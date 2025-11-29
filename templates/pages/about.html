@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}{{ settings.about_title or 'Про компанію' }} – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .about-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: radial-gradient(circle at center, rgba(52, 211, 153, 0.15), transparent 70%);
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .about-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(120deg, #22c55e, #a855f7, #06b6d4);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .about-hero p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .about-image {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+    }
+
+    .about-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        min-height: 300px;
+    }
+
+    .about-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .about-text h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .about-text p {
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 1rem;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .value-card {
+        text-align: center;
+        padding: 2rem 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .value-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    .value-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .value-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .value-card p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+        .about-content {
+            grid-template-columns: 1fr;
+        }
+
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Головна</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">Про компанію</span>
+    </div>
+
+    <div class="about-hero">
+        <h1>{{ settings.about_title or 'Про компанію' }}</h1>
+        <p>Дізнайтеся більше про нас, нашу місію та цінності</p>
+    </div>
+
+    <div class="about-content">
+        <div class="about-image">
+            <img src="https://images.pexels.com/photos/6476587/pexels-photo-6476587.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                 alt="Про нашу компанію">
+        </div>
+        <div class="about-text">
+            <h2>Наша історія</h2>
+            <p>{{ settings.about_text or 'Тут ви зможете розповісти про свій бренд, команду та цінності. Усе редагується через адмін-панель без розробника.' }}</p>
+            <p>Ми прагнемо надавати найкращий сервіс та якісні товари для наших клієнтів. Кожен день ми працюємо над тим, щоб зробити ваш досвід покупок максимально комфортним.</p>
+        </div>
+    </div>
+
+    <h2 style="text-align: center; margin-bottom: 0.5rem;">Наші цінності</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.5rem;">Що робить нас особливими</p>
+
+    <div class="values-grid">
+        <div class="value-card">
+            <div class="value-icon">🎯</div>
+            <h3>Якість</h3>
+            <p>Ми ретельно відбираємо кожен товар, щоб ви отримували тільки найкраще</p>
+        </div>
+        <div class="value-card">
+            <div class="value-icon">🚀</div>
+            <h3>Швидкість</h3>
+            <p>Швидка обробка замовлень та доставка у найкоротші терміни</p>
+        </div>
+        <div class="value-card">
+            <div class="value-icon">💬</div>
+            <h3>Підтримка</h3>
+            <p>Наш ІІ-помічник та команда завжди готові допомогти вам 24/7</p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem; text-align: center; padding: 2rem;">
+        <h3 style="margin-top: 0;">Маєте питання?</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Зв'яжіться з нами або поспілкуйтесь з нашим ІІ-помічником</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('contacts_page') }}" class="btn btn-outline">📞 Контакти</a>
+            <a href="{{ url_for('ai_assistant_page') }}" class="btn">🤖 Чат з ІІ</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

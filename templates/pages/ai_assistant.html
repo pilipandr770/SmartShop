@@ -1,0 +1,482 @@
+{% extends 'base.html' %}
+{% block title %}ІІ-продавець – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .ai-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: radial-gradient(circle at center, rgba(34, 197, 94, 0.15), transparent 70%);
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .ai-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(120deg, #22c55e, #14b8a6, #a855f7);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .ai-hero p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .ai-chat-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+        min-height: 500px;
+    }
+
+    .ai-chat-main {
+        display: flex;
+        flex-direction: column;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+        overflow: hidden;
+    }
+
+    .ai-chat-header {
+        padding: 1rem 1.5rem;
+        background: rgba(34, 197, 94, 0.1);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .ai-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #22c55e, #14b8a6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .ai-info h3 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .ai-info .status {
+        font-size: 0.8rem;
+        color: #22c55e;
+    }
+
+    .ai-messages {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-height: 350px;
+        max-height: 450px;
+    }
+
+    .ai-message {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 85%;
+    }
+
+    .ai-message.bot {
+        align-self: flex-start;
+    }
+
+    .ai-message.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+    }
+
+    .ai-message .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #22c55e, #14b8a6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .ai-message.user .avatar {
+        background: linear-gradient(135deg, #a855f7, #06b6d4);
+    }
+
+    .ai-message .content {
+        padding: 0.85rem 1.1rem;
+        border-radius: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .ai-message.bot .content {
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-bottom-left-radius: 0.25rem;
+    }
+
+    .ai-message.user .content {
+        background: rgba(34, 197, 94, 0.15);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        border-bottom-right-radius: 0.25rem;
+    }
+
+    .ai-input-area {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.25);
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .ai-input-area input {
+        flex: 1;
+        padding: 0.85rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text-main);
+        font-size: 0.9rem;
+    }
+
+    .ai-input-area input:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .ai-input-area button {
+        padding: 0.85rem 1.5rem;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #22c55e, #14b8a6);
+        color: #022c22;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .ai-input-area button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Sidebar */
+    .ai-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .ai-sidebar-card {
+        padding: 1.25rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+    }
+
+    .ai-sidebar-card h4 {
+        margin: 0 0 0.75rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+    }
+
+    .quick-questions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .quick-question {
+        padding: 0.6rem 0.85rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: rgba(15, 23, 42, 0.8);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+    }
+
+    .quick-question:hover {
+        border-color: var(--accent);
+        color: var(--text-main);
+    }
+
+    .catalog-preview {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .catalog-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background: rgba(15, 23, 42, 0.6);
+        font-size: 0.8rem;
+    }
+
+    .catalog-item img {
+        width: 32px;
+        height: 32px;
+        border-radius: 0.25rem;
+        object-fit: cover;
+    }
+
+    .catalog-item .name {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .catalog-item .price {
+        color: #bbf7d0;
+        font-weight: 600;
+    }
+
+    .ai-features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .ai-feature {
+        text-align: center;
+        padding: 1.5rem 1rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: rgba(15, 23, 42, 0.6);
+    }
+
+    .ai-feature .icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .ai-feature h4 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .ai-feature p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    @media (max-width: 920px) {
+        .ai-chat-container {
+            grid-template-columns: 1fr;
+        }
+
+        .ai-sidebar {
+            display: none;
+        }
+
+        .ai-features {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Головна</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">ІІ-продавець</span>
+    </div>
+
+    <div class="ai-hero">
+        <h1>🤖 ІІ-продавець</h1>
+        <p>Ваш персональний помічник, який знає весь каталог та готовий допомогти з вибором 24/7</p>
+    </div>
+
+    <div class="ai-chat-container">
+        <div class="ai-chat-main">
+            <div class="ai-chat-header">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-info">
+                    <h3>SmartShop AI Assistant</h3>
+                    <div class="status">● Онлайн</div>
+                </div>
+            </div>
+
+            <div class="ai-messages" id="aiMessagesMain">
+                <div class="ai-message bot">
+                    <div class="avatar">🤖</div>
+                    <div class="content">
+                        Вітаю! 👋 Я ІІ-помічник магазину SmartShop. Можу допомогти вам:<br><br>
+                        • Знайти потрібний товар<br>
+                        • Порівняти продукти<br>
+                        • Відповісти на питання про доставку<br>
+                        • Підібрати товар за бюджетом<br><br>
+                        Що вас цікавить?
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-input-area">
+                <input type="text" id="aiInputMain" placeholder="Напишіть ваше запитання..." onkeypress="if(event.key==='Enter')sendMainMessage()">
+                <button onclick="sendMainMessage()">Надіслати ➤</button>
+            </div>
+        </div>
+
+        <div class="ai-sidebar">
+            <div class="ai-sidebar-card">
+                <h4>💡 Швидкі запитання</h4>
+                <div class="quick-questions">
+                    <button class="quick-question" onclick="askQuestion('Які товари є в наявності?')">
+                        Які товари є в наявності?
+                    </button>
+                    <button class="quick-question" onclick="askQuestion('Скільки коштує доставка?')">
+                        Скільки коштує доставка?
+                    </button>
+                    <button class="quick-question" onclick="askQuestion('Порекомендуй щось до 100€')">
+                        Порекомендуй щось до 100€
+                    </button>
+                    <button class="quick-question" onclick="askQuestion('Як оформити замовлення?')">
+                        Як оформити замовлення?
+                    </button>
+                </div>
+            </div>
+
+            <div class="ai-sidebar-card">
+                <h4>📦 Каталог ({{ products|length }} товарів)</h4>
+                <div class="catalog-preview">
+                    {% for p in products[:5] %}
+                    <a href="{{ url_for('product_page', product_id=p.id) }}" class="catalog-item">
+                        <img src="{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=100' }}" alt="{{ p.name }}">
+                        <span class="name">{{ p.name }}</span>
+                        <span class="price">{{ "%.0f"|format(p.price) }}€</span>
+                    </a>
+                    {% else %}
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Товари ще не додані</p>
+                    {% endfor %}
+                </div>
+                {% if products|length > 5 %}
+                <a href="{{ url_for('shop') }}" style="display: block; text-align: center; margin-top: 0.75rem; font-size: 0.8rem; color: var(--accent);">
+                    Переглянути всі →
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="ai-sidebar-card">
+                <h4>⚙️ Інструкції ІІ</h4>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
+                    {{ (settings.ai_instructions or 'ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів.')[:100] }}...
+                </p>
+                <a href="{{ url_for('admin_blocks') }}" style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent);">
+                    Налаштувати в адмінці →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-features">
+        <div class="ai-feature">
+            <div class="icon">🧠</div>
+            <h4>Знає каталог</h4>
+            <p>Бачить усі товари, ціни та характеристики в реальному часі</p>
+        </div>
+        <div class="ai-feature">
+            <div class="icon">💬</div>
+            <h4>Природна мова</h4>
+            <p>Розуміє запитання українською, англійською та німецькою</p>
+        </div>
+        <div class="ai-feature">
+            <div class="icon">⚡</div>
+            <h4>Миттєві відповіді</h4>
+            <p>Працює 24/7 і відповідає за секунди</p>
+        </div>
+    </div>
+</section>
+
+<script>
+async function sendMainMessage() {
+    const input = document.getElementById('aiInputMain');
+    const messages = document.getElementById('aiMessagesMain');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    // Add user message
+    const userDiv = document.createElement('div');
+    userDiv.className = 'ai-message user';
+    userDiv.innerHTML = `
+        <div class="avatar">👤</div>
+        <div class="content">${text}</div>
+    `;
+    messages.appendChild(userDiv);
+    
+    input.value = '';
+    messages.scrollTop = messages.scrollHeight;
+    
+    // Add loading
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'ai-message bot';
+    loadingDiv.id = 'loadingMsgMain';
+    loadingDiv.innerHTML = `
+        <div class="avatar">🤖</div>
+        <div class="content" style="color: var(--text-muted);">Думаю...</div>
+    `;
+    messages.appendChild(loadingDiv);
+    messages.scrollTop = messages.scrollHeight;
+    
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: text})
+        });
+        
+        const data = await response.json();
+        loadingDiv.remove();
+        
+        const botDiv = document.createElement('div');
+        botDiv.className = 'ai-message bot';
+        botDiv.innerHTML = `
+            <div class="avatar">🤖</div>
+            <div class="content">${data.message || data.error || 'Вибачте, сталася помилка.'}</div>
+        `;
+        messages.appendChild(botDiv);
+    } catch (e) {
+        loadingDiv.remove();
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'ai-message bot';
+        errorDiv.innerHTML = `
+            <div class="avatar">🤖</div>
+            <div class="content">Не вдалося підключитися. Спробуйте пізніше.</div>
+        `;
+        messages.appendChild(errorDiv);
+    }
+    
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function askQuestion(question) {
+    document.getElementById('aiInputMain').value = question;
+    sendMainMessage();
+}
+</script>
+{% endblock %}

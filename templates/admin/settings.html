@@ -1,0 +1,266 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Налаштування - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>⚙️ Налаштування сайту</h1>
+    <p class="page-subtitle">Загальні налаштування вашого магазину</p>
+</div>
+
+<form method="post" class="settings-form">
+    <!-- Основні налаштування -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🏪 Основні налаштування</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="site_name">Назва сайту / магазину</label>
+                    <input type="text" id="site_name" name="site_name" value="{{ settings.site_name or 'SmartShop AI' }}" placeholder="SmartShop AI">
+                </div>
+                <div class="form-group">
+                    <label for="site_tagline">Слоган</label>
+                    <input type="text" id="site_tagline" name="site_tagline" value="{{ settings.site_tagline or '' }}" placeholder="Ваш надійний онлайн-магазин">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="logo_url">URL логотипу</label>
+                    <input type="text" id="logo_url" name="logo_url" value="{{ settings.logo_url or '' }}" placeholder="https://example.com/logo.png">
+                </div>
+                <div class="form-group">
+                    <label for="favicon_url">URL фавікону</label>
+                    <input type="text" id="favicon_url" name="favicon_url" value="{{ settings.favicon_url or '' }}" placeholder="https://example.com/favicon.ico">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контактна інформація -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>📞 Контактна інформація</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="contact_email">Email</label>
+                    <input type="email" id="contact_email" name="contact_email" value="{{ settings.contact_email or '' }}" placeholder="info@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="contact_phone">Телефон</label>
+                    <input type="text" id="contact_phone" name="contact_phone" value="{{ settings.contact_phone or '' }}" placeholder="+38 (099) 123-45-67">
+                </div>
+                <div class="form-group">
+                    <label for="working_hours">Години роботи</label>
+                    <input type="text" id="working_hours" name="working_hours" value="{{ settings.working_hours or '' }}" placeholder="Пн-Пт: 9:00-18:00">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="contact_address">Адреса</label>
+                <input type="text" id="contact_address" name="contact_address" value="{{ settings.contact_address or '' }}" placeholder="м. Київ, вул. Хрещатик, 1">
+            </div>
+            
+            <div class="form-group">
+                <label for="google_maps_url">Посилання на Google Maps</label>
+                <input type="text" id="google_maps_url" name="google_maps_url" value="{{ settings.google_maps_url or '' }}" placeholder="https://maps.google.com/...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Соцмережі -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🌐 Соціальні мережі</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="social_telegram">📱 Telegram</label>
+                    <input type="text" id="social_telegram" name="social_telegram" value="{{ settings.social_telegram or '' }}" placeholder="https://t.me/your_channel">
+                </div>
+                <div class="form-group">
+                    <label for="social_whatsapp">💬 WhatsApp</label>
+                    <input type="text" id="social_whatsapp" name="social_whatsapp" value="{{ settings.social_whatsapp or '' }}" placeholder="https://wa.me/380991234567">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="social_instagram">📸 Instagram</label>
+                    <input type="text" id="social_instagram" name="social_instagram" value="{{ settings.social_instagram or '' }}" placeholder="https://instagram.com/your_shop">
+                </div>
+                <div class="form-group">
+                    <label for="social_facebook">👥 Facebook</label>
+                    <input type="text" id="social_facebook" name="social_facebook" value="{{ settings.social_facebook or '' }}" placeholder="https://facebook.com/your_shop">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="social_youtube">🎬 YouTube</label>
+                    <input type="text" id="social_youtube" name="social_youtube" value="{{ settings.social_youtube or '' }}" placeholder="https://youtube.com/@your_channel">
+                </div>
+                <div class="form-group">
+                    <label for="social_tiktok">🎵 TikTok</label>
+                    <input type="text" id="social_tiktok" name="social_tiktok" value="{{ settings.social_tiktok or '' }}" placeholder="https://tiktok.com/@your_shop">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEO налаштування -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🔍 SEO налаштування</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-group">
+                <label for="meta_title">Meta Title</label>
+                <input type="text" id="meta_title" name="meta_title" value="{{ settings.meta_title or '' }}" placeholder="SmartShop AI - Ваш надійний онлайн-магазин" maxlength="70">
+                <small class="form-hint">Рекомендована довжина: 50-60 символів</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="meta_description">Meta Description</label>
+                <textarea id="meta_description" name="meta_description" rows="3" maxlength="160" placeholder="Короткий опис вашого магазину для пошукових систем...">{{ settings.meta_description or '' }}</textarea>
+                <small class="form-hint">Рекомендована довжина: 150-160 символів</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="meta_keywords">Meta Keywords</label>
+                <input type="text" id="meta_keywords" name="meta_keywords" value="{{ settings.meta_keywords or '' }}" placeholder="онлайн магазин, купити, товари, доставка">
+            </div>
+        </div>
+    </div>
+
+    <!-- Аналітика -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>📊 Аналітика та інтеграції</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="google_analytics_id">Google Analytics ID</label>
+                    <input type="text" id="google_analytics_id" name="google_analytics_id" value="{{ settings.google_analytics_id or '' }}" placeholder="G-XXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="facebook_pixel_id">Facebook Pixel ID</label>
+                    <input type="text" id="facebook_pixel_id" name="facebook_pixel_id" value="{{ settings.facebook_pixel_id or '' }}" placeholder="123456789012345">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="custom_head_code">Додатковий код в &lt;head&gt;</label>
+                <textarea id="custom_head_code" name="custom_head_code" rows="4" class="code-textarea" placeholder="<!-- Ваш кастомний код -->">{{ settings.custom_head_code or '' }}</textarea>
+                <small class="form-hint">HTML/JS код, який буде вставлено перед &lt;/head&gt;</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Магазин -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🛒 Налаштування магазину</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="default_currency">Валюта</label>
+                    <select id="default_currency" name="default_currency">
+                        <option value="UAH" {% if settings.default_currency == 'UAH' %}selected{% endif %}>UAH (₴)</option>
+                        <option value="EUR" {% if settings.default_currency == 'EUR' %}selected{% endif %}>EUR (€)</option>
+                        <option value="USD" {% if settings.default_currency == 'USD' %}selected{% endif %}>USD ($)</option>
+                        <option value="GBP" {% if settings.default_currency == 'GBP' %}selected{% endif %}>GBP (£)</option>
+                        <option value="PLN" {% if settings.default_currency == 'PLN' %}selected{% endif %}>PLN (zł)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="products_per_page">Товарів на сторінці</label>
+                    <input type="number" id="products_per_page" name="products_per_page" value="{{ settings.products_per_page or 12 }}" min="4" max="48">
+                </div>
+                <div class="form-group">
+                    <label for="min_order_amount">Мін. сума замовлення</label>
+                    <input type="text" id="min_order_amount" name="min_order_amount" value="{{ settings.min_order_amount or '0' }}" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="shipping_info">Інформація про доставку</label>
+                <textarea id="shipping_info" name="shipping_info" rows="3" placeholder="Безкоштовна доставка від 1000 грн...">{{ settings.shipping_info or '' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-footer">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <span>💾</span> Зберегти налаштування
+        </button>
+    </div>
+</form>
+
+<style>
+.form-section {
+    padding: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-row.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.code-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 0;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row.three-col {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

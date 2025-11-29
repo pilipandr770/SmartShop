@@ -1,0 +1,204 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Редагувати категорію - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1>✏️ Редагування категорії</h1>
+        <p class="page-subtitle">{{ category.name }}</p>
+    </div>
+    <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">← Назад до списку</a>
+</div>
+
+<form method="post">
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>📁 Інформація про категорію</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Назва категорії *</label>
+                    <input type="text" id="name" name="name" value="{{ category.name }}" required placeholder="Наприклад: Електроніка">
+                </div>
+                <div class="form-group">
+                    <label for="slug">Slug (URL) *</label>
+                    <input type="text" id="slug" name="slug" value="{{ category.slug }}" required placeholder="elektronika">
+                    <small class="form-hint">Використовуйте латиницю та дефіси</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Опис категорії</label>
+                <textarea id="description" name="description" rows="4" placeholder="Короткий опис категорії...">{{ category.description or '' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    {% if category.products %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>📦 Товари в категорії</h3>
+            <span class="badge badge-primary">{{ category.products|length }} шт.</span>
+        </div>
+        <div class="products-list">
+            {% for product in category.products[:10] %}
+            <div class="product-item">
+                <div class="product-info">
+                    {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-thumb">
+                    {% else %}
+                    <div class="product-thumb-placeholder">📷</div>
+                    {% endif %}
+                    <div>
+                        <strong>{{ product.name }}</strong>
+                        <br><span class="text-muted">{{ '%.2f'|format(product.price) }} ₴</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary">✏️</a>
+            </div>
+            {% endfor %}
+            {% if category.products|length > 10 %}
+            <div class="more-products">
+                <span class="text-muted">...та ще {{ category.products|length - 10 }} товарів</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="form-footer">
+        <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">Скасувати</a>
+        <button type="submit" class="btn btn-primary btn-lg">💾 Зберегти зміни</button>
+    </div>
+</form>
+
+<!-- Небезпечна зона -->
+<div class="card danger-zone" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>⚠️ Небезпечна зона</h3>
+    </div>
+    <div class="form-section">
+        <p class="text-muted">При видаленні категорії товари залишаться, але будуть без категорії.</p>
+        <form method="post" action="{{ url_for('admin_categories_delete', category_id=category.id) }}" onsubmit="return confirm('Ви впевнені, що хочете видалити цю категорію?');">
+            <button type="submit" class="btn btn-danger">🗑️ Видалити категорію</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-section {
+    padding: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.products-list {
+    padding: 1rem 1.5rem;
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.product-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+}
+
+.product-thumb-placeholder {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 1.2rem;
+}
+
+.more-products {
+    padding-top: 0.75rem;
+    text-align: center;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.danger-zone {
+    border-color: var(--danger-color);
+}
+
+.danger-zone .card-header h3 {
+    color: var(--danger-color);
+}
+
+.danger-zone .text-muted {
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

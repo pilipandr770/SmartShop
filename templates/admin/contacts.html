@@ -1,0 +1,293 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Контакти - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>✉️ Заявки з контактної форми</h1>
+    <p class="page-subtitle">Повідомлення від відвідувачів сайту</p>
+</div>
+
+<!-- Статистика -->
+<div class="stats-grid" style="margin-bottom: 2rem;">
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📨</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Усього заявок</div>
+        </div>
+    </div>
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #10b981, #059669);">🆕</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.unread }}</div>
+            <div class="stat-label">Нові</div>
+        </div>
+    </div>
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📅</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.today }}</div>
+            <div class="stat-label">За сьогодні</div>
+        </div>
+    </div>
+</div>
+
+<!-- Масові дії -->
+{% if contacts %}
+<div class="card mass-actions" style="margin-bottom: 1.5rem;">
+    <div class="card-content">
+        <span class="actions-label">Масові дії:</span>
+        <form method="post" action="{{ url_for('admin_contacts_mark_all_read') }}" style="display: inline;">
+            <button type="submit" class="btn btn-secondary btn-sm">✓ Позначити всі прочитаними</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_contacts_delete_read') }}" style="display: inline;" onsubmit="return confirm('Видалити всі прочитані заявки?');">
+            <button type="submit" class="btn btn-danger btn-sm">🗑️ Видалити прочитані</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Список заявок -->
+{% if contacts %}
+<div class="contacts-list">
+    {% for contact in contacts %}
+    <div class="contact-card {% if not contact.is_read %}unread{% endif %}">
+        <div class="contact-header">
+            <div class="contact-info">
+                <strong class="contact-name">{{ contact.name }}</strong>
+                {% if not contact.is_read %}
+                    <span class="badge badge-success">🆕 Нове</span>
+                {% else %}
+                    <span class="badge badge-secondary">Прочитано</span>
+                {% endif %}
+            </div>
+            <span class="contact-date">{{ contact.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
+        
+        <div class="contact-meta">
+            <span class="meta-item">📧 <a href="mailto:{{ contact.email }}">{{ contact.email }}</a></span>
+            {% if contact.phone %}
+                <span class="meta-item">📱 <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></span>
+            {% endif %}
+            {% if contact.subject %}
+                <span class="meta-item">📋 {{ contact.subject }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="contact-message">
+            {{ contact.message }}
+        </div>
+        
+        <div class="contact-actions">
+            <a href="mailto:{{ contact.email }}?subject=Re: {{ contact.subject or 'Ваш запит' }}" class="btn btn-primary btn-sm">
+                ✉️ Відповісти
+            </a>
+            
+            {% if not contact.is_read %}
+            <form method="post" action="{{ url_for('admin_contact_mark_read', contact_id=contact.id) }}" style="display: inline;">
+                <button type="submit" class="btn btn-secondary btn-sm">✓ Прочитано</button>
+            </form>
+            {% endif %}
+            
+            <form method="post" action="{{ url_for('admin_contact_delete', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('Видалити цю заявку?');">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️ Видалити</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Пагінація -->
+{% if pagination.pages > 1 %}
+<div class="pagination">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('admin_contacts', page=pagination.prev_num) }}" class="btn btn-secondary btn-sm">← Попередня</a>
+    {% endif %}
+    
+    <span class="pagination-info">
+        Сторінка {{ pagination.page }} з {{ pagination.pages }}
+    </span>
+    
+    {% if pagination.has_next %}
+        <a href="{{ url_for('admin_contacts', page=pagination.next_num) }}" class="btn btn-secondary btn-sm">Наступна →</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <div class="empty-icon">✉️</div>
+        <h3>Заявок ще немає</h3>
+        <p>Вони з'являться, коли відвідувачі надішлють повідомлення через форму на сайті</p>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card.mini {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-icon-mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.stat-card.mini .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-card.mini .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.mass-actions .card-content {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.actions-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.contacts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+}
+
+.contact-card:hover {
+    border-color: var(--accent-color);
+}
+
+.contact-card.unread {
+    border-left: 4px solid var(--success-color);
+}
+
+.contact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.contact-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.contact-name {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.contact-date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.contact-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.meta-item a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.meta-item a:hover {
+    text-decoration: underline;
+}
+
+.contact-message {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.contact-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.pagination-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %}

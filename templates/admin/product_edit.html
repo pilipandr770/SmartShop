@@ -1,0 +1,212 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Редагувати товар - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1>✏️ Редагування товару</h1>
+        <p class="page-subtitle">{{ product.name }}</p>
+    </div>
+    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">← Назад до списку</a>
+</div>
+
+<form method="post">
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>📦 Основна інформація</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="name">Назва товару *</label>
+                    <input type="text" id="name" name="name" value="{{ product.name }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Ціна *</label>
+                    <input type="number" id="price" name="price" value="{{ product.price }}" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="old_price">Стара ціна</label>
+                    <input type="number" id="old_price" name="old_price" value="{{ product.old_price or '' }}" step="0.01" min="0" placeholder="Для знижки">
+                </div>
+            </div>
+            
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="category_id">Категорія</label>
+                    <select id="category_id" name="category_id">
+                        <option value="">(без категорії)</option>
+                        {% for c in categories %}
+                            <option value="{{ c.id }}" {% if product.category_id == c.id %}selected{% endif %}>
+                                {{ c.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sku">SKU / Артикул</label>
+                    <input type="text" id="sku" name="sku" value="{{ product.sku or '' }}" placeholder="ABC-123">
+                </div>
+                <div class="form-group">
+                    <label for="stock">Кількість на складі</label>
+                    <input type="number" id="stock" name="stock" value="{{ product.stock or 0 }}" min="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🖼️ Зображення</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-group">
+                <label for="image_url">URL зображення</label>
+                <input type="url" id="image_url" name="image_url" value="{{ product.image_url or '' }}" placeholder="https://example.com/image.jpg">
+            </div>
+            
+            {% if product.image_url %}
+            <div class="image-preview">
+                <label>Поточне зображення:</label>
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>📝 Описи</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-group">
+                <label for="short_description">Короткий опис</label>
+                <textarea id="short_description" name="short_description" rows="3" placeholder="Короткий опис для каталогу...">{{ product.short_description or '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="long_description">Повний опис</label>
+                <textarea id="long_description" name="long_description" rows="6" placeholder="Детальний опис товару...">{{ product.long_description or '' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>⚙️ Налаштування</h3>
+        </div>
+        <div class="form-section">
+            <label class="checkbox-label">
+                <input type="checkbox" name="is_active" {% if product.is_active %}checked{% endif %}>
+                <span>Товар активний (показувати на сайті)</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-footer">
+        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">Скасувати</a>
+        <button type="submit" class="btn btn-primary btn-lg">💾 Зберегти зміни</button>
+    </div>
+</form>
+
+<!-- Небезпечна зона -->
+<div class="card danger-zone" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>⚠️ Небезпечна зона</h3>
+    </div>
+    <div class="form-section">
+        <p class="text-muted">Видалення товару є незворотною дією.</p>
+        <form method="post" action="{{ url_for('admin_products_delete', product_id=product.id) }}" onsubmit="return confirm('Ви впевнені, що хочете видалити цей товар?');">
+            <button type="submit" class="btn btn-danger">🗑️ Видалити товар</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-section {
+    padding: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-row.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+}
+
+.image-preview {
+    margin-top: 1rem;
+}
+
+.image-preview label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.image-preview img {
+    max-width: 300px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border-color);
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+}
+
+.danger-zone {
+    border-color: var(--danger-color);
+}
+
+.danger-zone .card-header h3 {
+    color: var(--danger-color);
+}
+
+.danger-zone .text-muted {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+    .form-row,
+    .form-row.three-col {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

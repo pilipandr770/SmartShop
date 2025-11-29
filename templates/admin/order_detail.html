@@ -1,0 +1,323 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Замовлення #{{ order.id }} - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1>🛒 Замовлення #{{ order.id }}</h1>
+        <p class="page-subtitle">Деталі замовлення</p>
+    </div>
+    <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">← Назад до списку</a>
+</div>
+
+<div class="order-grid">
+    <!-- Інформація про замовлення -->
+    <div class="card">
+        <div class="card-header">
+            <h3>📋 Інформація</h3>
+        </div>
+        <div class="detail-list">
+            <div class="detail-row">
+                <span class="detail-label">ID замовлення</span>
+                <span class="detail-value"><span class="badge badge-secondary">#{{ order.id }}</span></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Дата створення</span>
+                <span class="detail-value">{{ order.created_at.strftime('%d.%m.%Y о %H:%M') }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Статус</span>
+                <span class="detail-value">
+                    {% if order.status == 'created' %}
+                    <span class="badge badge-secondary">Створено</span>
+                    {% elif order.status == 'pending' %}
+                    <span class="badge badge-warning">Очікує оплати</span>
+                    {% elif order.status == 'paid' %}
+                    <span class="badge badge-success">Оплачено</span>
+                    {% elif order.status == 'shipped' %}
+                    <span class="badge badge-info">Відправлено</span>
+                    {% elif order.status == 'delivered' %}
+                    <span class="badge badge-success">Доставлено</span>
+                    {% elif order.status == 'cancelled' %}
+                    <span class="badge badge-danger">Скасовано</span>
+                    {% else %}
+                    <span class="badge badge-secondary">{{ order.status }}</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Сума</span>
+                <span class="detail-value text-success" style="font-size: 1.2rem; font-weight: 600;">{{ '%.2f'|format(order.amount) }} {{ order.currency }}</span>
+            </div>
+            {% if order.stripe_payment_intent %}
+            <div class="detail-row">
+                <span class="detail-label">Stripe Payment</span>
+                <span class="detail-value"><code class="code-small">{{ order.stripe_payment_intent[:25] }}...</code></span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Клієнт -->
+    <div class="card">
+        <div class="card-header">
+            <h3>👤 Клієнт</h3>
+        </div>
+        <div class="detail-list">
+            <div class="detail-row">
+                <span class="detail-label">Ім'я</span>
+                <span class="detail-value">{{ order.customer_name or '—' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email</span>
+                <span class="detail-value">
+                    {% if order.customer_email %}
+                        <a href="mailto:{{ order.customer_email }}" class="link-accent">{{ order.customer_email }}</a>
+                    {% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Телефон</span>
+                <span class="detail-value">
+                    {% if order.customer_phone %}
+                        <a href="tel:{{ order.customer_phone }}" class="link-accent">{{ order.customer_phone }}</a>
+                    {% else %}—{% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Адреса</span>
+                <span class="detail-value">{{ order.shipping_address or '—' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Товари -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h3>📦 Товари в замовленні</h3>
+    </div>
+    
+    {% if order.items %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Ціна</th>
+                    <th>Кількість</th>
+                    <th>Сума</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in order.items %}
+                <tr>
+                    <td>
+                        <strong>{{ item.product_name }}</strong>
+                        {% if item.product_id %}
+                            <a href="{{ url_for('admin_products_edit', product_id=item.product_id) }}" class="btn btn-sm btn-secondary" style="margin-left: 0.5rem;">→</a>
+                        {% endif %}
+                    </td>
+                    <td>{{ '%.2f'|format(item.price) }} {{ item.currency }}</td>
+                    <td><span class="badge badge-info">{{ item.quantity }} шт.</span></td>
+                    <td><strong class="text-success">{{ '%.2f'|format(item.price * item.quantity) }} {{ item.currency }}</strong></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Разом:</strong></td>
+                    <td><strong class="text-success" style="font-size: 1.2rem;">{{ '%.2f'|format(order.amount) }} {{ order.currency }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p class="text-muted">Деталі товарів недоступні</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Зміна статусу -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h3>🔄 Змінити статус</h3>
+    </div>
+    <div class="form-section">
+        <form method="post" action="{{ url_for('admin_order_update_status', order_id=order.id) }}" class="status-form">
+            <select name="status" class="status-select">
+                <option value="created" {% if order.status == 'created' %}selected{% endif %}>Створено</option>
+                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Очікує оплати</option>
+                <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Оплачено</option>
+                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Відправлено</option>
+                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Доставлено</option>
+                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Скасовано</option>
+            </select>
+            <button type="submit" class="btn btn-primary">💾 Оновити статус</button>
+        </form>
+    </div>
+</div>
+
+<!-- Нотатки -->
+<div class="card" style="margin-top: 1.5rem;">
+    <div class="card-header">
+        <h3>📝 Нотатки</h3>
+    </div>
+    <div class="form-section">
+        <form method="post" action="{{ url_for('admin_order_update_notes', order_id=order.id) }}">
+            <textarea name="notes" rows="3" placeholder="Внутрішні нотатки (тільки для адміністратора)...">{{ order.notes or '' }}</textarea>
+            <div class="form-actions" style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-secondary">💾 Зберегти нотатки</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Дії -->
+<div class="card actions-card" style="margin-top: 1.5rem;">
+    <div class="card-content">
+        {% if order.customer_email %}
+            <a href="mailto:{{ order.customer_email }}?subject=Замовлення %23{{ order.id }}" class="btn btn-primary">
+                ✉️ Написати клієнту
+            </a>
+        {% endif %}
+        
+        <form method="post" action="{{ url_for('admin_order_delete', order_id=order.id) }}" style="margin-left: auto;" onsubmit="return confirm('Ви впевнені, що хочете видалити це замовлення?');">
+            <button type="submit" class="btn btn-danger">🗑️ Видалити замовлення</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.order-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.detail-list {
+    padding: 1rem 1.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.text-success {
+    color: var(--success-color);
+}
+
+.link-accent {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.link-accent:hover {
+    text-decoration: underline;
+}
+
+.code-small {
+    background: var(--bg-tertiary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.data-table tfoot td {
+    background: var(--bg-tertiary);
+    border-top: 2px solid var(--border-color);
+}
+
+.form-section {
+    padding: 1.5rem;
+}
+
+.status-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.status-select {
+    width: auto;
+    min-width: 200px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.actions-card .card-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .order-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .status-select {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

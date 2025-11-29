@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% block title %}Блог – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .blog-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: radial-gradient(circle at center, rgba(168, 85, 247, 0.15), transparent 70%);
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .blog-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(120deg, #a855f7, #06b6d4, #22c55e);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .blog-hero p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .blog-card {
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    .blog-card-image {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .blog-card-image::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+    }
+
+    .blog-card-content {
+        padding: 1.25rem;
+    }
+
+    .blog-card-date {
+        font-size: 0.75rem;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+    }
+
+    .blog-card h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.75rem;
+        line-height: 1.4;
+    }
+
+    .blog-card p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .blog-card-tags {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .blog-tag {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.15);
+        color: var(--text-muted);
+    }
+
+    .featured-post {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+    }
+
+    .featured-image {
+        border-radius: 0.75rem;
+        overflow: hidden;
+        height: 300px;
+    }
+
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .featured-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .featured-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #a855f7, #06b6d4);
+        color: white;
+        margin-bottom: 1rem;
+        width: fit-content;
+    }
+
+    .featured-content h2 {
+        font-size: 1.5rem;
+        margin: 0 0 1rem;
+    }
+
+    .featured-content p {
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .ai-notice {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px dashed rgba(148, 163, 184, 0.45);
+        margin-top: 2rem;
+    }
+
+    .ai-notice h3 {
+        margin-top: 0;
+        color: var(--accent);
+    }
+
+    @media (max-width: 920px) {
+        .blog-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .featured-post {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .blog-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Головна</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">Блог</span>
+    </div>
+
+    <div class="blog-hero">
+        <h1>{{ settings.blog_title or 'Блог SmartShop AI' }}</h1>
+        <p>{{ settings.blog_excerpt or 'Корисні статті, огляди товарів та новини нашого магазину' }}</p>
+    </div>
+
+    <!-- Featured Post -->
+    <div class="featured-post">
+        <div class="featured-image">
+            <img src="https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                 alt="Головна стаття">
+        </div>
+        <div class="featured-content">
+            <span class="featured-badge">✨ Обране</span>
+            <h2>Як ІІ-технології змінюють онлайн-шопінг у 2025 році</h2>
+            <p>Штучний інтелект революціонізує спосіб, яким ми робимо покупки онлайн. Від персоналізованих рекомендацій до розумних чат-ботів — дізнайтеся, як ці технології покращують ваш досвід покупок.</p>
+            <a href="#" class="btn">Читати далі →</a>
+        </div>
+    </div>
+
+    <h2 style="margin-bottom: 1rem;">Останні публікації</h2>
+
+    <div class="blog-grid">
+        <article class="blog-card">
+            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">28 листопада 2025</div>
+                <h3>Топ-10 трендових товарів цієї зими</h3>
+                <p>Огляд найпопулярніших товарів, які варто придбати для себе або в подарунок близьким.</p>
+                <div class="blog-card-tags">
+                    <span class="blog-tag">Огляди</span>
+                    <span class="blog-tag">Тренди</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-card">
+            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">25 листопада 2025</div>
+                <h3>Як правильно обирати подарунки онлайн</h3>
+                <p>Практичні поради щодо вибору ідеального подарунка через інтернет-магазини.</p>
+                <div class="blog-card-tags">
+                    <span class="blog-tag">Поради</span>
+                    <span class="blog-tag">Подарунки</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-card">
+            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">22 листопада 2025</div>
+                <h3>Безпечні онлайн-покупки: що потрібно знати</h3>
+                <p>Важливі правила безпеки при здійсненні покупок в інтернеті та захист ваших даних.</p>
+                <div class="blog-card-tags">
+                    <span class="blog-tag">Безпека</span>
+                    <span class="blog-tag">Поради</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-card">
+            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">19 листопада 2025</div>
+                <h3>Переваги покупок з ІІ-консультантом</h3>
+                <p>Чому спілкування з розумним помічником робить шопінг швидшим та приємнішим.</p>
+                <div class="blog-card-tags">
+                    <span class="blog-tag">ІІ</span>
+                    <span class="blog-tag">Технології</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-card">
+            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/4050388/pexels-photo-4050388.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">15 листопада 2025</div>
+                <h3>Як економити при онлайн-покупках</h3>
+                <p>Секрети та лайфхаки для вигідних покупок: знижки, кешбек та акції.</p>
+                <div class="blog-card-tags">
+                    <span class="blog-tag">Економія</span>
+                    <span class="blog-tag">Лайфхаки</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="blog-card">
+            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+            <div class="blog-card-content">
+                <div class="blog-card-date">12 листопада 2025</div>
+                <h3>Огляд новинок каталогу</h3>
+                <p>Представляємо найсвіжіші надходження до нашого магазину — не пропустіть!</p>
+                <div class="blog-card-tags">
+                    <span class="blog-tag">Новинки</span>
+                    <span class="blog-tag">Огляди</span>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <div class="ai-notice">
+        <h3>🤖 Блог на базі ІІ</h3>
+        <p style="color: var(--text-muted);">Наш блог автоматично генерує унікальний контент за контент-планом на 30 днів.<br>Усі статті перевіряються редактором перед публікацією.</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Налаштуйте теми та стиль у <a href="{{ url_for('admin_blocks') }}" style="color: var(--accent);">адмін-панелі</a></p>
+    </div>
+</section>
+{% endblock %}

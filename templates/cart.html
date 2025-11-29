@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %}Кошик – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 1rem 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .cart-table th {
+        color: var(--text-muted);
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .cart-item-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 0.5rem;
+        object-fit: cover;
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .cart-item-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .cart-item-name {
+        font-weight: 600;
+    }
+
+    .cart-item-name a:hover {
+        color: var(--accent);
+    }
+
+    .quantity-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quantity-form input[type="number"] {
+        width: 60px;
+        padding: 0.4rem;
+        border-radius: 0.4rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text-main);
+        text-align: center;
+    }
+
+    .quantity-form button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .cart-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: radial-gradient(circle at top, rgba(52, 211, 153, 0.16), rgba(15, 23, 42, 1));
+    }
+
+    .cart-total {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #bbf7d0;
+    }
+
+    .cart-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-cart p {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .cart-table thead {
+            display: none;
+        }
+
+        .cart-table tr {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 0;
+            gap: 0.5rem;
+        }
+
+        .cart-table td {
+            padding: 0.25rem 0;
+            border: none;
+        }
+
+        .cart-summary {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <h1 style="font-size: 1.5rem; margin-bottom: 1rem;">🛒 Кошик</h1>
+
+    {% if items %}
+    <div class="card">
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>Ціна</th>
+                    <th>Кількість</th>
+                    <th>Сума</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <div class="cart-item-info">
+                            <img src="{{ item.product.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=100' }}" 
+                                 alt="{{ item.product.name }}" 
+                                 class="cart-item-img">
+                            <div class="cart-item-name">
+                                <a href="{{ url_for('product_page', product_id=item.product.id) }}">
+                                    {{ item.product.name }}
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ "%.2f"|format(item.product.price) }} {{ item.product.currency }}</td>
+                    <td>
+                        <form action="{{ url_for('cart_update', product_id=item.product.id) }}" method="post" class="quantity-form">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99">
+                            <button type="submit" class="btn btn-outline">✓</button>
+                        </form>
+                    </td>
+                    <td style="font-weight: 600; color: #bbf7d0;">
+                        {{ "%.2f"|format(item.item_total) }} {{ item.product.currency }}
+                    </td>
+                    <td>
+                        <form action="{{ url_for('cart_remove', product_id=item.product.id) }}" method="post">
+                            <button type="submit" class="btn btn-outline" style="color: #ef4444; border-color: #ef4444;">✕</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cart-summary">
+        <div>
+            <span style="color: var(--text-muted);">Загальна сума:</span>
+            <span class="cart-total">{{ "%.2f"|format(total) }} EUR</span>
+        </div>
+        <div class="cart-actions">
+            <form action="{{ url_for('cart_clear') }}" method="post">
+                <button type="submit" class="btn btn-outline">Очистити кошик</button>
+            </form>
+            <a href="{{ url_for('shop') }}" class="btn btn-outline">Продовжити покупки</a>
+            <form action="{{ url_for('checkout') }}" method="post" style="display: inline;">
+                <button type="submit" class="btn">
+                    💳 Оформити замовлення
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="card empty-cart">
+        <p>🛒 Ваш кошик порожній</p>
+        <a href="{{ url_for('shop') }}" class="btn">Перейти до магазину</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

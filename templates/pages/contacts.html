@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block title %}Контакти – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .contacts-hero {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15), transparent 70%);
+        border-radius: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .contacts-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(120deg, #06b6d4, #22c55e, #a855f7);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .contacts-hero p {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .contacts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .contact-card {
+        text-align: center;
+        padding: 2rem 1.5rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        border-color: var(--accent);
+    }
+
+    .contact-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .contact-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-card p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .contact-card a.contact-link {
+        display: inline-block;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .contact-card a.contact-link:hover {
+        text-decoration: underline;
+    }
+
+    .contact-form-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .contact-form {
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+    }
+
+    .contact-form h2 {
+        margin-top: 0;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.35rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text-main);
+        font-size: 0.9rem;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .map-placeholder {
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .map-placeholder .icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .map-placeholder p {
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .social-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text-main);
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .social-btn:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .social-btn.telegram:hover {
+        border-color: #0088cc;
+        box-shadow: 0 0 20px rgba(0, 136, 204, 0.3);
+    }
+
+    .social-btn.whatsapp:hover {
+        border-color: #25d366;
+        box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
+    }
+
+    @media (max-width: 920px) {
+        .contacts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-form-section {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Головна</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">Контакти</span>
+    </div>
+
+    <div class="contacts-hero">
+        <h1>Зв'яжіться з нами</h1>
+        <p>Ми завжди раді допомогти! Оберіть зручний спосіб зв'язку або напишіть нам</p>
+    </div>
+
+    <div class="contacts-grid">
+        <div class="contact-card">
+            <div class="contact-icon">📧</div>
+            <h3>Email</h3>
+            <p>Напишіть нам, і ми відповімо протягом 24 годин</p>
+            <a href="mailto:hello@smartshop.ai" class="contact-link">hello@smartshop.ai</a>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon">📞</div>
+            <h3>Телефон</h3>
+            <p>Пн-Пт: 9:00 - 18:00<br>Сб: 10:00 - 15:00</p>
+            <a href="tel:+49123456789" class="contact-link">+49 123 456 789</a>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon">📍</div>
+            <h3>Адреса</h3>
+            <p>Завітайте до нашого офісу</p>
+            <span class="contact-link">Berlin, Germany</span>
+        </div>
+    </div>
+
+    <div class="social-links">
+        {% if settings.social_telegram %}
+        <a href="{{ settings.social_telegram }}" target="_blank" class="social-btn telegram">
+            📱 Telegram
+        </a>
+        {% endif %}
+        {% if settings.social_whatsapp %}
+        <a href="{{ settings.social_whatsapp }}" target="_blank" class="social-btn whatsapp">
+            💬 WhatsApp
+        </a>
+        {% endif %}
+        <a href="{{ url_for('ai_assistant_page') }}" class="social-btn">
+            🤖 ІІ-помічник
+        </a>
+    </div>
+
+    <div class="contact-form-section">
+        <div class="contact-form">
+            <h2>✉️ Напишіть нам</h2>
+            <form action="#" method="post">
+                <div class="form-group">
+                    <label for="name">Ваше ім'я</label>
+                    <input type="text" id="name" name="name" placeholder="Введіть ваше ім'я" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Тема</label>
+                    <input type="text" id="subject" name="subject" placeholder="Тема повідомлення">
+                </div>
+                <div class="form-group">
+                    <label for="message">Повідомлення</label>
+                    <textarea id="message" name="message" placeholder="Ваше повідомлення..." required></textarea>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Надіслати повідомлення</button>
+            </form>
+        </div>
+
+        <div class="map-placeholder">
+            <div class="icon">🗺️</div>
+            <h3>Карта</h3>
+            <p>Тут буде інтерактивна карта з розташуванням офісу</p>
+            <p style="font-size: 0.85rem;">Інтеграція з Google Maps / OpenStreetMap</p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem; text-align: center; padding: 2rem;">
+        <h3 style="margin-top: 0;">Потрібна швидка відповідь?</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Наш ІІ-помічник працює 24/7 і може відповісти на більшість питань миттєво</p>
+        <a href="{{ url_for('ai_assistant_page') }}" class="btn">🤖 Поспілкуватись з ІІ</a>
+    </div>
+</section>
+{% endblock %}

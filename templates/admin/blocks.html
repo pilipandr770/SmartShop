@@ -1,0 +1,150 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Контент - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🎨 Контент сайту</h1>
+    <p class="page-subtitle">Налаштування текстів та блоків головної сторінки</p>
+</div>
+
+<form method="post">
+    <!-- Hero блок -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🚀 Hero-блок</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-group">
+                <label for="hero_subtitle">Підзаголовок під логотипом</label>
+                <input type="text" id="hero_subtitle" name="hero_subtitle" value="{{ settings.hero_subtitle or '' }}" placeholder="Ваш слоган або короткий опис">
+            </div>
+        </div>
+    </div>
+
+    <!-- Про компанію та Блог -->
+    <div class="cards-grid" style="margin-bottom: 2rem;">
+        <div class="card">
+            <div class="card-header">
+                <h3>ℹ️ Про компанію</h3>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="about_title">Заголовок</label>
+                    <input type="text" id="about_title" name="about_title" value="{{ settings.about_title or '' }}" placeholder="Про нас">
+                </div>
+                <div class="form-group">
+                    <label for="about_text">Текст</label>
+                    <textarea id="about_text" name="about_text" rows="5" placeholder="Розкажіть про вашу компанію...">{{ settings.about_text or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>📰 Блог / Новини</h3>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="blog_title">Заголовок</label>
+                    <input type="text" id="blog_title" name="blog_title" value="{{ settings.blog_title or '' }}" placeholder="Останні новини">
+                </div>
+                <div class="form-group">
+                    <label for="blog_excerpt">Короткий опис</label>
+                    <textarea id="blog_excerpt" name="blog_excerpt" rows="5" placeholder="Анонс останньої статті...">{{ settings.blog_excerpt or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Соцмережі та AI -->
+    <div class="cards-grid" style="margin-bottom: 2rem;">
+        <div class="card">
+            <div class="card-header">
+                <h3>💬 Месенджери</h3>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="social_telegram">
+                        <span class="social-icon">📱</span> Telegram
+                    </label>
+                    <input type="text" id="social_telegram" name="social_telegram" value="{{ settings.social_telegram or '' }}" placeholder="https://t.me/yourshop">
+                </div>
+                <div class="form-group">
+                    <label for="social_whatsapp">
+                        <span class="social-icon">💬</span> WhatsApp
+                    </label>
+                    <input type="text" id="social_whatsapp" name="social_whatsapp" value="{{ settings.social_whatsapp or '' }}" placeholder="https://wa.me/380XXXXXXXXX">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>🤖 AI-продавець</h3>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="ai_instructions">System prompt / правила</label>
+                    <textarea id="ai_instructions" name="ai_instructions" rows="5" placeholder="Інструкції для AI-продавця...">{{ settings.ai_instructions or '' }}</textarea>
+                    <small class="form-hint">
+                        💡 Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він може/не може робити
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-footer">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <span>💾</span> Зберегти зміни
+        </button>
+    </div>
+</form>
+
+<style>
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-section {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.social-icon {
+    margin-right: 0.25rem;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1.5rem 0;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

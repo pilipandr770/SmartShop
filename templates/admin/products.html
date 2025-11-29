@@ -1,0 +1,288 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}Товари - Адмін панель{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📦 Товари</h1>
+    <p class="page-subtitle">Керування каталогом товарів</p>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>➕ Додати новий товар</h3>
+    </div>
+    <form method="POST" action="{{ url_for('admin_products_new') }}" class="form-grid">
+        <div class="form-group">
+            <label for="name">Назва товару *</label>
+            <input type="text" id="name" name="name" required placeholder="Введіть назву товару">
+        </div>
+        
+        <div class="form-group">
+            <label for="category_id">Категорія *</label>
+            <select id="category_id" name="category_id" required>
+                <option value="">Оберіть категорію</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="price">Ціна (грн) *</label>
+            <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
+        </div>
+        
+        <div class="form-group">
+            <label for="old_price">Стара ціна (грн)</label>
+            <input type="number" id="old_price" name="old_price" step="0.01" min="0" placeholder="Для знижки">
+        </div>
+        
+        <div class="form-group">
+            <label for="image_url">URL зображення</label>
+            <input type="url" id="image_url" name="image_url" placeholder="https://example.com/image.jpg">
+        </div>
+        
+        <div class="form-group">
+            <label for="stock">Кількість на складі</label>
+            <input type="number" id="stock" name="stock" min="0" value="0" placeholder="0">
+        </div>
+        
+        <div class="form-group full-width">
+            <label for="description">Опис товару</label>
+            <textarea id="description" name="description" rows="4" placeholder="Детальний опис товару..."></textarea>
+        </div>
+        
+        <div class="form-group full-width">
+            <label class="checkbox-label">
+                <input type="checkbox" name="is_active" checked>
+                <span>Товар активний (показувати на сайті)</span>
+            </label>
+        </div>
+        
+        <div class="form-actions full-width">
+            <button type="submit" class="btn btn-primary">
+                <span>💾</span> Додати товар
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>📋 Список товарів</h3>
+        <span class="badge badge-primary">{{ products|length }} шт.</span>
+    </div>
+    
+    {% if products %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Фото</th>
+                    <th>Назва</th>
+                    <th>Категорія</th>
+                    <th>Ціна</th>
+                    <th>Склад</th>
+                    <th>Статус</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-thumb">
+                        {% else %}
+                        <div class="product-thumb-placeholder">📷</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ product.name }}</strong>
+                        {% if product.description %}
+                        <br><small class="text-muted">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.category %}
+                        <span class="badge badge-secondary">{{ product.category.name }}</span>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="price-cell">
+                            <strong class="text-success">{{ "%.2f"|format(product.price) }} ₴</strong>
+                            {% if product.old_price %}
+                            <br><small class="text-muted" style="text-decoration: line-through;">{{ "%.2f"|format(product.old_price) }} ₴</small>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        {% if product.stock > 10 %}
+                        <span class="badge badge-success">{{ product.stock }} шт.</span>
+                        {% elif product.stock > 0 %}
+                        <span class="badge badge-warning">{{ product.stock }} шт.</span>
+                        {% else %}
+                        <span class="badge badge-danger">Немає</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.is_active %}
+                        <span class="badge badge-success">Активний</span>
+                        {% else %}
+                        <span class="badge badge-secondary">Прихований</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{{ url_for('admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary" title="Редагувати">
+                                ✏️
+                            </a>
+                            <form method="POST" action="{{ url_for('admin_products_delete', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('Видалити товар?')">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Видалити">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>Товарів поки немає</h3>
+        <p>Додайте перший товар за допомогою форми вище</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.data-table tbody tr:hover {
+    background: var(--bg-secondary);
+}
+
+.product-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+}
+
+.product-thumb-placeholder {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    font-size: 1.5rem;
+}
+
+.price-cell {
+    white-space: nowrap;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+.text-success {
+    color: var(--success-color);
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

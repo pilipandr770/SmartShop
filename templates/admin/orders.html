@@ -1,0 +1,315 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Замовлення - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🛒 Замовлення</h1>
+    <p class="page-subtitle">Управління замовленнями магазину</p>
+</div>
+
+<!-- Фільтри -->
+<div class="card filter-card" style="margin-bottom: 1.5rem;">
+    <form method="get" class="filter-form">
+        <div class="filter-group">
+            <label for="status">Статус:</label>
+            <select name="status" id="status">
+                <option value="">Усі статуси</option>
+                <option value="created" {% if request.args.get('status') == 'created' %}selected{% endif %}>Створено</option>
+                <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Очікує оплати</option>
+                <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>Оплачено</option>
+                <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>Відправлено</option>
+                <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Доставлено</option>
+                <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Скасовано</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-secondary">🔍 Фільтрувати</button>
+        {% if request.args.get('status') %}
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-ghost">✕ Скинути</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Статистика -->
+<div class="stats-grid" style="margin-bottom: 2rem;">
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📦</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">Усього</div>
+        </div>
+    </div>
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #10b981, #059669);">✅</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.paid }}</div>
+            <div class="stat-label">Оплачено</div>
+        </div>
+    </div>
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #f59e0b, #d97706);">⏳</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ stats.pending }}</div>
+            <div class="stat-label">Очікує</div>
+        </div>
+    </div>
+    <div class="stat-card mini">
+        <div class="stat-icon-mini" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">💰</div>
+        <div class="stat-content">
+            <div class="stat-value">{{ '%.0f'|format(stats.revenue) }} ₴</div>
+            <div class="stat-label">Дохід</div>
+        </div>
+    </div>
+</div>
+
+<!-- Таблиця замовлень -->
+<div class="card">
+    <div class="card-header">
+        <h3>📋 Список замовлень</h3>
+        {% if request.args.get('status') %}
+            <span class="badge badge-secondary">Фільтр: {{ request.args.get('status') }}</span>
+        {% endif %}
+    </div>
+    
+    {% if orders %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Дата</th>
+                    <th>Клієнт</th>
+                    <th>Товари</th>
+                    <th>Сума</th>
+                    <th>Статус</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr class="order-row" onclick="window.location='{{ url_for('admin_order_detail', order_id=order.id) }}'">
+                    <td><span class="badge badge-secondary">#{{ order.id }}</span></td>
+                    <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>
+                        {% if order.customer_name %}
+                            <strong>{{ order.customer_name }}</strong><br>
+                            <small class="text-muted">{{ order.customer_email or '—' }}</small>
+                        {% elif order.customer_email %}
+                            {{ order.customer_email }}
+                        {% else %}
+                            <span class="text-muted">Гість</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.items %}
+                            <span class="badge badge-info">{{ order.items|length }} шт.</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td><strong class="text-success">{{ '%.2f'|format(order.amount) }} {{ order.currency }}</strong></td>
+                    <td>
+                        {% if order.status == 'created' %}
+                        <span class="badge badge-secondary">Створено</span>
+                        {% elif order.status == 'pending' %}
+                        <span class="badge badge-warning">Очікує</span>
+                        {% elif order.status == 'paid' %}
+                        <span class="badge badge-success">Оплачено</span>
+                        {% elif order.status == 'shipped' %}
+                        <span class="badge badge-info">Відправлено</span>
+                        {% elif order.status == 'delivered' %}
+                        <span class="badge badge-success">Доставлено</span>
+                        {% elif order.status == 'cancelled' %}
+                        <span class="badge badge-danger">Скасовано</span>
+                        {% else %}
+                        <span class="badge badge-secondary">{{ order.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td onclick="event.stopPropagation();">
+                        <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-secondary">
+                            👁️ Деталі
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Пагінація -->
+    {% if pagination.pages > 1 %}
+    <div class="pagination">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('admin_orders', page=pagination.prev_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">← Попередня</a>
+        {% endif %}
+        
+        <span class="pagination-info">
+            Сторінка {{ pagination.page }} з {{ pagination.pages }}
+        </span>
+        
+        {% if pagination.has_next %}
+            <a href="{{ url_for('admin_orders', page=pagination.next_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">Наступна →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h3>Замовлень немає</h3>
+        <p>
+            {% if request.args.get('status') %}
+                Немає замовлень зі статусом "{{ request.args.get('status') }}"
+            {% else %}
+                Замовлення з'являться після першої покупки
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.filter-card {
+    padding: 1rem 1.5rem;
+}
+
+.filter-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group select {
+    width: auto;
+    margin: 0;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+}
+
+.btn-ghost:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card.mini {
+    padding: 1rem 1.25rem;
+}
+
+.stat-icon-mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.stat-card.mini .stat-value {
+    font-size: 1.25rem;
+}
+
+.stat-card.mini .stat-label {
+    font-size: 0.75rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.order-row {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.order-row:hover {
+    background: var(--bg-secondary);
+}
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+.text-success {
+    color: var(--success-color);
+}
+
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pagination-info {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}

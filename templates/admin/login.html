@@ -1,0 +1,105 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Вхід - Адмін панель{% endblock %}
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">🔐</div>
+            <h1>Вхід в адмін-панель</h1>
+            <p>SmartShop AI</p>
+        </div>
+        
+        <form method="post" class="login-form">
+            <div class="form-group">
+                <label for="username">Логін</label>
+                <input type="text" id="username" name="username" required placeholder="Введіть логін" autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required placeholder="Введіть пароль">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <span>🚀</span> Увійти
+            </button>
+        </form>
+        
+        <div class="login-footer">
+            <p class="text-muted">Захищено 256-бітним шифруванням</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.login-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.login-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.login-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+.btn-full {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.login-footer .text-muted {
+    font-size: 0.8rem;
+}
+</style>
+{% endblock %}

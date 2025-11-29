@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Адмін-панель{% endblock %} • SmartShop AI</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a0a0f;
+            --bg-sidebar: #0d0d14;
+            --bg-card: #12121a;
+            --bg-input: #0d0d14;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #a78bfa;
+            --accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+            --accent-glow: rgba(139, 92, 246, 0.25);
+            --success: #22c55e;
+            --success-bg: rgba(34, 197, 94, 0.1);
+            --success-border: rgba(34, 197, 94, 0.3);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --danger-border: rgba(239, 68, 68, 0.3);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --warning-border: rgba(245, 158, 11, 0.3);
+            --info: #3b82f6;
+            --info-bg: rgba(59, 130, 246, 0.1);
+            --info-border: rgba(59, 130, 246, 0.3);
+            --sidebar-width: 260px;
+            --radius-sm: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; text-decoration: none; }
+        .layout {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+            min-height: 100vh;
+        }
+        .sidebar {
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 999px; }
+        .sidebar-header { margin-bottom: 2rem; padding: 0 0.5rem; }
+        .brand { display: flex; align-items: center; gap: 0.75rem; }
+        .brand-logo {
+            width: 40px; height: 40px;
+            border-radius: var(--radius-md);
+            background: var(--accent-gradient);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; color: white;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+        .brand-text h1 {
+            font-size: 1rem; font-weight: 700; letter-spacing: -0.02em;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .brand-text span { font-size: 0.72rem; color: var(--text-muted); font-weight: 400; }
+        .nav-section { margin-bottom: 1.75rem; }
+        .nav-title {
+            font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--text-muted);
+            padding: 0 0.75rem; margin-bottom: 0.5rem;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.65rem 0.75rem; border-radius: var(--radius-md);
+            font-size: 0.875rem; font-weight: 500; color: var(--text-secondary);
+            transition: all 0.2s ease; margin-bottom: 0.15rem; position: relative;
+        }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.04); color: var(--text-primary); }
+        .nav-link.active { background: rgba(139, 92, 246, 0.1); color: var(--accent-secondary); }
+        .nav-link.active::before {
+            content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            width: 3px; height: 60%; background: var(--accent-gradient); border-radius: 0 999px 999px 0;
+        }
+        .nav-icon { font-size: 1.1rem; width: 1.5rem; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+        .content { padding: 2rem 2.5rem; background: var(--bg-main); min-height: 100vh; }
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
+        }
+        .topbar-link {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem; border-radius: var(--radius-md);
+            font-size: 0.8rem; font-weight: 500; color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .topbar-link:hover {
+            background: rgba(255, 255, 255, 0.06); border-color: var(--border-light); color: var(--text-primary);
+        }
+        h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 1.5rem; }
+        h3 { font-size: 1rem; font-weight: 600; margin: 0 0 1rem; }
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+            transition: all 0.2s;
+        }
+        .card:hover { border-color: var(--border-light); }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+            position: relative; overflow: hidden; transition: all 0.3s;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: var(--accent-gradient); opacity: 0; transition: opacity 0.3s;
+        }
+        .stat-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-label {
+            font-size: 0.75rem; font-weight: 500; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .stat-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        @media (max-width: 1024px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+        label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.4rem; }
+        input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, select {
+            width: 100%; padding: 0.7rem 0.9rem; border-radius: var(--radius-md);
+            border: 1px solid var(--border-color); background: var(--bg-input);
+            color: var(--text-primary); font-family: inherit; font-size: 0.875rem;
+            transition: all 0.2s; margin-bottom: 0.75rem;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        input::placeholder, textarea::placeholder { color: var(--text-muted); }
+        textarea { min-height: 100px; resize: vertical; }
+        select {
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2371717a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2.5rem;
+        }
+        button, .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.65rem 1.25rem; border-radius: var(--radius-md); border: none;
+            font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        button[type="submit"], .btn-primary {
+            background: var(--accent-gradient); color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 20px var(--accent-glow);
+        }
+        button[type="submit"]:hover, .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 30px var(--accent-glow);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05); color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--border-light); }
+        button.small, .btn-small { padding: 0.4rem 0.75rem; font-size: 0.75rem; }
+        .btn-link {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.35rem 0.65rem; border-radius: var(--radius-sm);
+            font-size: 0.78rem; font-weight: 500; color: var(--accent-secondary);
+            background: transparent; transition: all 0.2s;
+        }
+        .btn-link:hover { background: rgba(139, 92, 246, 0.1); color: var(--accent-primary); }
+        table { width: 100%; border-collapse: collapse; }
+        thead { border-bottom: 1px solid var(--border-color); }
+        th {
+            text-align: left; padding: 0.75rem 0.5rem; font-size: 0.75rem;
+            font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        td { padding: 0.85rem 0.5rem; font-size: 0.875rem; border-bottom: 1px solid var(--border-color); }
+        tr { transition: background 0.15s; }
+        tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            padding: 0.25rem 0.65rem; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;
+        }
+        .badge.ok { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+        .badge.off { background: rgba(113, 113, 122, 0.1); color: var(--text-muted); border: 1px solid rgba(113, 113, 122, 0.2); }
+        .flash {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.85rem 1.1rem; border-radius: var(--radius-md);
+            font-size: 0.85rem; font-weight: 500; margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .flash-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+        .flash-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+        .flash-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
+        .flash-info { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); }
+        .status-created { background: rgba(113, 113, 122, 0.1); color: #a1a1aa; border: 1px solid rgba(113, 113, 122, 0.2); }
+        .status-pending { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
+        .status-paid { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+        .status-shipped { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); }
+        .status-delivered { background: rgba(20, 184, 166, 0.1); color: #14b8a6; border: 1px solid rgba(20, 184, 166, 0.3); }
+        .status-cancelled { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+        @media (max-width: 1024px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .content { padding: 1.5rem; }
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="brand-logo">AI</div>
+                <div class="brand-text">
+                    <h1>SmartShop</h1>
+                    <span>Адмін-панель</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Огляд</div>
+            <a href="{{ url_for('admin_dashboard') }}" class="nav-link{% if request.endpoint == 'admin_dashboard' %} active{% endif %}">
+                <span class="nav-icon">📊</span> Дашборд
+            </a>
+            <a href="{{ url_for('admin_stats') }}" class="nav-link{% if request.endpoint == 'admin_stats' %} active{% endif %}">
+                <span class="nav-icon">📈</span> Статистика
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Продажі</div>
+            <a href="{{ url_for('admin_orders') }}" class="nav-link{% if request.endpoint in ['admin_orders', 'admin_order_detail'] %} active{% endif %}">
+                <span class="nav-icon">🛒</span> Замовлення
+            </a>
+            <a href="{{ url_for('admin_contacts') }}" class="nav-link{% if request.endpoint == 'admin_contacts' %} active{% endif %}">
+                <span class="nav-icon">✉️</span> Заявки
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Контент</div>
+            <a href="{{ url_for('admin_blocks') }}" class="nav-link{% if request.endpoint == 'admin_blocks' %} active{% endif %}">
+                <span class="nav-icon">🏠</span> Головна сторінка
+            </a>
+            <a href="{{ url_for('admin_categories') }}" class="nav-link{% if request.endpoint in ['admin_categories', 'admin_categories_edit'] %} active{% endif %}">
+                <span class="nav-icon">📁</span> Категорії
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="nav-link{% if request.endpoint in ['admin_products', 'admin_products_edit'] %} active{% endif %}">
+                <span class="nav-icon">📦</span> Товари
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="nav-section" style="margin-bottom: 0;">
+                <div class="nav-title">Система</div>
+                <a href="{{ url_for('admin_settings') }}" class="nav-link{% if request.endpoint == 'admin_settings' %} active{% endif %}">
+                    <span class="nav-icon">⚙️</span> Налаштування
+                </a>
+                <a href="{{ url_for('admin_logout') }}" class="nav-link">
+                    <span class="nav-icon">🚪</span> Вийти
+                </a>
+                <a href="{{ url_for('index') }}" class="nav-link" target="_blank">
+                    <span class="nav-icon">🌐</span> Відкрити сайт
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="topbar">
+            <div></div>
+            <div>
+                <a href="{{ url_for('index') }}" target="_blank" class="topbar-link">🌐 Відкрити сайт</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">
+                    {% if category == 'success' %}✓{% elif category == 'danger' %}✕{% elif category == 'warning' %}⚠{% else %}ℹ{% endif %}
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>
