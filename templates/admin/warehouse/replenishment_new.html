@@ -1,0 +1,216 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}➕ Нове замовлення на поповнення{% endblock %}
+
+{% block content %}
+<div class="replenishment-new">
+    <div class="page-header" style="margin-bottom: 2rem;">
+        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← До списку</a>
+        <h1 style="margin: 0.5rem 0;">➕ Нове замовлення на поповнення</h1>
+    </div>
+
+    <form method="POST" id="replenishmentForm">
+        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- Ліва колонка - постачальник -->
+            <div class="card">
+                <h3>📦 Постачальник</h3>
+                
+                <div class="form-group">
+                    <label>Назва постачальника *</label>
+                    <input type="text" name="supplier_name" class="form-control" placeholder="ТОВ 'Постачальник'" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Контактна інформація</label>
+                    <textarea name="supplier_contact" class="form-control" rows="3" placeholder="Телефон, email, контактна особа..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Примітки до замовлення</label>
+                    <textarea name="notes" class="form-control" rows="3" placeholder="Додаткові побажання..."></textarea>
+                </div>
+            </div>
+
+            <!-- Права колонка - швидкий вибір -->
+            {% if low_stock_products %}
+            <div class="card">
+                <h3>⚠️ Товари з низьким залишком</h3>
+                <p class="text-muted">Натисніть щоб швидко додати до замовлення:</p>
+                <div class="quick-add-list" style="max-height: 300px; overflow-y: auto;">
+                    {% for product in low_stock_products %}
+                    <div class="quick-add-item" onclick="addProduct({{ product.id }}, '{{ product.name|e }}', '{{ product.sku or '' }}')" 
+                         style="padding: 0.5rem; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>{{ product.name }}</strong>
+                                {% if product.sku %}<br><small class="text-muted">{{ product.sku }}</small>{% endif %}
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="badge badge-warning">{{ product.stock }}/{{ product.min_stock }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Товари замовлення -->
+        <div class="card" style="margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="margin: 0;">📋 Товари замовлення</h3>
+                <button type="button" class="btn btn-sm btn-success" onclick="addEmptyRow()">
+                    ➕ Додати товар
+                </button>
+            </div>
+
+            <table class="admin-table" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Товар</th>
+                        <th style="width: 15%;">Кількість</th>
+                        <th style="width: 20%;">Ціна за од.</th>
+                        <th style="width: 15%;">Сума</th>
+                        <th style="width: 10%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    <!-- Рядки додаються динамічно -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>Загальна сума:</strong></td>
+                        <td><strong id="totalSum">0.00</strong> UAH</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Кнопки -->
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">Скасувати</a>
+            <button type="submit" class="btn btn-primary">💾 Створити замовлення</button>
+        </div>
+    </form>
+</div>
+
+<!-- Датасет всіх товарів для автодоповнення -->
+<script>
+const allProducts = [
+    {% for product in products %}
+    { id: {{ product.id }}, name: "{{ product.name|e }}", sku: "{{ product.sku or ''|e }}" },
+    {% endfor %}
+];
+
+let rowIndex = 0;
+
+function addProduct(id, name, sku) {
+    // Перевіряємо чи товар вже додано
+    const existing = document.querySelector(`input[name="product_ids"][value="${id}"]`);
+    if (existing) {
+        // Якщо є - збільшуємо кількість
+        const row = existing.closest('tr');
+        const qtyInput = row.querySelector('input[name="quantities"]');
+        qtyInput.value = parseInt(qtyInput.value || 0) + 1;
+        calculateRowSum(row);
+        return;
+    }
+    
+    addRow(id, name, sku, 1, 0);
+}
+
+function addEmptyRow() {
+    addRow('', '', '', 1, 0);
+}
+
+function addRow(productId, productName, productSku, qty, price) {
+    rowIndex++;
+    const tbody = document.getElementById('itemsBody');
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>
+            <input type="hidden" name="product_ids" value="${productId}">
+            <select class="form-control product-select" onchange="onProductSelect(this)">
+                <option value="">-- Оберіть товар --</option>
+                ${allProducts.map(p => `<option value="${p.id}" ${p.id == productId ? 'selected' : ''}>${p.name} ${p.sku ? '(' + p.sku + ')' : ''}</option>`).join('')}
+            </select>
+        </td>
+        <td>
+            <input type="number" name="quantities" value="${qty}" min="1" class="form-control" onchange="calculateRowSum(this.closest('tr'))">
+        </td>
+        <td>
+            <input type="number" name="prices" value="${price}" min="0" step="0.01" class="form-control" onchange="calculateRowSum(this.closest('tr'))" placeholder="0.00">
+        </td>
+        <td class="row-sum">0.00</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">🗑️</button>
+        </td>
+    `;
+    
+    tbody.appendChild(tr);
+    calculateTotal();
+}
+
+function onProductSelect(select) {
+    const row = select.closest('tr');
+    const hiddenInput = row.querySelector('input[name="product_ids"]');
+    hiddenInput.value = select.value;
+}
+
+function removeRow(btn) {
+    btn.closest('tr').remove();
+    calculateTotal();
+}
+
+function calculateRowSum(row) {
+    const qty = parseFloat(row.querySelector('input[name="quantities"]').value) || 0;
+    const price = parseFloat(row.querySelector('input[name="prices"]').value) || 0;
+    const sum = qty * price;
+    row.querySelector('.row-sum').textContent = sum.toFixed(2);
+    calculateTotal();
+}
+
+function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll('.row-sum').forEach(cell => {
+        total += parseFloat(cell.textContent) || 0;
+    });
+    document.getElementById('totalSum').textContent = total.toFixed(2);
+}
+
+// Hover ефект для quick-add
+document.querySelectorAll('.quick-add-item').forEach(item => {
+    item.addEventListener('mouseenter', () => item.style.background = '#f5f5f5');
+    item.addEventListener('mouseleave', () => item.style.background = 'transparent');
+});
+</script>
+
+<style>
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.card h3 {
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+.form-control { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+
+.badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+.badge-warning { background: #ffc107; color: #333; }
+
+.btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+.btn-outline:hover { background: #f5f5f5; }
+
+.row-sum { font-weight: bold; }
+</style>
+{% endblock %}

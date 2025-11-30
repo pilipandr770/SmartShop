@@ -1,0 +1,327 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}📦 Завдання {{ task.task_number or '#' ~ task.id }}{% endblock %}
+
+{% block content %}
+<div class="task-detail">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <a href="{{ url_for('admin_warehouse') }}" class="btn btn-sm btn-outline">← До списку</a>
+            <h1 style="margin: 0.5rem 0;">📦 Завдання {{ task.task_number or '#' ~ task.id }}</h1>
+        </div>
+        <div>
+            {% if task.status == 'pending' %}
+            <span class="status-badge pending">⏳ Очікує обробки</span>
+            {% elif task.status == 'processing' %}
+            <span class="status-badge processing">🔄 В роботі</span>
+            {% elif task.status == 'packed' %}
+            <span class="status-badge packed">📦 Запаковано</span>
+            {% elif task.status == 'ready' %}
+            <span class="status-badge ready">✅ Готово до відправки</span>
+            {% elif task.status == 'shipped' %}
+            <span class="status-badge shipped">🚚 Відправлено</span>
+            {% elif task.status == 'delivered' %}
+            <span class="status-badge delivered">✔️ Доставлено</span>
+            {% elif task.status == 'cancelled' %}
+            <span class="status-badge cancelled">❌ Скасовано</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <!-- Основна інформація -->
+        <div class="main-info">
+            <!-- Інформація про замовлення -->
+            <div class="card">
+                <h3>📋 Замовлення</h3>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="label">ID Замовлення:</span>
+                        <span class="value">
+                            {% if task.order %}
+                            <a href="{{ url_for('admin_order_detail', id=task.order_id) }}">#{{ task.order_id }}</a>
+                            {% else %}
+                            #{{ task.order_id }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Тип:</span>
+                        <span class="value">
+                            {% if task.is_b2b %}
+                            <span class="badge badge-info">B2B</span>
+                            {% else %}
+                            <span class="badge badge-secondary">B2C</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Пріоритет:</span>
+                        <span class="value">
+                            {% if task.priority == 1 %}
+                            <span class="badge badge-danger">🔴 Терміново</span>
+                            {% elif task.priority == 2 %}
+                            <span class="badge badge-warning">🟡 Високий</span>
+                            {% else %}
+                            <span class="badge badge-secondary">⚪ Звичайний</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Створено:</span>
+                        <span class="value">{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Інформація про клієнта -->
+            <div class="card">
+                <h3>👤 Клієнт</h3>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="label">Ім'я:</span>
+                        <span class="value">{{ task.customer_name or '—' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Телефон:</span>
+                        <span class="value">{{ task.customer_phone or '—' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Email:</span>
+                        <span class="value">{{ task.customer_email or '—' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Адреса доставки -->
+            <div class="card">
+                <h3>📍 Адреса доставки</h3>
+                <p style="font-size: 1.1rem; margin: 0;">{{ task.shipping_address or '—' }}</p>
+                {% if task.shipping_method %}
+                <p style="margin-top: 0.5rem; color: #666;">
+                    Спосіб: <strong>{{ task.shipping_method }}</strong>
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Товари замовлення -->
+            {% if task.order and task.order.items %}
+            <div class="card">
+                <h3>📦 Товари для відправки</h3>
+                <table class="admin-table" style="margin: 0;">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>SKU</th>
+                            <th>Кількість</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in task.order.items %}
+                        <tr>
+                            <td>{{ item.product.name if item.product else item.product_name }}</td>
+                            <td><code>{{ item.product.sku if item.product else '—' }}</code></td>
+                            <td><strong>{{ item.quantity }}</strong> шт.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <!-- Інформація про відправку -->
+            {% if task.status in ['shipped', 'delivered'] %}
+            <div class="card">
+                <h3>🚚 Інформація про відправку</h3>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="label">Перевізник:</span>
+                        <span class="value">{{ task.carrier or '—' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Номер відстеження:</span>
+                        <span class="value"><code>{{ task.tracking_number or '—' }}</code></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Відправлено:</span>
+                        <span class="value">{{ task.shipped_at.strftime('%d.%m.%Y %H:%M') if task.shipped_at else '—' }}</span>
+                    </div>
+                    {% if task.delivered_at %}
+                    <div class="info-row">
+                        <span class="label">Доставлено:</span>
+                        <span class="value">{{ task.delivered_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                    {% endif %}
+                    {% if task.weight_kg %}
+                    <div class="info-row">
+                        <span class="label">Вага:</span>
+                        <span class="value">{{ task.weight_kg }} кг</span>
+                    </div>
+                    {% endif %}
+                    {% if task.dimensions %}
+                    <div class="info-row">
+                        <span class="label">Розміри:</span>
+                        <span class="value">{{ task.dimensions }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Нотатки -->
+            <div class="card">
+                <h3>📝 Нотатки</h3>
+                <form method="POST">
+                    <input type="hidden" name="action" value="update_notes">
+                    <textarea name="admin_notes" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">{{ task.admin_notes or '' }}</textarea>
+                    <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;">💾 Зберегти нотатки</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Панель дій -->
+        <div class="actions-panel">
+            <div class="card">
+                <h3>⚡ Дії</h3>
+                
+                {% if task.status == 'pending' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="start_processing">
+                    <div class="form-group">
+                        <label>Виконавець:</label>
+                        <input type="text" name="assigned_to" class="form-control" placeholder="Ім'я працівника">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">🔄 Взяти в роботу</button>
+                </form>
+                {% endif %}
+
+                {% if task.status == 'processing' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="mark_packed">
+                    <div class="form-group">
+                        <label>Вага (кг):</label>
+                        <input type="number" name="weight_kg" step="0.01" class="form-control" placeholder="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Розміри:</label>
+                        <input type="text" name="dimensions" class="form-control" placeholder="30x20x10 см">
+                    </div>
+                    <button type="submit" class="btn btn-info btn-block">📦 Запаковано</button>
+                </form>
+                {% endif %}
+
+                {% if task.status == 'packed' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="mark_ready">
+                    <button type="submit" class="btn btn-success btn-block">✅ Готово до відправки</button>
+                </form>
+                {% endif %}
+
+                {% if task.status == 'ready' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="mark_shipped">
+                    <div class="form-group">
+                        <label>Перевізник:</label>
+                        <select name="carrier" class="form-control">
+                            <option value="Nova Poshta">Нова Пошта</option>
+                            <option value="Ukrposhta">Укрпошта</option>
+                            <option value="Meest">Meest</option>
+                            <option value="DHL">DHL</option>
+                            <option value="UPS">UPS</option>
+                            <option value="Other">Інший</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Номер ТТН:</label>
+                        <input type="text" name="tracking_number" class="form-control" placeholder="20450000000001" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-block">🚚 Відправлено</button>
+                </form>
+                {% endif %}
+
+                {% if task.status == 'shipped' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="mark_delivered">
+                    <button type="submit" class="btn btn-success btn-block">✔️ Доставлено</button>
+                </form>
+                {% endif %}
+
+                {% if task.status not in ['delivered', 'cancelled'] %}
+                <hr style="margin: 1.5rem 0;">
+                <form method="POST" onsubmit="return confirm('Ви впевнені що хочете скасувати це завдання?');">
+                    <input type="hidden" name="action" value="cancel">
+                    <div class="form-group">
+                        <label>Причина скасування:</label>
+                        <textarea name="cancel_reason" class="form-control" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block">❌ Скасувати</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Інформація про виконавця -->
+            {% if task.assigned_to %}
+            <div class="card">
+                <h3>👷 Виконавець</h3>
+                <p style="font-size: 1.2rem; margin: 0;">{{ task.assigned_to }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Швидкі посилання -->
+            <div class="card">
+                <h3>🔗 Посилання</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline btn-block">📦 Всі завдання</a>
+                    <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline btn-block">📊 Залишки</a>
+                    {% if task.order %}
+                    <a href="{{ url_for('admin_order_detail', id=task.order_id) }}" class="btn btn-outline btn-block">🧾 Замовлення</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.card h3 {
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 1rem;
+}
+.status-badge.pending { background: #f8f9fa; color: #6c757d; }
+.status-badge.processing { background: #e3f2fd; color: #1976d2; }
+.status-badge.packed { background: #e8f5e9; color: #388e3c; }
+.status-badge.ready { background: #fff3e0; color: #f57c00; }
+.status-badge.shipped { background: #ffc107; color: #333; }
+.status-badge.delivered { background: #28a745; color: white; }
+.status-badge.cancelled { background: #dc3545; color: white; }
+
+.info-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+.info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; }
+.info-row:last-child { border-bottom: none; }
+.info-row .label { color: #666; }
+.info-row .value { font-weight: 500; }
+
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.9rem; }
+.form-control { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+
+.btn-block { width: 100%; display: block; text-align: center; }
+.btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+.btn-outline:hover { background: #f5f5f5; }
+</style>
+{% endblock %}

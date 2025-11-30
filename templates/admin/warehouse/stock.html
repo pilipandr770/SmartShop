@@ -1,0 +1,297 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}📊 Склад - Залишки{% endblock %}
+
+{% block content %}
+<div class="stock-dashboard">
+    <div class="page-header">
+        <h1>📊 Залишки на складі</h1>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.total_products }}</span>
+                <span class="stat-label">Всього товарів</span>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.low_stock }}</span>
+                <span class="stat-label">Закінчуються</span>
+            </div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-icon">❌</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.out_of_stock }}</span>
+                <span class="stat-label">Немає в наявності</span>
+            </div>
+        </div>
+        <div class="stat-card info">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.unresolved_alerts }}</span>
+                <span class="stat-label">Активних сповіщень</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фільтри та пошук -->
+    <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <form method="GET" style="display: flex; gap: 0.5rem; flex-grow: 1;">
+            <input type="text" name="search" value="{{ search }}" placeholder="🔍 Пошук за назвою або SKU..." 
+                   class="form-control" style="max-width: 300px;">
+            <button type="submit" class="btn btn-primary">Знайти</button>
+        </form>
+        
+        <a href="{{ url_for('admin_warehouse_stock') }}" 
+           class="btn {% if not show_low %}btn-primary{% else %}btn-outline{% endif %}">
+            Всі товари
+        </a>
+        <a href="{{ url_for('admin_warehouse_stock', low=1) }}" 
+           class="btn {% if show_low %}btn-warning{% else %}btn-outline{% endif %}">
+            ⚠️ Низький залишок
+        </a>
+        
+        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">
+            ➕ Замовити поповнення
+        </a>
+    </div>
+
+    <!-- Таблиця товарів -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>SKU</th>
+                    <th>Залишок</th>
+                    <th>Мін. залишок</th>
+                    <th>Статус</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr class="{% if product.stock == 0 %}out-of-stock{% elif product.min_stock > 0 and product.stock <= product.min_stock %}low-stock{% endif %}">
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            {% endif %}
+                            <div>
+                                <strong>{{ product.name }}</strong>
+                                {% if product.category %}
+                                <br><small class="text-muted">{{ product.category.name }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td><code>{{ product.sku or '—' }}</code></td>
+                    <td>
+                        <span class="stock-value {% if product.stock == 0 %}zero{% elif product.min_stock > 0 and product.stock <= product.min_stock %}low{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </td>
+                    <td>{{ product.min_stock or '—' }}</td>
+                    <td>
+                        {% if product.stock == 0 %}
+                        <span class="badge badge-danger">❌ Немає</span>
+                        {% elif product.min_stock > 0 and product.stock <= product.min_stock %}
+                        <span class="badge badge-warning">⚠️ Закінчується</span>
+                        {% else %}
+                        <span class="badge badge-success">✓ В наявності</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button type="button" class="btn btn-sm btn-primary" 
+                                    onclick="openAdjustModal({{ product.id }}, '{{ product.name }}', {{ product.stock }})">
+                                ±
+                            </button>
+                            <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id) }}" 
+                               class="btn btn-sm btn-outline" title="Історія">
+                                📜
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        <p style="padding: 2rem;">
+                            📭 Товарів не знайдено
+                        </p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагінація -->
+    {% if total_pages > 1 %}
+    <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_warehouse_stock', page=page-1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">← Назад</a>
+        {% endif %}
+        
+        <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_warehouse_stock', page=page+1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">Далі →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Модальне вікно коригування -->
+<div id="adjustModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>± Коригування залишку</h3>
+            <button type="button" class="close" onclick="closeAdjustModal()">&times;</button>
+        </div>
+        <form id="adjustForm" method="POST">
+            <div class="modal-body">
+                <p><strong id="productName"></strong></p>
+                <p>Поточний залишок: <strong id="currentStock"></strong> шт.</p>
+                
+                <div class="form-group">
+                    <label>Коригування (+/-):</label>
+                    <input type="number" name="adjustment" id="adjustment" class="form-control" 
+                           placeholder="-5 або +10" required>
+                    <small class="text-muted">Введіть від'ємне число для зменшення, додатне для збільшення</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Причина:</label>
+                    <select name="reason" class="form-control">
+                        <option value="inventory">Інвентаризація</option>
+                        <option value="damage">Пошкодження</option>
+                        <option value="return">Повернення</option>
+                        <option value="correction">Коригування помилки</option>
+                        <option value="other">Інше</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Примітка:</label>
+                    <textarea name="notes" class="form-control" rows="2" placeholder="Опціонально..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeAdjustModal()">Скасувати</button>
+                <button type="submit" class="btn btn-primary">Зберегти</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stat-card .stat-icon { font-size: 2rem; }
+.stat-card .stat-value { display: block; font-size: 2rem; font-weight: bold; }
+.stat-card .stat-label { color: #666; }
+.stat-card.warning { border-left: 4px solid #ffc107; }
+.stat-card.danger { border-left: 4px solid #dc3545; }
+.stat-card.info { border-left: 4px solid #17a2b8; }
+
+.out-of-stock { background: rgba(220, 53, 69, 0.05); }
+.low-stock { background: rgba(255, 193, 7, 0.1); }
+
+.stock-value { font-weight: bold; font-size: 1.2rem; }
+.stock-value.zero { color: #dc3545; }
+.stock-value.low { color: #ffc107; }
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+.modal-header h3 { margin: 0; }
+.modal-header .close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+.modal-body { padding: 1.5rem; }
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+.form-control { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+
+.badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+.badge-success { background: #28a745; color: white; }
+.badge-warning { background: #ffc107; color: #333; }
+.badge-danger { background: #dc3545; color: white; }
+
+.btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+.btn-outline:hover { background: #f5f5f5; }
+</style>
+
+<script>
+function openAdjustModal(productId, productName, currentStock) {
+    document.getElementById('adjustModal').style.display = 'flex';
+    document.getElementById('productName').textContent = productName;
+    document.getElementById('currentStock').textContent = currentStock;
+    document.getElementById('adjustForm').action = '/admin/warehouse/stock/' + productId + '/adjust';
+    document.getElementById('adjustment').value = '';
+    document.getElementById('adjustment').focus();
+}
+
+function closeAdjustModal() {
+    document.getElementById('adjustModal').style.display = 'none';
+}
+
+// Закрити модальне вікно при кліку поза ним
+document.getElementById('adjustModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeAdjustModal();
+    }
+});
+</script>
+{% endblock %}

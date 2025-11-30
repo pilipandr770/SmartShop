@@ -1,0 +1,227 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}📦 Склад - Завдання{% endblock %}
+
+{% block content %}
+<div class="warehouse-dashboard">
+    <div class="page-header">
+        <h1>📦 Склад - Завдання на відправку</h1>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.pending }}</span>
+                <span class="stat-label">Очікують</span>
+            </div>
+        </div>
+        <div class="stat-card processing">
+            <div class="stat-icon">🔄</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.processing }}</span>
+                <span class="stat-label">В роботі</span>
+            </div>
+        </div>
+        <div class="stat-card packed">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.packed }}</span>
+                <span class="stat-label">Запаковано</span>
+            </div>
+        </div>
+        <div class="stat-card shipped">
+            <div class="stat-icon">🚚</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.shipped_today }}</span>
+                <span class="stat-label">Відправлено сьогодні</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фільтри -->
+    <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('admin_warehouse') }}" 
+           class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">
+            Активні
+        </a>
+        <a href="{{ url_for('admin_warehouse', status='pending') }}" 
+           class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">
+            ⏳ Очікують
+        </a>
+        <a href="{{ url_for('admin_warehouse', status='processing') }}" 
+           class="btn {% if status_filter == 'processing' %}btn-primary{% else %}btn-outline{% endif %}">
+            🔄 В роботі
+        </a>
+        <a href="{{ url_for('admin_warehouse', status='packed') }}" 
+           class="btn {% if status_filter == 'packed' %}btn-primary{% else %}btn-outline{% endif %}">
+            📦 Запаковано
+        </a>
+        <a href="{{ url_for('admin_warehouse', status='shipped') }}" 
+           class="btn {% if status_filter == 'shipped' %}btn-primary{% else %}btn-outline{% endif %}">
+            🚚 Відправлено
+        </a>
+        <a href="{{ url_for('admin_warehouse', status='delivered') }}" 
+           class="btn {% if status_filter == 'delivered' %}btn-primary{% else %}btn-outline{% endif %}">
+            ✔️ Доставлено
+        </a>
+    </div>
+
+    <!-- Таблиця завдань -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>№ Завдання</th>
+                    <th>Замовлення</th>
+                    <th>Клієнт</th>
+                    <th>Адреса</th>
+                    <th>Пріоритет</th>
+                    <th>Статус</th>
+                    <th>Створено</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr class="priority-{{ task.priority }}">
+                    <td>
+                        <strong>{{ task.task_number or '#' ~ task.id }}</strong>
+                        {% if task.is_b2b %}
+                        <span class="badge badge-info">B2B</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if task.order %}
+                        <a href="{{ url_for('admin_order_detail', id=task.order_id) }}">
+                            #{{ task.order.id }}
+                        </a>
+                        {% else %}
+                        #{{ task.order_id }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ task.customer_name or '—' }}<br>
+                        <small class="text-muted">{{ task.customer_phone or '' }}</small>
+                    </td>
+                    <td>
+                        <small>{{ task.shipping_address[:50] }}{% if task.shipping_address|length > 50 %}...{% endif %}</small>
+                    </td>
+                    <td>
+                        {% if task.priority == 1 %}
+                        <span class="badge badge-danger">🔴 Терміново</span>
+                        {% elif task.priority == 2 %}
+                        <span class="badge badge-warning">🟡 Високий</span>
+                        {% else %}
+                        <span class="badge badge-secondary">⚪ Звичайний</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if task.status == 'pending' %}
+                        <span class="badge badge-secondary">⏳ Очікує</span>
+                        {% elif task.status == 'processing' %}
+                        <span class="badge badge-primary">🔄 В роботі</span>
+                        {% elif task.status == 'packed' %}
+                        <span class="badge badge-info">📦 Запаковано</span>
+                        {% elif task.status == 'ready' %}
+                        <span class="badge badge-success">✅ Готово</span>
+                        {% elif task.status == 'shipped' %}
+                        <span class="badge badge-warning">🚚 Відправлено</span>
+                        {% elif task.status == 'delivered' %}
+                        <span class="badge badge-success">✔️ Доставлено</span>
+                        {% elif task.status == 'cancelled' %}
+                        <span class="badge badge-danger">❌ Скасовано</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <small>{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin_warehouse_task', id=task.id) }}" class="btn btn-sm btn-primary">
+                            👁️ Деталі
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        <p style="padding: 2rem;">
+                            📭 Немає завдань
+                            {% if status_filter %}з таким статусом{% endif %}
+                        </p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагінація -->
+    {% if total_pages > 1 %}
+    <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_warehouse', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">← Назад</a>
+        {% endif %}
+        
+        <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_warehouse', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">Далі →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stat-card .stat-icon {
+    font-size: 2rem;
+}
+.stat-card .stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+}
+.stat-card .stat-label {
+    color: #666;
+}
+.stat-card.pending { border-left: 4px solid #ffc107; }
+.stat-card.processing { border-left: 4px solid #17a2b8; }
+.stat-card.packed { border-left: 4px solid #6c5ce7; }
+.stat-card.shipped { border-left: 4px solid #28a745; }
+
+.priority-1 { background: rgba(255,0,0,0.05); }
+.priority-2 { background: rgba(255,193,7,0.05); }
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+.badge-primary { background: #007bff; color: white; }
+.badge-secondary { background: #6c757d; color: white; }
+.badge-success { background: #28a745; color: white; }
+.badge-danger { background: #dc3545; color: white; }
+.badge-warning { background: #ffc107; color: #333; }
+.badge-info { background: #17a2b8; color: white; }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #ddd;
+    color: #333;
+}
+.btn-outline:hover {
+    background: #f5f5f5;
+}
+</style>
+{% endblock %}

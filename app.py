@@ -120,6 +120,10 @@ def create_app():
     from models.order import Order, OrderItem
     from models.user import User, UserRole
     from models.company import Company, CompanyStatus
+    from models.warehouse import (
+        WarehouseTask, StockMovement, ReplenishmentOrder, 
+        ReplenishmentItem, WarehouseExpense, LowStockAlert
+    )
 
     # Flask-Login user loader
     @login_manager.user_loader
@@ -137,6 +141,13 @@ def create_app():
     app.UserRole = UserRole
     app.Company = Company
     app.CompanyStatus = CompanyStatus
+    # Warehouse
+    app.WarehouseTask = WarehouseTask
+    app.StockMovement = StockMovement
+    app.ReplenishmentOrder = ReplenishmentOrder
+    app.ReplenishmentItem = ReplenishmentItem
+    app.WarehouseExpense = WarehouseExpense
+    app.LowStockAlert = LowStockAlert
 
     # ----- СЛУЖБОВІ ФУНКЦІЇ -----
 
@@ -357,6 +368,101 @@ def create_app():
                     ('created_at', 'TIMESTAMP DEFAULT NOW()'),
                 ]
                 
+                # warehouse_tasks колонки
+                warehouse_task_columns = [
+                    ('order_id', 'INTEGER'),
+                    ('task_number', 'VARCHAR(50)'),
+                    ('status', "VARCHAR(20) DEFAULT 'pending'"),
+                    ('priority', 'INTEGER DEFAULT 3'),
+                    ('notes', 'TEXT'),
+                    ('admin_notes', 'TEXT'),
+                    ('assigned_to', 'VARCHAR(100)'),
+                    ('tracking_number', 'VARCHAR(100)'),
+                    ('carrier', 'VARCHAR(50)'),
+                    ('weight_kg', 'FLOAT'),
+                    ('dimensions', 'VARCHAR(50)'),
+                    ('shipping_cost', 'FLOAT DEFAULT 0.0'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('packed_at', 'TIMESTAMP'),
+                    ('shipped_at', 'TIMESTAMP'),
+                    ('delivered_at', 'TIMESTAMP'),
+                ]
+                
+                # stock_movements колонки
+                stock_movement_columns = [
+                    ('product_id', 'INTEGER'),
+                    ('movement_type', 'VARCHAR(20)'),
+                    ('quantity', 'INTEGER'),
+                    ('stock_after', 'INTEGER'),
+                    ('reason', 'VARCHAR(100)'),
+                    ('reference_id', 'INTEGER'),
+                    ('notes', 'TEXT'),
+                    ('performed_by', 'VARCHAR(100)'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # replenishment_orders колонки
+                replenishment_order_columns = [
+                    ('order_number', 'VARCHAR(50)'),
+                    ('supplier_name', 'VARCHAR(255)'),
+                    ('supplier_contact', 'VARCHAR(255)'),
+                    ('status', "VARCHAR(20) DEFAULT 'draft'"),
+                    ('subtotal', 'FLOAT DEFAULT 0.0'),
+                    ('shipping_cost', 'FLOAT DEFAULT 0.0'),
+                    ('total', 'FLOAT DEFAULT 0.0'),
+                    ('currency', "VARCHAR(8) DEFAULT 'UAH'"),
+                    ('is_paid', 'BOOLEAN DEFAULT FALSE'),
+                    ('paid_at', 'TIMESTAMP'),
+                    ('payment_method', 'VARCHAR(50)'),
+                    ('notes', 'TEXT'),
+                    ('created_by', 'VARCHAR(100)'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('ordered_at', 'TIMESTAMP'),
+                    ('expected_at', 'TIMESTAMP'),
+                    ('received_at', 'TIMESTAMP'),
+                ]
+                
+                # replenishment_items колонки
+                replenishment_item_columns = [
+                    ('replenishment_id', 'INTEGER'),
+                    ('product_id', 'INTEGER'),
+                    ('product_name', 'VARCHAR(200)'),
+                    ('product_sku', 'VARCHAR(64)'),
+                    ('quantity', 'INTEGER DEFAULT 1'),
+                    ('unit_price', 'FLOAT DEFAULT 0.0'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # warehouse_expenses колонки
+                warehouse_expense_columns = [
+                    ('category', "VARCHAR(50) DEFAULT 'other'"),
+                    ('description', 'VARCHAR(255)'),
+                    ('amount', 'FLOAT'),
+                    ('currency', "VARCHAR(8) DEFAULT 'UAH'"),
+                    ('warehouse_task_id', 'INTEGER'),
+                    ('replenishment_id', 'INTEGER'),
+                    ('receipt_number', 'VARCHAR(100)'),
+                    ('receipt_url', 'VARCHAR(500)'),
+                    ('created_by', 'VARCHAR(100)'),
+                    ('expense_date', 'DATE DEFAULT CURRENT_DATE'),
+                    ('notes', 'TEXT'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # low_stock_alerts колонки
+                low_stock_alert_columns = [
+                    ('product_id', 'INTEGER'),
+                    ('current_stock', 'INTEGER'),
+                    ('min_stock', 'INTEGER'),
+                    ('is_resolved', 'BOOLEAN DEFAULT FALSE'),
+                    ('resolved_at', 'TIMESTAMP'),
+                    ('resolved_by', 'VARCHAR(100)'),
+                    ('replenishment_id', 'INTEGER'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
                 migrations = [
                     ('site_settings', site_settings_columns),
                     ('categories', category_columns),
@@ -368,6 +474,13 @@ def create_app():
                     ('verification_logs', verification_log_columns),
                     ('admin_alerts', admin_alert_columns),
                     ('contact_messages', contact_message_columns),
+                    # Warehouse
+                    ('warehouse_tasks', warehouse_task_columns),
+                    ('stock_movements', stock_movement_columns),
+                    ('replenishment_orders', replenishment_order_columns),
+                    ('replenishment_items', replenishment_item_columns),
+                    ('warehouse_expenses', warehouse_expense_columns),
+                    ('low_stock_alerts', low_stock_alert_columns),
                 ]
                 
                 with db.engine.connect() as conn:
@@ -483,6 +596,13 @@ def create_app():
                 return redirect(url_for("admin_login"))
             return fn(*args, **kwargs)
         return wrapper
+
+    # ----- РЕЄСТРАЦІЯ BLUEPRINTS -----
+    from routes.auth import auth_bp
+    from routes.cabinet import cabinet_bp
+    
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(cabinet_bp)
 
     # ----- ПУБЛІЧНІ СТОРІНКИ -----
 
@@ -824,6 +944,19 @@ def create_app():
                     order.stripe_payment_intent = checkout_session.payment_intent
                     db.session.commit()
                     
+                    # Створюємо завдання для складу
+                    try:
+                        from models.warehouse import WarehouseTask
+                        existing_task = WarehouseTask.query.filter_by(order_id=order.id).first()
+                        if not existing_task:
+                            WarehouseTask.create_from_order(
+                                order_id=order.id,
+                                priority=2 if getattr(order, 'is_b2b', False) else 3,
+                                notes=getattr(order, 'notes', ''),
+                            )
+                    except Exception:
+                        pass  # Якщо модуль складу не доступний
+                    
                     # Очищаємо кошик
                     save_cart({})
             except Exception:
@@ -872,6 +1005,19 @@ def create_app():
                 order.customer_name = session_data.get("customer_details", {}).get("name")
                 order.stripe_payment_intent = session_data.get("payment_intent")
                 db.session.commit()
+                
+                # Створюємо завдання для складу
+                try:
+                    from models.warehouse import WarehouseTask
+                    existing_task = WarehouseTask.query.filter_by(order_id=order.id).first()
+                    if not existing_task:
+                        WarehouseTask.create_from_order(
+                            order_id=order.id,
+                            priority=2 if getattr(order, 'is_b2b', False) else 3,
+                            notes=getattr(order, 'notes', ''),
+                        )
+                except Exception:
+                    pass  # Якщо модуль складу не доступний
 
         return jsonify({"status": "success"}), 200
 
@@ -2368,6 +2514,558 @@ def create_app():
             
         except Exception as e:
             return jsonify({"success": False, "error": str(e)}), 500
+
+    # =====================================================================
+    # СКЛАД (WAREHOUSE) ROUTES
+    # =====================================================================
+    
+    @app.route("/admin/warehouse")
+    @admin_required
+    def admin_warehouse():
+        """Головна сторінка складу - завдання на відправку."""
+        from models.warehouse import WarehouseTask, ShipmentStatus
+        
+        page = request.args.get("page", 1, type=int)
+        status_filter = request.args.get("status", "")
+        per_page = 20
+        
+        query = WarehouseTask.query
+        
+        if status_filter:
+            query = query.filter(WarehouseTask.status == status_filter)
+        
+        # За замовчуванням показуємо активні завдання
+        if not status_filter:
+            active_statuses = [
+                ShipmentStatus.PENDING.value,
+                ShipmentStatus.PROCESSING.value,
+                ShipmentStatus.PACKED.value,
+                ShipmentStatus.READY.value,
+            ]
+            query = query.filter(WarehouseTask.status.in_(active_statuses))
+        
+        query = query.order_by(WarehouseTask.priority.asc(), WarehouseTask.created_at.desc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        tasks = pagination.items
+        
+        # Статистика
+        stats = {
+            "pending": WarehouseTask.query.filter_by(status=ShipmentStatus.PENDING.value).count(),
+            "processing": WarehouseTask.query.filter_by(status=ShipmentStatus.PROCESSING.value).count(),
+            "packed": WarehouseTask.query.filter_by(status=ShipmentStatus.PACKED.value).count(),
+            "shipped_today": WarehouseTask.query.filter(
+                WarehouseTask.status == ShipmentStatus.SHIPPED.value,
+                db.func.date(WarehouseTask.shipped_at) == db.func.current_date()
+            ).count(),
+        }
+        
+        return render_template(
+            "admin/warehouse/tasks.html",
+            tasks=tasks,
+            pagination=pagination,
+            stats=stats,
+            status_filter=status_filter,
+            page=page,
+            total_pages=pagination.pages,
+        )
+    
+    @app.route("/admin/warehouse/task/<int:id>", methods=["GET", "POST"])
+    @admin_required
+    def admin_warehouse_task(id):
+        """Деталі завдання складу."""
+        from models.warehouse import WarehouseTask, ShipmentStatus
+        
+        task = WarehouseTask.query.get_or_404(id)
+        
+        if request.method == "POST":
+            action = request.form.get("action")
+            
+            if action == "start_processing":
+                task.status = ShipmentStatus.PROCESSING.value
+                task.assigned_to = request.form.get("assigned_to", "")
+                db.session.commit()
+                flash("✅ Завдання взято в роботу", "success")
+                
+            elif action == "mark_packed":
+                task.mark_packed(
+                    weight_kg=request.form.get("weight_kg", type=float),
+                    dimensions=request.form.get("dimensions", "")
+                )
+                flash("📦 Замовлення запаковано", "success")
+                
+            elif action == "mark_ready":
+                task.status = ShipmentStatus.READY.value
+                db.session.commit()
+                flash("✅ Готово до відправки", "success")
+                
+            elif action == "mark_shipped":
+                task.mark_shipped(
+                    tracking_number=request.form.get("tracking_number", ""),
+                    carrier=request.form.get("carrier", "")
+                )
+                flash("🚚 Відправлено!", "success")
+                
+            elif action == "mark_delivered":
+                task.mark_delivered()
+                flash("✔️ Доставлено!", "success")
+                
+            elif action == "cancel":
+                task.status = ShipmentStatus.CANCELLED.value
+                task.admin_notes = request.form.get("cancel_reason", "")
+                db.session.commit()
+                flash("❌ Завдання скасовано", "warning")
+            
+            elif action == "update_notes":
+                task.admin_notes = request.form.get("admin_notes", "")
+                db.session.commit()
+                flash("💾 Нотатки збережено", "success")
+            
+            return redirect(url_for("admin_warehouse_task", id=id))
+        
+        return render_template("admin/warehouse/task_detail.html", task=task)
+    
+    @app.route("/admin/warehouse/stock")
+    @admin_required
+    def admin_warehouse_stock():
+        """Залишки товарів на складі."""
+        from models.warehouse import LowStockAlert, StockMovement
+        
+        page = request.args.get("page", 1, type=int)
+        show_low = request.args.get("low", "0") == "1"
+        search = request.args.get("search", "")
+        per_page = 50
+        
+        query = Product.query.filter_by(is_active=True)
+        
+        if show_low:
+            query = query.filter(
+                Product.stock <= Product.min_stock,
+                Product.min_stock > 0
+            )
+        
+        if search:
+            query = query.filter(
+                db.or_(
+                    Product.name.ilike(f"%{search}%"),
+                    Product.sku.ilike(f"%{search}%")
+                )
+            )
+        
+        query = query.order_by(Product.stock.asc(), Product.name.asc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        products = pagination.items
+        
+        # Статистика
+        stats = {
+            "total_products": Product.query.filter_by(is_active=True).count(),
+            "out_of_stock": Product.query.filter_by(is_active=True, stock=0).count(),
+            "low_stock": Product.query.filter(
+                Product.is_active == True,
+                Product.stock > 0,
+                Product.stock <= Product.min_stock,
+                Product.min_stock > 0
+            ).count(),
+            "unresolved_alerts": LowStockAlert.query.filter_by(is_resolved=False).count(),
+        }
+        
+        return render_template(
+            "admin/warehouse/stock.html",
+            products=products,
+            pagination=pagination,
+            stats=stats,
+            show_low=show_low,
+            search=search,
+            page=page,
+            total_pages=pagination.pages,
+        )
+    
+    @app.route("/admin/warehouse/stock/<int:product_id>/adjust", methods=["POST"])
+    @admin_required
+    def admin_warehouse_stock_adjust(product_id):
+        """Коригування залишку товару."""
+        from models.warehouse import StockMovement
+        
+        product = Product.query.get_or_404(product_id)
+        
+        adjustment = request.form.get("adjustment", 0, type=int)
+        reason = request.form.get("reason", "adjustment")
+        notes = request.form.get("notes", "")
+        
+        if adjustment == 0:
+            flash("Введіть кількість для коригування", "warning")
+            return redirect(url_for("admin_warehouse_stock"))
+        
+        try:
+            StockMovement.record_movement(
+                product_id=product_id,
+                quantity=adjustment,
+                movement_type="adjustment",
+                reason=reason,
+                notes=notes,
+                performed_by="admin",
+            )
+            flash(f"✅ Залишок '{product.name}' скориговано на {adjustment:+d}", "success")
+        except ValueError as e:
+            flash(f"❌ Помилка: {str(e)}", "danger")
+        
+        return redirect(url_for("admin_warehouse_stock"))
+    
+    @app.route("/admin/warehouse/stock/<int:product_id>/history")
+    @admin_required
+    def admin_warehouse_stock_history(product_id):
+        """Історія руху товару."""
+        from models.warehouse import StockMovement
+        
+        product = Product.query.get_or_404(product_id)
+        
+        page = request.args.get("page", 1, type=int)
+        per_page = 50
+        
+        query = StockMovement.query.filter_by(product_id=product_id)\
+            .order_by(StockMovement.created_at.desc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        movements = pagination.items
+        
+        return render_template(
+            "admin/warehouse/stock_history.html",
+            product=product,
+            movements=movements,
+            pagination=pagination,
+        )
+    
+    @app.route("/admin/warehouse/replenishment")
+    @admin_required
+    def admin_warehouse_replenishment():
+        """Замовлення на поповнення."""
+        from models.warehouse import ReplenishmentOrder, ReplenishmentStatus
+        
+        page = request.args.get("page", 1, type=int)
+        status_filter = request.args.get("status", "")
+        per_page = 20
+        
+        query = ReplenishmentOrder.query
+        
+        if status_filter:
+            query = query.filter(ReplenishmentOrder.status == status_filter)
+        
+        query = query.order_by(ReplenishmentOrder.created_at.desc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        orders = pagination.items
+        
+        # Статистика
+        stats = {
+            "draft": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.DRAFT.value).count(),
+            "pending": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.PENDING.value).count(),
+            "ordered": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.ORDERED.value).count(),
+            "shipped": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.SHIPPED.value).count(),
+        }
+        
+        return render_template(
+            "admin/warehouse/replenishment.html",
+            orders=orders,
+            pagination=pagination,
+            stats=stats,
+            status_filter=status_filter,
+            page=page,
+            total_pages=pagination.pages,
+        )
+    
+    @app.route("/admin/warehouse/replenishment/new", methods=["GET", "POST"])
+    @admin_required
+    def admin_warehouse_replenishment_new():
+        """Нове замовлення на поповнення."""
+        from models.warehouse import ReplenishmentOrder, ReplenishmentItem, LowStockAlert
+        
+        if request.method == "POST":
+            order = ReplenishmentOrder(
+                supplier_name=request.form.get("supplier_name", ""),
+                supplier_contact=request.form.get("supplier_contact", ""),
+                notes=request.form.get("notes", ""),
+                status="draft",
+                created_by="admin",
+            )
+            db.session.add(order)
+            db.session.flush()
+            order.generate_order_number()
+            
+            # Додаємо товари
+            product_ids = request.form.getlist("product_ids")
+            quantities = request.form.getlist("quantities")
+            prices = request.form.getlist("prices")
+            
+            for i, product_id in enumerate(product_ids):
+                if product_id:
+                    product = Product.query.get(int(product_id))
+                    if product:
+                        item = ReplenishmentItem(
+                            replenishment_id=order.id,
+                            product_id=product.id,
+                            product_name=product.name,
+                            product_sku=product.sku,
+                            quantity=int(quantities[i]) if i < len(quantities) and quantities[i] else 1,
+                            unit_price=float(prices[i]) if i < len(prices) and prices[i] else 0.0,
+                        )
+                        db.session.add(item)
+            
+            order.calculate_totals()
+            db.session.commit()
+            
+            flash(f"✅ Замовлення {order.order_number} створено", "success")
+            return redirect(url_for("admin_warehouse_replenishment_detail", id=order.id))
+        
+        # Товари з низьким залишком для пропозиції
+        low_stock_products = Product.query.filter(
+            Product.is_active == True,
+            Product.stock <= Product.min_stock,
+            Product.min_stock > 0
+        ).all()
+        
+        return render_template(
+            "admin/warehouse/replenishment_new.html",
+            low_stock_products=low_stock_products,
+            products=Product.query.filter_by(is_active=True).order_by(Product.name).all(),
+        )
+    
+    @app.route("/admin/warehouse/replenishment/<int:id>", methods=["GET", "POST"])
+    @admin_required
+    def admin_warehouse_replenishment_detail(id):
+        """Деталі замовлення на поповнення."""
+        from models.warehouse import ReplenishmentOrder, ReplenishmentStatus
+        
+        order = ReplenishmentOrder.query.get_or_404(id)
+        
+        if request.method == "POST":
+            action = request.form.get("action")
+            
+            if action == "approve":
+                order.status = ReplenishmentStatus.APPROVED.value
+                db.session.commit()
+                flash("✅ Замовлення підтверджено", "success")
+                
+            elif action == "order":
+                order.status = ReplenishmentStatus.ORDERED.value
+                order.ordered_at = datetime.utcnow()
+                db.session.commit()
+                flash("📤 Замовлено у постачальника", "success")
+                
+            elif action == "shipped":
+                order.status = ReplenishmentStatus.SHIPPED.value
+                order.expected_at = datetime.utcnow()  # TODO: real expected date
+                db.session.commit()
+                flash("🚚 Позначено як відправлено", "success")
+                
+            elif action == "receive":
+                order.mark_received()
+                flash("✔️ Товар отримано, залишки оновлено!", "success")
+                
+            elif action == "cancel":
+                order.status = ReplenishmentStatus.CANCELLED.value
+                db.session.commit()
+                flash("❌ Замовлення скасовано", "warning")
+            
+            elif action == "mark_paid":
+                order.is_paid = True
+                order.paid_at = datetime.utcnow()
+                order.payment_method = request.form.get("payment_method", "")
+                db.session.commit()
+                flash("💰 Оплату зафіксовано", "success")
+            
+            return redirect(url_for("admin_warehouse_replenishment_detail", id=id))
+        
+        return render_template("admin/warehouse/replenishment_detail.html", order=order)
+    
+    @app.route("/admin/warehouse/expenses")
+    @admin_required
+    def admin_warehouse_expenses():
+        """Витрати складу."""
+        from models.warehouse import WarehouseExpense, ExpenseCategory
+        
+        page = request.args.get("page", 1, type=int)
+        category_filter = request.args.get("category", "")
+        date_from = request.args.get("date_from", "")
+        date_to = request.args.get("date_to", "")
+        per_page = 50
+        
+        query = WarehouseExpense.query
+        
+        if category_filter:
+            query = query.filter(WarehouseExpense.category == category_filter)
+        
+        if date_from:
+            query = query.filter(WarehouseExpense.expense_date >= date_from)
+        
+        if date_to:
+            query = query.filter(WarehouseExpense.expense_date <= date_to)
+        
+        query = query.order_by(WarehouseExpense.expense_date.desc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        expenses = pagination.items
+        
+        # Статистика за місяць
+        from datetime import date
+        today = date.today()
+        first_day = today.replace(day=1)
+        
+        monthly_stats = db.session.query(
+            WarehouseExpense.category,
+            db.func.sum(WarehouseExpense.amount)
+        ).filter(
+            WarehouseExpense.expense_date >= first_day
+        ).group_by(WarehouseExpense.category).all()
+        
+        stats_by_category = {cat: amt for cat, amt in monthly_stats}
+        total_monthly = sum(stats_by_category.values())
+        
+        return render_template(
+            "admin/warehouse/expenses.html",
+            expenses=expenses,
+            pagination=pagination,
+            stats_by_category=stats_by_category,
+            total_monthly=total_monthly,
+            category_filter=category_filter,
+            date_from=date_from,
+            date_to=date_to,
+            page=page,
+            total_pages=pagination.pages,
+            expense_categories=ExpenseCategory,
+        )
+    
+    @app.route("/admin/warehouse/expenses/add", methods=["GET", "POST"])
+    @admin_required
+    def admin_warehouse_expenses_add():
+        """Додати витрату."""
+        from models.warehouse import WarehouseExpense, ExpenseCategory
+        from datetime import date
+        
+        if request.method == "POST":
+            expense = WarehouseExpense(
+                category=request.form.get("category", ExpenseCategory.OTHER.value),
+                description=request.form.get("description", ""),
+                amount=request.form.get("amount", 0, type=float),
+                currency=request.form.get("currency", "UAH"),
+                receipt_number=request.form.get("receipt_number", "") or None,
+                notes=request.form.get("notes", "") or None,
+                expense_date=date.fromisoformat(request.form.get("expense_date", str(date.today()))),
+                created_by="admin",
+            )
+            db.session.add(expense)
+            db.session.commit()
+            
+            flash("✅ Витрату додано", "success")
+            return redirect(url_for("admin_warehouse_expenses"))
+        
+        return render_template(
+            "admin/warehouse/expense_add.html",
+            expense_categories=ExpenseCategory,
+            today=date.today(),
+        )
+    
+    @app.route("/admin/warehouse/reports")
+    @admin_required
+    def admin_warehouse_reports():
+        """Звіти складу."""
+        from models.warehouse import WarehouseTask, ReplenishmentOrder, WarehouseExpense, StockMovement
+        from datetime import date, timedelta
+        
+        # Період
+        period = request.args.get("period", "month")
+        today = date.today()
+        
+        if period == "week":
+            start_date = today - timedelta(days=7)
+        elif period == "month":
+            start_date = today.replace(day=1)
+        elif period == "quarter":
+            quarter_start = (today.month - 1) // 3 * 3 + 1
+            start_date = today.replace(month=quarter_start, day=1)
+        else:  # year
+            start_date = today.replace(month=1, day=1)
+        
+        # Відправки
+        shipments = {
+            "total": WarehouseTask.query.filter(WarehouseTask.created_at >= start_date).count(),
+            "shipped": WarehouseTask.query.filter(
+                WarehouseTask.shipped_at >= start_date,
+                WarehouseTask.shipped_at.isnot(None)
+            ).count(),
+            "delivered": WarehouseTask.query.filter(
+                WarehouseTask.delivered_at >= start_date,
+                WarehouseTask.delivered_at.isnot(None)
+            ).count(),
+        }
+        
+        # Поповнення
+        replenishments = {
+            "total": ReplenishmentOrder.query.filter(ReplenishmentOrder.created_at >= start_date).count(),
+            "received": ReplenishmentOrder.query.filter(
+                ReplenishmentOrder.received_at >= start_date,
+                ReplenishmentOrder.received_at.isnot(None)
+            ).count(),
+            "total_cost": db.session.query(db.func.sum(ReplenishmentOrder.total)).filter(
+                ReplenishmentOrder.received_at >= start_date,
+                ReplenishmentOrder.received_at.isnot(None)
+            ).scalar() or 0,
+        }
+        
+        # Витрати
+        expenses = {
+            "total": db.session.query(db.func.sum(WarehouseExpense.amount)).filter(
+                WarehouseExpense.expense_date >= start_date
+            ).scalar() or 0,
+        }
+        
+        # По категоріях
+        expense_by_category = db.session.query(
+            WarehouseExpense.category,
+            db.func.sum(WarehouseExpense.amount)
+        ).filter(
+            WarehouseExpense.expense_date >= start_date
+        ).group_by(WarehouseExpense.category).all()
+        
+        return render_template(
+            "admin/warehouse/reports.html",
+            period=period,
+            start_date=start_date,
+            shipments=shipments,
+            replenishments=replenishments,
+            expenses=expenses,
+            expense_by_category=dict(expense_by_category),
+        )
+    
+    # Автоматичне створення завдання після оплати
+    @app.route("/webhook/payment-success", methods=["POST"])
+    def webhook_payment_success():
+        """Webhook для обробки успішної оплати - створює завдання для складу."""
+        from models.warehouse import WarehouseTask
+        
+        data = request.get_json()
+        order_id = data.get("order_id")
+        
+        if not order_id:
+            return jsonify({"error": "order_id required"}), 400
+        
+        order = Order.query.get(order_id)
+        if not order:
+            return jsonify({"error": "order not found"}), 404
+        
+        # Перевіряємо чи не існує вже завдання
+        existing_task = WarehouseTask.query.filter_by(order_id=order_id).first()
+        if existing_task:
+            return jsonify({"message": "task already exists", "task_id": existing_task.id})
+        
+        # Створюємо завдання
+        task = WarehouseTask.create_from_order(
+            order_id=order_id,
+            priority=2 if order.is_b2b else 3,  # B2B - вищий пріоритет
+            notes=order.notes,
+        )
+        
+        return jsonify({"success": True, "task_id": task.id, "task_number": task.task_number})
 
     # Ініціалізація БД при старті
     init_db()

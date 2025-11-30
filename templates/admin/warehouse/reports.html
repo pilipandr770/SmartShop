@@ -1,0 +1,198 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}📈 Звіти складу{% endblock %}
+
+{% block content %}
+<div class="reports-dashboard">
+    <div class="page-header" style="margin-bottom: 2rem;">
+        <h1>📈 Звіти складу</h1>
+    </div>
+
+    <!-- Вибір періоду -->
+    <div class="period-selector" style="margin-bottom: 2rem; display: flex; gap: 1rem;">
+        <a href="{{ url_for('admin_warehouse_reports', period='week') }}" 
+           class="btn {% if period == 'week' %}btn-primary{% else %}btn-outline{% endif %}">
+            Тиждень
+        </a>
+        <a href="{{ url_for('admin_warehouse_reports', period='month') }}" 
+           class="btn {% if period == 'month' %}btn-primary{% else %}btn-outline{% endif %}">
+            Місяць
+        </a>
+        <a href="{{ url_for('admin_warehouse_reports', period='quarter') }}" 
+           class="btn {% if period == 'quarter' %}btn-primary{% else %}btn-outline{% endif %}">
+            Квартал
+        </a>
+        <a href="{{ url_for('admin_warehouse_reports', period='year') }}" 
+           class="btn {% if period == 'year' %}btn-primary{% else %}btn-outline{% endif %}">
+            Рік
+        </a>
+    </div>
+
+    <p class="text-muted" style="margin-bottom: 2rem;">
+        📅 Період: з <strong>{{ start_date.strftime('%d.%m.%Y') }}</strong>
+    </p>
+
+    <div class="reports-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+        <!-- Відправки -->
+        <div class="card">
+            <h3>🚚 Відправки</h3>
+            <div class="report-stats">
+                <div class="report-row">
+                    <span class="label">Всього завдань:</span>
+                    <span class="value">{{ shipments.total }}</span>
+                </div>
+                <div class="report-row">
+                    <span class="label">Відправлено:</span>
+                    <span class="value highlight-blue">{{ shipments.shipped }}</span>
+                </div>
+                <div class="report-row">
+                    <span class="label">Доставлено:</span>
+                    <span class="value highlight-green">{{ shipments.delivered }}</span>
+                </div>
+                {% if shipments.total > 0 %}
+                <div class="report-row">
+                    <span class="label">Виконання:</span>
+                    <span class="value">
+                        {{ "%.1f"|format(shipments.delivered / shipments.total * 100) }}%
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Поповнення -->
+        <div class="card">
+            <h3>📥 Поповнення</h3>
+            <div class="report-stats">
+                <div class="report-row">
+                    <span class="label">Всього замовлень:</span>
+                    <span class="value">{{ replenishments.total }}</span>
+                </div>
+                <div class="report-row">
+                    <span class="label">Отримано:</span>
+                    <span class="value highlight-green">{{ replenishments.received }}</span>
+                </div>
+                <div class="report-row">
+                    <span class="label">Сума закупівель:</span>
+                    <span class="value highlight-blue">{{ "%.2f"|format(replenishments.total_cost) }} UAH</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Витрати -->
+        <div class="card">
+            <h3>💰 Витрати</h3>
+            <div class="report-stats">
+                <div class="report-row total">
+                    <span class="label">Загальні витрати:</span>
+                    <span class="value highlight-red">{{ "%.2f"|format(expenses.total) }} UAH</span>
+                </div>
+                
+                {% for category, amount in expense_by_category.items() %}
+                <div class="report-row">
+                    <span class="label">
+                        {% if category == 'shipping' %}🚚 Доставка
+                        {% elif category == 'packaging' %}📦 Пакування
+                        {% elif category == 'warehouse' %}🏭 Склад
+                        {% elif category == 'returns' %}↩️ Повернення
+                        {% elif category == 'salary' %}👷 Зарплата
+                        {% elif category == 'equipment' %}🔧 Обладнання
+                        {% elif category == 'utilities' %}💡 Комунальні
+                        {% else %}📋 {{ category }}{% endif %}
+                    </span>
+                    <span class="value">{{ "%.2f"|format(amount) }} UAH</span>
+                </div>
+                {% else %}
+                <div class="report-row">
+                    <span class="text-muted">Немає витрат за період</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Зведення -->
+        <div class="card summary-card">
+            <h3>📊 Зведення</h3>
+            <div class="summary-stats">
+                <div class="summary-item">
+                    <span class="icon">📤</span>
+                    <span class="number">{{ shipments.shipped }}</span>
+                    <span class="label">Відправок</span>
+                </div>
+                <div class="summary-item">
+                    <span class="icon">📥</span>
+                    <span class="number">{{ replenishments.received }}</span>
+                    <span class="label">Поповнень</span>
+                </div>
+                <div class="summary-item expense">
+                    <span class="icon">💸</span>
+                    <span class="number">{{ "%.0f"|format(expenses.total) }}</span>
+                    <span class="label">Витрат (UAH)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Швидкі посилання -->
+    <div class="quick-links" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline">📦 Завдання</a>
+        <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline">📊 Залишки</a>
+        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">📥 Поповнення</a>
+        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">💰 Витрати</a>
+    </div>
+</div>
+
+<style>
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.card h3 {
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.report-stats { display: flex; flex-direction: column; gap: 0.75rem; }
+.report-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+.report-row:last-child { border-bottom: none; }
+.report-row.total { 
+    background: #f8f9fa; 
+    margin: -0.5rem -1rem 0.5rem -1rem;
+    padding: 1rem;
+    border-radius: 8px;
+}
+.report-row .label { color: #666; }
+.report-row .value { font-weight: bold; font-size: 1.1rem; }
+
+.highlight-blue { color: #007bff; }
+.highlight-green { color: #28a745; }
+.highlight-red { color: #dc3545; }
+
+.summary-card .summary-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+}
+.summary-item {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+.summary-item .icon { font-size: 2rem; display: block; }
+.summary-item .number { font-size: 2rem; font-weight: bold; display: block; color: #007bff; }
+.summary-item .label { color: #666; font-size: 0.85rem; }
+.summary-item.expense .number { color: #dc3545; }
+
+.btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+.btn-outline:hover { background: #f5f5f5; }
+</style>
+{% endblock %}

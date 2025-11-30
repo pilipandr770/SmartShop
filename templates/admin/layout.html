@@ -290,6 +290,25 @@
         </div>
 
         <div class="nav-section">
+            <div class="nav-title">Склад</div>
+            <a href="{{ url_for('admin_warehouse') }}" class="nav-link{% if request.endpoint in ['admin_warehouse', 'admin_warehouse_task'] %} active{% endif %}">
+                <span class="nav-icon">📦</span> Завдання
+            </a>
+            <a href="{{ url_for('admin_warehouse_stock') }}" class="nav-link{% if request.endpoint in ['admin_warehouse_stock', 'admin_warehouse_stock_history'] %} active{% endif %}">
+                <span class="nav-icon">📊</span> Залишки
+            </a>
+            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="nav-link{% if request.endpoint in ['admin_warehouse_replenishment', 'admin_warehouse_replenishment_new', 'admin_warehouse_replenishment_detail'] %} active{% endif %}">
+                <span class="nav-icon">📥</span> Поповнення
+            </a>
+            <a href="{{ url_for('admin_warehouse_expenses') }}" class="nav-link{% if request.endpoint in ['admin_warehouse_expenses', 'admin_warehouse_expenses_add'] %} active{% endif %}">
+                <span class="nav-icon">💰</span> Витрати
+            </a>
+            <a href="{{ url_for('admin_warehouse_reports') }}" class="nav-link{% if request.endpoint == 'admin_warehouse_reports' %} active{% endif %}">
+                <span class="nav-icon">📈</span> Звіти
+            </a>
+        </div>
+
+        <div class="nav-section">
             <div class="nav-title">Контент</div>
             <a href="{{ url_for('admin_blocks') }}" class="nav-link{% if request.endpoint == 'admin_blocks' %} active{% endif %}">
                 <span class="nav-icon">🏠</span> Головна сторінка

@@ -1,0 +1,186 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}📥 Замовлення на поповнення{% endblock %}
+
+{% block content %}
+<div class="replenishment-list">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>📥 Замовлення на поповнення</h1>
+        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">
+            ➕ Нове замовлення
+        </a>
+    </div>
+
+    <!-- Статистика -->
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.draft }}</span>
+                <span class="stat-label">Чернетки</span>
+            </div>
+        </div>
+        <div class="stat-card pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.pending }}</span>
+                <span class="stat-label">Очікують</span>
+            </div>
+        </div>
+        <div class="stat-card ordered">
+            <div class="stat-icon">📤</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.ordered }}</span>
+                <span class="stat-label">Замовлено</span>
+            </div>
+        </div>
+        <div class="stat-card shipped">
+            <div class="stat-icon">🚚</div>
+            <div class="stat-info">
+                <span class="stat-value">{{ stats.shipped }}</span>
+                <span class="stat-label">В дорозі</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фільтри -->
+    <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('admin_warehouse_replenishment') }}" 
+           class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">
+            Всі
+        </a>
+        <a href="{{ url_for('admin_warehouse_replenishment', status='draft') }}" 
+           class="btn {% if status_filter == 'draft' %}btn-primary{% else %}btn-outline{% endif %}">
+            📝 Чернетки
+        </a>
+        <a href="{{ url_for('admin_warehouse_replenishment', status='pending') }}" 
+           class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">
+            ⏳ Очікують
+        </a>
+        <a href="{{ url_for('admin_warehouse_replenishment', status='ordered') }}" 
+           class="btn {% if status_filter == 'ordered' %}btn-primary{% else %}btn-outline{% endif %}">
+            📤 Замовлено
+        </a>
+        <a href="{{ url_for('admin_warehouse_replenishment', status='received') }}" 
+           class="btn {% if status_filter == 'received' %}btn-primary{% else %}btn-outline{% endif %}">
+            ✔️ Отримано
+        </a>
+    </div>
+
+    <!-- Таблиця замовлень -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>№ Замовлення</th>
+                    <th>Постачальник</th>
+                    <th>Товарів</th>
+                    <th>Сума</th>
+                    <th>Статус</th>
+                    <th>Створено</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>
+                        <strong>{{ order.order_number or '#' ~ order.id }}</strong>
+                        {% if order.is_paid %}
+                        <span class="badge badge-success">💰</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.supplier_name or '—' }}</td>
+                    <td>{{ order.items|length if order.items else 0 }}</td>
+                    <td>
+                        {% if order.total %}
+                        <strong>{{ "%.2f"|format(order.total) }}</strong> {{ order.currency or 'UAH' }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.status == 'draft' %}
+                        <span class="badge badge-secondary">📝 Чернетка</span>
+                        {% elif order.status == 'pending' %}
+                        <span class="badge badge-warning">⏳ Очікує</span>
+                        {% elif order.status == 'approved' %}
+                        <span class="badge badge-info">✅ Затверджено</span>
+                        {% elif order.status == 'ordered' %}
+                        <span class="badge badge-primary">📤 Замовлено</span>
+                        {% elif order.status == 'shipped' %}
+                        <span class="badge badge-info">🚚 В дорозі</span>
+                        {% elif order.status == 'received' %}
+                        <span class="badge badge-success">✔️ Отримано</span>
+                        {% elif order.status == 'cancelled' %}
+                        <span class="badge badge-danger">❌ Скасовано</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.created_at.strftime('%d.%m.%Y') }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_warehouse_replenishment_detail', id=order.id) }}" class="btn btn-sm btn-primary">
+                            👁️ Деталі
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        <p style="padding: 2rem;">
+                            📭 Немає замовлень на поповнення
+                        </p>
+                        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">
+                            ➕ Створити перше замовлення
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагінація -->
+    {% if total_pages > 1 %}
+    <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
+        {% if page > 1 %}
+        <a href="{{ url_for('admin_warehouse_replenishment', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">← Назад</a>
+        {% endif %}
+        
+        <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
+        
+        {% if page < total_pages %}
+        <a href="{{ url_for('admin_warehouse_replenishment', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">Далі →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stat-card .stat-icon { font-size: 2rem; }
+.stat-card .stat-value { display: block; font-size: 2rem; font-weight: bold; }
+.stat-card .stat-label { color: #666; }
+.stat-card.pending { border-left: 4px solid #ffc107; }
+.stat-card.ordered { border-left: 4px solid #007bff; }
+.stat-card.shipped { border-left: 4px solid #17a2b8; }
+
+.badge { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+.badge-primary { background: #007bff; color: white; }
+.badge-secondary { background: #6c757d; color: white; }
+.badge-success { background: #28a745; color: white; }
+.badge-danger { background: #dc3545; color: white; }
+.badge-warning { background: #ffc107; color: #333; }
+.badge-info { background: #17a2b8; color: white; }
+
+.btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+.btn-outline:hover { background: #f5f5f5; }
+</style>
+{% endblock %}

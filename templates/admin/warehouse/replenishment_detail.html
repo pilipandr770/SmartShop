@@ -1,0 +1,263 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}📥 Замовлення {{ order.order_number or '#' ~ order.id }}{% endblock %}
+
+{% block content %}
+<div class="replenishment-detail">
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← До списку</a>
+            <h1 style="margin: 0.5rem 0;">📥 Замовлення {{ order.order_number or '#' ~ order.id }}</h1>
+        </div>
+        <div>
+            {% if order.status == 'draft' %}
+            <span class="status-badge draft">📝 Чернетка</span>
+            {% elif order.status == 'pending' %}
+            <span class="status-badge pending">⏳ Очікує підтвердження</span>
+            {% elif order.status == 'approved' %}
+            <span class="status-badge approved">✅ Затверджено</span>
+            {% elif order.status == 'ordered' %}
+            <span class="status-badge ordered">📤 Замовлено</span>
+            {% elif order.status == 'shipped' %}
+            <span class="status-badge shipped">🚚 В дорозі</span>
+            {% elif order.status == 'received' %}
+            <span class="status-badge received">✔️ Отримано</span>
+            {% elif order.status == 'cancelled' %}
+            <span class="status-badge cancelled">❌ Скасовано</span>
+            {% endif %}
+            
+            {% if order.is_paid %}
+            <span class="status-badge paid">💰 Оплачено</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <!-- Основна інформація -->
+        <div class="main-info">
+            <!-- Постачальник -->
+            <div class="card">
+                <h3>📦 Постачальник</h3>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="label">Назва:</span>
+                        <span class="value">{{ order.supplier_name or '—' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Контакти:</span>
+                        <span class="value">{{ order.supplier_contact or '—' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Товари -->
+            <div class="card">
+                <h3>📋 Товари</h3>
+                <table class="admin-table" style="margin: 0;">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>SKU</th>
+                            <th>Кількість</th>
+                            <th>Ціна</th>
+                            <th>Сума</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items %}
+                        <tr>
+                            <td>{{ item.product_name }}</td>
+                            <td><code>{{ item.product_sku or '—' }}</code></td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ "%.2f"|format(item.unit_price) if item.unit_price else '—' }}</td>
+                            <td><strong>{{ "%.2f"|format(item.total) if item.total else '—' }}</strong></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Немає товарів</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align: right;"><strong>Загальна сума:</strong></td>
+                            <td><strong>{{ "%.2f"|format(order.total) if order.total else '0.00' }}</strong> {{ order.currency or 'UAH' }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Інформація про доставку/отримання -->
+            {% if order.status in ['shipped', 'received'] %}
+            <div class="card">
+                <h3>🚚 Доставка</h3>
+                <div class="info-grid">
+                    {% if order.expected_at %}
+                    <div class="info-row">
+                        <span class="label">Очікувана дата:</span>
+                        <span class="value">{{ order.expected_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    {% endif %}
+                    {% if order.received_at %}
+                    <div class="info-row">
+                        <span class="label">Отримано:</span>
+                        <span class="value">{{ order.received_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Примітки -->
+            {% if order.notes %}
+            <div class="card">
+                <h3>📝 Примітки</h3>
+                <p style="margin: 0; white-space: pre-wrap;">{{ order.notes }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Інформація про оплату -->
+            {% if order.is_paid %}
+            <div class="card">
+                <h3>💰 Оплата</h3>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="label">Спосіб оплати:</span>
+                        <span class="value">{{ order.payment_method or '—' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Дата оплати:</span>
+                        <span class="value">{{ order.paid_at.strftime('%d.%m.%Y %H:%M') if order.paid_at else '—' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Панель дій -->
+        <div class="actions-panel">
+            <div class="card">
+                <h3>⚡ Дії</h3>
+                
+                {% if order.status == 'draft' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="btn btn-info btn-block">✅ Підтвердити</button>
+                </form>
+                {% endif %}
+
+                {% if order.status in ['pending', 'approved'] %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="order">
+                    <button type="submit" class="btn btn-primary btn-block">📤 Замовити у постачальника</button>
+                </form>
+                {% endif %}
+
+                {% if order.status == 'ordered' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="shipped">
+                    <button type="submit" class="btn btn-info btn-block">🚚 Відправлено</button>
+                </form>
+                {% endif %}
+
+                {% if order.status == 'shipped' %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="receive">
+                    <button type="submit" class="btn btn-success btn-block">✔️ Отримано (оновити залишки)</button>
+                </form>
+                {% endif %}
+
+                {% if order.status not in ['received', 'cancelled'] %}
+                <hr style="margin: 1.5rem 0;">
+                <form method="POST" onsubmit="return confirm('Ви впевнені що хочете скасувати це замовлення?');">
+                    <input type="hidden" name="action" value="cancel">
+                    <button type="submit" class="btn btn-danger btn-block">❌ Скасувати</button>
+                </form>
+                {% endif %}
+                
+                {% if not order.is_paid and order.status != 'cancelled' %}
+                <hr style="margin: 1.5rem 0;">
+                <form method="POST">
+                    <input type="hidden" name="action" value="mark_paid">
+                    <div class="form-group">
+                        <label>Спосіб оплати:</label>
+                        <select name="payment_method" class="form-control">
+                            <option value="bank_transfer">Банківський переказ</option>
+                            <option value="cash">Готівка</option>
+                            <option value="card">Карта</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">💰 Зафіксувати оплату</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Інформація -->
+            <div class="card">
+                <h3>📊 Інформація</h3>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <span class="label">Створено:</span>
+                        <span class="value">{{ order.created_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Автор:</span>
+                        <span class="value">{{ order.created_by or '—' }}</span>
+                    </div>
+                    {% if order.ordered_at %}
+                    <div class="info-row">
+                        <span class="label">Замовлено:</span>
+                        <span class="value">{{ order.ordered_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.card h3 {
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+.status-badge.draft { background: #f8f9fa; color: #6c757d; }
+.status-badge.pending { background: #fff3cd; color: #856404; }
+.status-badge.approved { background: #d1ecf1; color: #0c5460; }
+.status-badge.ordered { background: #cce5ff; color: #004085; }
+.status-badge.shipped { background: #17a2b8; color: white; }
+.status-badge.received { background: #28a745; color: white; }
+.status-badge.cancelled { background: #dc3545; color: white; }
+.status-badge.paid { background: #28a745; color: white; }
+
+.info-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+.info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #f5f5f5; }
+.info-row:last-child { border-bottom: none; }
+.info-row .label { color: #666; }
+.info-row .value { font-weight: 500; }
+
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; font-size: 0.9rem; }
+.form-control { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; }
+
+.btn-block { width: 100%; display: block; text-align: center; }
+.btn-outline { background: transparent; border: 1px solid #ddd; color: #333; }
+.btn-outline:hover { background: #f5f5f5; }
+</style>
+{% endblock %}
