@@ -1087,7 +1087,7 @@
             
             const botMsg = document.createElement('div');
             botMsg.className = 'ai-msg bot';
-            botMsg.textContent = data.reply || data.error || 'Вибачте, сталася помилка.';
+            botMsg.textContent = data.message || data.error || 'Вибачте, сталася помилка.';
             messages.appendChild(botMsg);
         } catch (e) {
             loadingMsg.remove();

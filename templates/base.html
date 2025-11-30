@@ -699,10 +699,11 @@
             chatMessages.appendChild(botDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         } catch (error) {
+            console.error('Chat error:', error);
             loadingDiv.remove();
             const errorDiv = document.createElement('div');
             errorDiv.className = 'chat-message bot';
-            errorDiv.textContent = 'Не вдалося підключитися до ІІ-продавця.';
+            errorDiv.textContent = 'Не вдалося підключитися до ІІ-продавця: ' + error.message;
             chatMessages.appendChild(errorDiv);
         }
     });
