@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -162,6 +162,35 @@
             border-color: var(--accent);
             color: var(--text-main);
             box-shadow: 0 0 18px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.2rem;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .lang-btn {
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-main);
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: #022c22;
         }
 
         .btn {
@@ -409,14 +438,23 @@
         </a>
 
         <nav class="nav" aria-label="Головна навігація">
-            <a href="{{ url_for('index') }}">Головна</a>
-            <a href="{{ url_for('shop') }}">Магазин</a>
-            <a href="{{ url_for('blog_page') }}">Блог</a>
-            <a href="{{ url_for('about_page') }}">Про нас</a>
-            <a href="{{ url_for('contacts_page') }}">Контакти</a>
+            <a href="{{ url_for('index') }}">{{ _('Home') }}</a>
+            <a href="{{ url_for('shop') }}">{{ _('Shop') }}</a>
+            <a href="{{ url_for('blog_page') }}">{{ _('Blog') }}</a>
+            <a href="{{ url_for('about_page') }}">{{ _('About') }}</a>
+            <a href="{{ url_for('contacts_page') }}">{{ _('Contacts') }}</a>
         </nav>
 
         <div class="header-actions">
+            <!-- Language Switcher -->
+            <div class="lang-switcher">
+                {% for code, name in languages.items() %}
+                    <a href="{{ url_for('set_language', lang=code) }}" class="lang-btn {% if get_locale()|string == code %}active{% endif %}" title="{{ name }}">
+                        {{ code|upper }}
+                    </a>
+                {% endfor %}
+            </div>
+            
             <div class="socials">
                 {% if settings and settings.social_telegram %}
                     <a href="{{ settings.social_telegram }}" target="_blank" class="social-pill">Telegram</a>
@@ -426,7 +464,7 @@
                 {% endif %}
             </div>
             <a href="{{ url_for('cart_page') }}" class="btn btn-outline cart-badge">
-                🛒 Кошик
+                🛒 {{ _('Cart') }}
                 {% if cart_count > 0 %}
                     <span class="cart-count">{{ cart_count }}</span>
                 {% endif %}
@@ -435,14 +473,14 @@
                 {% if current_user.is_b2b %}
                     <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
                 {% else %}
-                    <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 Кабінет</a>
+                    <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 {{ _('Dashboard') }}</a>
                 {% endif %}
-                <a href="{{ url_for('user_logout') }}" class="social-pill" title="Вийти">🚪</a>
+                <a href="{{ url_for('user_logout') }}" class="social-pill" title="{{ _('Logout') }}">🚪</a>
             {% else %}
-                <a href="{{ url_for('user_login') }}" class="btn btn-outline">Увійти</a>
-                <a href="{{ url_for('user_register') }}" class="btn">Реєстрація</a>
+                <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Login') }}</a>
+                <a href="{{ url_for('user_register') }}" class="btn">{{ _('Register') }}</a>
             {% endif %}
-            <a href="{{ url_for('admin_login') }}" class="social-pill" title="Адмін">⚙️</a>
+            <a href="{{ url_for('admin_login') }}" class="social-pill" title="{{ _('Admin Panel') }}">⚙️</a>
         </div>
     </header>
 
@@ -461,34 +499,34 @@
     <!-- FOOTER -->
     <footer class="footer" id="contact">
         <div class="footer-links">
-            <a href="#">Політика конфіденційності</a>
-            <a href="#">Умови використання</a>
-            <a href="#">Контакти</a>
+            <a href="#">{{ _('Privacy Policy') }}</a>
+            <a href="#">{{ _('Terms of Service') }}</a>
+            <a href="{{ url_for('contacts_page') }}">{{ _('Contacts') }}</a>
         </div>
         <div class="footer-badge">
-            © <span id="year"></span> SmartShop AI
+            © <span id="year"></span> SmartShop AI. {{ _('All rights reserved') }}
         </div>
     </footer>
 </div>
 
 <!-- AI CHAT WIDGET -->
 <div id="ai-chat-widget" class="chat-widget">
-    <button id="chat-toggle" class="chat-toggle" title="Чат з ІІ-продавцем">
+    <button id="chat-toggle" class="chat-toggle" title="{{ _('AI Assistant') }}">
         <span class="chat-icon">🤖</span>
         <span class="chat-close">✕</span>
     </button>
     <div id="chat-window" class="chat-window">
         <div class="chat-header">
-            <span>ІІ-продавець</span>
-            <span class="chat-status">онлайн</span>
+            <span>{{ _('AI Assistant') }}</span>
+            <span class="chat-status">online</span>
         </div>
         <div id="chat-messages" class="chat-messages">
             <div class="chat-message bot">
-                Вітаю! Я ваш ІІ-помічник. Чим можу допомогти?
+                {{ _('How can I help you?') }}
             </div>
         </div>
         <form id="chat-form" class="chat-input-form">
-            <input type="text" id="chat-input" placeholder="Напишіть запитання..." autocomplete="off">
+            <input type="text" id="chat-input" placeholder="{{ _('Ask me anything...') }}" autocomplete="off">
             <button type="submit">➤</button>
         </form>
     </div>

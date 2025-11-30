@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ product.name }} – SmartShop AI{% endblock %}
+{% block title %}{{ product.get_name(get_locale()|string) }} – SmartShop AI{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -90,58 +90,58 @@
 <section>
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-        <a href="{{ url_for('index') }}">Головна</a>
+        <a href="{{ url_for('index') }}">{{ _('Home') }}</a>
         <span>/</span>
-        <a href="{{ url_for('shop') }}">Магазин</a>
+        <a href="{{ url_for('shop') }}">{{ _('Shop') }}</a>
         {% if product.category %}
         <span>/</span>
-        <a href="{{ url_for('category_page', slug=product.category.slug) }}">{{ product.category.name }}</a>
+        <a href="{{ url_for('category_page', slug=product.category.slug) }}">{{ product.category.get_name(get_locale()|string) }}</a>
         {% endif %}
         <span>/</span>
-        <span style="color: var(--text-main);">{{ product.name }}</span>
+        <span style="color: var(--text-main);">{{ product.get_name(get_locale()|string) }}</span>
     </div>
 
     <div class="product-detail">
         <!-- Галерея -->
         <div class="product-gallery">
             <img src="{{ product.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}" 
-                 alt="{{ product.name }}">
+                 alt="{{ product.get_name(get_locale()|string) }}">
         </div>
 
         <!-- Інформація -->
         <div class="product-info">
-            <h1>{{ product.name }}</h1>
+            <h1>{{ product.get_name(get_locale()|string) }}</h1>
             
             {% if product.sku %}
-            <div class="sku">Артикул: {{ product.sku }}</div>
+            <div class="sku">SKU: {{ product.sku }}</div>
             {% endif %}
 
             <div class="price">{{ "%.2f"|format(product.price) }} {{ product.currency }}</div>
 
-            {% if product.short_description %}
-            <div class="description">{{ product.short_description }}</div>
+            {% if product.get_short_description(get_locale()|string) %}
+            <div class="description">{{ product.get_short_description(get_locale()|string) }}</div>
             {% endif %}
 
             <!-- Форма додавання в кошик -->
             <form action="{{ url_for('cart_add', product_id=product.id) }}" method="post" class="add-to-cart-form">
                 <input type="hidden" name="next" value="{{ url_for('product_page', product_id=product.id) }}">
-                <label for="quantity" style="color: var(--text-muted);">Кількість:</label>
+                <label for="quantity" style="color: var(--text-muted);">{{ _('Quantity') }}:</label>
                 <input type="number" name="quantity" id="quantity" value="1" min="1" max="99">
-                <button type="submit" class="btn">🛒 Додати в кошик</button>
+                <button type="submit" class="btn">🛒 {{ _('Add to cart') }}</button>
             </form>
 
             {% if product.category %}
             <div style="margin-top: 0.5rem;">
-                <span style="color: var(--text-muted);">Категорія:</span>
+                <span style="color: var(--text-muted);">{{ _('Category') }}:</span>
                 <a href="{{ url_for('category_page', slug=product.category.slug) }}" 
-                   class="social-pill" style="margin-left: 0.5rem;">{{ product.category.name }}</a>
+                   class="social-pill" style="margin-left: 0.5rem;">{{ product.category.get_name(get_locale()|string) }}</a>
             </div>
             {% endif %}
 
-            {% if product.long_description %}
+            {% if product.get_long_description(get_locale()|string) %}
             <div class="card" style="margin-top: 1rem;">
-                <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 0.5rem;">Опис</h3>
-                <div class="description" style="white-space: pre-line;">{{ product.long_description }}</div>
+                <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 0.5rem;">{{ _('Description') }}</h3>
+                <div class="description" style="white-space: pre-line;">{{ product.get_long_description(get_locale()|string) }}</div>
             </div>
             {% endif %}
         </div>
@@ -150,14 +150,14 @@
     <!-- Схожі товари -->
     {% if related %}
     <div class="related-section">
-        <h2>Схожі товари</h2>
+        <h2>{{ _('Related Products') }}</h2>
         <div class="products-grid">
             {% for p in related %}
             <a href="{{ url_for('product_page', product_id=p.id) }}" class="product-card">
                 <div class="product-img">
                     <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
                 </div>
-                <div class="product-title">{{ p.name }}</div>
+                <div class="product-title">{{ p.get_name(get_locale()|string) }}</div>
                 <div class="product-price">{{ "%.2f"|format(p.price) }} {{ p.currency }}</div>
             </a>
             {% endfor %}

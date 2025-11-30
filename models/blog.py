@@ -26,6 +26,14 @@ class BlogPost(db.Model):
     excerpt = db.Column(db.String(500), nullable=True)  # Короткий опис для картки
     content = db.Column(db.Text, nullable=True)  # Повний текст статті
     
+    # Мультимовність
+    title_en = db.Column(db.String(255), nullable=True)
+    title_de = db.Column(db.String(255), nullable=True)
+    excerpt_en = db.Column(db.String(500), nullable=True)
+    excerpt_de = db.Column(db.String(500), nullable=True)
+    content_en = db.Column(db.Text, nullable=True)
+    content_de = db.Column(db.Text, nullable=True)
+    
     # Медіа
     featured_image = db.Column(db.String(500), nullable=True)
     
@@ -121,6 +129,30 @@ class BlogPost(db.Model):
     def get_by_slug(cls, slug):
         """Знайти пост за slug."""
         return cls.query.filter_by(slug=slug).first()
+    
+    def get_title(self, locale='uk'):
+        """Повертає заголовок відповідно до мови."""
+        if locale == 'en' and self.title_en:
+            return self.title_en
+        elif locale == 'de' and self.title_de:
+            return self.title_de
+        return self.title
+    
+    def get_excerpt(self, locale='uk'):
+        """Повертає уривок відповідно до мови."""
+        if locale == 'en' and self.excerpt_en:
+            return self.excerpt_en
+        elif locale == 'de' and self.excerpt_de:
+            return self.excerpt_de
+        return self.excerpt or ''
+    
+    def get_content(self, locale='uk'):
+        """Повертає контент відповідно до мови."""
+        if locale == 'en' and self.content_en:
+            return self.content_en
+        elif locale == 'de' and self.content_de:
+            return self.content_de
+        return self.content or ''
 
 
 class BlogPlan(db.Model):

@@ -18,15 +18,14 @@
         <!-- Основний контент -->
         <div class="editor-main">
             <div class="card">
+                <!-- Language Tabs -->
+                <div class="lang-tabs">
+                    <button type="button" class="lang-tab active" data-lang="uk">🇺🇦 Українська</button>
+                    <button type="button" class="lang-tab" data-lang="en">🇬🇧 English</button>
+                    <button type="button" class="lang-tab" data-lang="de">🇩🇪 Deutsch</button>
+                </div>
+                
                 <div class="form-section">
-                    <div class="form-group">
-                        <label for="title">Заголовок статті</label>
-                        <input type="text" id="title" name="title" required
-                               value="{{ post.title if post else '' }}" 
-                               placeholder="Введіть заголовок статті..."
-                               oninput="generateSlug()">
-                    </div>
-                    
                     <div class="form-group">
                         <label for="slug">URL (slug)</label>
                         <div class="slug-input">
@@ -37,17 +36,72 @@
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="excerpt">Короткий опис</label>
-                        <textarea id="excerpt" name="excerpt" rows="3" 
-                                  placeholder="Короткий опис для картки (до 200 символів)...">{{ post.excerpt if post else '' }}</textarea>
+                    <!-- Ukrainian content -->
+                    <div class="lang-content" data-lang="uk">
+                        <div class="form-group">
+                            <label for="title">Заголовок статті (UK)</label>
+                            <input type="text" id="title" name="title" required
+                                   value="{{ post.title if post else '' }}" 
+                                   placeholder="Введіть заголовок статті..."
+                                   oninput="generateSlug()">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt">Короткий опис (UK)</label>
+                            <textarea id="excerpt" name="excerpt" rows="3" 
+                                      placeholder="Короткий опис для картки (до 200 символів)...">{{ post.excerpt if post else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="content">Повний текст статті (UK)</label>
+                            <textarea id="content" name="content" rows="15" 
+                                      placeholder="Напишіть статтю тут... Підтримується HTML форматування.">{{ post.content if post else '' }}</textarea>
+                            <small class="form-hint">💡 Використовуйте &lt;h2&gt;, &lt;h3&gt; для підзаголовків</small>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="content">Повний текст статті</label>
-                        <textarea id="content" name="content" rows="20" 
-                                  placeholder="Напишіть статтю тут... Підтримується HTML форматування.">{{ post.content if post else '' }}</textarea>
-                        <small class="form-hint">💡 Використовуйте &lt;h2&gt;, &lt;h3&gt; для підзаголовків, &lt;ul&gt; для списків</small>
+                    <!-- English content -->
+                    <div class="lang-content" data-lang="en" style="display:none;">
+                        <div class="form-group">
+                            <label for="title_en">Article Title (EN)</label>
+                            <input type="text" id="title_en" name="title_en"
+                                   value="{{ post.title_en if post else '' }}" 
+                                   placeholder="Enter article title...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt_en">Short Description (EN)</label>
+                            <textarea id="excerpt_en" name="excerpt_en" rows="3" 
+                                      placeholder="Short description for card (up to 200 chars)...">{{ post.excerpt_en if post else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="content_en">Full Article Text (EN)</label>
+                            <textarea id="content_en" name="content_en" rows="15" 
+                                      placeholder="Write article here... HTML formatting supported.">{{ post.content_en if post else '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- German content -->
+                    <div class="lang-content" data-lang="de" style="display:none;">
+                        <div class="form-group">
+                            <label for="title_de">Artikeltitel (DE)</label>
+                            <input type="text" id="title_de" name="title_de"
+                                   value="{{ post.title_de if post else '' }}" 
+                                   placeholder="Geben Sie den Artikeltitel ein...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="excerpt_de">Kurzbeschreibung (DE)</label>
+                            <textarea id="excerpt_de" name="excerpt_de" rows="3" 
+                                      placeholder="Kurzbeschreibung für Karte (bis 200 Zeichen)...">{{ post.excerpt_de if post else '' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="content_de">Vollständiger Artikeltext (DE)</label>
+                            <textarea id="content_de" name="content_de" rows="15" 
+                                      placeholder="Schreiben Sie hier den Artikel... HTML-Formatierung unterstützt.">{{ post.content_de if post else '' }}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -200,6 +254,44 @@
 
 .back-link:hover {
     color: var(--accent);
+}
+
+/* Language Tabs */
+.lang-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+    padding: 0 1.25rem;
+}
+
+.lang-tab {
+    padding: 0.75rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+}
+
+.lang-tab:hover {
+    color: var(--text-main);
+}
+
+.lang-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.lang-content {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .editor-layout {
@@ -421,6 +513,18 @@ async function generateWithAI() {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('meta-title-count').textContent = document.getElementById('meta_title').value.length;
     document.getElementById('meta-desc-count').textContent = document.getElementById('meta_description').value.length;
+    
+    // Language tabs switching
+    document.querySelectorAll('.lang-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const lang = this.dataset.lang;
+            document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.lang-content').forEach(c => {
+                c.style.display = c.dataset.lang === lang ? 'block' : 'none';
+            });
+        });
+    });
 });
 </script>
 {% endblock %}

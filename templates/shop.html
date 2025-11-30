@@ -1,22 +1,22 @@
 {% extends 'base.html' %}
-{% block title %}Магазин – SmartShop AI{% endblock %}
+{% block title %}{{ _('Shop') }} – SmartShop AI{% endblock %}
 
 {% block content %}
 <section>
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Усі товари</h1>
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ _('All Products') }}</h1>
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0;">
-        Переглядайте наш каталог та обирайте найкраще
+        {{ _('Your intelligent shopping assistant') }}
     </p>
 
     <!-- Категорії -->
     {% if categories %}
     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0;">
         <a href="{{ url_for('shop') }}" class="social-pill" style="{% if not request.args.get('category') %}border-color: var(--accent);{% endif %}">
-            Усі
+            {{ _('All Categories') }}
         </a>
         {% for cat in categories %}
         <a href="{{ url_for('category_page', slug=cat.slug) }}" class="social-pill">
-            {{ cat.name }}
+            {{ cat.get_name(get_locale()|string) }}
         </a>
         {% endfor %}
     </div>
@@ -30,9 +30,9 @@
             <div class="product-img">
                 <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
             </div>
-            <div class="product-title">{{ p.name }}</div>
+            <div class="product-title">{{ p.get_name(get_locale()|string) }}</div>
             <div class="product-price">{{ "%.2f"|format(p.price) }} {{ p.currency }}</div>
-            <div class="product-meta">{{ p.short_description or p.category.name if p.category else '' }}</div>
+            <div class="product-meta">{{ p.get_short_description(get_locale()|string) or (cat.get_name(get_locale()|string) if p.category else '') }}</div>
         </a>
         {% endfor %}
     </div>
@@ -41,7 +41,7 @@
     {% if products.pages > 1 %}
     <div class="pagination">
         {% if products.has_prev %}
-        <a href="{{ url_for('shop', page=products.prev_num) }}">← Назад</a>
+        <a href="{{ url_for('shop', page=products.prev_num) }}">← {{ _('Previous') }}</a>
         {% endif %}
 
         {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
@@ -57,15 +57,15 @@
         {% endfor %}
 
         {% if products.has_next %}
-        <a href="{{ url_for('shop', page=products.next_num) }}">Далі →</a>
+        <a href="{{ url_for('shop', page=products.next_num) }}">{{ _('Next') }} →</a>
         {% endif %}
     </div>
     {% endif %}
 
     {% else %}
     <div class="card" style="text-align: center; padding: 2rem;">
-        <p style="color: var(--text-muted);">Товарів поки немає. Додайте перший товар через адмін-панель.</p>
-        <a href="{{ url_for('admin_products') }}" class="btn" style="margin-top: 1rem;">Додати товар</a>
+        <p style="color: var(--text-muted);">{{ _('No results found') }}</p>
+        <a href="{{ url_for('admin_products') }}" class="btn" style="margin-top: 1rem;">{{ _('Add New') }}</a>
     </div>
     {% endif %}
 </section>

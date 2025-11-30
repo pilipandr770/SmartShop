@@ -24,8 +24,10 @@ from flask import (
     jsonify,
     send_from_directory,
     abort,
+    g,
 )
 from flask_login import login_required, current_user
+from flask_babel import Babel, gettext as _, lazy_gettext as _l, get_locale
 
 # Опціональні залежності
 try:
@@ -105,6 +107,39 @@ def create_app():
     
     def allowed_file(filename):
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    # Flask-Babel налаштування для мультимовності
+    app.config['BABEL_DEFAULT_LOCALE'] = 'uk'
+    app.config['BABEL_SUPPORTED_LOCALES'] = ['uk', 'en', 'de']
+    app.config['LANGUAGES'] = {
+        'uk': '🇺🇦 Українська',
+        'en': '🇬🇧 English',
+        'de': '🇩🇪 Deutsch'
+    }
+    
+    babel = Babel()
+    
+    def get_locale_selector():
+        # 1. Перевіряємо параметр URL
+        lang = request.args.get('lang')
+        if lang in app.config['BABEL_SUPPORTED_LOCALES']:
+            session['lang'] = lang
+            return lang
+        # 2. Перевіряємо сесію
+        if 'lang' in session:
+            return session['lang']
+        # 3. Автоматичне визначення з браузера
+        return request.accept_languages.best_match(app.config['BABEL_SUPPORTED_LOCALES'])
+    
+    babel.init_app(app, locale_selector=get_locale_selector)
+    
+    # Робимо функції доступними в шаблонах
+    @app.context_processor
+    def inject_locale():
+        return {
+            'get_locale': get_locale,
+            'languages': app.config['LANGUAGES'],
+        }
 
     db.init_app(app)
     
@@ -205,6 +240,11 @@ def create_app():
                     ('sort_order', 'INTEGER DEFAULT 0'),
                     ('created_at', 'TIMESTAMP DEFAULT NOW()'),
                     ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    # Мультимовність
+                    ('name_en', 'VARCHAR(120)'),
+                    ('name_de', 'VARCHAR(120)'),
+                    ('description_en', 'TEXT'),
+                    ('description_de', 'TEXT'),
                 ]
                 
                 # products колонки
@@ -225,6 +265,13 @@ def create_app():
                     ('meta_description', 'VARCHAR(200)'),
                     ('created_at', 'TIMESTAMP DEFAULT NOW()'),
                     ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    # Мультимовність
+                    ('name_en', 'VARCHAR(200)'),
+                    ('name_de', 'VARCHAR(200)'),
+                    ('short_description_en', 'VARCHAR(255)'),
+                    ('short_description_de', 'VARCHAR(255)'),
+                    ('long_description_en', 'TEXT'),
+                    ('long_description_de', 'TEXT'),
                 ]
                 
                 # orders колонки
@@ -495,6 +542,13 @@ def create_app():
                     ('views', 'INTEGER DEFAULT 0'),
                     ('created_at', 'TIMESTAMP DEFAULT NOW()'),
                     ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    # Мультимовність
+                    ('title_en', 'VARCHAR(255)'),
+                    ('title_de', 'VARCHAR(255)'),
+                    ('excerpt_en', 'VARCHAR(500)'),
+                    ('excerpt_de', 'VARCHAR(500)'),
+                    ('content_en', 'TEXT'),
+                    ('content_de', 'TEXT'),
                 ]
                 
                 # blog_plans колонки
@@ -680,6 +734,16 @@ def create_app():
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(cabinet_bp)
+
+    # ----- ПЕРЕКЛЮЧЕННЯ МОВИ -----
+
+    @app.route("/set-language/<lang>")
+    def set_language(lang):
+        """Змінити мову інтерфейсу."""
+        if lang in app.config['BABEL_SUPPORTED_LOCALES']:
+            session['lang'] = lang
+        # Повернути на попередню сторінку
+        return redirect(request.referrer or url_for('index'))
 
     # ----- ПУБЛІЧНІ СТОРІНКИ -----
 
@@ -1299,6 +1363,12 @@ def create_app():
             name = request.form.get("name", "").strip()
             slug = request.form.get("slug", "").strip()
             description = request.form.get("description", "").strip()
+            
+            # Multilingual fields
+            name_en = request.form.get("name_en", "").strip()
+            name_de = request.form.get("name_de", "").strip()
+            description_en = request.form.get("description_en", "").strip()
+            description_de = request.form.get("description_de", "").strip()
 
             if not name or not slug:
                 flash("Назва і slug категорії обовʼязкові.", "danger")
@@ -1311,6 +1381,10 @@ def create_app():
                         name=name,
                         slug=slug,
                         description=description or None,
+                        name_en=name_en or None,
+                        name_de=name_de or None,
+                        description_en=description_en or None,
+                        description_de=description_de or None,
                     )
                     db.session.add(category)
                     db.session.commit()
@@ -1375,6 +1449,12 @@ def create_app():
         image_url = request.form.get("image_url", "").strip()
         stock = request.form.get("stock", "0").strip()
         is_active = request.form.get("is_active") == "on"
+        
+        # Мультимовні поля
+        name_en = request.form.get("name_en", "").strip() or None
+        name_de = request.form.get("name_de", "").strip() or None
+        description_en = request.form.get("description_en", "").strip() or None
+        description_de = request.form.get("description_de", "").strip() or None
 
         try:
             price_value = float(price)
@@ -1401,6 +1481,11 @@ def create_app():
             image_url=image_url or None,
             stock=stock_value,
             is_active=is_active,
+            # Мультимовність
+            name_en=name_en,
+            name_de=name_de,
+            short_description_en=description_en,
+            short_description_de=description_de,
         )
         db.session.add(product)
         db.session.commit()
@@ -3310,6 +3395,13 @@ def create_app():
                 category=request.form.get("category", "").strip() or None,
                 author=request.form.get("author", "AI").strip(),
                 ai_topic=request.form.get("ai_topic", "").strip() or None,
+                # Multilingual fields
+                title_en=request.form.get("title_en", "").strip() or None,
+                title_de=request.form.get("title_de", "").strip() or None,
+                excerpt_en=request.form.get("excerpt_en", "").strip() or None,
+                excerpt_de=request.form.get("excerpt_de", "").strip() or None,
+                content_en=request.form.get("content_en", "").strip() or None,
+                content_de=request.form.get("content_de", "").strip() or None,
             )
             
             # Статус та дата публікації
@@ -3361,6 +3453,14 @@ def create_app():
             post.category = request.form.get("category", "").strip() or None
             post.author = request.form.get("author", "AI").strip()
             post.ai_topic = request.form.get("ai_topic", "").strip() or None
+            
+            # Multilingual fields
+            post.title_en = request.form.get("title_en", "").strip() or None
+            post.title_de = request.form.get("title_de", "").strip() or None
+            post.excerpt_en = request.form.get("excerpt_en", "").strip() or None
+            post.excerpt_de = request.form.get("excerpt_de", "").strip() or None
+            post.content_en = request.form.get("content_en", "").strip() or None
+            post.content_de = request.form.get("content_de", "").strip() or None
             
             if action == "publish":
                 post.status = BlogPostStatus.PUBLISHED

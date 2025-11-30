@@ -18,6 +18,12 @@ class Category(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     sort_order = db.Column(db.Integer, default=0)
     
+    # Мультимовність
+    name_en = db.Column(db.String(120), nullable=True)
+    name_de = db.Column(db.String(120), nullable=True)
+    description_en = db.Column(db.Text, nullable=True)
+    description_de = db.Column(db.Text, nullable=True)
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -25,6 +31,22 @@ class Category(db.Model):
     
     def __repr__(self):
         return f"<Category {self.name}>"
+    
+    def get_name(self, locale='uk'):
+        """Повертає назву відповідно до мови."""
+        if locale == 'en' and self.name_en:
+            return self.name_en
+        elif locale == 'de' and self.name_de:
+            return self.name_de
+        return self.name
+    
+    def get_description(self, locale='uk'):
+        """Повертає опис відповідно до мови."""
+        if locale == 'en' and self.description_en:
+            return self.description_en
+        elif locale == 'de' and self.description_de:
+            return self.description_de
+        return self.description or ''
 
 
 class Product(db.Model):
@@ -54,6 +76,14 @@ class Product(db.Model):
     # Описи
     short_description = db.Column(db.String(255), nullable=True)
     long_description = db.Column(db.Text, nullable=True)
+    
+    # Мультимовність
+    name_en = db.Column(db.String(200), nullable=True)
+    name_de = db.Column(db.String(200), nullable=True)
+    short_description_en = db.Column(db.String(255), nullable=True)
+    short_description_de = db.Column(db.String(255), nullable=True)
+    long_description_en = db.Column(db.Text, nullable=True)
+    long_description_de = db.Column(db.Text, nullable=True)
     
     # Медіа
     image_url = db.Column(db.String(500), nullable=True)
@@ -109,3 +139,27 @@ class Product(db.Model):
         if user and user.is_b2b and self.b2b_price:
             return self.b2b_price
         return self.price
+    
+    def get_name(self, locale='uk'):
+        """Повертає назву відповідно до мови."""
+        if locale == 'en' and self.name_en:
+            return self.name_en
+        elif locale == 'de' and self.name_de:
+            return self.name_de
+        return self.name
+    
+    def get_short_description(self, locale='uk'):
+        """Повертає короткий опис відповідно до мови."""
+        if locale == 'en' and self.short_description_en:
+            return self.short_description_en
+        elif locale == 'de' and self.short_description_de:
+            return self.short_description_de
+        return self.short_description or ''
+    
+    def get_long_description(self, locale='uk'):
+        """Повертає повний опис відповідно до мови."""
+        if locale == 'en' and self.long_description_en:
+            return self.long_description_en
+        elif locale == 'de' and self.long_description_de:
+            return self.long_description_de
+        return self.long_description or ''

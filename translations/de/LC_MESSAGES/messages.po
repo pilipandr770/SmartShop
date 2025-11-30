@@ -1,0 +1,459 @@
+# SmartShop AI - German translations
+msgid ""
+msgstr ""
+"Project-Id-Version: SmartShop AI 1.0\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Home"
+msgstr "Startseite"
+
+msgid "Shop"
+msgstr "Shop"
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "About"
+msgstr "Ueber uns"
+
+msgid "Contacts"
+msgstr "Kontakt"
+
+msgid "Cart"
+msgstr "Warenkorb"
+
+msgid "Login"
+msgstr "Anmelden"
+
+msgid "Logout"
+msgstr "Abmelden"
+
+msgid "Register"
+msgstr "Registrieren"
+
+msgid "Admin Panel"
+msgstr "Admin-Bereich"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Search"
+msgstr "Suche"
+
+msgid "Search products..."
+msgstr "Produkte suchen..."
+
+msgid "View all"
+msgstr "Alle anzeigen"
+
+msgid "Read more"
+msgstr "Mehr lesen"
+
+msgid "Learn more"
+msgstr "Mehr erfahren"
+
+msgid "Buy now"
+msgstr "Jetzt kaufen"
+
+msgid "Add to cart"
+msgstr "In den Warenkorb"
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Delete"
+msgstr "Loeschen"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Back"
+msgstr "Zurueck"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Previous"
+msgstr "Zurueck"
+
+msgid "Loading..."
+msgstr "Laden..."
+
+msgid "No results found"
+msgstr "Keine Ergebnisse gefunden"
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Success"
+msgstr "Erfolg"
+
+msgid "Welcome to SmartShop AI"
+msgstr "Willkommen bei SmartShop AI"
+
+msgid "Your intelligent shopping assistant"
+msgstr "Ihr intelligenter Einkaufsassistent"
+
+msgid "Featured Products"
+msgstr "Empfohlene Produkte"
+
+msgid "New Arrivals"
+msgstr "Neuheiten"
+
+msgid "Best Sellers"
+msgstr "Bestseller"
+
+msgid "Categories"
+msgstr "Kategorien"
+
+msgid "All Categories"
+msgstr "Alle Kategorien"
+
+msgid "Latest from Blog"
+msgstr "Neueste Blog-Beitraege"
+
+msgid "All Products"
+msgstr "Alle Produkte"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Sort by"
+msgstr "Sortieren nach"
+
+msgid "Price: Low to High"
+msgstr "Preis: aufsteigend"
+
+msgid "Price: High to Low"
+msgstr "Preis: absteigend"
+
+msgid "Newest First"
+msgstr "Neueste zuerst"
+
+msgid "In Stock"
+msgstr "Auf Lager"
+
+msgid "Out of Stock"
+msgstr "Nicht auf Lager"
+
+msgid "Price"
+msgstr "Preis"
+
+msgid "Quantity"
+msgstr "Menge"
+
+msgid "Total"
+msgstr "Gesamt"
+
+msgid "Subtotal"
+msgstr "Zwischensumme"
+
+msgid "Discount"
+msgstr "Rabatt"
+
+msgid "Shipping"
+msgstr "Versand"
+
+msgid "Free Shipping"
+msgstr "Kostenloser Versand"
+
+msgid "Your Cart"
+msgstr "Ihr Warenkorb"
+
+msgid "Cart is empty"
+msgstr "Warenkorb ist leer"
+
+msgid "Continue Shopping"
+msgstr "Einkauf fortsetzen"
+
+msgid "Checkout"
+msgstr "Zur Kasse"
+
+msgid "Proceed to Checkout"
+msgstr "Zur Kasse gehen"
+
+msgid "Order Summary"
+msgstr "Bestelluebersicht"
+
+msgid "Shipping Address"
+msgstr "Lieferadresse"
+
+msgid "Payment Method"
+msgstr "Zahlungsmethode"
+
+msgid "Place Order"
+msgstr "Bestellung aufgeben"
+
+msgid "Contact Us"
+msgstr "Kontaktieren Sie uns"
+
+msgid "Your Name"
+msgstr "Ihr Name"
+
+msgid "Your Email"
+msgstr "Ihre E-Mail"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Send Message"
+msgstr "Nachricht senden"
+
+msgid "Privacy Policy"
+msgstr "Datenschutz"
+
+msgid "Terms of Service"
+msgstr "AGB"
+
+msgid "All rights reserved"
+msgstr "Alle Rechte vorbehalten"
+
+msgid "AI Assistant"
+msgstr "KI-Assistent"
+
+msgid "Ask me anything..."
+msgstr "Fragen Sie mich alles..."
+
+msgid "How can I help you?"
+msgstr "Wie kann ich Ihnen helfen?"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Reviews"
+msgstr "Bewertungen"
+
+msgid "Related Products"
+msgstr "Aehnliche Produkte"
+
+msgid "Category"
+msgstr "Kategorie"
+
+msgid "Products"
+msgstr "Produkte"
+
+msgid "Orders"
+msgstr "Bestellungen"
+
+msgid "Customers"
+msgstr "Kunden"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Statistics"
+msgstr "Statistiken"
+
+msgid "Add New"
+msgstr "Neu hinzufuegen"
+
+msgid "Product Name"
+msgstr "Produktname"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Published"
+msgstr "Veroeffentlicht"
+
+msgid "Draft"
+msgstr "Entwurf"
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "Processing"
+msgstr "In Bearbeitung"
+
+msgid "Shipped"
+msgstr "Versendet"
+
+msgid "Delivered"
+msgstr "Geliefert"
+
+msgid "Cancelled"
+msgstr "Storniert"
+
+msgid "Paid"
+msgstr "Bezahlt"
+
+msgid "Today"
+msgstr "Heute"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Company"
+msgstr "Unternehmen"
+
+msgid "views"
+msgstr "Aufrufe"
+
+msgid "Posted on"
+msgstr "Veroeffentlicht am"
+
+msgid "By"
+msgstr "Von"
+
+msgid "Related Articles"
+msgstr "Aehnliche Artikel"
+
+msgid "Головна"
+msgstr "Startseite"
+
+msgid "Блог"
+msgstr "Blog"
+
+msgid "хв читання"
+msgstr "Min. Lesezeit"
+
+msgid "переглядів"
+msgstr "Aufrufe"
+
+msgid "AI-контент"
+msgstr "KI-Inhalt"
+
+msgid "Поділитись"
+msgstr "Teilen"
+
+msgid "Посилання скопійовано"
+msgstr "Link kopiert"
+
+msgid "Копіювати"
+msgstr "Kopieren"
+
+msgid "Схожі статті"
+msgstr "Aehnliche Artikel"
+
+msgid "Магазин"
+msgstr "Shop"
+
+msgid "В кошик"
+msgstr "In den Warenkorb"
+
+msgid "Характеристики"
+msgstr "Eigenschaften"
+
+msgid "Опис"
+msgstr "Beschreibung"
+
+msgid "Відгуки"
+msgstr "Bewertungen"
+
+msgid "Схожі товари"
+msgstr "Aehnliche Produkte"
+
+msgid "Читати більше"
+msgstr "Mehr lesen"
+
+msgid "Показати більше"
+msgstr "Mehr anzeigen"
+
+msgid "Новинка"
+msgstr "Neu"
+
+msgid "Немає опису"
+msgstr "Keine Beschreibung"
+
+msgid "Інше"
+msgstr "Sonstige"
+
+msgid "Всі категорії"
+msgstr "Alle Kategorien"
+
+msgid "Фільтрувати"
+msgstr "Filtern"
+
+msgid "Ціна"
+msgstr "Preis"
+
+msgid "від"
+msgstr "von"
+
+msgid "до"
+msgstr "bis"
+
+msgid "Застосувати"
+msgstr "Anwenden"
+
+msgid "Скинути"
+msgstr "Zuruecksetzen"
+
+msgid "Сортування"
+msgstr "Sortieren nach"
+
+msgid "За замовчуванням"
+msgstr "Standard"
+
+msgid "За ціною (низька-висока)"
+msgstr "Preis (aufsteigend)"
+
+msgid "За ціною (висока-низька)"
+msgstr "Preis (absteigend)"
+
+msgid "За назвою (А-Я)"
+msgstr "Name (A-Z)"
+
+msgid "Товарів на сторінці"
+msgstr "Produkte pro Seite"
+
+msgid "Показано"
+msgstr "Anzeigen"
+
+msgid "з"
+msgstr "von"
+
+msgid "товарів"
+msgstr "Produkte"
+
+msgid "Товари не знайдено"
+msgstr "Keine Produkte gefunden"
+
+msgid "Кількість"
+msgstr "Menge"
+
+msgid "шт"
+msgstr "Stueck"
+
+msgid "Є в наявності"
+msgstr "Auf Lager"
+
+msgid "Немає в наявності"
+msgstr "Nicht auf Lager"
+
+msgid "Артикул"
+msgstr "Artikelnr."
+
+msgid "Доставка"
+msgstr "Versand"
+
+msgid "Оплата"
+msgstr "Zahlung"
+
+msgid "Гарантія"
+msgstr "Garantie"
+
+msgid "AI рекомендації"
+msgstr "KI-Empfehlungen"
+

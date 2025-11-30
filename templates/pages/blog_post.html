@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}{{ post.meta_title or post.title }} – {{ settings.site_name or 'SmartShop AI' }}{% endblock %}
+{% block title %}{{ post.get_title(get_locale()|string) }} – {{ settings.site_name or 'SmartShop AI' }}{% endblock %}
 
 {% block extra_head %}
 <!-- SEO Meta Tags -->
-<meta name="description" content="{{ post.meta_description or post.excerpt or '' }}">
+<meta name="description" content="{{ post.meta_description or post.get_excerpt(get_locale()|string) or '' }}">
 <meta name="keywords" content="{{ post.meta_keywords or '' }}">
 <meta name="author" content="{{ post.author or 'SmartShop AI' }}">
 
 <!-- Open Graph -->
-<meta property="og:title" content="{{ post.meta_title or post.title }}">
-<meta property="og:description" content="{{ post.meta_description or post.excerpt or '' }}">
+<meta property="og:title" content="{{ post.get_title(get_locale()|string) }}">
+<meta property="og:description" content="{{ post.meta_description or post.get_excerpt(get_locale()|string) or '' }}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="{{ request.url }}">
 {% if post.featured_image %}
@@ -18,8 +18,8 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{ post.meta_title or post.title }}">
-<meta name="twitter:description" content="{{ post.meta_description or post.excerpt or '' }}">
+<meta name="twitter:title" content="{{ post.get_title(get_locale()|string) }}">
+<meta name="twitter:description" content="{{ post.meta_description or post.get_excerpt(get_locale()|string) or '' }}">
 {% if post.featured_image %}
 <meta name="twitter:image" content="{{ post.featured_image }}">
 {% endif %}
@@ -29,8 +29,8 @@
 {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": "{{ post.title }}",
-    "description": "{{ post.meta_description or post.excerpt or '' }}",
+    "headline": "{{ post.get_title(get_locale()|string) }}",
+    "description": "{{ post.meta_description or post.get_excerpt(get_locale()|string) or '' }}",
     "author": {
         "@type": "Person",
         "name": "{{ post.author or 'SmartShop AI' }}"
@@ -295,11 +295,11 @@
 {% block content %}
 <section>
     <div class="breadcrumb">
-        <a href="{{ url_for('index') }}">Головна</a>
+        <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
         <span>/</span>
-        <a href="{{ url_for('blog_page') }}">Блог</a>
+        <a href="{{ url_for('blog_page') }}">{{ _('Блог') }}</a>
         <span>/</span>
-        <span style="color: var(--text-main);">{{ post.title[:50] }}...</span>
+        <span style="color: var(--text-main);">{{ post.get_title(get_locale()|string)[:50] }}...</span>
     </div>
 
     <article>
@@ -308,10 +308,10 @@
             <span class="article-category">{{ post.category }}</span>
             {% endif %}
             
-            <h1 class="article-title">{{ post.title }}</h1>
+            <h1 class="article-title">{{ post.get_title(get_locale()|string) }}</h1>
             
-            {% if post.excerpt %}
-            <p class="article-excerpt">{{ post.excerpt }}</p>
+            {% if post.get_excerpt(get_locale()|string) %}
+            <p class="article-excerpt">{{ post.get_excerpt(get_locale()|string) }}</p>
             {% endif %}
 
             <div class="article-meta">
@@ -322,10 +322,10 @@
                     ✍️ {{ post.author or 'SmartShop AI' }}
                 </span>
                 <span class="article-meta-item">
-                    👁 {{ post.views or 0 }} переглядів
+                    👁 {{ post.views or 0 }} {{ _('переглядів') }}
                 </span>
                 {% if post.is_ai_generated %}
-                <span class="ai-badge-large">🤖 AI-контент</span>
+                <span class="ai-badge-large">🤖 {{ _('AI-контент') }}</span>
                 {% endif %}
             </div>
 
@@ -340,32 +340,32 @@
 
         {% if post.featured_image %}
         <div class="article-image">
-            <img src="{{ post.featured_image }}" alt="{{ post.title }}">
+            <img src="{{ post.featured_image }}" alt="{{ post.get_title(get_locale()|string) }}">
         </div>
         {% endif %}
 
         <div class="article-content">
-            {{ post.content | safe }}
+            {{ post.get_content(get_locale()|string) | safe }}
         </div>
 
         <footer class="article-footer">
             <div class="share-buttons">
-                <span>Поділитись:</span>
-                <a href="https://t.me/share/url?url={{ request.url | urlencode }}&text={{ post.title | urlencode }}" 
+                <span>{{ _('Поділитись') }}:</span>
+                <a href="https://t.me/share/url?url={{ request.url | urlencode }}&text={{ post.get_title(get_locale()|string) | urlencode }}" 
                    target="_blank" class="share-btn">📱 Telegram</a>
-                <a href="https://twitter.com/intent/tweet?url={{ request.url | urlencode }}&text={{ post.title | urlencode }}" 
+                <a href="https://twitter.com/intent/tweet?url={{ request.url | urlencode }}&text={{ post.get_title(get_locale()|string) | urlencode }}" 
                    target="_blank" class="share-btn">🐦 Twitter</a>
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url | urlencode }}" 
                    target="_blank" class="share-btn">📘 Facebook</a>
-                <button onclick="navigator.clipboard.writeText(window.location.href);alert('Посилання скопійовано!')" 
-                        class="share-btn">🔗 Копіювати</button>
+                <button onclick="navigator.clipboard.writeText(window.location.href);alert('{{ _('Посилання скопійовано') }}!')" 
+                        class="share-btn">🔗 {{ _('Копіювати') }}</button>
             </div>
         </footer>
     </article>
 
     {% if related %}
     <section class="related-section">
-        <h2 class="related-title">Схожі статті</h2>
+        <h2 class="related-title">{{ _('Схожі статті') }}</h2>
         <div class="related-grid">
             {% for r in related %}
             <a href="{{ url_for('blog_post_page', slug=r.slug) }}" class="related-card">
@@ -375,8 +375,8 @@
                 <div class="related-card-image" style="background: radial-gradient(circle at top, rgba(52, 211, 153, 0.2), rgba(15, 23, 42, 1));"></div>
                 {% endif %}
                 <div class="related-card-content">
-                    <h4>{{ r.title }}</h4>
-                    <p>{{ r.excerpt[:100] if r.excerpt else '' }}...</p>
+                    <h4>{{ r.get_title(get_locale()|string) }}</h4>
+                    <p>{{ r.get_excerpt(get_locale()|string)[:100] if r.get_excerpt(get_locale()|string) else '' }}...</p>
                 </div>
             </a>
             {% endfor %}

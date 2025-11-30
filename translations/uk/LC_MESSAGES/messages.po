@@ -1,0 +1,320 @@
+# SmartShop AI - Ukrainian translations
+msgid ""
+msgstr ""
+"Project-Id-Version: SmartShop AI 1.0\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Home"
+msgstr "Головна"
+
+msgid "Shop"
+msgstr "Магазин"
+
+msgid "Blog"
+msgstr "Блог"
+
+msgid "About"
+msgstr "Про нас"
+
+msgid "Contacts"
+msgstr "Контакти"
+
+msgid "Cart"
+msgstr "Кошик"
+
+msgid "Login"
+msgstr "Увійти"
+
+msgid "Logout"
+msgstr "Вийти"
+
+msgid "Register"
+msgstr "Реєстрація"
+
+msgid "Admin Panel"
+msgstr "Адмін панель"
+
+msgid "Dashboard"
+msgstr "Панель керування"
+
+msgid "Search"
+msgstr "Пошук"
+
+msgid "Search products..."
+msgstr "Пошук товарів..."
+
+msgid "View all"
+msgstr "Переглянути все"
+
+msgid "Read more"
+msgstr "Читати далі"
+
+msgid "Learn more"
+msgstr "Дізнатися більше"
+
+msgid "Buy now"
+msgstr "Купити зараз"
+
+msgid "Add to cart"
+msgstr "Додати в кошик"
+
+msgid "Remove"
+msgstr "Видалити"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Delete"
+msgstr "Видалити"
+
+msgid "Edit"
+msgstr "Редагувати"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Далі"
+
+msgid "Previous"
+msgstr "Попередня"
+
+msgid "Loading..."
+msgstr "Завантаження..."
+
+msgid "No results found"
+msgstr "Нічого не знайдено"
+
+msgid "Error"
+msgstr "Помилка"
+
+msgid "Success"
+msgstr "Успіх"
+
+msgid "Welcome to SmartShop AI"
+msgstr "Ласкаво просимо до SmartShop AI"
+
+msgid "Your intelligent shopping assistant"
+msgstr "Ваш розумний помічник для покупок"
+
+msgid "Featured Products"
+msgstr "Рекомендовані товари"
+
+msgid "New Arrivals"
+msgstr "Новинки"
+
+msgid "Best Sellers"
+msgstr "Хіти продажів"
+
+msgid "Categories"
+msgstr "Категорії"
+
+msgid "All Categories"
+msgstr "Всі категорії"
+
+msgid "Latest from Blog"
+msgstr "Останнє з блогу"
+
+msgid "All Products"
+msgstr "Всі товари"
+
+msgid "Filter"
+msgstr "Фільтр"
+
+msgid "Sort by"
+msgstr "Сортувати за"
+
+msgid "Price: Low to High"
+msgstr "Ціна: від низької до високої"
+
+msgid "Price: High to Low"
+msgstr "Ціна: від високої до низької"
+
+msgid "Newest First"
+msgstr "Спочатку новинки"
+
+msgid "In Stock"
+msgstr "В наявності"
+
+msgid "Out of Stock"
+msgstr "Немає в наявності"
+
+msgid "Price"
+msgstr "Ціна"
+
+msgid "Quantity"
+msgstr "Кількість"
+
+msgid "Total"
+msgstr "Всього"
+
+msgid "Subtotal"
+msgstr "Проміжний підсумок"
+
+msgid "Discount"
+msgstr "Знижка"
+
+msgid "Shipping"
+msgstr "Доставка"
+
+msgid "Free Shipping"
+msgstr "Безкоштовна доставка"
+
+msgid "Your Cart"
+msgstr "Ваш кошик"
+
+msgid "Cart is empty"
+msgstr "Кошик порожній"
+
+msgid "Continue Shopping"
+msgstr "Продовжити покупки"
+
+msgid "Checkout"
+msgstr "Оформити замовлення"
+
+msgid "Proceed to Checkout"
+msgstr "Перейти до оформлення"
+
+msgid "Order Summary"
+msgstr "Підсумок замовлення"
+
+msgid "Shipping Address"
+msgstr "Адреса доставки"
+
+msgid "Payment Method"
+msgstr "Спосіб оплати"
+
+msgid "Place Order"
+msgstr "Оформити замовлення"
+
+msgid "Contact Us"
+msgstr "Зв'яжіться з нами"
+
+msgid "Your Name"
+msgstr "Ваше ім'я"
+
+msgid "Your Email"
+msgstr "Ваш Email"
+
+msgid "Message"
+msgstr "Повідомлення"
+
+msgid "Send Message"
+msgstr "Надіслати повідомлення"
+
+msgid "Privacy Policy"
+msgstr "Політика конфіденційності"
+
+msgid "Terms of Service"
+msgstr "Умови використання"
+
+msgid "All rights reserved"
+msgstr "Всі права захищені"
+
+msgid "AI Assistant"
+msgstr "ІІ-помічник"
+
+msgid "Ask me anything..."
+msgstr "Запитайте мене про що завгодно..."
+
+msgid "How can I help you?"
+msgstr "Чим можу допомогти?"
+
+msgid "Description"
+msgstr "Опис"
+
+msgid "Reviews"
+msgstr "Відгуки"
+
+msgid "Related Products"
+msgstr "Схожі товари"
+
+msgid "Category"
+msgstr "Категорія"
+
+msgid "Products"
+msgstr "Товари"
+
+msgid "Orders"
+msgstr "Замовлення"
+
+msgid "Customers"
+msgstr "Клієнти"
+
+msgid "Settings"
+msgstr "Налаштування"
+
+msgid "Statistics"
+msgstr "Статистика"
+
+msgid "Add New"
+msgstr "Додати новий"
+
+msgid "Product Name"
+msgstr "Назва товару"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Active"
+msgstr "Активний"
+
+msgid "Published"
+msgstr "Опубліковано"
+
+msgid "Draft"
+msgstr "Чернетка"
+
+msgid "Pending"
+msgstr "Очікує"
+
+msgid "Processing"
+msgstr "Обробляється"
+
+msgid "Shipped"
+msgstr "Відправлено"
+
+msgid "Delivered"
+msgstr "Доставлено"
+
+msgid "Cancelled"
+msgstr "Скасовано"
+
+msgid "Paid"
+msgstr "Оплачено"
+
+msgid "Today"
+msgstr "Сьогодні"
+
+msgid "Language"
+msgstr "Мова"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Address"
+msgstr "Адреса"
+
+msgid "Company"
+msgstr "Компанія"
+
+msgid "views"
+msgstr "переглядів"
+
+msgid "Posted on"
+msgstr "Опубліковано"
+
+msgid "By"
+msgstr "Автор"
+
+msgid "Related Articles"
+msgstr "Схожі статті"

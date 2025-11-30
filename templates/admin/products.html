@@ -13,9 +13,49 @@
         <h3>➕ Додати новий товар</h3>
     </div>
     <form method="POST" action="{{ url_for('admin_products_new') }}" class="form-grid">
-        <div class="form-group">
-            <label for="name">Назва товару *</label>
-            <input type="text" id="name" name="name" required placeholder="Введіть назву товару">
+        <!-- Вкладки мов -->
+        <div class="full-width">
+            <div class="lang-tabs">
+                <button type="button" class="lang-tab active" data-lang="uk">🇺🇦 Українська</button>
+                <button type="button" class="lang-tab" data-lang="en">🇬🇧 English</button>
+                <button type="button" class="lang-tab" data-lang="de">🇩🇪 Deutsch</button>
+            </div>
+        </div>
+        
+        <!-- Українська (основна) -->
+        <div class="lang-content active" data-lang="uk">
+            <div class="form-group">
+                <label for="name">Назва товару * (UK)</label>
+                <input type="text" id="name" name="name" required placeholder="Введіть назву товару">
+            </div>
+            <div class="form-group full-width">
+                <label for="description">Опис товару (UK)</label>
+                <textarea id="description" name="description" rows="4" placeholder="Детальний опис товару..."></textarea>
+            </div>
+        </div>
+        
+        <!-- English -->
+        <div class="lang-content" data-lang="en" style="display:none;">
+            <div class="form-group">
+                <label for="name_en">Product Name (EN)</label>
+                <input type="text" id="name_en" name="name_en" placeholder="Enter product name in English">
+            </div>
+            <div class="form-group full-width">
+                <label for="description_en">Description (EN)</label>
+                <textarea id="description_en" name="description_en" rows="4" placeholder="Product description in English..."></textarea>
+            </div>
+        </div>
+        
+        <!-- Deutsch -->
+        <div class="lang-content" data-lang="de" style="display:none;">
+            <div class="form-group">
+                <label for="name_de">Produktname (DE)</label>
+                <input type="text" id="name_de" name="name_de" placeholder="Produktname auf Deutsch eingeben">
+            </div>
+            <div class="form-group full-width">
+                <label for="description_de">Beschreibung (DE)</label>
+                <textarea id="description_de" name="description_de" rows="4" placeholder="Produktbeschreibung auf Deutsch..."></textarea>
+            </div>
         </div>
         
         <div class="form-group">
@@ -62,11 +102,6 @@
         <div class="form-group">
             <label for="stock">Кількість на складі</label>
             <input type="number" id="stock" name="stock" min="0" value="0" placeholder="0">
-        </div>
-        
-        <div class="form-group full-width">
-            <label for="description">Опис товару</label>
-            <textarea id="description" name="description" rows="4" placeholder="Детальний опис товару..."></textarea>
         </div>
         
         <div class="form-group full-width">
@@ -185,8 +220,57 @@
     padding: 1.5rem;
 }
 
-.form-group.full-width {
+.form-group.full-width,
+.full-width {
     grid-column: 1 / -1;
+}
+
+/* Language Tabs */
+.lang-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0;
+}
+
+.lang-tab {
+    padding: 0.75rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+}
+
+.lang-tab:hover {
+    color: var(--text-primary);
+}
+
+.lang-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.lang-content {
+    display: none;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.lang-content.active {
+    display: grid;
+}
+
+.lang-content[style*="display:none"],
+.lang-content[style*="display: none"] {
+    display: none !important;
 }
 
 .form-actions {
@@ -430,6 +514,30 @@ document.getElementById('image_url').addEventListener('input', function() {
         previewEl.innerHTML = '<span class="preview-placeholder">📷 Немає зображення</span>';
         hiddenInput.value = '';
     }
+});
+
+// Language tabs switching
+document.querySelectorAll('.lang-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const lang = this.dataset.lang;
+        
+        // Деактивувати всі таби
+        document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+        // Активувати поточний
+        this.classList.add('active');
+        
+        // Сховати всі контенти
+        document.querySelectorAll('.lang-content').forEach(c => {
+            c.style.display = 'none';
+            c.classList.remove('active');
+        });
+        // Показати потрібний
+        const content = document.querySelector(`.lang-content[data-lang="${lang}"]`);
+        if (content) {
+            content.style.display = 'grid';
+            content.classList.add('active');
+        }
+    });
 });
 </script>
 {% endblock %}

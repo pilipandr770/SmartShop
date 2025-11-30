@@ -10,21 +10,58 @@
     <div class="card-header">
         <h3>➕ Нова категорія</h3>
     </div>
+    
+    <!-- Language Tabs -->
+    <div class="lang-tabs">
+        <button type="button" class="lang-tab active" data-lang="uk">🇺🇦 Українська</button>
+        <button type="button" class="lang-tab" data-lang="en">🇬🇧 English</button>
+        <button type="button" class="lang-tab" data-lang="de">🇩🇪 Deutsch</button>
+    </div>
+    
     <form method="post" class="form-grid">
-        <div class="form-group">
-            <label for="name">Назва категорії *</label>
-            <input type="text" id="name" name="name" required placeholder="Наприклад: Електроніка">
-        </div>
-        
         <div class="form-group">
             <label for="slug">Slug (URL) *</label>
             <input type="text" id="slug" name="slug" required placeholder="elektronika">
             <small class="form-hint">Використовуйте латиницю та дефіси</small>
         </div>
         
-        <div class="form-group full-width">
-            <label for="description">Опис категорії</label>
-            <textarea id="description" name="description" rows="3" placeholder="Короткий опис категорії..."></textarea>
+        <!-- Ukrainian fields -->
+        <div class="lang-content" data-lang="uk">
+            <div class="form-group">
+                <label for="name">Назва категорії (UK) *</label>
+                <input type="text" id="name" name="name" required placeholder="Наприклад: Електроніка">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Опис категорії (UK)</label>
+                <textarea id="description" name="description" rows="3" placeholder="Короткий опис категорії..."></textarea>
+            </div>
+        </div>
+        
+        <!-- English fields -->
+        <div class="lang-content" data-lang="en" style="display:none;">
+            <div class="form-group">
+                <label for="name_en">Category Name (EN)</label>
+                <input type="text" id="name_en" name="name_en" placeholder="e.g.: Electronics">
+            </div>
+            
+            <div class="form-group">
+                <label for="description_en">Category Description (EN)</label>
+                <textarea id="description_en" name="description_en" rows="3" placeholder="Short category description..."></textarea>
+            </div>
+        </div>
+        
+        <!-- German fields -->
+        <div class="lang-content" data-lang="de" style="display:none;">
+            <div class="form-group">
+                <label for="name_de">Kategoriename (DE)</label>
+                <input type="text" id="name_de" name="name_de" placeholder="z.B.: Elektronik">
+            </div>
+            
+            <div class="form-group">
+                <label for="description_de">Kategoriebeschreibung (DE)</label>
+                <textarea id="description_de" name="description_de" rows="3" placeholder="Kurze Kategoriebeschreibung..."></textarea>
+            </div>
         </div>
         
         <div class="form-actions full-width">
@@ -95,6 +132,44 @@
 </div>
 
 <style>
+/* Language Tabs */
+.lang-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+    padding: 0 1.5rem;
+}
+
+.lang-tab {
+    padding: 0.75rem 1.25rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+}
+
+.lang-tab:hover {
+    color: var(--text-main);
+}
+
+.lang-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.lang-content {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -190,4 +265,19 @@
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.lang-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const lang = this.dataset.lang;
+            document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.lang-content').forEach(c => {
+                c.style.display = c.dataset.lang === lang ? 'block' : 'none';
+            });
+        });
+    });
+});
+</script>
 {% endblock %}
