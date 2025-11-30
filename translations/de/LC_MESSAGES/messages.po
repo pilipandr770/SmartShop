@@ -457,3 +457,172 @@ msgstr "Garantie"
 msgid "AI рекомендації"
 msgstr "KI-Empfehlungen"
 
+# Cart page
+msgid "Кошик"
+msgstr "Warenkorb"
+
+msgid "Товар"
+msgstr "Produkt"
+
+msgid "Сума"
+msgstr "Summe"
+
+msgid "Загальна сума"
+msgstr "Gesamtsumme"
+
+msgid "Очистити кошик"
+msgstr "Warenkorb leeren"
+
+msgid "Продовжити покупки"
+msgstr "Einkauf fortsetzen"
+
+msgid "Оформити замовлення"
+msgstr "Zur Kasse"
+
+msgid "Ваш кошик порожній"
+msgstr "Ihr Warenkorb ist leer"
+
+msgid "Перейти до магазину"
+msgstr "Zum Shop"
+
+# Category page
+msgid "Усі"
+msgstr "Alle"
+
+msgid "Назад"
+msgstr "Zurueck"
+
+msgid "Далі"
+msgstr "Weiter"
+
+msgid "У цій категорії поки немає товарів"
+msgstr "In dieser Kategorie gibt es noch keine Produkte"
+
+msgid "Переглянути всі товари"
+msgstr "Alle Produkte anzeigen"
+
+# About page
+msgid "Про компанію"
+msgstr "Ueber uns"
+
+msgid "Дізнайтеся більше про нас, нашу місію та цінності"
+msgstr "Erfahren Sie mehr ueber uns, unsere Mission und Werte"
+
+msgid "Наша історія"
+msgstr "Unsere Geschichte"
+
+msgid "Тут ви зможете розповісти про свій бренд, команду та цінності."
+msgstr "Hier koennen Sie ueber Ihre Marke, Team und Werte erzaehlen."
+
+msgid "Ми прагнемо надавати найкращий сервіс та якісні товари для наших клієнтів."
+msgstr "Wir streben danach, den besten Service und Qualitaetsprodukte fuer unsere Kunden anzubieten."
+
+msgid "Наші цінності"
+msgstr "Unsere Werte"
+
+msgid "Що робить нас особливими"
+msgstr "Was uns besonders macht"
+
+msgid "Якість"
+msgstr "Qualitaet"
+
+msgid "Ми ретельно відбираємо кожен товар, щоб ви отримували тільки найкраще"
+msgstr "Wir waehlen jedes Produkt sorgfaeltig aus, damit Sie nur das Beste bekommen"
+
+msgid "Швидкість"
+msgstr "Schnelligkeit"
+
+msgid "Швидка обробка замовлень та доставка у найкоротші терміни"
+msgstr "Schnelle Auftragsabwicklung und Lieferung in kuerzester Zeit"
+
+msgid "Підтримка"
+msgstr "Support"
+
+msgid "Наш ІІ-помічник та команда завжди готові допомогти вам 24/7"
+msgstr "Unser KI-Assistent und Team sind immer bereit, Ihnen 24/7 zu helfen"
+
+msgid "Маєте питання?"
+msgstr "Haben Sie Fragen?"
+
+msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ІІ-помічником"
+msgstr "Kontaktieren Sie uns oder chatten Sie mit unserem KI-Assistenten"
+
+msgid "Контакти"
+msgstr "Kontakt"
+
+msgid "Чат з ІІ"
+msgstr "KI-Chat"
+
+# Contacts page
+msgid "Зв'яжіться з нами"
+msgstr "Kontaktieren Sie uns"
+
+msgid "Ми завжди раді допомогти! Оберіть зручний спосіб зв'язку"
+msgstr "Wir helfen Ihnen gerne! Waehlen Sie eine bequeme Kontaktmethode"
+
+msgid "Напишіть нам, і ми відповімо протягом 24 годин"
+msgstr "Schreiben Sie uns und wir antworten innerhalb von 24 Stunden"
+
+msgid "Телефон"
+msgstr "Telefon"
+
+msgid "Пн-Пт"
+msgstr "Mo-Fr"
+
+msgid "Сб"
+msgstr "Sa"
+
+msgid "Адреса"
+msgstr "Adresse"
+
+msgid "Завітайте до нашого офісу"
+msgstr "Besuchen Sie unser Buero"
+
+msgid "ІІ-помічник"
+msgstr "KI-Assistent"
+
+msgid "Напишіть нам"
+msgstr "Schreiben Sie uns"
+
+msgid "Ваше ім'я"
+msgstr "Ihr Name"
+
+msgid "Введіть"
+msgstr "Geben Sie"
+
+msgid "ваше ім'я"
+msgstr "Ihren Namen ein"
+
+msgid "Тема"
+msgstr "Betreff"
+
+msgid "Тема повідомлення"
+msgstr "Nachrichtenbetreff"
+
+msgid "Повідомлення"
+msgstr "Nachricht"
+
+msgid "Ваше повідомлення"
+msgstr "Ihre Nachricht"
+
+msgid "Надіслати повідомлення"
+msgstr "Nachricht senden"
+
+msgid "Карта"
+msgstr "Karte"
+
+msgid "Тут буде інтерактивна карта з розташуванням офісу"
+msgstr "Hier wird eine interaktive Karte mit Buerostandort sein"
+
+msgid "Інтеграція з Google Maps / OpenStreetMap"
+msgstr "Integration mit Google Maps / OpenStreetMap"
+
+msgid "Потрібна швидка відповідь?"
+msgstr "Brauchen Sie eine schnelle Antwort?"
+
+msgid "Наш ІІ-помічник працює 24/7 і може відповісти миттєво"
+msgstr "Unser KI-Assistent arbeitet 24/7 und kann sofort antworten"
+
+msgid "Поспілкуватись з ІІ"
+msgstr "Mit KI chatten"
+

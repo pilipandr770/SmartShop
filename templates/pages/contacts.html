@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Контакти – SmartShop AI{% endblock %}
+{% block title %}{{ _('Контакти') }} – SmartShop AI{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -204,35 +204,35 @@
 {% block content %}
 <section>
     <div class="breadcrumb">
-        <a href="{{ url_for('index') }}">Головна</a>
+        <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
         <span>/</span>
-        <span style="color: var(--text-main);">Контакти</span>
+        <span style="color: var(--text-main);">{{ _('Контакти') }}</span>
     </div>
 
     <div class="contacts-hero">
-        <h1>Зв'яжіться з нами</h1>
-        <p>Ми завжди раді допомогти! Оберіть зручний спосіб зв'язку або напишіть нам</p>
+        <h1>{{ _("Зв'яжіться з нами") }}</h1>
+        <p>{{ _('Ми завжди раді допомогти! Оберіть зручний спосіб зв’язку') }}</p>
     </div>
 
     <div class="contacts-grid">
         <div class="contact-card">
             <div class="contact-icon">📧</div>
             <h3>Email</h3>
-            <p>Напишіть нам, і ми відповімо протягом 24 годин</p>
+            <p>{{ _('Напишіть нам, і ми відповімо протягом 24 годин') }}</p>
             <a href="mailto:hello@smartshop.ai" class="contact-link">hello@smartshop.ai</a>
         </div>
 
         <div class="contact-card">
             <div class="contact-icon">📞</div>
-            <h3>Телефон</h3>
-            <p>Пн-Пт: 9:00 - 18:00<br>Сб: 10:00 - 15:00</p>
+            <h3>{{ _('Телефон') }}</h3>
+            <p>{{ _('Пн-Пт') }}: 9:00 - 18:00<br>{{ _('Сб') }}: 10:00 - 15:00</p>
             <a href="tel:+49123456789" class="contact-link">+49 123 456 789</a>
         </div>
 
         <div class="contact-card">
             <div class="contact-icon">📍</div>
-            <h3>Адреса</h3>
-            <p>Завітайте до нашого офісу</p>
+            <h3>{{ _('Адреса') }}</h3>
+            <p>{{ _('Завітайте до нашого офісу') }}</p>
             <span class="contact-link">Berlin, Germany</span>
         </div>
     </div>
@@ -249,46 +249,46 @@
         </a>
         {% endif %}
         <a href="{{ url_for('ai_assistant_page') }}" class="social-btn">
-            🤖 ІІ-помічник
+            🤖 {{ _('ІІ-помічник') }}
         </a>
     </div>
 
     <div class="contact-form-section">
         <div class="contact-form">
-            <h2>✉️ Напишіть нам</h2>
+            <h2>✉️ {{ _('Напишіть нам') }}</h2>
             <form action="#" method="post">
                 <div class="form-group">
-                    <label for="name">Ваше ім'я</label>
-                    <input type="text" id="name" name="name" placeholder="Введіть ваше ім'я" required>
+                    <label for="name">{{ _("Ваше ім'я") }}</label>
+                    <input type="text" id="name" name="name" placeholder="{{ _('Введіть') }} {{ _("ваше ім'я") }}" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="your@email.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="subject">Тема</label>
-                    <input type="text" id="subject" name="subject" placeholder="Тема повідомлення">
+                    <label for="subject">{{ _('Тема') }}</label>
+                    <input type="text" id="subject" name="subject" placeholder="{{ _('Тема повідомлення') }}">
                 </div>
                 <div class="form-group">
-                    <label for="message">Повідомлення</label>
-                    <textarea id="message" name="message" placeholder="Ваше повідомлення..." required></textarea>
+                    <label for="message">{{ _('Повідомлення') }}</label>
+                    <textarea id="message" name="message" placeholder="{{ _('Ваше повідомлення') }}..." required></textarea>
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">Надіслати повідомлення</button>
+                <button type="submit" class="btn" style="width: 100%;">{{ _('Надіслати повідомлення') }}</button>
             </form>
         </div>
 
         <div class="map-placeholder">
             <div class="icon">🗺️</div>
-            <h3>Карта</h3>
-            <p>Тут буде інтерактивна карта з розташуванням офісу</p>
-            <p style="font-size: 0.85rem;">Інтеграція з Google Maps / OpenStreetMap</p>
+            <h3>{{ _('Карта') }}</h3>
+            <p>{{ _('Тут буде інтерактивна карта з розташуванням офісу') }}</p>
+            <p style="font-size: 0.85rem;">{{ _('Інтеграція з Google Maps / OpenStreetMap') }}</p>
         </div>
     </div>
 
     <div class="card" style="margin-top: 2rem; text-align: center; padding: 2rem;">
-        <h3 style="margin-top: 0;">Потрібна швидка відповідь?</h3>
-        <p style="color: var(--text-muted); margin-bottom: 1rem;">Наш ІІ-помічник працює 24/7 і може відповісти на більшість питань миттєво</p>
-        <a href="{{ url_for('ai_assistant_page') }}" class="btn">🤖 Поспілкуватись з ІІ</a>
+        <h3 style="margin-top: 0;">{{ _('Потрібна швидка відповідь?') }}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">{{ _('Наш ІІ-помічник працює 24/7 і може відповісти миттєво') }}</p>
+        <a href="{{ url_for('ai_assistant_page') }}" class="btn">🤖 {{ _('Поспілкуватись з ІІ') }}</a>
     </div>
 </section>
 {% endblock %}

@@ -302,14 +302,14 @@
 {% block content %}
 <section>
     <div class="breadcrumb">
-        <a href="{{ url_for('index') }}">Головна</a>
+        <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
         <span>/</span>
-        <span style="color: var(--text-main);">ІІ-продавець</span>
+        <span style="color: var(--text-main);">{{ _('ІІ-продавець') }}</span>
     </div>
 
     <div class="ai-hero">
-        <h1>🤖 ІІ-продавець</h1>
-        <p>Ваш персональний помічник, який знає весь каталог та готовий допомогти з вибором 24/7</p>
+        <h1>🤖 {{ _('ІІ-продавець') }}</h1>
+        <p>{{ _('Ваш персональний помічник, який знає весь каталог та готовий допомогти 24/7') }}</p>
     </div>
 
     <div class="ai-chat-container">
@@ -318,7 +318,7 @@
                 <div class="ai-avatar">🤖</div>
                 <div class="ai-info">
                     <h3>SmartShop AI Assistant</h3>
-                    <div class="status">● Онлайн</div>
+                    <div class="status">● {{ _('Онлайн') }}</div>
                 </div>
             </div>
 
@@ -326,57 +326,57 @@
                 <div class="ai-message bot">
                     <div class="avatar">🤖</div>
                     <div class="content">
-                        Вітаю! 👋 Я ІІ-помічник магазину SmartShop. Можу допомогти вам:<br><br>
-                        • Знайти потрібний товар<br>
-                        • Порівняти продукти<br>
-                        • Відповісти на питання про доставку<br>
-                        • Підібрати товар за бюджетом<br><br>
-                        Що вас цікавить?
+                        {{ _('Вітаю!') }} 👋 {{ _('Я ІІ-помічник магазину SmartShop. Можу допомогти вам:') }}<br><br>
+                        • {{ _('Знайти потрібний товар') }}<br>
+                        • {{ _('Порівняти продукти') }}<br>
+                        • {{ _('Відповісти на питання про доставку') }}<br>
+                        • {{ _('Підібрати товар за бюджетом') }}<br><br>
+                        {{ _('Що вас цікавить?') }}
                     </div>
                 </div>
             </div>
 
             <div class="ai-input-area">
-                <input type="text" id="aiInputMain" placeholder="Напишіть ваше запитання..." onkeypress="if(event.key==='Enter')sendMainMessage()">
-                <button onclick="sendMainMessage()">Надіслати ➤</button>
+                <input type="text" id="aiInputMain" placeholder="{{ _('Напишіть ваше запитання...') }}" onkeypress="if(event.key==='Enter')sendMainMessage()">
+                <button onclick="sendMainMessage()">{{ _('Надіслати') }} ➤</button>
             </div>
         </div>
 
         <div class="ai-sidebar">
             <div class="ai-sidebar-card">
-                <h4>💡 Швидкі запитання</h4>
+                <h4>💡 {{ _('Швидкі запитання') }}</h4>
                 <div class="quick-questions">
-                    <button class="quick-question" onclick="askQuestion('Які товари є в наявності?')">
-                        Які товари є в наявності?
+                    <button class="quick-question" onclick="askQuestion('{{ _('Які товари є в наявності?') }}')">
+                        {{ _('Які товари є в наявності?') }}
                     </button>
-                    <button class="quick-question" onclick="askQuestion('Скільки коштує доставка?')">
-                        Скільки коштує доставка?
+                    <button class="quick-question" onclick="askQuestion('{{ _('Скільки коштує доставка?') }}')">
+                        {{ _('Скільки коштує доставка?') }}
                     </button>
-                    <button class="quick-question" onclick="askQuestion('Порекомендуй щось до 100€')">
-                        Порекомендуй щось до 100€
+                    <button class="quick-question" onclick="askQuestion('{{ _('Порекомендуй щось до 100€') }}')">
+                        {{ _('Порекомендуй щось до 100€') }}
                     </button>
-                    <button class="quick-question" onclick="askQuestion('Як оформити замовлення?')">
-                        Як оформити замовлення?
+                    <button class="quick-question" onclick="askQuestion('{{ _('Як оформити замовлення?') }}')">
+                        {{ _('Як оформити замовлення?') }}
                     </button>
                 </div>
             </div>
 
             <div class="ai-sidebar-card">
-                <h4>📦 Каталог ({{ products|length }} товарів)</h4>
+                <h4>📦 {{ _('Каталог') }} ({{ products|length }} {{ _('товарів') }})</h4>
                 <div class="catalog-preview">
                     {% for p in products[:5] %}
                     <a href="{{ url_for('product_page', product_id=p.id) }}" class="catalog-item">
-                        <img src="{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=100' }}" alt="{{ p.name }}">
-                        <span class="name">{{ p.name }}</span>
+                        <img src="{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=100' }}" alt="{{ p.get_name(get_locale()|string) }}">
+                        <span class="name">{{ p.get_name(get_locale()|string) }}</span>
                         <span class="price">{{ "%.0f"|format(p.price) }}€</span>
                     </a>
                     {% else %}
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Товари ще не додані</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">{{ _('Товари ще не додані') }}</p>
                     {% endfor %}
                 </div>
                 {% if products|length > 5 %}
                 <a href="{{ url_for('shop') }}" style="display: block; text-align: center; margin-top: 0.75rem; font-size: 0.8rem; color: var(--accent);">
-                    Переглянути всі →
+                    {{ _('Переглянути всі') }} →
                 </a>
                 {% endif %}
             </div>

@@ -195,6 +195,38 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Автоматичний переклад -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3>🌐 Автоматичний переклад</h3>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="toggle-label">
+                        <input type="checkbox" name="auto_translate" {{ 'checked' if ai_settings.auto_translate else '' }}>
+                        <span class="toggle-switch"></span>
+                        Автоперекладати статті на інші мови
+                    </label>
+                    <small class="form-hint">При генерації статті автоматично перекладати на вибрані мови</small>
+                </div>
+                <div class="form-group">
+                    <label>Мови для перекладу</label>
+                    <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
+                        <label class="toggle-label" style="flex: none;">
+                            <input type="checkbox" name="translate_en" {{ 'checked' if 'en' in (ai_settings.auto_translate_languages or 'en,de') else '' }}>
+                            <span class="toggle-switch"></span>
+                            🇬🇧 English
+                        </label>
+                        <label class="toggle-label" style="flex: none;">
+                            <input type="checkbox" name="translate_de" {{ 'checked' if 'de' in (ai_settings.auto_translate_languages or 'en,de') else '' }}>
+                            <span class="toggle-switch"></span>
+                            🇩🇪 Deutsch
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="card" style="margin-top: 1.5rem;">
             <div class="card-header">

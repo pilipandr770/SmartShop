@@ -170,6 +170,21 @@
                         <button type="submit" name="action" value="save" class="btn btn-secondary">💾 Зберегти</button>
                         <button type="submit" name="action" value="publish" class="btn btn-primary">📤 Опублікувати</button>
                     </div>
+                    
+                    {% if post and post.id %}
+                    <!-- Автопереклад -->
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(148, 163, 184, 0.3);">
+                        <button type="button" class="btn btn-accent btn-full" onclick="translatePost()">
+                            🌐 Автопереклад (EN + DE)
+                        </button>
+                        <div id="translateProgress" class="ai-progress" style="display:none;">
+                            <div class="spinner"></div>
+                            <span>Переклад...</span>
+                        </div>
+                        <div id="translateResult" style="display:none; margin-top: 0.5rem; padding: 0.75rem; background: rgba(34, 197, 94, 0.1); border-radius: 0.5rem; font-size: 0.85rem;">
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             
@@ -501,6 +516,58 @@ async function generateWithAI() {
             generateSlug();
         } else {
             alert(data.error || 'Помилка генерації');
+        }
+    } catch (e) {
+        alert('Помилка підключення: ' + e.message);
+    } finally {
+        progress.style.display = 'none';
+    }
+}
+
+// Автоматичний переклад статті
+async function translatePost() {
+    {% if post and post.id %}
+    const postId = {{ post.id }};
+    {% else %}
+    alert('Спочатку збережіть статтю');
+    return;
+    {% endif %}
+    
+    const progress = document.getElementById('translateProgress');
+    const result = document.getElementById('translateResult');
+    progress.style.display = 'flex';
+    result.style.display = 'none';
+    
+    try {
+        const response = await fetch(`/api/blog/translate/${postId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                languages: ['en', 'de']
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            result.style.display = 'block';
+            result.innerHTML = `✅ ${data.message}<br>`;
+            
+            // Оновлюємо поля в формі
+            if (data.translated.en) {
+                document.getElementById('title_en').value = data.translated.en.title || '';
+                document.getElementById('excerpt_en').value = data.translated.en.excerpt || '';
+                // Отримуємо повний контент з сервера
+                location.reload();
+            }
+            if (data.translated.de) {
+                document.getElementById('title_de').value = data.translated.de.title || '';
+                document.getElementById('excerpt_de').value = data.translated.de.excerpt || '';
+            }
+            
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            alert(data.error || 'Помилка перекладу');
         }
     } catch (e) {
         alert('Помилка підключення: ' + e.message);

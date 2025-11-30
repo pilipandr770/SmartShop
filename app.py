@@ -586,6 +586,8 @@ def create_app():
                     ('publish_time', "VARCHAR(5) DEFAULT '10:00'"),
                     ('generate_images', 'BOOLEAN DEFAULT TRUE'),
                     ('image_style', "VARCHAR(100) DEFAULT 'professional photography, realistic, high quality'"),
+                    ('auto_translate', 'BOOLEAN DEFAULT TRUE'),
+                    ('auto_translate_languages', "VARCHAR(50) DEFAULT 'en,de'"),
                     ('created_at', 'TIMESTAMP DEFAULT NOW()'),
                     ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
                 ]
@@ -3321,6 +3323,15 @@ def create_app():
             ai_settings.generate_images = request.form.get("generate_images") == "on"
             ai_settings.image_style = request.form.get("image_style", "professional photography, realistic, high quality")
             
+            # Автоматичний переклад
+            ai_settings.auto_translate = request.form.get("auto_translate") == "on"
+            translate_langs = []
+            if request.form.get("translate_en") == "on":
+                translate_langs.append("en")
+            if request.form.get("translate_de") == "on":
+                translate_langs.append("de")
+            ai_settings.auto_translate_languages = ",".join(translate_langs) if translate_langs else "en,de"
+            
             db.session.commit()
             flash("✅ AI налаштування збережено!", "success")
             return redirect(url_for("admin_ai_settings"))
@@ -3796,6 +3807,63 @@ def create_app():
             
             db.session.commit()
             
+            # Автоматичний переклад якщо увімкнено
+            if ai_settings.auto_translate:
+                try:
+                    translate_languages = (ai_settings.auto_translate_languages or "en,de").split(",")
+                    for lang in translate_languages:
+                        lang = lang.strip()
+                        if lang not in ["en", "de"]:
+                            continue
+                        
+                        lang_name = "English" if lang == "en" else "German"
+                        
+                        # Перекладаємо заголовок
+                        title_resp = openai_client.chat.completions.create(
+                            model="gpt-3.5-turbo",
+                            messages=[
+                                {"role": "system", "content": f"Translate from Ukrainian to {lang_name}. Return ONLY translated text."},
+                                {"role": "user", "content": post.title},
+                            ],
+                            max_tokens=200,
+                            temperature=0.3,
+                        )
+                        
+                        # Перекладаємо excerpt
+                        excerpt_resp = openai_client.chat.completions.create(
+                            model="gpt-3.5-turbo",
+                            messages=[
+                                {"role": "system", "content": f"Translate from Ukrainian to {lang_name}. Return ONLY translated text."},
+                                {"role": "user", "content": post.excerpt or ""},
+                            ],
+                            max_tokens=300,
+                            temperature=0.3,
+                        )
+                        
+                        # Перекладаємо контент
+                        content_resp = openai_client.chat.completions.create(
+                            model="gpt-3.5-turbo",
+                            messages=[
+                                {"role": "system", "content": f"Translate this HTML content from Ukrainian to {lang_name}. Keep all HTML tags. Return ONLY translated HTML."},
+                                {"role": "user", "content": post.content or ""},
+                            ],
+                            max_tokens=3000,
+                            temperature=0.3,
+                        )
+                        
+                        if lang == "en":
+                            post.title_en = title_resp.choices[0].message.content.strip()
+                            post.excerpt_en = excerpt_resp.choices[0].message.content.strip()
+                            post.content_en = content_resp.choices[0].message.content.strip()
+                        elif lang == "de":
+                            post.title_de = title_resp.choices[0].message.content.strip()
+                            post.excerpt_de = excerpt_resp.choices[0].message.content.strip()
+                            post.content_de = content_resp.choices[0].message.content.strip()
+                    
+                    db.session.commit()
+                except Exception as translate_error:
+                    print(f"Auto-translate error: {translate_error}")
+            
             return jsonify({"success": True, "post_id": post.id})
         
         except Exception as e:
@@ -3832,6 +3900,94 @@ def create_app():
         db.session.delete(plan)
         db.session.commit()
         return jsonify({"success": True})
+    
+    @app.route("/api/blog/translate/<int:post_id>", methods=["POST"])
+    @admin_required
+    def api_blog_translate(post_id):
+        """Автоматичний переклад статті на інші мови."""
+        if not OPENAI_AVAILABLE or not openai_client:
+            return jsonify({"error": "AI не налаштовано. Додайте OPENAI_API_KEY"}), 400
+        
+        post = BlogPost.query.get_or_404(post_id)
+        data = request.get_json() or {}
+        languages = data.get("languages", ["en", "de"])
+        
+        if not post.title or not post.content:
+            return jsonify({"error": "Стаття не має контенту для перекладу"}), 400
+        
+        translated = {}
+        
+        try:
+            for lang in languages:
+                if lang not in ["en", "de"]:
+                    continue
+                
+                lang_name = "English" if lang == "en" else "German"
+                
+                # Перекладаємо заголовок
+                title_response = openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": f"You are a professional translator. Translate the following text from Ukrainian to {lang_name}. Keep the same style and tone. Return ONLY the translated text, nothing else."},
+                        {"role": "user", "content": post.title},
+                    ],
+                    max_tokens=200,
+                    temperature=0.3,
+                )
+                translated_title = title_response.choices[0].message.content.strip()
+                
+                # Перекладаємо excerpt якщо є
+                translated_excerpt = None
+                if post.excerpt:
+                    excerpt_response = openai_client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": f"You are a professional translator. Translate the following text from Ukrainian to {lang_name}. Keep the same style and tone. Return ONLY the translated text, nothing else."},
+                            {"role": "user", "content": post.excerpt},
+                        ],
+                        max_tokens=300,
+                        temperature=0.3,
+                    )
+                    translated_excerpt = excerpt_response.choices[0].message.content.strip()
+                
+                # Перекладаємо контент (може бути довгим, тому розбиваємо)
+                content_response = openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": f"You are a professional translator. Translate the following HTML content from Ukrainian to {lang_name}. Keep all HTML tags intact. Maintain the same formatting and structure. Return ONLY the translated HTML, nothing else."},
+                        {"role": "user", "content": post.content},
+                    ],
+                    max_tokens=3000,
+                    temperature=0.3,
+                )
+                translated_content = content_response.choices[0].message.content.strip()
+                
+                # Зберігаємо переклади
+                if lang == "en":
+                    post.title_en = translated_title
+                    post.excerpt_en = translated_excerpt
+                    post.content_en = translated_content
+                elif lang == "de":
+                    post.title_de = translated_title
+                    post.excerpt_de = translated_excerpt
+                    post.content_de = translated_content
+                
+                translated[lang] = {
+                    "title": translated_title,
+                    "excerpt": translated_excerpt,
+                    "content_preview": translated_content[:200] + "..." if len(translated_content) > 200 else translated_content
+                }
+            
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "translated": translated,
+                "message": f"Стаття перекладена на {len(translated)} мов(и)"
+            })
+        
+        except Exception as e:
+            return jsonify({"error": f"Помилка перекладу: {str(e)}"}), 500
     
     # =====================================================================
     # PUBLIC BLOG ROUTES

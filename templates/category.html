@@ -5,17 +5,17 @@
 <section>
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-        <a href="{{ url_for('index') }}">Головна</a>
+        <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
         <span>/</span>
-        <a href="{{ url_for('shop') }}">Магазин</a>
+        <a href="{{ url_for('shop') }}">{{ _('Магазин') }}</a>
         <span>/</span>
-        <span style="color: var(--text-main);">{{ category.name }}</span>
+        <span style="color: var(--text-main);">{{ category.get_name(get_locale()|string) }}</span>
     </div>
 
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ category.name }}</h1>
-    {% if category.description %}
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">{{ category.get_name(get_locale()|string) }}</h1>
+    {% if category.get_description(get_locale()|string) %}
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0;">
-        {{ category.description }}
+        {{ category.get_description(get_locale()|string) }}
     </p>
     {% endif %}
 
@@ -23,13 +23,13 @@
     {% if categories %}
     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0;">
         <a href="{{ url_for('shop') }}" class="social-pill">
-            Усі
+            {{ _('Усі') }}
         </a>
         {% for cat in categories %}
         <a href="{{ url_for('category_page', slug=cat.slug) }}" 
            class="social-pill" 
            style="{% if cat.id == category.id %}border-color: var(--accent); color: var(--text-main);{% endif %}">
-            {{ cat.name }}
+            {{ cat.get_name(get_locale()|string) }}
         </a>
         {% endfor %}
     </div>
@@ -43,9 +43,9 @@
             <div class="product-img">
                 <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
             </div>
-            <div class="product-title">{{ p.name }}</div>
+            <div class="product-title">{{ p.get_name(get_locale()|string) }}</div>
             <div class="product-price">{{ "%.2f"|format(p.price) }} {{ p.currency }}</div>
-            <div class="product-meta">{{ p.short_description or '' }}</div>
+            <div class="product-meta">{{ p.get_short_description(get_locale()|string) or '' }}</div>
         </a>
         {% endfor %}
     </div>
@@ -54,7 +54,7 @@
     {% if products.pages > 1 %}
     <div class="pagination">
         {% if products.has_prev %}
-        <a href="{{ url_for('category_page', slug=category.slug, page=products.prev_num) }}">← Назад</a>
+        <a href="{{ url_for('category_page', slug=category.slug, page=products.prev_num) }}">← {{ _('Назад') }}</a>
         {% endif %}
 
         {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
@@ -70,15 +70,15 @@
         {% endfor %}
 
         {% if products.has_next %}
-        <a href="{{ url_for('category_page', slug=category.slug, page=products.next_num) }}">Далі →</a>
+        <a href="{{ url_for('category_page', slug=category.slug, page=products.next_num) }}">{{ _('Далі') }} →</a>
         {% endif %}
     </div>
     {% endif %}
 
     {% else %}
     <div class="card" style="text-align: center; padding: 2rem;">
-        <p style="color: var(--text-muted);">У цій категорії поки немає товарів.</p>
-        <a href="{{ url_for('shop') }}" class="btn btn-outline" style="margin-top: 1rem;">Переглянути всі товари</a>
+        <p style="color: var(--text-muted);">{{ _('У цій категорії поки немає товарів') }}.</p>
+        <a href="{{ url_for('shop') }}" class="btn btn-outline" style="margin-top: 1rem;">{{ _('Переглянути всі товари') }}</a>
     </div>
     {% endif %}
 </section>

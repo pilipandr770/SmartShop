@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Кошик – SmartShop AI{% endblock %}
+{% block title %}{{ _('Кошик') }} – SmartShop AI{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -124,17 +124,17 @@
 
 {% block content %}
 <section>
-    <h1 style="font-size: 1.5rem; margin-bottom: 1rem;">🛒 Кошик</h1>
+    <h1 style="font-size: 1.5rem; margin-bottom: 1rem;">🛒 {{ _('Кошик') }}</h1>
 
     {% if items %}
     <div class="card">
         <table class="cart-table">
             <thead>
                 <tr>
-                    <th>Товар</th>
-                    <th>Ціна</th>
-                    <th>Кількість</th>
-                    <th>Сума</th>
+                    <th>{{ _('Товар') }}</th>
+                    <th>{{ _('Ціна') }}</th>
+                    <th>{{ _('Кількість') }}</th>
+                    <th>{{ _('Сума') }}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -176,17 +176,17 @@
 
     <div class="cart-summary">
         <div>
-            <span style="color: var(--text-muted);">Загальна сума:</span>
+            <span style="color: var(--text-muted);">{{ _('Загальна сума') }}:</span>
             <span class="cart-total">{{ "%.2f"|format(total) }} EUR</span>
         </div>
         <div class="cart-actions">
             <form action="{{ url_for('cart_clear') }}" method="post">
-                <button type="submit" class="btn btn-outline">Очистити кошик</button>
+                <button type="submit" class="btn btn-outline">{{ _('Очистити кошик') }}</button>
             </form>
-            <a href="{{ url_for('shop') }}" class="btn btn-outline">Продовжити покупки</a>
+            <a href="{{ url_for('shop') }}" class="btn btn-outline">{{ _('Продовжити покупки') }}</a>
             <form action="{{ url_for('checkout') }}" method="post" style="display: inline;">
                 <button type="submit" class="btn">
-                    💳 Оформити замовлення
+                    💳 {{ _('Оформити замовлення') }}
                 </button>
             </form>
         </div>
@@ -194,8 +194,8 @@
 
     {% else %}
     <div class="card empty-cart">
-        <p>🛒 Ваш кошик порожній</p>
-        <a href="{{ url_for('shop') }}" class="btn">Перейти до магазину</a>
+        <p>🛒 {{ _('Ваш кошик порожній') }}</p>
+        <a href="{{ url_for('shop') }}" class="btn">{{ _('Перейти до магазину') }}</a>
     </div>
     {% endif %}
 </section>

@@ -291,6 +291,10 @@ class AISettings(db.Model):
     generate_images = db.Column(db.Boolean, default=True)
     image_style = db.Column(db.String(100), default="professional photography, realistic, high quality")
     
+    # Автоматичний переклад
+    auto_translate = db.Column(db.Boolean, default=True)
+    auto_translate_languages = db.Column(db.String(50), default="en,de")  # Мови для автоперекладу
+    
     # Метадані
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

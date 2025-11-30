@@ -457,3 +457,172 @@ msgstr "Warranty"
 msgid "AI рекомендації"
 msgstr "AI Recommendations"
 
+# Cart page
+msgid "Кошик"
+msgstr "Cart"
+
+msgid "Товар"
+msgstr "Product"
+
+msgid "Сума"
+msgstr "Total"
+
+msgid "Загальна сума"
+msgstr "Total"
+
+msgid "Очистити кошик"
+msgstr "Clear cart"
+
+msgid "Продовжити покупки"
+msgstr "Continue shopping"
+
+msgid "Оформити замовлення"
+msgstr "Checkout"
+
+msgid "Ваш кошик порожній"
+msgstr "Your cart is empty"
+
+msgid "Перейти до магазину"
+msgstr "Go to shop"
+
+# Category page
+msgid "Усі"
+msgstr "All"
+
+msgid "Назад"
+msgstr "Back"
+
+msgid "Далі"
+msgstr "Next"
+
+msgid "У цій категорії поки немає товарів"
+msgstr "No products in this category yet"
+
+msgid "Переглянути всі товари"
+msgstr "View all products"
+
+# About page
+msgid "Про компанію"
+msgstr "About Us"
+
+msgid "Дізнайтеся більше про нас, нашу місію та цінності"
+msgstr "Learn more about us, our mission and values"
+
+msgid "Наша історія"
+msgstr "Our Story"
+
+msgid "Тут ви зможете розповісти про свій бренд, команду та цінності."
+msgstr "Here you can tell about your brand, team and values."
+
+msgid "Ми прагнемо надавати найкращий сервіс та якісні товари для наших клієнтів."
+msgstr "We strive to provide the best service and quality products for our customers."
+
+msgid "Наші цінності"
+msgstr "Our Values"
+
+msgid "Що робить нас особливими"
+msgstr "What makes us special"
+
+msgid "Якість"
+msgstr "Quality"
+
+msgid "Ми ретельно відбираємо кожен товар, щоб ви отримували тільки найкраще"
+msgstr "We carefully select each product so you get only the best"
+
+msgid "Швидкість"
+msgstr "Speed"
+
+msgid "Швидка обробка замовлень та доставка у найкоротші терміни"
+msgstr "Fast order processing and delivery in the shortest time"
+
+msgid "Підтримка"
+msgstr "Support"
+
+msgid "Наш ІІ-помічник та команда завжди готові допомогти вам 24/7"
+msgstr "Our AI assistant and team are always ready to help you 24/7"
+
+msgid "Маєте питання?"
+msgstr "Have questions?"
+
+msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ІІ-помічником"
+msgstr "Contact us or chat with our AI assistant"
+
+msgid "Контакти"
+msgstr "Contacts"
+
+msgid "Чат з ІІ"
+msgstr "AI Chat"
+
+# Contacts page
+msgid "Зв'яжіться з нами"
+msgstr "Contact Us"
+
+msgid "Ми завжди раді допомогти! Оберіть зручний спосіб зв'язку"
+msgstr "We're always happy to help! Choose a convenient way to contact"
+
+msgid "Напишіть нам, і ми відповімо протягом 24 годин"
+msgstr "Write to us and we'll respond within 24 hours"
+
+msgid "Телефон"
+msgstr "Phone"
+
+msgid "Пн-Пт"
+msgstr "Mon-Fri"
+
+msgid "Сб"
+msgstr "Sat"
+
+msgid "Адреса"
+msgstr "Address"
+
+msgid "Завітайте до нашого офісу"
+msgstr "Visit our office"
+
+msgid "ІІ-помічник"
+msgstr "AI Assistant"
+
+msgid "Напишіть нам"
+msgstr "Write to Us"
+
+msgid "Ваше ім'я"
+msgstr "Your Name"
+
+msgid "Введіть"
+msgstr "Enter"
+
+msgid "ваше ім'я"
+msgstr "your name"
+
+msgid "Тема"
+msgstr "Subject"
+
+msgid "Тема повідомлення"
+msgstr "Message subject"
+
+msgid "Повідомлення"
+msgstr "Message"
+
+msgid "Ваше повідомлення"
+msgstr "Your message"
+
+msgid "Надіслати повідомлення"
+msgstr "Send message"
+
+msgid "Карта"
+msgstr "Map"
+
+msgid "Тут буде інтерактивна карта з розташуванням офісу"
+msgstr "Here will be an interactive map with office location"
+
+msgid "Інтеграція з Google Maps / OpenStreetMap"
+msgstr "Integration with Google Maps / OpenStreetMap"
+
+msgid "Потрібна швидка відповідь?"
+msgstr "Need a quick answer?"
+
+msgid "Наш ІІ-помічник працює 24/7 і може відповісти миттєво"
+msgstr "Our AI assistant works 24/7 and can respond instantly"
+
+msgid "Поспілкуватись з ІІ"
+msgstr "Chat with AI"
+
