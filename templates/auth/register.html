@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Реєстрація - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>👤 Реєстрація</h1>
+            <p>Створіть акаунт покупця</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" class="auth-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_name">Ім'я</label>
+                    <input type="text" id="first_name" name="first_name" 
+                           placeholder="Іван" value="{{ request.form.get('first_name', '') }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">Прізвище</label>
+                    <input type="text" id="last_name" name="last_name" 
+                           placeholder="Петренко" value="{{ request.form.get('last_name', '') }}">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="your@email.com" value="{{ request.form.get('email', '') }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Телефон</label>
+                <input type="tel" id="phone" name="phone" 
+                       placeholder="+380 XX XXX XX XX" value="{{ request.form.get('phone', '') }}">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Пароль *</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="Мін. 6 символів">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password_confirm">Підтвердження *</label>
+                    <input type="password" id="password_confirm" name="password_confirm" required 
+                           placeholder="Повторіть пароль">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                Зареєструватися
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Вже є акаунт? <a href="{{ url_for('user_login') }}">Увійти</a></p>
+            <div class="auth-divider">
+                <span>або</span>
+            </div>
+            <a href="{{ url_for('user_register_b2b') }}" class="btn btn-outline btn-b2b btn-block">
+                🏢 Реєстрація B2B партнера
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #f1f5f9);
+}
+
+.auth-header p {
+    color: var(--text-secondary, #94a3b8);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary, #f1f5f9);
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.8);
+    color: var(--text-primary, #f1f5f9);
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--primary-color, #10b981);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.btn-block {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+    border: none;
+    color: #022c22;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: var(--text-primary, #f1f5f9);
+    padding: 0.875rem 1.25rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-outline:hover {
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.btn-b2b {
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.btn-b2b:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.auth-footer {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.auth-footer p {
+    color: var(--text-secondary, #94a3b8);
+    margin-bottom: 1rem;
+}
+
+.auth-footer a {
+    color: var(--primary-color, #10b981);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(148, 163, 184, 0.2);
+}
+
+.auth-divider span {
+    padding: 0 1rem;
+    color: var(--text-secondary, #94a3b8);
+    font-size: 0.85rem;
+}
+
+.alert {
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

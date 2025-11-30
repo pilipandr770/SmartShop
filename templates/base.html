@@ -431,7 +431,18 @@
                     <span class="cart-count">{{ cart_count }}</span>
                 {% endif %}
             </a>
-            <a href="{{ url_for('admin_login') }}" class="btn">Адмін</a>
+            {% if current_user.is_authenticated %}
+                {% if current_user.is_b2b %}
+                    <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
+                {% else %}
+                    <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 Кабінет</a>
+                {% endif %}
+                <a href="{{ url_for('user_logout') }}" class="social-pill" title="Вийти">🚪</a>
+            {% else %}
+                <a href="{{ url_for('user_login') }}" class="btn btn-outline">Увійти</a>
+                <a href="{{ url_for('user_register') }}" class="btn">Реєстрація</a>
+            {% endif %}
+            <a href="{{ url_for('admin_login') }}" class="social-pill" title="Адмін">⚙️</a>
         </div>
     </header>
 

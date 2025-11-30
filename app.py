@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from functools import wraps
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Завантаження змінних з .env
 try:
@@ -24,7 +25,7 @@ from flask import (
     send_from_directory,
     abort,
 )
-from flask_sqlalchemy import SQLAlchemy
+from flask_login import login_required, current_user
 
 # Опціональні залежності
 try:
@@ -39,8 +40,8 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
-# Ініціалізація SQLAlchemy
-db = SQLAlchemy()
+# Ініціалізація SQLAlchemy та Flask-Login - імпортуємо з extensions для уникнення дублювання
+from extensions import db, login_manager
 
 
 def create_app():
@@ -106,176 +107,24 @@ def create_app():
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     db.init_app(app)
+    
+    # Ініціалізація Flask-Login
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Будь ласка, увійдіть для доступу до цієї сторінки."
+    login_manager.login_message_category = "info"
 
-    # ----- МОДЕЛІ -----
+    # ----- МОДЕЛІ (імпорт з models/) -----
+    from models.settings import SiteSettings, ContactMessage
+    from models.product import Product, Category
+    from models.order import Order, OrderItem
+    from models.user import User, UserRole
+    from models.company import Company, CompanyStatus
 
-    class SiteSettings(db.Model):
-        __tablename__ = "site_settings"
-
-        id = db.Column(db.Integer, primary_key=True)
-        hero_subtitle = db.Column(db.String(255), nullable=True)
-        about_title = db.Column(db.String(120), nullable=True)
-        about_text = db.Column(db.Text, nullable=True)
-        blog_title = db.Column(db.String(200), nullable=True)
-        blog_excerpt = db.Column(db.Text, nullable=True)
-
-        social_telegram = db.Column(db.String(255), nullable=True)
-        social_whatsapp = db.Column(db.String(255), nullable=True)
-        social_instagram = db.Column(db.String(255), nullable=True)
-        social_facebook = db.Column(db.String(255), nullable=True)
-        social_youtube = db.Column(db.String(255), nullable=True)
-        social_tiktok = db.Column(db.String(255), nullable=True)
-
-        ai_instructions = db.Column(db.Text, nullable=True)
-
-        # Нові поля для налаштувань сайту
-        site_name = db.Column(db.String(120), nullable=True)
-        site_tagline = db.Column(db.String(255), nullable=True)
-        logo_url = db.Column(db.String(500), nullable=True)
-        favicon_url = db.Column(db.String(500), nullable=True)
-        
-        # Контактна інформація
-        contact_email = db.Column(db.String(255), nullable=True)
-        contact_phone = db.Column(db.String(100), nullable=True)
-        contact_address = db.Column(db.String(500), nullable=True)
-        working_hours = db.Column(db.String(255), nullable=True)
-        google_maps_url = db.Column(db.String(500), nullable=True)
-        
-        # SEO
-        meta_title = db.Column(db.String(100), nullable=True)
-        meta_description = db.Column(db.String(200), nullable=True)
-        meta_keywords = db.Column(db.String(255), nullable=True)
-        
-        # Аналітика
-        google_analytics_id = db.Column(db.String(50), nullable=True)
-        facebook_pixel_id = db.Column(db.String(50), nullable=True)
-        custom_head_code = db.Column(db.Text, nullable=True)
-        
-        # Магазин
-        default_currency = db.Column(db.String(8), nullable=True, default="EUR")
-        products_per_page = db.Column(db.Integer, nullable=True, default=12)
-        min_order_amount = db.Column(db.Float, nullable=True, default=0.0)
-        shipping_info = db.Column(db.Text, nullable=True)
-
-        created_at = db.Column(db.DateTime, default=datetime.utcnow)
-        updated_at = db.Column(
-            db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-        )
-
-        @staticmethod
-        def get_or_create():
-            settings = SiteSettings.query.first()
-            if not settings:
-                settings = SiteSettings(
-                    hero_subtitle=(
-                        "Магазин, який ви налаштовуєте з адмінки за 1 годину."
-                    ),
-                    about_title="Про компанію",
-                    about_text=(
-                        "Тут ви зможете розповісти про свій бренд, команду та цінності. "
-                        "Усе редагується через адмін-панель без розробника."
-                    ),
-                    blog_title="Як ми автоматизуємо ваш онлайн-магазин",
-                    blog_excerpt=(
-                        "Автоматичний блог на базі ІІ: статті, огляди, відповіді на "
-                        "питання клієнтів — усе за контент-планом на 30 днів."
-                    ),
-                    social_telegram="https://t.me/your_channel",
-                    social_whatsapp="https://wa.me/49123456789",
-                    ai_instructions=(
-                        "Ти — ввічливий продавець цього магазину. Твоє завдання — "
-                        "допомогти клієнту обрати товар, ставити уточнюючі запитання, "
-                        "пропонувати релевантні позиції з каталогу та не вигадувати того, "
-                        "чого немає на сайті."
-                    ),
-                )
-                db.session.add(settings)
-                db.session.commit()
-            return settings
-
-    class Category(db.Model):
-        __tablename__ = "categories"
-
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(120), nullable=False)
-        slug = db.Column(db.String(120), unique=True, nullable=False)
-        description = db.Column(db.Text, nullable=True)
-
-        products = db.relationship("Product", backref="category", lazy=True)
-
-    class Product(db.Model):
-        __tablename__ = "products"
-
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(200), nullable=False)
-        sku = db.Column(db.String(64), nullable=True)
-        price = db.Column(db.Float, nullable=False, default=0.0)
-        old_price = db.Column(db.Float, nullable=True)  # Стара ціна для знижок
-        currency = db.Column(db.String(8), nullable=False, default="EUR")
-        stock = db.Column(db.Integer, nullable=False, default=0)  # Кількість на складі
-
-        short_description = db.Column(db.String(255), nullable=True)
-        long_description = db.Column(db.Text, nullable=True)
-
-        image_url = db.Column(db.String(500), nullable=True)
-
-        category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=True)
-
-        is_active = db.Column(db.Boolean, nullable=False, default=True)
-
-        created_at = db.Column(db.DateTime, default=datetime.utcnow)
-        updated_at = db.Column(
-            db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-        )
-
-    class Order(db.Model):
-        __tablename__ = "orders"
-
-        id = db.Column(db.Integer, primary_key=True)
-        created_at = db.Column(db.DateTime, default=datetime.utcnow)
-        status = db.Column(db.String(32), nullable=False, default="created")
-        amount = db.Column(db.Float, nullable=False, default=0.0)
-        currency = db.Column(db.String(8), nullable=False, default="EUR")
-        
-        # Stripe
-        stripe_session_id = db.Column(db.String(255), nullable=True)
-        stripe_payment_intent = db.Column(db.String(255), nullable=True)
-        
-        # Клієнт
-        customer_email = db.Column(db.String(255), nullable=True)
-        customer_name = db.Column(db.String(255), nullable=True)
-        customer_phone = db.Column(db.String(50), nullable=True)
-        shipping_address = db.Column(db.Text, nullable=True)
-        
-        # Адмін нотатки
-        notes = db.Column(db.Text, nullable=True)
-        
-        # Зв'язок з товарами
-        items = db.relationship("OrderItem", backref="order", lazy=True)
-
-    class OrderItem(db.Model):
-        __tablename__ = "order_items"
-
-        id = db.Column(db.Integer, primary_key=True)
-        order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
-        product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=True)
-        product_name = db.Column(db.String(200), nullable=False)
-        price = db.Column(db.Float, nullable=False)
-        quantity = db.Column(db.Integer, nullable=False, default=1)
-        currency = db.Column(db.String(8), nullable=False, default="EUR")
-
-    class ContactMessage(db.Model):
-        """Модель для збереження повідомлень з форми контактів."""
-        __tablename__ = "contact_messages"
-
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(200), nullable=False)
-        email = db.Column(db.String(255), nullable=False)
-        phone = db.Column(db.String(50), nullable=True)
-        subject = db.Column(db.String(255), nullable=True)
-        message = db.Column(db.Text, nullable=False)
-        is_read = db.Column(db.Boolean, nullable=False, default=False)
-        created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Flask-Login user loader
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # Робимо моделі доступними через app
     app.SiteSettings = SiteSettings
@@ -284,6 +133,10 @@ def create_app():
     app.Order = Order
     app.OrderItem = OrderItem
     app.ContactMessage = ContactMessage
+    app.User = User
+    app.UserRole = UserRole
+    app.Company = Company
+    app.CompanyStatus = CompanyStatus
 
     # ----- СЛУЖБОВІ ФУНКЦІЇ -----
 
@@ -294,15 +147,240 @@ def create_app():
             db_schema = app.config.get("DB_SCHEMA", "smartshop")
             database_url = app.config.get("SQLALCHEMY_DATABASE_URI", "")
             
+            from sqlalchemy import text
+            
             if "postgresql" in database_url:
                 # Створюємо схему, якщо не існує
-                from sqlalchemy import text
                 with db.engine.connect() as conn:
                     conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {db_schema}"))
                     conn.commit()
                 print(f"✅ PostgreSQL схема '{db_schema}' готова")
             
+            # Створюємо таблиці
             db.create_all()
+            
+            if "postgresql" in database_url:
+                # МІГРАЦІЇ - додаємо відсутні колонки ПЕРЕД запитами до БД
+                
+                # site_settings колонки
+                site_settings_columns = [
+                    ('admin_username', 'VARCHAR(100)'),
+                    ('admin_password_hash', 'VARCHAR(255)'),
+                    ('admin_company_name', 'VARCHAR(255)'),
+                    ('admin_company_legal_name', 'VARCHAR(255)'),
+                    ('admin_vat_number', 'VARCHAR(50)'),
+                    ('admin_vat_country', 'VARCHAR(2)'),
+                    ('admin_company_address', 'VARCHAR(255)'),
+                    ('admin_company_city', 'VARCHAR(100)'),
+                    ('admin_company_postal_code', 'VARCHAR(20)'),
+                    ('admin_company_country', 'VARCHAR(100)'),
+                    ('admin_company_country_code', 'VARCHAR(2)'),
+                    ('admin_handelsregister_id', 'VARCHAR(50)'),
+                    ('admin_company_email', 'VARCHAR(255)'),
+                    ('admin_company_phone', 'VARCHAR(50)'),
+                    ('admin_company_website', 'VARCHAR(255)'),
+                    ('b2b_enabled', 'BOOLEAN DEFAULT TRUE'),
+                ]
+                
+                # categories колонки
+                category_columns = [
+                    ('image_url', 'VARCHAR(500)'),
+                    ('is_active', 'BOOLEAN DEFAULT TRUE'),
+                    ('sort_order', 'INTEGER DEFAULT 0'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # products колонки
+                product_columns = [
+                    ('sku', 'VARCHAR(64)'),
+                    ('old_price', 'FLOAT'),
+                    ('cost_price', 'FLOAT'),
+                    ('currency', "VARCHAR(8) DEFAULT 'UAH'"),
+                    ('b2b_price', 'FLOAT'),
+                    ('min_b2b_quantity', 'INTEGER DEFAULT 1'),
+                    ('reserved', 'INTEGER DEFAULT 0'),
+                    ('min_stock', 'INTEGER DEFAULT 0'),
+                    ('short_description', 'VARCHAR(255)'),
+                    ('long_description', 'TEXT'),
+                    ('gallery', 'JSON'),
+                    ('is_featured', 'BOOLEAN DEFAULT FALSE'),
+                    ('meta_title', 'VARCHAR(100)'),
+                    ('meta_description', 'VARCHAR(200)'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # orders колонки
+                order_columns = [
+                    ('order_number', 'VARCHAR(50)'),
+                    ('user_id', 'INTEGER'),
+                    ('company_id', 'INTEGER'),
+                    ('is_b2b', 'BOOLEAN DEFAULT FALSE'),
+                    ('customer_name', 'VARCHAR(200)'),
+                    ('customer_email', 'VARCHAR(255)'),
+                    ('customer_phone', 'VARCHAR(50)'),
+                    ('shipping_address', 'TEXT'),
+                    ('shipping_city', 'VARCHAR(100)'),
+                    ('shipping_postal_code', 'VARCHAR(20)'),
+                    ('shipping_country', 'VARCHAR(100)'),
+                    ('shipping_method', 'VARCHAR(50)'),
+                    ('shipping_cost', 'FLOAT DEFAULT 0.0'),
+                    ('tracking_number', 'VARCHAR(100)'),
+                    ('payment_method', "VARCHAR(20) DEFAULT 'card'"),
+                    ('payment_status', 'VARCHAR(20)'),
+                    ('stripe_payment_intent', 'VARCHAR(255)'),
+                    ('stripe_session_id', 'VARCHAR(255)'),
+                    ('subtotal', 'FLOAT DEFAULT 0.0'),
+                    ('discount', 'FLOAT DEFAULT 0.0'),
+                    ('tax', 'FLOAT DEFAULT 0.0'),
+                    ('amount', 'FLOAT DEFAULT 0.0'),
+                    ('currency', "VARCHAR(8) DEFAULT 'UAH'"),
+                    ('status', "VARCHAR(20) DEFAULT 'created'"),
+                    ('notes', 'TEXT'),
+                    ('admin_notes', 'TEXT'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('paid_at', 'TIMESTAMP'),
+                    ('shipped_at', 'TIMESTAMP'),
+                    ('delivered_at', 'TIMESTAMP'),
+                ]
+                
+                # order_items колонки
+                order_item_columns = [
+                    ('order_id', 'INTEGER'),
+                    ('product_id', 'INTEGER'),
+                    ('product_name', 'VARCHAR(200)'),
+                    ('product_sku', 'VARCHAR(64)'),
+                    ('price', 'FLOAT'),
+                    ('quantity', 'INTEGER DEFAULT 1'),
+                    ('currency', "VARCHAR(8) DEFAULT 'UAH'"),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # companies колонки
+                company_columns = [
+                    ('name', 'VARCHAR(255)'),
+                    ('legal_name', 'VARCHAR(255)'),
+                    ('vat_number', 'VARCHAR(50)'),
+                    ('vat_country', 'VARCHAR(2)'),
+                    ('vat_verified', 'BOOLEAN DEFAULT FALSE'),
+                    ('vat_verified_at', 'TIMESTAMP'),
+                    ('vat_data', 'JSON'),
+                    ('handelsregister_id', 'VARCHAR(100)'),
+                    ('hr_verified', 'BOOLEAN DEFAULT FALSE'),
+                    ('hr_data', 'JSON'),
+                    ('website', 'VARCHAR(255)'),
+                    ('domain', 'VARCHAR(255)'),
+                    ('whois_data', 'JSON'),
+                    ('whois_checked_at', 'TIMESTAMP'),
+                    ('address', 'VARCHAR(500)'),
+                    ('city', 'VARCHAR(100)'),
+                    ('postal_code', 'VARCHAR(20)'),
+                    ('country', 'VARCHAR(100)'),
+                    ('country_code', 'VARCHAR(2)'),
+                    ('contact_person', 'VARCHAR(200)'),
+                    ('contact_email', 'VARCHAR(255)'),
+                    ('contact_phone', 'VARCHAR(50)'),
+                    ('credit_limit', 'FLOAT DEFAULT 0.0'),
+                    ('payment_terms', 'INTEGER DEFAULT 0'),
+                    ('discount_percent', 'FLOAT DEFAULT 0.0'),
+                    ('status', "VARCHAR(20) DEFAULT 'pending'"),
+                    ('rejection_reason', 'TEXT'),
+                    ('reliability_score', 'INTEGER DEFAULT 0'),
+                    ('reliability_level', "VARCHAR(20) DEFAULT 'critical'"),
+                    ('last_verification_at', 'TIMESTAMP'),
+                    ('last_verification_data', 'JSON'),
+                    ('is_whois_verified', 'BOOLEAN DEFAULT FALSE'),
+                    ('is_hr_verified', 'BOOLEAN DEFAULT FALSE'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('verified_at', 'TIMESTAMP'),
+                ]
+                
+                # users колонки
+                user_columns = [
+                    ('email', 'VARCHAR(255)'),
+                    ('password_hash', 'VARCHAR(255)'),
+                    ('role', "VARCHAR(20) DEFAULT 'customer'"),
+                    ('is_active', 'BOOLEAN DEFAULT TRUE'),
+                    ('is_verified', 'BOOLEAN DEFAULT FALSE'),
+                    ('first_name', 'VARCHAR(100)'),
+                    ('last_name', 'VARCHAR(100)'),
+                    ('phone', 'VARCHAR(50)'),
+                    ('company_id', 'INTEGER'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('last_login', 'TIMESTAMP'),
+                ]
+                
+                # verification_logs колонки
+                verification_log_columns = [
+                    ('company_id', 'INTEGER'),
+                    ('check_type', 'VARCHAR(30)'),
+                    ('status', 'VARCHAR(20)'),
+                    ('is_valid', 'BOOLEAN'),
+                    ('request_data', 'JSON'),
+                    ('response_data', 'JSON'),
+                    ('error_message', 'TEXT'),
+                    ('changes_detected', 'BOOLEAN DEFAULT FALSE'),
+                    ('changes_description', 'TEXT'),
+                    ('checked_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # admin_alerts колонки
+                admin_alert_columns = [
+                    ('company_id', 'INTEGER'),
+                    ('alert_type', 'VARCHAR(50)'),
+                    ('severity', "VARCHAR(20) DEFAULT 'info'"),
+                    ('title', 'VARCHAR(200)'),
+                    ('message', 'TEXT'),
+                    ('data', 'JSON'),
+                    ('is_read', 'BOOLEAN DEFAULT FALSE'),
+                    ('is_resolved', 'BOOLEAN DEFAULT FALSE'),
+                    ('resolved_by', 'INTEGER'),
+                    ('resolved_at', 'TIMESTAMP'),
+                    ('resolution_note', 'TEXT'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # contact_messages колонки
+                contact_message_columns = [
+                    ('name', 'VARCHAR(200)'),
+                    ('email', 'VARCHAR(255)'),
+                    ('phone', 'VARCHAR(50)'),
+                    ('subject', 'VARCHAR(255)'),
+                    ('message', 'TEXT'),
+                    ('is_read', 'BOOLEAN DEFAULT FALSE'),
+                    ('replied_at', 'TIMESTAMP'),
+                    ('notes', 'TEXT'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                migrations = [
+                    ('site_settings', site_settings_columns),
+                    ('categories', category_columns),
+                    ('products', product_columns),
+                    ('orders', order_columns),
+                    ('order_items', order_item_columns),
+                    ('companies', company_columns),
+                    ('users', user_columns),
+                    ('verification_logs', verification_log_columns),
+                    ('admin_alerts', admin_alert_columns),
+                    ('contact_messages', contact_message_columns),
+                ]
+                
+                with db.engine.connect() as conn:
+                    for table_name, columns in migrations:
+                        for col_name, col_type in columns:
+                            try:
+                                conn.execute(text(f"ALTER TABLE {db_schema}.{table_name} ADD COLUMN IF NOT EXISTS {col_name} {col_type}"))
+                            except Exception as e:
+                                pass
+                    conn.commit()
+                print("✅ Міграції застосовані")
+            
+            # Тепер безпечно працювати з моделями
             SiteSettings.get_or_create()
             
             # Створюємо тестові дані, якщо БД порожня
@@ -387,6 +465,7 @@ def create_app():
 
     # DEMO MODE: Авторизація вимкнена для демонстрації
     DEMO_MODE = os.environ.get("DEMO_MODE", "true").lower() == "true"
+    print(f"🔧 DEMO_MODE = {DEMO_MODE}")
 
     def is_admin_logged_in() -> bool:
         if DEMO_MODE:
@@ -882,15 +961,28 @@ def create_app():
             username = request.form.get("username", "").strip()
             password = request.form.get("password", "").strip()
 
-            expected_user = os.environ.get("ADMIN_USERNAME", "admin")
-            expected_pass = os.environ.get("ADMIN_PASSWORD", "admin123")
-
-            if username == expected_user and password == expected_pass:
-                session["is_admin"] = True
-                flash("Вітаю, ви увійшли в адмін-панель.", "success")
-                return redirect(url_for("admin_dashboard"))
+            # Спочатку перевіряємо в БД
+            settings = SiteSettings.get_or_create()
+            
+            # Якщо є логін/пароль в БД - використовуємо їх
+            if settings.admin_username and settings.admin_password_hash:
+                if username == settings.admin_username and check_password_hash(settings.admin_password_hash, password):
+                    session["is_admin"] = True
+                    flash("Вітаю, ви увійшли в адмін-панель.", "success")
+                    return redirect(url_for("admin_dashboard"))
+                else:
+                    flash("Невірний логін або пароль.", "danger")
             else:
-                flash("Невірний логін або пароль.", "danger")
+                # Fallback на змінні середовища
+                expected_user = os.environ.get("ADMIN_USERNAME", "admin")
+                expected_pass = os.environ.get("ADMIN_PASSWORD", "admin123")
+
+                if username == expected_user and password == expected_pass:
+                    session["is_admin"] = True
+                    flash("Вітаю, ви увійшли в адмін-панель.", "success")
+                    return redirect(url_for("admin_dashboard"))
+                else:
+                    flash("Невірний логін або пароль.", "danger")
 
         return render_template("admin/login.html")
 
@@ -1407,6 +1499,39 @@ def create_app():
             except ValueError:
                 settings.min_order_amount = 0.0
             settings.shipping_info = request.form.get("shipping_info") or None
+            
+            # ========== АДМІНІСТРАТОР ==========
+            # Логін
+            new_username = request.form.get("admin_username", "").strip()
+            if new_username and len(new_username) >= 3:
+                settings.admin_username = new_username
+            
+            # Пароль (тільки якщо заповнено і співпадає)
+            new_password = request.form.get("admin_password", "")
+            confirm_password = request.form.get("admin_password_confirm", "")
+            if new_password:
+                if len(new_password) < 6:
+                    flash("Пароль має бути мінімум 6 символів.", "warning")
+                elif new_password != confirm_password:
+                    flash("Паролі не співпадають.", "warning")
+                else:
+                    settings.admin_password_hash = generate_password_hash(new_password)
+                    flash("Пароль адміністратора змінено.", "success")
+            
+            # Дані юрособи адміністратора
+            settings.admin_company_name = request.form.get("admin_company_name") or None
+            settings.admin_company_legal_name = request.form.get("admin_company_legal_name") or None
+            settings.admin_vat_number = request.form.get("admin_vat_number") or None
+            settings.admin_vat_country = request.form.get("admin_vat_country") or None
+            settings.admin_company_address = request.form.get("admin_company_address") or None
+            settings.admin_company_city = request.form.get("admin_company_city") or None
+            settings.admin_company_postal_code = request.form.get("admin_company_postal_code") or None
+            settings.admin_company_country = request.form.get("admin_company_country") or None
+            settings.admin_company_country_code = (request.form.get("admin_company_country_code") or "").upper() or None
+            settings.admin_handelsregister_id = request.form.get("admin_handelsregister_id") or None
+            settings.admin_company_email = request.form.get("admin_company_email") or None
+            settings.admin_company_phone = request.form.get("admin_company_phone") or None
+            settings.admin_company_website = request.form.get("admin_company_website") or None
 
             db.session.commit()
             flash("Налаштування сайту збережено.", "success")
@@ -1448,6 +1573,801 @@ def create_app():
         
         flash("Дякуємо! Ваше повідомлення надіслано.", "success")
         return redirect(url_for("contacts_page"))
+
+    # ----- AUTH: ВХІД/РЕЄСТРАЦІЯ B2C/B2B -----
+
+    @app.route("/login", methods=["GET", "POST"])
+    def user_login():
+        """Сторінка входу для користувачів."""
+        if current_user.is_authenticated:
+            if current_user.is_b2b:
+                return redirect(url_for("b2b_dashboard"))
+            return redirect(url_for("user_cabinet"))
+        
+        if request.method == "POST":
+            email = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "")
+            remember = request.form.get("remember") == "on"
+            
+            user = User.get_by_email(email)
+            
+            if user and user.check_password(password):
+                if not user.is_active:
+                    flash("Ваш акаунт деактивовано. Зверніться до підтримки.", "danger")
+                    return render_template("auth/login.html")
+                
+                from flask_login import login_user as flask_login_user
+                flask_login_user(user, remember=remember)
+                user.update_last_login()
+                
+                flash(f"Вітаємо, {user.full_name}!", "success")
+                
+                next_page = request.args.get("next")
+                if next_page:
+                    return redirect(next_page)
+                
+                if user.is_admin or user.is_manager:
+                    return redirect(url_for("admin_dashboard"))
+                elif user.is_b2b:
+                    return redirect(url_for("b2b_dashboard"))
+                
+                return redirect(url_for("user_cabinet"))
+            
+            flash("Невірний email або пароль.", "danger")
+        
+        settings = SiteSettings.get_or_create()
+        return render_template("auth/login.html", settings=settings)
+
+    @app.route("/logout")
+    @login_required
+    def user_logout():
+        """Вихід з системи."""
+        from flask_login import logout_user as flask_logout_user
+        flask_logout_user()
+        flash("Ви успішно вийшли з системи.", "info")
+        return redirect(url_for("user_login"))
+
+    @app.route("/register", methods=["GET", "POST"])
+    def user_register():
+        """Реєстрація B2C клієнта."""
+        if current_user.is_authenticated:
+            return redirect(url_for("user_cabinet"))
+        
+        if request.method == "POST":
+            email = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "")
+            password_confirm = request.form.get("password_confirm", "")
+            first_name = request.form.get("first_name", "").strip()
+            last_name = request.form.get("last_name", "").strip()
+            phone = request.form.get("phone", "").strip()
+            
+            errors = []
+            
+            if not email:
+                errors.append("Email обов'язковий")
+            elif User.get_by_email(email):
+                errors.append("Користувач з таким email вже існує")
+            
+            if not password:
+                errors.append("Пароль обов'язковий")
+            elif len(password) < 6:
+                errors.append("Пароль має бути не менше 6 символів")
+            elif password != password_confirm:
+                errors.append("Паролі не співпадають")
+            
+            if errors:
+                for error in errors:
+                    flash(error, "danger")
+                settings = SiteSettings.get_or_create()
+                return render_template("auth/register.html", settings=settings)
+            
+            user = User.create_user(
+                email=email,
+                password=password,
+                role=UserRole.CUSTOMER,
+                first_name=first_name or None,
+                last_name=last_name or None,
+                phone=phone or None,
+            )
+            
+            from flask_login import login_user as flask_login_user
+            flask_login_user(user)
+            flash("Реєстрація успішна! Ласкаво просимо!", "success")
+            return redirect(url_for("user_cabinet"))
+        
+        settings = SiteSettings.get_or_create()
+        return render_template("auth/register.html", settings=settings)
+
+    @app.route("/register/b2b", methods=["GET", "POST"])
+    def user_register_b2b():
+        """Реєстрація B2B партнера."""
+        if current_user.is_authenticated:
+            return redirect(url_for("b2b_dashboard"))
+        
+        settings = SiteSettings.get_or_create()
+        if not getattr(settings, 'b2b_registration_open', True):
+            flash("B2B реєстрація тимчасово закрита.", "warning")
+            return redirect(url_for("user_login"))
+        
+        if request.method == "POST":
+            # Дані користувача
+            email = request.form.get("email", "").strip().lower()
+            password = request.form.get("password", "")
+            password_confirm = request.form.get("password_confirm", "")
+            first_name = request.form.get("first_name", "").strip()
+            last_name = request.form.get("last_name", "").strip()
+            phone = request.form.get("phone", "").strip()
+            
+            # Дані компанії
+            company_name = request.form.get("company_name", "").strip()
+            vat_number = request.form.get("vat_number", "").strip()
+            country = request.form.get("country", "").strip()
+            address = request.form.get("address", "").strip()
+            city = request.form.get("city", "").strip()
+            website = request.form.get("website", "").strip()
+            
+            # Валідація
+            errors = []
+            
+            if not email:
+                errors.append("Email обов'язковий")
+            elif User.get_by_email(email):
+                errors.append("Користувач з таким email вже існує")
+            
+            if not password:
+                errors.append("Пароль обов'язковий")
+            elif len(password) < 8:
+                errors.append("Пароль має бути не менше 8 символів")
+            elif password != password_confirm:
+                errors.append("Паролі не співпадають")
+            
+            if not company_name:
+                errors.append("Назва компанії обов'язкова")
+            
+            if not first_name or not last_name:
+                errors.append("Ім'я та прізвище контактної особи обов'язкові")
+            
+            if errors:
+                for error in errors:
+                    flash(error, "danger")
+                return render_template("auth/register_b2b.html", settings=settings)
+            
+            # Перевірка VAT (опціонально)
+            vat_verified = False
+            vat_data = None
+            if vat_number:
+                try:
+                    from services.vat_checker import VATChecker
+                    checker = VATChecker()
+                    vat_result = checker.check_vat(vat_number)
+                    vat_verified = vat_result.get("valid", False)
+                    vat_data = vat_result
+                    if vat_verified:
+                        flash(f"✅ VAT номер підтверджено!", "success")
+                    else:
+                        flash(f"⚠️ VAT не підтверджено: {vat_result.get('error', '')}", "warning")
+                except Exception as e:
+                    flash(f"⚠️ Помилка перевірки VAT: {str(e)}", "warning")
+            
+            # Створення компанії
+            company = Company(
+                name=company_name,
+                vat_number=vat_number or None,
+                vat_country=country[:2].upper() if country else None,
+                vat_verified=vat_verified,
+                vat_verified_at=datetime.utcnow() if vat_verified else None,
+                vat_data=vat_data,
+                address=address or None,
+                city=city or None,
+                country=country or None,
+                website=website or None,
+                contact_person=f"{first_name} {last_name}",
+                contact_email=email,
+                contact_phone=phone or None,
+                status=CompanyStatus.VERIFIED.value if (getattr(settings, 'b2b_auto_approve', False) and vat_verified) else CompanyStatus.PENDING.value,
+            )
+            db.session.add(company)
+            db.session.flush()
+            
+            # Створення користувача
+            user = User(
+                email=email,
+                role=UserRole.PARTNER.value,
+                first_name=first_name,
+                last_name=last_name,
+                phone=phone or None,
+                company_id=company.id,
+                is_verified=vat_verified,
+            )
+            user.set_password(password)
+            db.session.add(user)
+            db.session.commit()
+            
+            from flask_login import login_user as flask_login_user
+            flask_login_user(user)
+            
+            if company.is_verified:
+                flash("✅ Реєстрація успішна! Ваша компанія верифікована.", "success")
+            else:
+                flash("📋 Реєстрація успішна! Ваша заявка на розгляді.", "info")
+            
+            return redirect(url_for("b2b_dashboard"))
+        
+        return render_template("auth/register_b2b.html", settings=settings)
+
+    # ----- API: ПЕРЕВІРКА VAT -----
+
+    @app.route("/api/verify-vat", methods=["POST"])
+    def api_verify_vat():
+        """AJAX перевірка VAT номера."""
+        data = request.get_json() if request.is_json else request.form
+        vat_number = data.get("vat_number", "").strip()
+        
+        if not vat_number:
+            return jsonify({"error": "VAT номер обов'язковий"}), 400
+        
+        try:
+            from services.vat_checker import VATChecker
+            checker = VATChecker()
+            result = checker.check_vat(vat_number)
+            return jsonify(result)
+        except Exception as e:
+            return jsonify({"error": str(e), "valid": False}), 500
+
+    # ----- КАБІНЕТ B2C -----
+
+    @app.route("/cabinet")
+    @login_required
+    def user_cabinet():
+        """Особистий кабінет B2C клієнта."""
+        if current_user.is_b2b:
+            return redirect(url_for("b2b_dashboard"))
+        
+        settings = SiteSettings.get_or_create()
+        
+        # Статистика
+        total_orders = Order.query.filter_by(customer_email=current_user.email).count()
+        recent_orders = Order.query.filter_by(customer_email=current_user.email)\
+            .order_by(Order.created_at.desc()).limit(5).all()
+        
+        for order in recent_orders:
+            order.status_display = {
+                "created": "Створено",
+                "pending": "Очікує оплати",
+                "paid": "Оплачено",
+                "shipped": "Відправлено",
+                "delivered": "Доставлено",
+                "cancelled": "Скасовано",
+            }.get(order.status, order.status)
+        
+        return render_template(
+            "cabinet/b2c/dashboard.html",
+            settings=settings,
+            total_orders=total_orders,
+            recent_orders=recent_orders,
+        )
+
+    # ----- КАБІНЕТ B2B -----
+
+    @app.route("/cabinet/b2b")
+    @login_required
+    def b2b_dashboard():
+        """Dashboard B2B партнера."""
+        if not current_user.is_b2b:
+            return redirect(url_for("user_cabinet"))
+        
+        settings = SiteSettings.get_or_create()
+        company = current_user.company
+        
+        # Статистика
+        total_orders = Order.query.filter_by(customer_email=current_user.email).count()
+        pending_orders = Order.query.filter_by(customer_email=current_user.email, status="pending").count()
+        total_spent = db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))\
+            .filter_by(customer_email=current_user.email, status="paid").scalar()
+        
+        discount = company.discount_percent if company else 0
+        
+        recent_orders = Order.query.filter_by(customer_email=current_user.email)\
+            .order_by(Order.created_at.desc()).limit(5).all()
+        
+        for order in recent_orders:
+            order.status_display = {
+                "created": "Створено",
+                "pending": "Очікує оплати",
+                "paid": "Оплачено",
+                "shipped": "Відправлено",
+                "delivered": "Доставлено",
+                "cancelled": "Скасовано",
+            }.get(order.status, order.status)
+        
+        return render_template(
+            "cabinet/b2b/dashboard.html",
+            settings=settings,
+            total_orders=total_orders,
+            pending_orders=pending_orders,
+            total_spent=total_spent,
+            discount=discount,
+            recent_orders=recent_orders,
+            recent_documents=[],  # TODO: Документи
+            chart_labels=None,
+            chart_data=None,
+        )
+
+    @app.route("/cabinet/b2b/orders")
+    @login_required
+    def b2b_orders():
+        """Замовлення B2B партнера."""
+        if not current_user.is_b2b:
+            return redirect(url_for("user_cabinet"))
+        
+        settings = SiteSettings.get_or_create()
+        
+        orders = Order.query.filter_by(customer_email=current_user.email)\
+            .order_by(Order.created_at.desc()).all()
+        
+        for order in orders:
+            order.status_display = {
+                "created": "Створено",
+                "pending": "Очікує оплати",
+                "paid": "Оплачено",
+                "shipped": "Відправлено",
+                "delivered": "Доставлено",
+                "cancelled": "Скасовано",
+            }.get(order.status, order.status)
+        
+        return render_template(
+            "cabinet/b2b/orders.html",
+            settings=settings,
+            orders=orders,
+        )
+
+    @app.route("/cabinet/b2b/company", methods=["GET", "POST"])
+    @login_required
+    def b2b_company():
+        """Профіль компанії B2B партнера."""
+        if not current_user.is_b2b:
+            return redirect(url_for("user_cabinet"))
+        
+        settings = SiteSettings.get_or_create()
+        company = current_user.company
+        
+        if request.method == "POST" and company:
+            company.name = request.form.get("name", company.name)
+            company.address = request.form.get("address", company.address)
+            company.city = request.form.get("city", company.city)
+            company.postal_code = request.form.get("postal_code", company.postal_code)
+            company.country = request.form.get("country", company.country)
+            company.website = request.form.get("website", company.website)
+            company.contact_person = request.form.get("contact_person", company.contact_person)
+            company.contact_phone = request.form.get("phone", company.contact_phone)
+            
+            db.session.commit()
+            flash("Дані компанії оновлено!", "success")
+            return redirect(url_for("b2b_company"))
+        
+        return render_template(
+            "cabinet/b2b/company.html",
+            settings=settings,
+            company=company,
+        )
+
+    # ========== CRM ADMIN ROUTES ==========
+    
+    @app.route("/admin/crm")
+    @admin_required
+    def admin_crm():
+        """CRM - список партнерів."""
+        settings = SiteSettings.query.first()
+        
+        # Фільтри
+        filter_status = request.args.get("status", "")
+        filter_reliability = request.args.get("reliability", "")
+        filter_country = request.args.get("country", "")
+        search = request.args.get("search", "")
+        page = request.args.get("page", 1, type=int)
+        per_page = 20
+        
+        # Базовий запит
+        query = Company.query
+        
+        # Застосовуємо фільтри
+        if filter_status:
+            query = query.filter(Company.status == filter_status)
+        if filter_reliability:
+            query = query.filter(Company.reliability_level == filter_reliability)
+        if filter_country:
+            query = query.filter(Company.country_code == filter_country)
+        if search:
+            search_term = f"%{search}%"
+            query = query.filter(
+                db.or_(
+                    Company.name.ilike(search_term),
+                    Company.vat_number.ilike(search_term),
+                    Company.domain.ilike(search_term),
+                )
+            )
+        
+        # Сортування та пагінація
+        query = query.order_by(Company.created_at.desc())
+        total = query.count()
+        companies = query.offset((page - 1) * per_page).limit(per_page).all()
+        total_pages = (total + per_page - 1) // per_page
+        
+        # Статистика
+        all_companies = Company.query.all()
+        stats = {
+            "total": len(all_companies),
+            "verified": len([c for c in all_companies if c.status == "verified"]),
+            "pending": len([c for c in all_companies if c.status == "pending"]),
+            "rejected": len([c for c in all_companies if c.status == "rejected"]),
+            "high_reliability": len([c for c in all_companies if c.reliability_level == "high"]),
+            "medium_reliability": len([c for c in all_companies if c.reliability_level == "medium"]),
+            "low_reliability": len([c for c in all_companies if c.reliability_level == "low"]),
+            "critical_reliability": len([c for c in all_companies if c.reliability_level == "critical"]),
+        }
+        # Відсотки
+        total_r = max(1, stats["total"])
+        stats["high_reliability_pct"] = int(stats["high_reliability"] / total_r * 100)
+        stats["medium_reliability_pct"] = int(stats["medium_reliability"] / total_r * 100)
+        stats["low_reliability_pct"] = int(stats["low_reliability"] / total_r * 100)
+        stats["critical_reliability_pct"] = int(stats["critical_reliability"] / total_r * 100)
+        
+        # Алерти - використовуємо прямі запити замість методів класу
+        from models.company import AdminAlert, AlertSeverity
+        critical_alerts = AdminAlert.query.filter_by(
+            severity=AlertSeverity.CRITICAL.value,
+            is_resolved=False
+        ).order_by(AdminAlert.created_at.desc()).all()
+        unread_alerts_count = AdminAlert.query.filter_by(is_read=False).count()
+        
+        # Унікальні країни
+        countries = db.session.query(Company.country_code, Company.country).distinct().filter(
+            Company.country_code.isnot(None)
+        ).all()
+        
+        return render_template(
+            "admin/crm.html",
+            settings=settings,
+            companies=companies,
+            stats=stats,
+            critical_alerts=critical_alerts,
+            unread_alerts_count=unread_alerts_count,
+            countries=countries,
+            filter_status=filter_status,
+            filter_reliability=filter_reliability,
+            filter_country=filter_country,
+            search=search,
+            page=page,
+            total_pages=total_pages,
+        )
+    
+    @app.route("/admin/crm/partner/<int:id>")
+    @admin_required
+    def admin_crm_partner(id):
+        """Деталі партнера."""
+        settings = SiteSettings.query.first()
+        company = Company.query.get_or_404(id)
+        
+        from models.company import AdminAlert, VerificationLog
+        company_alerts = AdminAlert.query.filter_by(
+            company_id=id, 
+            is_resolved=False
+        ).order_by(AdminAlert.created_at.desc()).all()
+        
+        verification_logs = VerificationLog.query.filter_by(
+            company_id=id
+        ).order_by(VerificationLog.checked_at.desc()).limit(20).all()
+        
+        return render_template(
+            "admin/crm_partner.html",
+            settings=settings,
+            company=company,
+            company_alerts=company_alerts,
+            verification_logs=verification_logs,
+        )
+    
+    @app.route("/admin/crm/partner/<int:id>/verify", methods=["POST"])
+    @admin_required
+    def admin_crm_partner_verify(id):
+        """Запустити верифікацію партнера."""
+        company = Company.query.get_or_404(id)
+        
+        try:
+            from services.partner_verifier import partner_verifier
+            from models.company import VerificationLog, AdminAlert
+            
+            # Попередній результат для порівняння
+            previous_result = company.last_verification_data
+            
+            # Повна верифікація
+            result = partner_verifier.full_verification(
+                company_name=company.name,
+                vat_number=company.full_vat_number,
+                domain=company.website or company.domain,
+                hr_number=company.handelsregister_id,
+                country_code=company.country_code,
+                city=company.city,
+                previous_result=previous_result,
+            )
+            
+            # Оновлюємо компанію
+            company.reliability_score = result.get("reliability_score", 0)
+            company.reliability_level = result.get("reliability_level", "critical")
+            company.last_verification_at = datetime.utcnow()
+            company.last_verification_data = result
+            
+            # Оновлюємо статуси перевірок
+            if result.get("vat_result", {}).get("valid"):
+                company.vat_verified = True
+                company.vat_verified_at = datetime.utcnow()
+                company.vat_data = result["vat_result"]
+            
+            if result.get("whois_result", {}).get("valid"):
+                company.is_whois_verified = True
+                company.whois_checked_at = datetime.utcnow()
+                company.whois_data = result["whois_result"]
+            
+            if result.get("hr_result", {}).get("valid"):
+                company.is_hr_verified = True
+                company.hr_data = result["hr_result"]
+            
+            # Логуємо перевірку
+            VerificationLog.log_check(
+                company_id=company.id,
+                check_type="full",
+                status="success",
+                is_valid=result.get("reliability_score", 0) >= 50,
+                response_data=result,
+                changes_detected=len(result.get("changes", [])) > 0,
+                changes_description=str(result.get("changes", [])) if result.get("changes") else None,
+            )
+            
+            # Створюємо алерти
+            for alert_data in result.get("alerts", []):
+                AdminAlert.create_alert(
+                    alert_type=alert_data.get("type"),
+                    title=alert_data.get("message", "Алерт верифікації"),
+                    message=alert_data.get("message"),
+                    company_id=company.id,
+                    severity=alert_data.get("severity", "info"),
+                    data=result,
+                )
+            
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "summary": result.get("summary", ""),
+                "score": result.get("reliability_score"),
+                "level": result.get("reliability_level"),
+            })
+            
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+    
+    @app.route("/admin/crm/partner/<int:id>/approve", methods=["POST"])
+    @admin_required
+    def admin_crm_partner_approve(id):
+        """Підтвердити партнера."""
+        company = Company.query.get_or_404(id)
+        company.status = "verified"
+        company.verified_at = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({"success": True})
+    
+    @app.route("/admin/crm/partner/<int:id>/reject", methods=["POST"])
+    @admin_required
+    def admin_crm_partner_reject(id):
+        """Відхилити партнера."""
+        data = request.get_json() or {}
+        company = Company.query.get_or_404(id)
+        company.status = "rejected"
+        company.rejection_reason = data.get("reason", "")
+        db.session.commit()
+        
+        return jsonify({"success": True})
+    
+    @app.route("/admin/crm/partner/<int:id>/suspend", methods=["POST"])
+    @admin_required
+    def admin_crm_partner_suspend(id):
+        """Призупинити партнера."""
+        data = request.get_json() or {}
+        company = Company.query.get_or_404(id)
+        company.status = "suspended"
+        company.rejection_reason = data.get("reason", "")
+        db.session.commit()
+        
+        return jsonify({"success": True})
+    
+    @app.route("/admin/crm/partner/<int:id>/update", methods=["POST"])
+    @admin_required
+    def admin_crm_partner_update(id):
+        """Оновити B2B налаштування партнера."""
+        company = Company.query.get_or_404(id)
+        company.credit_limit = float(request.form.get("credit_limit", 0))
+        company.payment_terms = int(request.form.get("payment_terms", 0))
+        company.discount_percent = float(request.form.get("discount_percent", 0))
+        db.session.commit()
+        
+        flash("Налаштування оновлено!", "success")
+        return redirect(url_for("admin_crm_partner", id=id))
+    
+    @app.route("/admin/crm/alerts")
+    @admin_required
+    def admin_crm_alerts():
+        """Список алертів."""
+        settings = SiteSettings.query.first()
+        
+        from models.company import AdminAlert
+        
+        filter_severity = request.args.get("severity", "")
+        filter_status = request.args.get("status", "")
+        page = request.args.get("page", 1, type=int)
+        per_page = 30
+        
+        query = AdminAlert.query
+        
+        if filter_severity:
+            query = query.filter(AdminAlert.severity == filter_severity)
+        if filter_status == "unread":
+            query = query.filter(AdminAlert.is_read == False)
+        elif filter_status == "unresolved":
+            query = query.filter(AdminAlert.is_resolved == False)
+        elif filter_status == "resolved":
+            query = query.filter(AdminAlert.is_resolved == True)
+        
+        query = query.order_by(AdminAlert.created_at.desc())
+        total = query.count()
+        alerts = query.offset((page - 1) * per_page).limit(per_page).all()
+        total_pages = (total + per_page - 1) // per_page
+        
+        # Статистика
+        all_alerts = AdminAlert.query.all()
+        stats = {
+            "critical": len([a for a in all_alerts if a.severity == "critical" and not a.is_resolved]),
+            "warning": len([a for a in all_alerts if a.severity == "warning" and not a.is_resolved]),
+            "info": len([a for a in all_alerts if a.severity == "info" and not a.is_resolved]),
+            "unread": len([a for a in all_alerts if not a.is_read]),
+        }
+        
+        return render_template(
+            "admin/crm_alerts.html",
+            settings=settings,
+            alerts=alerts,
+            stats=stats,
+            filter_severity=filter_severity,
+            filter_status=filter_status,
+            page=page,
+            total_pages=total_pages,
+        )
+    
+    @app.route("/admin/crm/alert/<int:id>/read", methods=["POST"])
+    @admin_required
+    def admin_crm_alert_read(id):
+        """Позначити алерт прочитаним."""
+        from models.company import AdminAlert
+        alert = AdminAlert.query.get_or_404(id)
+        alert.mark_read()
+        
+        return jsonify({"success": True})
+    
+    @app.route("/admin/crm/alert/<int:id>/resolve", methods=["POST"])
+    @admin_required
+    def admin_crm_alert_resolve(id):
+        """Вирішити алерт."""
+        from models.company import AdminAlert
+        data = request.get_json() or {}
+        alert = AdminAlert.query.get_or_404(id)
+        
+        # Знаходимо поточного адміна (потребує ID)
+        alert.is_resolved = True
+        alert.resolved_at = datetime.utcnow()
+        alert.resolution_note = data.get("note", "")
+        db.session.commit()
+        
+        return jsonify({"success": True})
+    
+    @app.route("/admin/crm/alerts/mark-all-read", methods=["POST"])
+    @admin_required
+    def admin_crm_alerts_mark_all_read():
+        """Позначити всі алерти прочитаними."""
+        from models.company import AdminAlert
+        AdminAlert.query.filter_by(is_read=False).update({"is_read": True})
+        db.session.commit()
+        
+        return jsonify({"success": True})
+    
+    @app.route("/admin/crm/run-daily-check", methods=["POST"])
+    @admin_required
+    def admin_crm_run_daily_check():
+        """Запустити щоденну перевірку всіх партнерів."""
+        try:
+            from services.partner_verifier import partner_verifier
+            from models.company import VerificationLog, AdminAlert
+            
+            companies = Company.query.filter(
+                Company.status.in_(["verified", "pending"])
+            ).all()
+            
+            checked = 0
+            alerts_created = 0
+            
+            for company in companies:
+                try:
+                    previous_result = company.last_verification_data
+                    
+                    result = partner_verifier.full_verification(
+                        company_name=company.name,
+                        vat_number=company.full_vat_number,
+                        domain=company.website or company.domain,
+                        hr_number=company.handelsregister_id,
+                        country_code=company.country_code,
+                        city=company.city,
+                        previous_result=previous_result,
+                    )
+                    
+                    # Оновлюємо компанію
+                    company.reliability_score = result.get("reliability_score", 0)
+                    company.reliability_level = result.get("reliability_level", "critical")
+                    company.last_verification_at = datetime.utcnow()
+                    company.last_verification_data = result
+                    
+                    if result.get("vat_result", {}).get("valid"):
+                        company.vat_verified = True
+                        company.vat_data = result["vat_result"]
+                    
+                    if result.get("whois_result", {}).get("valid"):
+                        company.is_whois_verified = True
+                        company.whois_data = result["whois_result"]
+                    
+                    if result.get("hr_result", {}).get("valid"):
+                        company.is_hr_verified = True
+                        company.hr_data = result["hr_result"]
+                    
+                    # Логуємо
+                    VerificationLog.log_check(
+                        company_id=company.id,
+                        check_type="daily",
+                        status="success",
+                        is_valid=result.get("reliability_score", 0) >= 50,
+                        response_data=result,
+                        changes_detected=len(result.get("changes", [])) > 0,
+                    )
+                    
+                    # Алерти
+                    for alert_data in result.get("alerts", []):
+                        AdminAlert.create_alert(
+                            alert_type=alert_data.get("type"),
+                            title=f"{company.name}: {alert_data.get('message', 'Алерт')}",
+                            message=alert_data.get("message"),
+                            company_id=company.id,
+                            severity=alert_data.get("severity", "info"),
+                        )
+                        alerts_created += 1
+                    
+                    checked += 1
+                    
+                except Exception as e:
+                    # Логуємо помилку
+                    VerificationLog.log_check(
+                        company_id=company.id,
+                        check_type="daily",
+                        status="error",
+                        is_valid=False,
+                        error_message=str(e),
+                    )
+            
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "checked": checked,
+                "alerts": alerts_created,
+            })
+            
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
 
     # Ініціалізація БД при старті
     init_db()

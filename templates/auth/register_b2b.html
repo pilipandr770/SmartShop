@@ -1,0 +1,466 @@
+{% extends "base.html" %}
+
+{% block title %}B2B Реєстрація - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-header">
+            <h1>🏢 B2B Партнерство</h1>
+            <p>Реєстрація для бізнес-клієнтів</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" class="auth-form" id="b2bForm">
+            <!-- Секція: Дані компанії -->
+            <div class="form-section">
+                <h3>📋 Дані компанії</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company_name">Назва компанії *</label>
+                        <input type="text" id="company_name" name="company_name" required 
+                               placeholder="ТОВ «Ваша Компанія»" value="{{ request.form.get('company_name', '') }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="legal_name">Юридична назва</label>
+                        <input type="text" id="legal_name" name="legal_name" 
+                               placeholder="Повна юридична назва" value="{{ request.form.get('legal_name', '') }}">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vat_country">Країна VAT</label>
+                        <select id="vat_country" name="vat_country">
+                            <option value="">Оберіть країну</option>
+                            <option value="DE" {% if request.form.get('vat_country') == 'DE' %}selected{% endif %}>🇩🇪 Німеччина (DE)</option>
+                            <option value="AT" {% if request.form.get('vat_country') == 'AT' %}selected{% endif %}>🇦🇹 Австрія (AT)</option>
+                            <option value="PL" {% if request.form.get('vat_country') == 'PL' %}selected{% endif %}>🇵🇱 Польща (PL)</option>
+                            <option value="CZ" {% if request.form.get('vat_country') == 'CZ' %}selected{% endif %}>🇨🇿 Чехія (CZ)</option>
+                            <option value="FR" {% if request.form.get('vat_country') == 'FR' %}selected{% endif %}>🇫🇷 Франція (FR)</option>
+                            <option value="IT" {% if request.form.get('vat_country') == 'IT' %}selected{% endif %}>🇮🇹 Італія (IT)</option>
+                            <option value="ES" {% if request.form.get('vat_country') == 'ES' %}selected{% endif %}>🇪🇸 Іспанія (ES)</option>
+                            <option value="NL" {% if request.form.get('vat_country') == 'NL' %}selected{% endif %}>🇳🇱 Нідерланди (NL)</option>
+                            <option value="BE" {% if request.form.get('vat_country') == 'BE' %}selected{% endif %}>🇧🇪 Бельгія (BE)</option>
+                            <option value="SE" {% if request.form.get('vat_country') == 'SE' %}selected{% endif %}>🇸🇪 Швеція (SE)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vat_number">VAT номер (ПДВ)</label>
+                        <div class="input-with-btn">
+                            <input type="text" id="vat_number" name="vat_number" 
+                                   placeholder="123456789" value="{{ request.form.get('vat_number', '') }}">
+                            <button type="button" class="btn btn-sm btn-check" onclick="checkVAT()">
+                                Перевірити
+                            </button>
+                        </div>
+                        <div id="vatStatus" class="vat-status"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="website">Веб-сайт</label>
+                    <input type="url" id="website" name="website" 
+                           placeholder="https://your-company.com" value="{{ request.form.get('website', '') }}">
+                </div>
+            </div>
+            
+            <!-- Секція: Адреса -->
+            <div class="form-section">
+                <h3>📍 Адреса</h3>
+                
+                <div class="form-group">
+                    <label for="address">Адреса</label>
+                    <input type="text" id="address" name="address" 
+                           placeholder="вул. Головна, 1" value="{{ request.form.get('address', '') }}">
+                </div>
+                
+                <div class="form-row three-col">
+                    <div class="form-group">
+                        <label for="city">Місто</label>
+                        <input type="text" id="city" name="city" 
+                               placeholder="Київ" value="{{ request.form.get('city', '') }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postal_code">Поштовий індекс</label>
+                        <input type="text" id="postal_code" name="postal_code" 
+                               placeholder="01001" value="{{ request.form.get('postal_code', '') }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country">Країна</label>
+                        <input type="text" id="country" name="country" 
+                               placeholder="Україна" value="{{ request.form.get('country', '') }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Секція: Контактна особа -->
+            <div class="form-section">
+                <h3>👤 Контактна особа</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">Ім'я *</label>
+                        <input type="text" id="first_name" name="first_name" required 
+                               placeholder="Іван" value="{{ request.form.get('first_name', '') }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last_name">Прізвище *</label>
+                        <input type="text" id="last_name" name="last_name" required 
+                               placeholder="Петренко" value="{{ request.form.get('last_name', '') }}">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="business@company.com" value="{{ request.form.get('email', '') }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Телефон</label>
+                        <input type="tel" id="phone" name="phone" 
+                               placeholder="+380 XX XXX XX XX" value="{{ request.form.get('phone', '') }}">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Секція: Пароль -->
+            <div class="form-section">
+                <h3>🔐 Безпека</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Пароль *</label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Мін. 8 символів">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password_confirm">Підтвердження *</label>
+                        <input type="password" id="password_confirm" name="password_confirm" required 
+                               placeholder="Повторіть пароль">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-info">
+                <p>ℹ️ Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії та повідомимо про результат на вказаний email.</p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block btn-lg">
+                🚀 Подати заявку на партнерство
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Вже є акаунт? <a href="{{ url_for('user_login') }}">Увійти</a></p>
+            <p>Приватний покупець? <a href="{{ url_for('user_register') }}">Звичайна реєстрація</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.auth-card-wide {
+    max-width: 680px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #f1f5f9);
+}
+
+.auth-header p {
+    color: var(--text-secondary, #94a3b8);
+}
+
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary, #f1f5f9);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-row.three-col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.auth-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary, #f1f5f9);
+    font-size: 0.9rem;
+}
+
+.auth-form input,
+.auth-form select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.8);
+    color: var(--text-primary, #f1f5f9);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+    outline: none;
+    border-color: var(--primary-color, #10b981);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.input-with-btn {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.input-with-btn input {
+    flex: 1;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.btn-check {
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: #93c5fd;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-check:hover {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.vat-status {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    min-height: 1.2rem;
+}
+
+.vat-status.valid {
+    color: #6ee7b7;
+}
+
+.vat-status.invalid {
+    color: #fca5a5;
+}
+
+.vat-status.checking {
+    color: #93c5fd;
+}
+
+.form-info {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #93c5fd;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+.btn-lg {
+    padding: 1.125rem 1.5rem;
+    font-size: 1.05rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+.auth-footer {
+    margin-top: 2rem;
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.auth-footer p {
+    color: var(--text-secondary, #94a3b8);
+    margin-bottom: 0.5rem;
+}
+
+.auth-footer a {
+    color: var(--primary-color, #10b981);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.alert {
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+}
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #fcd34d;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
+}
+
+@media (max-width: 640px) {
+    .form-row,
+    .form-row.three-col {
+        grid-template-columns: 1fr;
+    }
+    
+    .auth-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+
+<script>
+async function checkVAT() {
+    const vatNumber = document.getElementById('vat_number').value.trim();
+    const vatCountry = document.getElementById('vat_country').value;
+    const statusEl = document.getElementById('vatStatus');
+    
+    if (!vatNumber) {
+        statusEl.textContent = '❌ Введіть VAT номер';
+        statusEl.className = 'vat-status invalid';
+        return;
+    }
+    
+    statusEl.textContent = '⏳ Перевірка...';
+    statusEl.className = 'vat-status checking';
+    
+    try {
+        const formData = new FormData();
+        formData.append('vat_number', vatNumber);
+        if (vatCountry) formData.append('vat_country', vatCountry);
+        
+        const response = await fetch('/auth/check-vat', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.valid) {
+            statusEl.innerHTML = `✅ Підтверджено: <strong>${data.name || 'OK'}</strong>`;
+            statusEl.className = 'vat-status valid';
+            
+            // Автозаповнення даних
+            if (data.name && !document.getElementById('legal_name').value) {
+                document.getElementById('legal_name').value = data.name;
+            }
+            if (data.address && !document.getElementById('address').value) {
+                document.getElementById('address').value = data.address;
+            }
+        } else {
+            statusEl.textContent = `❌ ${data.error || 'VAT номер недійсний'}`;
+            statusEl.className = 'vat-status invalid';
+        }
+    } catch (error) {
+        statusEl.textContent = '❌ Помилка перевірки';
+        statusEl.className = 'vat-status invalid';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,607 @@
+{% extends "base.html" %}
+
+{% block title %}Профіль компанії - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+
+{% block content %}
+<div class="cabinet-container">
+    <div class="cabinet-sidebar">
+        <div class="user-info">
+            <div class="user-avatar b2b">🏢</div>
+            <div class="user-details">
+                <h3>{{ current_user.company.name if current_user.company else current_user.full_name }}</h3>
+                <span class="badge badge-b2b">B2B Партнер</span>
+            </div>
+        </div>
+        
+        <nav class="cabinet-nav">
+            <a href="{{ url_for('b2b_dashboard') }}" class="nav-item">
+                📊 Dashboard
+            </a>
+            <a href="{{ url_for('b2b_orders') }}" class="nav-item">
+                📦 Замовлення
+            </a>
+            <a href="{{ url_for('b2b_company') }}" class="nav-item active">
+                🏢 Компанія
+            </a>
+            <a href="#" class="nav-item">
+                💰 Прайс-листи
+            </a>
+            <a href="#" class="nav-item">
+                📄 Документи
+            </a>
+            <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
+                🚪 Вийти
+            </a>
+        </nav>
+    </div>
+    
+    <div class="cabinet-content">
+        <div class="page-header">
+            <h1>🏢 Профіль компанії</h1>
+            <p>Управління даними вашої компанії</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if company %}
+        <div class="verification-section">
+            <div class="verification-card {% if company.verification_status == 'verified' %}verified{% elif company.verification_status == 'pending' %}pending{% else %}rejected{% endif %}">
+                <div class="verification-header">
+                    <h3>Статус верифікації</h3>
+                    {% if company.verification_status == 'verified' %}
+                    <span class="status-badge status-success">✅ Верифіковано</span>
+                    {% elif company.verification_status == 'pending' %}
+                    <span class="status-badge status-warning">⏳ На перевірці</span>
+                    {% else %}
+                    <span class="status-badge status-danger">❌ Відхилено</span>
+                    {% endif %}
+                </div>
+                
+                <div class="verification-checks">
+                    <div class="check-item {% if company.is_vat_verified %}passed{% else %}pending{% endif %}">
+                        <span class="check-icon">{% if company.is_vat_verified %}✅{% else %}⏳{% endif %}</span>
+                        <span class="check-label">VAT перевірка (VIES)</span>
+                    </div>
+                    <div class="check-item {% if company.is_register_verified %}passed{% else %}pending{% endif %}">
+                        <span class="check-icon">{% if company.is_register_verified %}✅{% else %}⏳{% endif %}</span>
+                        <span class="check-label">Handelsregister</span>
+                    </div>
+                    <div class="check-item {% if company.is_whois_verified %}passed{% else %}pending{% endif %}">
+                        <span class="check-icon">{% if company.is_whois_verified %}✅{% else %}⏳{% endif %}</span>
+                        <span class="check-label">WHOIS домену</span>
+                    </div>
+                </div>
+                
+                {% if company.last_verification_at %}
+                <p class="verification-date">Остання перевірка: {{ company.last_verification_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <form method="POST" action="{{ url_for('b2b_company') }}" class="company-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+            
+            <div class="form-section">
+                <h3>📋 Основна інформація</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Назва компанії *</label>
+                        <input type="text" id="name" name="name" value="{{ company.name }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="legal_form">Правова форма</label>
+                        <select id="legal_form" name="legal_form">
+                            <option value="">Оберіть...</option>
+                            <option value="gmbh" {% if company.legal_form == 'gmbh' %}selected{% endif %}>GmbH</option>
+                            <option value="ag" {% if company.legal_form == 'ag' %}selected{% endif %}>AG</option>
+                            <option value="ug" {% if company.legal_form == 'ug' %}selected{% endif %}>UG</option>
+                            <option value="ohg" {% if company.legal_form == 'ohg' %}selected{% endif %}>OHG</option>
+                            <option value="kg" {% if company.legal_form == 'kg' %}selected{% endif %}>KG</option>
+                            <option value="einzelunternehmen" {% if company.legal_form == 'einzelunternehmen' %}selected{% endif %}>Einzelunternehmen</option>
+                            <option value="tov" {% if company.legal_form == 'tov' %}selected{% endif %}>ТОВ</option>
+                            <option value="pp" {% if company.legal_form == 'pp' %}selected{% endif %}>ПП</option>
+                            <option value="fop" {% if company.legal_form == 'fop' %}selected{% endif %}>ФОП</option>
+                            <option value="other" {% if company.legal_form == 'other' %}selected{% endif %}>Інше</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vat_number">VAT номер *</label>
+                        <div class="input-with-status">
+                            <input type="text" id="vat_number" name="vat_number" 
+                                   value="{{ company.vat_number }}" required
+                                   {% if company.is_vat_verified %}class="verified-input"{% endif %}>
+                            {% if company.is_vat_verified %}
+                            <span class="input-status verified">✅</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country">Країна *</label>
+                        <select id="country" name="country" required>
+                            <option value="">Оберіть країну...</option>
+                            <option value="DE" {% if company.country == 'DE' %}selected{% endif %}>🇩🇪 Німеччина</option>
+                            <option value="AT" {% if company.country == 'AT' %}selected{% endif %}>🇦🇹 Австрія</option>
+                            <option value="PL" {% if company.country == 'PL' %}selected{% endif %}>🇵🇱 Польща</option>
+                            <option value="CZ" {% if company.country == 'CZ' %}selected{% endif %}>🇨🇿 Чехія</option>
+                            <option value="FR" {% if company.country == 'FR' %}selected{% endif %}>🇫🇷 Франція</option>
+                            <option value="IT" {% if company.country == 'IT' %}selected{% endif %}>🇮🇹 Італія</option>
+                            <option value="ES" {% if company.country == 'ES' %}selected{% endif %}>🇪🇸 Іспанія</option>
+                            <option value="NL" {% if company.country == 'NL' %}selected{% endif %}>🇳🇱 Нідерланди</option>
+                            <option value="BE" {% if company.country == 'BE' %}selected{% endif %}>🇧🇪 Бельгія</option>
+                            <option value="UA" {% if company.country == 'UA' %}selected{% endif %}>🇺🇦 Україна</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="handelsregister_id">Handelsregister ID</label>
+                        <input type="text" id="handelsregister_id" name="handelsregister_id" 
+                               value="{{ company.handelsregister_id or '' }}"
+                               placeholder="HRB 12345">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="website">Веб-сайт</label>
+                        <input type="url" id="website" name="website" 
+                               value="{{ company.website or '' }}"
+                               placeholder="https://example.com">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>📍 Адреса</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="address">Адреса</label>
+                        <input type="text" id="address" name="address" 
+                               value="{{ company.address or '' }}"
+                               placeholder="Вулиця, будинок">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">Місто</label>
+                        <input type="text" id="city" name="city" 
+                               value="{{ company.city or '' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postal_code">Поштовий індекс</label>
+                        <input type="text" id="postal_code" name="postal_code" 
+                               value="{{ company.postal_code or '' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>📞 Контакти</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="email">Email компанії *</label>
+                        <input type="email" id="email" name="email" 
+                               value="{{ company.email }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Телефон</label>
+                        <input type="tel" id="phone" name="phone" 
+                               value="{{ company.phone or '' }}"
+                               placeholder="+49 123 456789">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact_person">Контактна особа</label>
+                        <input type="text" id="contact_person" name="contact_person" 
+                               value="{{ company.contact_person or '' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contact_position">Посада</label>
+                        <input type="text" id="contact_position" name="contact_position" 
+                               value="{{ company.contact_position or '' }}"
+                               placeholder="Менеджер з закупівель">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>🏦 Банківські реквізити</h3>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="bank_name">Назва банку</label>
+                        <input type="text" id="bank_name" name="bank_name" 
+                               value="{{ company.bank_name or '' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="iban">IBAN</label>
+                        <input type="text" id="iban" name="iban" 
+                               value="{{ company.iban or '' }}"
+                               placeholder="DE89 3704 0044 0532 0130 00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bic">BIC/SWIFT</label>
+                        <input type="text" id="bic" name="bic" 
+                               value="{{ company.bic or '' }}"
+                               placeholder="COBADEFFXXX">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Зберегти зміни</button>
+                <button type="button" class="btn btn-secondary" id="verify-btn">🔄 Повторна верифікація</button>
+            </div>
+        </form>
+        {% else %}
+        <div class="empty-state">
+            <p>Компанія не знайдена</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.cabinet-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 80vh;
+}
+
+.cabinet-sidebar {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.badge-b2b {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.cabinet-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.nav-item:hover {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.nav-logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.cabinet-content {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.verification-section {
+    margin-bottom: 2rem;
+}
+
+.verification-card {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.verification-card.verified {
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.verification-card.pending {
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.verification-card.rejected {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.verification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.verification-header h3 {
+    font-size: 1rem;
+}
+
+.status-badge {
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.status-warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.status-danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.verification-checks {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 0.5rem;
+}
+
+.check-item.passed {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.check-icon {
+    font-size: 1rem;
+}
+
+.check-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.verification-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.company-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-section {
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.form-section h3 {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input-with-status {
+    position: relative;
+}
+
+.input-with-status input {
+    width: 100%;
+    padding-right: 2.5rem;
+}
+
+.input-status {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.verified-input {
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    background: rgba(16, 185, 129, 0.05) !important;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: rgba(148, 163, 184, 0.2);
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+.alert-info { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; }
+.alert-warning { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fcd34d; }
+.alert-danger { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+@media (max-width: 768px) {
+    .cabinet-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .verification-checks {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+document.getElementById('verify-btn')?.addEventListener('click', async function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.textContent = '⏳ Перевірка...';
+    
+    try {
+        const response = await fetch('/api/company/reverify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Верифікацію запущено! Результати будуть оновлені найближчим часом.');
+            location.reload();
+        } else {
+            alert('❌ ' + (data.error || 'Помилка при запуску верифікації'));
+        }
+    } catch (error) {
+        alert('❌ Помилка з\'єднання');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Повторна верифікація';
+    }
+});
+</script>
+{% endblock %}

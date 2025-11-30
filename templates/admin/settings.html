@@ -195,6 +195,171 @@
         </div>
     </div>
 
+    <!-- ========== АДМІНІСТРАТОР ========== -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🔐 Обліковий запис адміністратора</h3>
+        </div>
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="admin_username">Логін адміністратора</label>
+                    <input type="text" id="admin_username" name="admin_username" 
+                           value="{{ settings.admin_username or 'admin' }}" 
+                           placeholder="admin" autocomplete="off">
+                    <small class="form-hint">Використовується для входу в адмін-панель</small>
+                </div>
+                <div class="form-group">
+                    <label for="admin_password">Новий пароль</label>
+                    <input type="password" id="admin_password" name="admin_password" 
+                           placeholder="Залиште порожнім, щоб не змінювати" autocomplete="new-password">
+                    <small class="form-hint">Мінімум 6 символів. Залиште порожнім, якщо не хочете змінювати</small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="admin_password_confirm">Підтвердження пароля</label>
+                    <input type="password" id="admin_password_confirm" name="admin_password_confirm" 
+                           placeholder="Повторіть новий пароль" autocomplete="new-password">
+                </div>
+                <div class="form-group"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Юридична особа адміністратора -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🏢 Ваша компанія (для запитів до реєстрів)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+                Ці дані використовуються для верифікації контрагентів через VIES, Handelsregister та інші реєстри.
+                Заповніть, щоб отримувати повні відповіді від реєстрів.
+            </p>
+        </div>
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="admin_company_name">Назва компанії</label>
+                    <input type="text" id="admin_company_name" name="admin_company_name" 
+                           value="{{ settings.admin_company_name or '' }}" 
+                           placeholder="SmartShop GmbH">
+                </div>
+                <div class="form-group">
+                    <label for="admin_company_legal_name">Юридична назва</label>
+                    <input type="text" id="admin_company_legal_name" name="admin_company_legal_name" 
+                           value="{{ settings.admin_company_legal_name or '' }}" 
+                           placeholder="SmartShop Handelsgesellschaft mbH">
+                </div>
+            </div>
+            
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="admin_vat_country">Країна VAT</label>
+                    <select id="admin_vat_country" name="admin_vat_country">
+                        <option value="">-- Оберіть --</option>
+                        <option value="DE" {% if settings.admin_vat_country == 'DE' %}selected{% endif %}>🇩🇪 Німеччина (DE)</option>
+                        <option value="AT" {% if settings.admin_vat_country == 'AT' %}selected{% endif %}>🇦🇹 Австрія (AT)</option>
+                        <option value="PL" {% if settings.admin_vat_country == 'PL' %}selected{% endif %}>🇵🇱 Польща (PL)</option>
+                        <option value="CZ" {% if settings.admin_vat_country == 'CZ' %}selected{% endif %}>🇨🇿 Чехія (CZ)</option>
+                        <option value="NL" {% if settings.admin_vat_country == 'NL' %}selected{% endif %}>🇳🇱 Нідерланди (NL)</option>
+                        <option value="BE" {% if settings.admin_vat_country == 'BE' %}selected{% endif %}>🇧🇪 Бельгія (BE)</option>
+                        <option value="FR" {% if settings.admin_vat_country == 'FR' %}selected{% endif %}>🇫🇷 Франція (FR)</option>
+                        <option value="IT" {% if settings.admin_vat_country == 'IT' %}selected{% endif %}>🇮🇹 Італія (IT)</option>
+                        <option value="ES" {% if settings.admin_vat_country == 'ES' %}selected{% endif %}>🇪🇸 Іспанія (ES)</option>
+                        <option value="UA" {% if settings.admin_vat_country == 'UA' %}selected{% endif %}>🇺🇦 Україна (UA)</option>
+                        <option value="SK" {% if settings.admin_vat_country == 'SK' %}selected{% endif %}>🇸🇰 Словаччина (SK)</option>
+                        <option value="HU" {% if settings.admin_vat_country == 'HU' %}selected{% endif %}>🇭🇺 Угорщина (HU)</option>
+                        <option value="RO" {% if settings.admin_vat_country == 'RO' %}selected{% endif %}>🇷🇴 Румунія (RO)</option>
+                        <option value="BG" {% if settings.admin_vat_country == 'BG' %}selected{% endif %}>🇧🇬 Болгарія (BG)</option>
+                        <option value="LT" {% if settings.admin_vat_country == 'LT' %}selected{% endif %}>🇱🇹 Литва (LT)</option>
+                        <option value="LV" {% if settings.admin_vat_country == 'LV' %}selected{% endif %}>🇱🇻 Латвія (LV)</option>
+                        <option value="EE" {% if settings.admin_vat_country == 'EE' %}selected{% endif %}>🇪🇪 Естонія (EE)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="admin_vat_number">VAT номер</label>
+                    <input type="text" id="admin_vat_number" name="admin_vat_number" 
+                           value="{{ settings.admin_vat_number or '' }}" 
+                           placeholder="123456789">
+                    <small class="form-hint">Без коду країни (DE, AT...)</small>
+                </div>
+                <div class="form-group">
+                    <label for="admin_handelsregister_id">Handelsregister ID</label>
+                    <input type="text" id="admin_handelsregister_id" name="admin_handelsregister_id" 
+                           value="{{ settings.admin_handelsregister_id or '' }}" 
+                           placeholder="HRB 123456">
+                    <small class="form-hint">Тільки для Німеччини</small>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="admin_company_address">Адреса</label>
+                    <input type="text" id="admin_company_address" name="admin_company_address" 
+                           value="{{ settings.admin_company_address or '' }}" 
+                           placeholder="Musterstraße 123">
+                </div>
+                <div class="form-group">
+                    <label for="admin_company_city">Місто</label>
+                    <input type="text" id="admin_company_city" name="admin_company_city" 
+                           value="{{ settings.admin_company_city or '' }}" 
+                           placeholder="Berlin">
+                </div>
+            </div>
+            
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="admin_company_postal_code">Поштовий індекс</label>
+                    <input type="text" id="admin_company_postal_code" name="admin_company_postal_code" 
+                           value="{{ settings.admin_company_postal_code or '' }}" 
+                           placeholder="10115">
+                </div>
+                <div class="form-group">
+                    <label for="admin_company_country">Країна</label>
+                    <input type="text" id="admin_company_country" name="admin_company_country" 
+                           value="{{ settings.admin_company_country or '' }}" 
+                           placeholder="Germany">
+                </div>
+                <div class="form-group">
+                    <label for="admin_company_country_code">Код країни</label>
+                    <input type="text" id="admin_company_country_code" name="admin_company_country_code" 
+                           value="{{ settings.admin_company_country_code or '' }}" 
+                           placeholder="DE" maxlength="2" style="text-transform: uppercase;">
+                </div>
+            </div>
+            
+            <div class="form-row three-col">
+                <div class="form-group">
+                    <label for="admin_company_email">Email компанії</label>
+                    <input type="email" id="admin_company_email" name="admin_company_email" 
+                           value="{{ settings.admin_company_email or '' }}" 
+                           placeholder="info@company.de">
+                </div>
+                <div class="form-group">
+                    <label for="admin_company_phone">Телефон</label>
+                    <input type="text" id="admin_company_phone" name="admin_company_phone" 
+                           value="{{ settings.admin_company_phone or '' }}" 
+                           placeholder="+49 30 12345678">
+                </div>
+                <div class="form-group">
+                    <label for="admin_company_website">Веб-сайт</label>
+                    <input type="text" id="admin_company_website" name="admin_company_website" 
+                           value="{{ settings.admin_company_website or '' }}" 
+                           placeholder="https://company.de">
+                </div>
+            </div>
+            
+            <div class="admin-company-status" style="margin-top: 1rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
+                <strong>📊 Статус даних:</strong>
+                {% if settings.admin_vat_number and settings.admin_vat_country %}
+                    <span style="color: #22c55e;">✅ VAT заповнено ({{ settings.admin_vat_country }}{{ settings.admin_vat_number }})</span>
+                {% else %}
+                    <span style="color: #f59e0b;">⚠️ VAT не заповнено - запити до реєстрів можуть бути обмежені</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <div class="form-footer">
         <button type="submit" class="btn btn-primary btn-lg">
             <span>💾</span> Зберегти налаштування

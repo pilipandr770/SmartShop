@@ -280,6 +280,16 @@
         </div>
 
         <div class="nav-section">
+            <div class="nav-title">B2B / CRM</div>
+            <a href="{{ url_for('admin_crm') }}" class="nav-link{% if request.endpoint in ['admin_crm', 'admin_crm_partner'] %} active{% endif %}">
+                <span class="nav-icon">🏢</span> Партнери
+            </a>
+            <a href="{{ url_for('admin_crm_alerts') }}" class="nav-link{% if request.endpoint == 'admin_crm_alerts' %} active{% endif %}">
+                <span class="nav-icon">🔔</span> Алерти
+            </a>
+        </div>
+
+        <div class="nav-section">
             <div class="nav-title">Контент</div>
             <a href="{{ url_for('admin_blocks') }}" class="nav-link{% if request.endpoint == 'admin_blocks' %} active{% endif %}">
                 <span class="nav-icon">🏠</span> Головна сторінка

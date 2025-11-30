@@ -1,0 +1,307 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}CRM - Алерти{% endblock %}
+
+{% block content %}
+<div class="alerts-page">
+    <div class="page-header">
+        <div class="breadcrumb">
+            <a href="{{ url_for('admin_crm') }}">← CRM</a>
+        </div>
+        <h1>🔔 Алерти верифікації</h1>
+        <div class="header-actions">
+            <button class="btn" onclick="markAllRead()">✓ Позначити прочитаними</button>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="alert-stats">
+        <div class="stat critical">
+            <span class="count">{{ stats.critical }}</span>
+            <span class="label">Критичні</span>
+        </div>
+        <div class="stat warning">
+            <span class="count">{{ stats.warning }}</span>
+            <span class="label">Попередження</span>
+        </div>
+        <div class="stat info">
+            <span class="count">{{ stats.info }}</span>
+            <span class="label">Інформаційні</span>
+        </div>
+        <div class="stat unread">
+            <span class="count">{{ stats.unread }}</span>
+            <span class="label">Непрочитані</span>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters">
+        <form method="get" class="filters-form">
+            <select name="severity">
+                <option value="">Всі рівні</option>
+                <option value="critical" {% if filter_severity == 'critical' %}selected{% endif %}>Критичні</option>
+                <option value="warning" {% if filter_severity == 'warning' %}selected{% endif %}>Попередження</option>
+                <option value="info" {% if filter_severity == 'info' %}selected{% endif %}>Інформаційні</option>
+            </select>
+            <select name="status">
+                <option value="">Всі статуси</option>
+                <option value="unread" {% if filter_status == 'unread' %}selected{% endif %}>Непрочитані</option>
+                <option value="unresolved" {% if filter_status == 'unresolved' %}selected{% endif %}>Невирішені</option>
+                <option value="resolved" {% if filter_status == 'resolved' %}selected{% endif %}>Вирішені</option>
+            </select>
+            <button type="submit" class="btn">Фільтрувати</button>
+        </form>
+    </div>
+    
+    <!-- Alerts List -->
+    <div class="alerts-list">
+        {% for alert in alerts %}
+        <div class="alert-card {{ alert.severity }} {% if not alert.is_read %}unread{% endif %} {% if alert.is_resolved %}resolved{% endif %}">
+            <div class="alert-icon">
+                {% if alert.severity == 'critical' %}🚨
+                {% elif alert.severity == 'warning' %}⚠️
+                {% else %}ℹ️{% endif %}
+            </div>
+            <div class="alert-body">
+                <div class="alert-header">
+                    <h4>{{ alert.title }}</h4>
+                    <span class="alert-time">{{ alert.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                </div>
+                <p class="alert-message">{{ alert.message }}</p>
+                {% if alert.company %}
+                <a href="{{ url_for('admin_crm_partner', id=alert.company.id) }}" class="company-link">
+                    🏢 {{ alert.company.name }}
+                </a>
+                {% endif %}
+                
+                {% if alert.is_resolved %}
+                <div class="resolution-info">
+                    <small>
+                        ✅ Вирішено {{ alert.resolved_at.strftime('%d.%m.%Y %H:%M') }}
+                        {% if alert.resolution_note %}
+                        <br>Коментар: {{ alert.resolution_note }}
+                        {% endif %}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+            <div class="alert-actions">
+                {% if not alert.is_read %}
+                <button class="btn btn-sm" onclick="markRead({{ alert.id }})" title="Прочитано">👁️</button>
+                {% endif %}
+                {% if not alert.is_resolved %}
+                <button class="btn btn-sm btn-success" onclick="resolveAlert({{ alert.id }})" title="Вирішено">✓</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% if not alerts %}
+        <div class="empty-state">
+            <span class="icon">🎉</span>
+            <h3>Немає алертів</h3>
+            <p>Все працює добре!</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="?page={{ page - 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">← Назад</a>
+        {% endif %}
+        <span class="page-info">Сторінка {{ page }} з {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">Вперед →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.alerts-page { padding: 20px; max-width: 1000px; margin: 0 auto; }
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.page-header h1 { margin: 0; flex: 1; }
+.breadcrumb a { color: #666; text-decoration: none; }
+
+.alert-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+.stat {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stat .count { display: block; font-size: 32px; font-weight: bold; }
+.stat .label { color: #666; font-size: 14px; }
+.stat.critical { border-top: 4px solid #dc3545; }
+.stat.critical .count { color: #dc3545; }
+.stat.warning { border-top: 4px solid #ffc107; }
+.stat.warning .count { color: #ffc107; }
+.stat.info { border-top: 4px solid #17a2b8; }
+.stat.info .count { color: #17a2b8; }
+.stat.unread { border-top: 4px solid #007bff; }
+.stat.unread .count { color: #007bff; }
+
+.filters {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.filters-form {
+    display: flex;
+    gap: 15px;
+}
+.filters-form select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-width: 150px;
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.alert-card {
+    display: flex;
+    gap: 15px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+.alert-card:hover { transform: translateX(5px); }
+.alert-card.unread { border-left: 4px solid #007bff; background: #f8f9ff; }
+.alert-card.resolved { opacity: 0.7; }
+
+.alert-card.critical { border-left: 4px solid #dc3545; }
+.alert-card.warning { border-left: 4px solid #ffc107; }
+.alert-card.info { border-left: 4px solid #17a2b8; }
+
+.alert-icon {
+    font-size: 28px;
+    width: 40px;
+    text-align: center;
+}
+
+.alert-body { flex: 1; }
+.alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+.alert-header h4 { margin: 0; }
+.alert-time { color: #999; font-size: 13px; }
+.alert-message { margin: 0 0 10px 0; color: #555; }
+.company-link {
+    display: inline-block;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+}
+.company-link:hover { text-decoration: underline; }
+
+.resolution-info {
+    margin-top: 10px;
+    padding: 10px;
+    background: #d4edda;
+    border-radius: 6px;
+    color: #155724;
+}
+
+.alert-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+}
+.empty-state .icon { font-size: 64px; display: block; margin-bottom: 15px; }
+.empty-state h3 { margin: 0 0 10px 0; }
+.empty-state p { color: #666; margin: 0; }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+.page-info { color: #666; }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    background: #e9ecef;
+    color: #333;
+}
+.btn:hover { background: #dee2e6; }
+.btn-success { background: #28a745; color: white; }
+.btn-sm { padding: 6px 10px; }
+</style>
+
+<script>
+function markRead(id) {
+    fetch(`/admin/crm/alert/${id}/read`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+}
+
+function markAllRead() {
+    fetch('/admin/crm/alerts/mark-all-read', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+}
+
+function resolveAlert(id) {
+    const note = prompt('Коментар до вирішення:');
+    if (note === null) return;
+    
+    fetch(`/admin/crm/alert/${id}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note })
+    })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload();
+            else alert('Помилка: ' + data.error);
+        });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}Особистий кабінет - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+
+{% block content %}
+<div class="cabinet-container">
+    <div class="cabinet-sidebar">
+        <div class="user-info">
+            <div class="user-avatar">{{ current_user.full_name[0] }}</div>
+            <div class="user-details">
+                <h3>{{ current_user.full_name }}</h3>
+                <p>{{ current_user.email }}</p>
+            </div>
+        </div>
+        
+        <nav class="cabinet-nav">
+            <a href="{{ url_for('user_cabinet') }}" class="nav-item active">
+                📊 Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                📦 Мої замовлення
+            </a>
+            <a href="#" class="nav-item">
+                👤 Профіль
+            </a>
+            <a href="#" class="nav-item">
+                🔐 Змінити пароль
+            </a>
+            <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
+                🚪 Вийти
+            </a>
+        </nav>
+    </div>
+    
+    <div class="cabinet-content">
+        <div class="page-header">
+            <h1>👋 Вітаємо, {{ current_user.first_name or current_user.full_name }}!</h1>
+            <p>Ваш особистий кабінет</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-value">{{ total_orders }}</div>
+                <div class="stat-label">Замовлень</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                <h2>📦 Останні замовлення</h2>
+                <a href="#" class="btn btn-sm">Всі замовлення →</a>
+            </div>
+            
+            {% if recent_orders %}
+            <div class="orders-list">
+                {% for order in recent_orders %}
+                <div class="order-card">
+                    <div class="order-info">
+                        <span class="order-number">#{{ order.order_number or order.id }}</span>
+                        <span class="order-date">{{ order.created_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    <div class="order-status">
+                        <span class="status-badge status-{{ order.status }}">{{ order.status_display }}</span>
+                    </div>
+                    <div class="order-amount">
+                        {{ "%.2f"|format(order.amount) }} {{ order.currency }}
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline">
+                        Деталі
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>У вас ще немає замовлень</p>
+                <a href="{{ url_for('home') }}" class="btn btn-primary">Перейти до каталогу</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.cabinet-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 80vh;
+}
+
+.cabinet-sidebar {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #022c22;
+}
+
+.user-details h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-details p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.cabinet-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.nav-item:hover {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+.nav-logout {
+    margin-top: 1rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
+    padding-top: 1rem;
+}
+
+.nav-logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.cabinet-content {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #10b981;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.section {
+    margin-top: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-header h2 {
+    font-size: 1.1rem;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.order-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 0.5rem;
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-number {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.order-date {
+    margin-left: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-paid { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.status-shipped { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+.status-delivered { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.status-cancelled { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.order-amount {
+    font-weight: 600;
+    color: #10b981;
+    min-width: 100px;
+    text-align: right;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover {
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+}
+
+.empty-state .btn {
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #10b981, #14b8a6);
+    border: none;
+    color: #022c22;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.alert {
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+.alert-info { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; }
+.alert-warning { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fcd34d; }
+
+@media (max-width: 768px) {
+    .cabinet-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .cabinet-sidebar {
+        position: static;
+    }
+    
+    .order-card {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}

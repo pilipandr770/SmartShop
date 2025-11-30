@@ -1,0 +1,597 @@
+{% extends "base.html" %}
+
+{% block title %}B2B Замовлення - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+
+{% block content %}
+<div class="cabinet-container">
+    <div class="cabinet-sidebar">
+        <div class="user-info">
+            <div class="user-avatar b2b">🏢</div>
+            <div class="user-details">
+                <h3>{{ current_user.company.name if current_user.company else current_user.full_name }}</h3>
+                <span class="badge badge-b2b">B2B Партнер</span>
+            </div>
+        </div>
+        
+        <nav class="cabinet-nav">
+            <a href="{{ url_for('b2b_dashboard') }}" class="nav-item">
+                📊 Dashboard
+            </a>
+            <a href="{{ url_for('b2b_orders') }}" class="nav-item active">
+                📦 Замовлення
+            </a>
+            <a href="{{ url_for('b2b_company') }}" class="nav-item">
+                🏢 Компанія
+            </a>
+            <a href="#" class="nav-item">
+                💰 Прайс-листи
+            </a>
+            <a href="#" class="nav-item">
+                📄 Документи
+            </a>
+            <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
+                🚪 Вийти
+            </a>
+        </nav>
+    </div>
+    
+    <div class="cabinet-content">
+        <div class="page-header">
+            <h1>📦 Мої замовлення</h1>
+            <p>Історія та статус ваших замовлень</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label>Статус:</label>
+                <select id="status-filter">
+                    <option value="">Всі</option>
+                    <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Очікує</option>
+                    <option value="processing" {% if request.args.get('status') == 'processing' %}selected{% endif %}>В обробці</option>
+                    <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>Оплачено</option>
+                    <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>Відправлено</option>
+                    <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Доставлено</option>
+                    <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Скасовано</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Період:</label>
+                <select id="period-filter">
+                    <option value="">Весь час</option>
+                    <option value="week">Останній тиждень</option>
+                    <option value="month">Останній місяць</option>
+                    <option value="quarter">Останній квартал</option>
+                    <option value="year">Останній рік</option>
+                </select>
+            </div>
+            
+            <div class="filter-group search-group">
+                <input type="text" id="search-input" placeholder="🔍 Пошук за номером...">
+            </div>
+            
+            <button class="btn btn-export" onclick="exportOrders()">
+                📥 Експорт CSV
+            </button>
+        </div>
+        
+        <div class="stats-summary">
+            <div class="stat-item">
+                <span class="stat-value">{{ orders|length }}</span>
+                <span class="stat-label">Всього замовлень</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ orders|selectattr('status', 'equalto', 'pending')|list|length + orders|selectattr('status', 'equalto', 'processing')|list|length }}</span>
+                <span class="stat-label">В обробці</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ "%.2f"|format(orders|sum(attribute='amount')) }} €</span>
+                <span class="stat-label">Загальна сума</span>
+            </div>
+        </div>
+        
+        {% if orders %}
+        <div class="orders-table-container">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Номер</th>
+                        <th>Дата</th>
+                        <th>Товари</th>
+                        <th>Сума</th>
+                        <th>Статус</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="order-row" data-status="{{ order.status }}" data-number="{{ order.order_number or order.id }}">
+                        <td>
+                            <span class="order-number">#{{ order.order_number or order.id }}</span>
+                        </td>
+                        <td>
+                            <span class="order-date">{{ order.created_at.strftime('%d.%m.%Y') }}</span>
+                            <span class="order-time">{{ order.created_at.strftime('%H:%M') }}</span>
+                        </td>
+                        <td>
+                            <span class="items-count">{{ order.items|length if order.items else 0 }} товарів</span>
+                        </td>
+                        <td>
+                            <span class="order-amount">{{ "%.2f"|format(order.amount) }} €</span>
+                            {% if order.discount_percent %}
+                            <span class="discount-badge">-{{ order.discount_percent }}%</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ order.status }}">
+                                {{ order.status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a href="#" class="btn btn-sm btn-view">
+                                    👁️ Деталі
+                                </a>
+                                {% if order.status in ['pending', 'processing'] %}
+                                <button class="btn btn-sm btn-cancel" onclick="cancelOrder({{ order.id }})">
+                                    ❌
+                                </button>
+                                {% endif %}
+                                {% if order.invoice_url %}
+                                <a href="{{ order.invoice_url }}" class="btn btn-sm btn-invoice" target="_blank">
+                                    📄
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if pagination %}
+        <div class="pagination">
+            {% if pagination.has_prev %}
+            <a href="?page={{ pagination.prev_num }}" class="page-btn">← Попередня</a>
+            {% endif %}
+            
+            <span class="page-info">Сторінка {{ pagination.page }} з {{ pagination.pages }}</span>
+            
+            {% if pagination.has_next %}
+            <a href="?page={{ pagination.next_num }}" class="page-btn">Наступна →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>Замовлень поки немає</h3>
+            <p>Створіть своє перше оптове замовлення</p>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">Перейти до каталогу</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.cabinet-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 80vh;
+}
+
+.cabinet-sidebar {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.badge-b2b {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.cabinet-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.nav-item:hover {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.nav-logout:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.cabinet-content {
+    background: var(--card-bg, #1e293b);
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.filters-bar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 0.75rem;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.375rem;
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+
+.search-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-group input {
+    width: 100%;
+}
+
+.btn-export {
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.stats-summary {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 0.75rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-item .stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.stat-item .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.orders-table-container {
+    overflow-x: auto;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.orders-table th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.orders-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.order-number {
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+.order-date {
+    display: block;
+}
+
+.order-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.items-count {
+    font-size: 0.9rem;
+}
+
+.order-amount {
+    font-weight: 600;
+    color: #10b981;
+}
+
+.discount-badge {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    margin-left: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.status-processing { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+.status-paid { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.status-shipped { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+.status-delivered { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.status-cancelled { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-view {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.btn-cancel {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.btn-invoice {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--text-secondary);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.page-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.375rem;
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.page-info {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+.alert-info { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; }
+.alert-warning { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fcd34d; }
+.alert-danger { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+@media (max-width: 1024px) {
+    .filters-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-export {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .cabinet-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-summary {
+        flex-wrap: wrap;
+    }
+}
+</style>
+
+<script>
+// Filters
+document.getElementById('status-filter')?.addEventListener('change', applyFilters);
+document.getElementById('period-filter')?.addEventListener('change', applyFilters);
+document.getElementById('search-input')?.addEventListener('input', filterBySearch);
+
+function applyFilters() {
+    const status = document.getElementById('status-filter').value;
+    const period = document.getElementById('period-filter').value;
+    
+    const params = new URLSearchParams(window.location.search);
+    if (status) params.set('status', status);
+    else params.delete('status');
+    if (period) params.set('period', period);
+    else params.delete('period');
+    
+    window.location.search = params.toString();
+}
+
+function filterBySearch() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    document.querySelectorAll('.order-row').forEach(row => {
+        const number = row.dataset.number.toLowerCase();
+        row.style.display = number.includes(search) ? '' : 'none';
+    });
+}
+
+function cancelOrder(orderId) {
+    if (!confirm('Ви впевнені, що хочете скасувати це замовлення?')) return;
+    
+    fetch(`/api/orders/${orderId}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Помилка при скасуванні');
+        }
+    });
+}
+
+function exportOrders() {
+    window.location.href = '/cabinet/b2b/orders/export?format=csv';
+}
+</script>
+{% endblock %}
