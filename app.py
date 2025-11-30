@@ -61,11 +61,20 @@ def create_app():
     
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    # Для PostgreSQL - налаштування пулу з'єднань
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    
+    # DB Schema for PostgreSQL (to isolate from other projects)
+    db_schema = os.environ.get("DB_SCHEMA", "smartshop")
+    app.config["DB_SCHEMA"] = db_schema
+    
+    # Для PostgreSQL - налаштування пулу з'єднань та схеми
+    engine_options = {
         "pool_recycle": 300,
         "pool_pre_ping": True,
     }
+    # Додаємо search_path для PostgreSQL
+    if "postgresql" in database_url:
+        engine_options["connect_args"] = {"options": f"-csearch_path={db_schema}"}
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 
     # Stripe налаштування
     app.config["STRIPE_SECRET_KEY"] = os.environ.get("STRIPE_SECRET_KEY", "")
@@ -264,8 +273,20 @@ def create_app():
     # ----- СЛУЖБОВІ ФУНКЦІЇ -----
 
     def init_db():
-        """Створити таблиці й дефолтні налаштування, якщо їх ще немає."""
+        """Створити схему, таблиці й дефолтні налаштування, якщо їх ще немає."""
         with app.app_context():
+            # Для PostgreSQL - створюємо окрему схему
+            db_schema = app.config.get("DB_SCHEMA", "smartshop")
+            database_url = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+            
+            if "postgresql" in database_url:
+                # Створюємо схему, якщо не існує
+                from sqlalchemy import text
+                with db.engine.connect() as conn:
+                    conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {db_schema}"))
+                    conn.commit()
+                print(f"✅ PostgreSQL схема '{db_schema}' готова")
+            
             db.create_all()
             SiteSettings.get_or_create()
             
