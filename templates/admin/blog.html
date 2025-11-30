@@ -1,0 +1,333 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Блог - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div>
+            <h1>📝 Блог</h1>
+            <p class="page-subtitle">Управління публікаціями та контент-планом</p>
+        </div>
+        <div style="display:flex;gap:0.75rem;">
+            <a href="{{ url_for('admin_blog_plan') }}" class="btn btn-secondary">📅 План на 7 днів</a>
+            <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">➕ Нова стаття</a>
+        </div>
+    </div>
+</div>
+
+<!-- Статистика -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Всього статей</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.published }}</div>
+        <div class="stat-label">Опубліковано</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.scheduled }}</div>
+        <div class="stat-label">Заплановано</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.draft }}</div>
+        <div class="stat-label">Чернетки</div>
+    </div>
+</div>
+
+<!-- Фільтри -->
+<div class="filters-bar">
+    <div class="filter-group">
+        <a href="{{ url_for('admin_blog') }}" class="filter-btn {{ 'active' if not status_filter else '' }}">Всі</a>
+        <a href="{{ url_for('admin_blog', status='published') }}" class="filter-btn {{ 'active' if status_filter == 'published' else '' }}">Опубліковані</a>
+        <a href="{{ url_for('admin_blog', status='scheduled') }}" class="filter-btn {{ 'active' if status_filter == 'scheduled' else '' }}">Заплановані</a>
+        <a href="{{ url_for('admin_blog', status='draft') }}" class="filter-btn {{ 'active' if status_filter == 'draft' else '' }}">Чернетки</a>
+    </div>
+</div>
+
+<!-- Список постів -->
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Стаття</th>
+                <th>Статус</th>
+                <th>Автор</th>
+                <th>Дата</th>
+                <th>👁 Перегляди</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if posts %}
+                {% for post in posts %}
+                <tr>
+                    <td>
+                        <div class="post-info">
+                            {% if post.featured_image %}
+                            <img src="{{ post.featured_image }}" alt="" class="post-thumb">
+                            {% else %}
+                            <div class="post-thumb-placeholder">📄</div>
+                            {% endif %}
+                            <div>
+                                <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="post-title">{{ post.title }}</a>
+                                {% if post.is_ai_generated %}
+                                <span class="ai-badge">🤖 AI</span>
+                                {% endif %}
+                                <div class="post-meta">
+                                    {% if post.tags_list %}
+                                    {% for tag in post.tags_list[:3] %}
+                                    <span class="tag">{{ tag }}</span>
+                                    {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if post.status == 'published' %}
+                        <span class="status-badge success">✓ Опубліковано</span>
+                        {% elif post.status == 'scheduled' %}
+                        <span class="status-badge warning">🕐 Заплановано</span>
+                        {% elif post.status == 'draft' %}
+                        <span class="status-badge neutral">📝 Чернетка</span>
+                        {% else %}
+                        <span class="status-badge">{{ post.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ post.author or 'AI' }}</td>
+                    <td>
+                        {% if post.publish_date %}
+                        {{ post.publish_date.strftime('%d.%m.%Y %H:%M') }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>{{ post.views or 0 }}</td>
+                    <td>
+                        <div class="actions">
+                            {% if post.status != 'published' %}
+                            <form method="post" action="{{ url_for('admin_blog_publish', id=post.id) }}" style="display:inline;">
+                                <button type="submit" class="btn-icon success" title="Опублікувати">🚀</button>
+                            </form>
+                            {% endif %}
+                            <a href="{{ url_for('blog_post_page', slug=post.slug) }}" target="_blank" class="btn-icon" title="Переглянути">👁</a>
+                            <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="btn-icon" title="Редагувати">✏️</a>
+                            <form method="post" action="{{ url_for('admin_blog_delete', id=post.id) }}" style="display:inline;">
+                                <button type="submit" class="btn-icon danger" title="Видалити" onclick="return confirm('Видалити цю статтю?')">🗑</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="6" class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <p>Ще немає жодної статті</p>
+                    <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">Створити першу статтю</a>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Пагінація -->
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% for p in range(1, total_pages + 1) %}
+    <a href="{{ url_for('admin_blog', page=p, status=status_filter) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<style>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.filters-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--accent);
+}
+
+.post-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.post-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+}
+
+.post-thumb-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.5rem;
+    background: rgba(148, 163, 184, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.post-title {
+    font-weight: 600;
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+.post-title:hover {
+    color: var(--accent);
+}
+
+.ai-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+    border-radius: 0.25rem;
+    margin-left: 0.5rem;
+}
+
+.post-meta {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+}
+
+.tag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--text-muted);
+    border-radius: 0.25rem;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.2);
+}
+
+.status-badge.success {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.warning {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+}
+
+.status-badge.neutral {
+    background: rgba(148, 163, 184, 0.2);
+    color: var(--text-muted);
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    padding: 0.35rem 0.5rem;
+    border: none;
+    background: rgba(148, 163, 184, 0.1);
+    border-radius: 0.35rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-icon:hover {
+    background: rgba(148, 163, 184, 0.2);
+}
+
+.btn-icon.success:hover {
+    background: rgba(34, 197, 94, 0.2);
+}
+
+.btn-icon.danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.page-btn {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.page-btn:hover, .page-btn.active {
+    background: var(--accent);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}

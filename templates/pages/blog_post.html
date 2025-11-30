@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.meta_title or post.title }} – {{ settings.site_name or 'SmartShop AI' }}{% endblock %}
+
+{% block extra_head %}
+<!-- SEO Meta Tags -->
+<meta name="description" content="{{ post.meta_description or post.excerpt or '' }}">
+<meta name="keywords" content="{{ post.meta_keywords or '' }}">
+<meta name="author" content="{{ post.author or 'SmartShop AI' }}">
+
+<!-- Open Graph -->
+<meta property="og:title" content="{{ post.meta_title or post.title }}">
+<meta property="og:description" content="{{ post.meta_description or post.excerpt or '' }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ request.url }}">
+{% if post.featured_image %}
+<meta property="og:image" content="{{ post.featured_image }}">
+{% endif %}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ post.meta_title or post.title }}">
+<meta name="twitter:description" content="{{ post.meta_description or post.excerpt or '' }}">
+{% if post.featured_image %}
+<meta name="twitter:image" content="{{ post.featured_image }}">
+{% endif %}
+
+<!-- Article Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{ post.title }}",
+    "description": "{{ post.meta_description or post.excerpt or '' }}",
+    "author": {
+        "@type": "Person",
+        "name": "{{ post.author or 'SmartShop AI' }}"
+    },
+    "datePublished": "{{ post.publish_date.isoformat() if post.publish_date else post.created_at.isoformat() }}",
+    "dateModified": "{{ post.updated_at.isoformat() if post.updated_at else post.created_at.isoformat() }}"
+    {% if post.featured_image %},
+    "image": "{{ post.featured_image }}"
+    {% endif %}
+}
+</script>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .article-header {
+        text-align: center;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .article-meta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .article-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .article-category {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--accent);
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        margin: 0 0 1rem;
+        background: linear-gradient(120deg, #22c55e, #a855f7, #06b6d4);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .article-excerpt {
+        font-size: 1.15rem;
+        color: var(--text-muted);
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .article-tags {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .article-tag {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.15);
+        color: var(--text-muted);
+    }
+
+    .article-image {
+        border-radius: 1rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .article-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .article-content {
+        max-width: 800px;
+        margin: 0 auto;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: var(--text-main);
+    }
+
+    .article-content h2 {
+        font-size: 1.75rem;
+        margin: 2.5rem 0 1rem;
+        color: var(--text-main);
+    }
+
+    .article-content h3 {
+        font-size: 1.35rem;
+        margin: 2rem 0 0.75rem;
+        color: var(--text-main);
+    }
+
+    .article-content p {
+        margin: 0 0 1.25rem;
+    }
+
+    .article-content ul, .article-content ol {
+        margin: 0 0 1.25rem;
+        padding-left: 1.5rem;
+    }
+
+    .article-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .article-content blockquote {
+        border-left: 3px solid var(--accent);
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+
+    .article-content a {
+        color: var(--accent);
+        text-decoration: underline;
+    }
+
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.75rem;
+        margin: 1.5rem 0;
+    }
+
+    .article-footer {
+        max-width: 800px;
+        margin: 3rem auto 0;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .share-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .share-buttons span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .share-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .share-btn:hover {
+        border-color: var(--accent);
+        color: var(--text-main);
+    }
+
+    /* Related Posts */
+    .related-section {
+        margin-top: 3rem;
+    }
+
+    .related-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .related-card {
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: rgba(15, 23, 42, 0.9);
+        overflow: hidden;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .related-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    .related-card-image {
+        height: 140px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .related-card-content {
+        padding: 1rem;
+    }
+
+    .related-card h4 {
+        font-size: 1rem;
+        margin: 0 0 0.5rem;
+        line-height: 1.4;
+    }
+
+    .related-card p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .ai-badge-large {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(168, 85, 247, 0.15);
+        color: #a855f7;
+    }
+
+    @media (max-width: 768px) {
+        .article-title {
+            font-size: 1.75rem;
+        }
+
+        .article-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .related-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Головна</a>
+        <span>/</span>
+        <a href="{{ url_for('blog_page') }}">Блог</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">{{ post.title[:50] }}...</span>
+    </div>
+
+    <article>
+        <header class="article-header">
+            {% if post.category %}
+            <span class="article-category">{{ post.category }}</span>
+            {% endif %}
+            
+            <h1 class="article-title">{{ post.title }}</h1>
+            
+            {% if post.excerpt %}
+            <p class="article-excerpt">{{ post.excerpt }}</p>
+            {% endif %}
+
+            <div class="article-meta">
+                <span class="article-meta-item">
+                    📅 {{ post.publish_date.strftime('%d %B %Y') if post.publish_date else post.created_at.strftime('%d %B %Y') }}
+                </span>
+                <span class="article-meta-item">
+                    ✍️ {{ post.author or 'SmartShop AI' }}
+                </span>
+                <span class="article-meta-item">
+                    👁 {{ post.views or 0 }} переглядів
+                </span>
+                {% if post.is_ai_generated %}
+                <span class="ai-badge-large">🤖 AI-контент</span>
+                {% endif %}
+            </div>
+
+            {% if post.tags_list %}
+            <div class="article-tags">
+                {% for tag in post.tags_list %}
+                <span class="article-tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </header>
+
+        {% if post.featured_image %}
+        <div class="article-image">
+            <img src="{{ post.featured_image }}" alt="{{ post.title }}">
+        </div>
+        {% endif %}
+
+        <div class="article-content">
+            {{ post.content | safe }}
+        </div>
+
+        <footer class="article-footer">
+            <div class="share-buttons">
+                <span>Поділитись:</span>
+                <a href="https://t.me/share/url?url={{ request.url | urlencode }}&text={{ post.title | urlencode }}" 
+                   target="_blank" class="share-btn">📱 Telegram</a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.url | urlencode }}&text={{ post.title | urlencode }}" 
+                   target="_blank" class="share-btn">🐦 Twitter</a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url | urlencode }}" 
+                   target="_blank" class="share-btn">📘 Facebook</a>
+                <button onclick="navigator.clipboard.writeText(window.location.href);alert('Посилання скопійовано!')" 
+                        class="share-btn">🔗 Копіювати</button>
+            </div>
+        </footer>
+    </article>
+
+    {% if related %}
+    <section class="related-section">
+        <h2 class="related-title">Схожі статті</h2>
+        <div class="related-grid">
+            {% for r in related %}
+            <a href="{{ url_for('blog_post_page', slug=r.slug) }}" class="related-card">
+                {% if r.featured_image %}
+                <div class="related-card-image" style="background-image: url('{{ r.featured_image }}');"></div>
+                {% else %}
+                <div class="related-card-image" style="background: radial-gradient(circle at top, rgba(52, 211, 153, 0.2), rgba(15, 23, 42, 1));"></div>
+                {% endif %}
+                <div class="related-card-content">
+                    <h4>{{ r.title }}</h4>
+                    <p>{{ r.excerpt[:100] if r.excerpt else '' }}...</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</section>
+{% endblock %}

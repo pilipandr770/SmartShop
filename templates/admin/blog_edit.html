@@ -1,0 +1,426 @@
+{% extends 'admin/layout.html' %}
+{% block title %}{{ 'Редагування' if post else 'Нова стаття' }} - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <a href="{{ url_for('admin_blog') }}" class="back-link">← Назад до блогу</a>
+            <h1>{{ 'Редагування статті' if post else 'Нова стаття' }}</h1>
+        </div>
+        {% if post and post.status == 'draft' %}
+        <button type="button" class="btn btn-accent" onclick="generateWithAI()">🤖 Згенерувати AI</button>
+        {% endif %}
+    </div>
+</div>
+
+<form method="post" id="postForm">
+    <div class="editor-layout">
+        <!-- Основний контент -->
+        <div class="editor-main">
+            <div class="card">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="title">Заголовок статті</label>
+                        <input type="text" id="title" name="title" required
+                               value="{{ post.title if post else '' }}" 
+                               placeholder="Введіть заголовок статті..."
+                               oninput="generateSlug()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slug">URL (slug)</label>
+                        <div class="slug-input">
+                            <span class="slug-prefix">/blog/</span>
+                            <input type="text" id="slug" name="slug" required
+                                   value="{{ post.slug if post else '' }}" 
+                                   placeholder="url-statyi">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="excerpt">Короткий опис</label>
+                        <textarea id="excerpt" name="excerpt" rows="3" 
+                                  placeholder="Короткий опис для картки (до 200 символів)...">{{ post.excerpt if post else '' }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content">Повний текст статті</label>
+                        <textarea id="content" name="content" rows="20" 
+                                  placeholder="Напишіть статтю тут... Підтримується HTML форматування.">{{ post.content if post else '' }}</textarea>
+                        <small class="form-hint">💡 Використовуйте &lt;h2&gt;, &lt;h3&gt; для підзаголовків, &lt;ul&gt; для списків</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEO блок -->
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <h3>🔍 SEO налаштування</h3>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="meta_title">Meta Title</label>
+                        <input type="text" id="meta_title" name="meta_title" maxlength="100"
+                               value="{{ post.meta_title if post else '' }}" 
+                               placeholder="SEO заголовок (до 60 символів)">
+                        <div class="char-counter"><span id="meta-title-count">0</span>/60</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="meta_description">Meta Description</label>
+                        <textarea id="meta_description" name="meta_description" rows="2" maxlength="200"
+                                  placeholder="SEO опис (до 160 символів)">{{ post.meta_description if post else '' }}</textarea>
+                        <div class="char-counter"><span id="meta-desc-count">0</span>/160</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="meta_keywords">Ключові слова</label>
+                        <input type="text" id="meta_keywords" name="meta_keywords"
+                               value="{{ post.meta_keywords if post else '' }}" 
+                               placeholder="ключ1, ключ2, ключ3...">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="editor-sidebar">
+            <!-- Публікація -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📤 Публікація</h3>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="status">Статус</label>
+                        <select id="status" name="status">
+                            <option value="draft" {{ 'selected' if (post and post.status == 'draft') or not post else '' }}>📝 Чернетка</option>
+                            <option value="scheduled" {{ 'selected' if post and post.status == 'scheduled' else '' }}>🕐 Запланована</option>
+                            <option value="published" {{ 'selected' if post and post.status == 'published' else '' }}>✓ Опублікована</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="publish_date">Дата публікації</label>
+                        <input type="datetime-local" id="publish_date" name="publish_date"
+                               value="{{ post.publish_date.strftime('%Y-%m-%dT%H:%M') if post and post.publish_date else '' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="author">Автор</label>
+                        <input type="text" id="author" name="author"
+                               value="{{ post.author if post else 'AI' }}" placeholder="AI">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" name="action" value="save" class="btn btn-secondary">💾 Зберегти</button>
+                        <button type="submit" name="action" value="publish" class="btn btn-primary">📤 Опублікувати</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Медіа -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🖼 Зображення</h3>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="featured_image">URL зображення</label>
+                        <input type="text" id="featured_image" name="featured_image"
+                               value="{{ post.featured_image if post else '' }}" 
+                               placeholder="https://...">
+                    </div>
+                    <div class="image-preview" id="imagePreview">
+                        {% if post and post.featured_image %}
+                        <img src="{{ post.featured_image }}" alt="Preview">
+                        {% else %}
+                        <div class="preview-placeholder">🖼 Попередній перегляд</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Категорія та теги -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🏷 Категорія та теги</h3>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="category">Категорія</label>
+                        <input type="text" id="category" name="category"
+                               value="{{ post.category if post else '' }}" 
+                               placeholder="Огляди, Поради, Новини...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tags">Теги</label>
+                        <input type="text" id="tags" name="tags"
+                               value="{{ post.tags if post else '' }}" 
+                               placeholder="тег1, тег2, тег3...">
+                        <small class="form-hint">Через кому</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI генерація -->
+            {% if not post or post.status == 'draft' %}
+            <div class="card ai-card">
+                <div class="card-header">
+                    <h3>🤖 AI генерація</h3>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="ai_topic">Тема для AI</label>
+                        <input type="text" id="ai_topic" name="ai_topic"
+                               value="{{ post.ai_topic if post else '' }}" 
+                               placeholder="Опишіть тему статті...">
+                    </div>
+                    <button type="button" class="btn btn-accent btn-full" onclick="generateWithAI()">
+                        🤖 Згенерувати статтю
+                    </button>
+                    <div id="aiProgress" class="ai-progress" style="display:none;">
+                        <div class="spinner"></div>
+                        <span>Генерація...</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+
+<style>
+.back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.form-section {
+    padding: 1.25rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.slug-input {
+    display: flex;
+    align-items: center;
+}
+
+.slug-prefix {
+    padding: 0.6rem 0.75rem;
+    background: rgba(148, 163, 184, 0.15);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-right: none;
+    border-radius: 0.5rem 0 0 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.slug-input input {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.image-preview {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    min-height: 120px;
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.preview-placeholder {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: rgba(148, 163, 184, 0.1);
+}
+
+.ai-card {
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+.ai-card .card-header {
+    background: rgba(168, 85, 247, 0.1);
+}
+
+.btn-accent {
+    background: linear-gradient(135deg, #a855f7, #8b5cf6);
+    color: white;
+}
+
+.btn-accent:hover {
+    filter: brightness(1.1);
+}
+
+.ai-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(168, 85, 247, 0.1);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    color: #a855f7;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(168, 85, 247, 0.3);
+    border-top-color: #a855f7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1024px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+// Генерація slug
+function generateSlug() {
+    const title = document.getElementById('title').value;
+    const slug = transliterate(title);
+    document.getElementById('slug').value = slug;
+}
+
+function transliterate(text) {
+    const map = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'h', 'ґ': 'g', 'д': 'd', 'е': 'e',
+        'є': 'ye', 'ж': 'zh', 'з': 'z', 'и': 'y', 'і': 'i', 'ї': 'yi', 'й': 'y',
+        'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r',
+        'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch',
+        'ш': 'sh', 'щ': 'shch', 'ь': '', 'ю': 'yu', 'я': 'ya', 'ы': 'y', 'э': 'e',
+        'ё': 'yo', 'ъ': ''
+    };
+    
+    let result = text.toLowerCase();
+    for (const [ukr, lat] of Object.entries(map)) {
+        result = result.replace(new RegExp(ukr, 'g'), lat);
+    }
+    result = result.replace(/[^a-z0-9\-]/g, '-');
+    result = result.replace(/-+/g, '-');
+    result = result.replace(/^-|-$/g, '');
+    return result.substring(0, 200);
+}
+
+// Попередній перегляд зображення
+document.getElementById('featured_image').addEventListener('input', function() {
+    const url = this.value;
+    const preview = document.getElementById('imagePreview');
+    if (url) {
+        preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'preview-placeholder\\'>❌ Помилка завантаження</div>';">`;
+    } else {
+        preview.innerHTML = '<div class="preview-placeholder">🖼 Попередній перегляд</div>';
+    }
+});
+
+// Лічильники символів
+document.getElementById('meta_title').addEventListener('input', function() {
+    document.getElementById('meta-title-count').textContent = this.value.length;
+});
+
+document.getElementById('meta_description').addEventListener('input', function() {
+    document.getElementById('meta-desc-count').textContent = this.value.length;
+});
+
+// AI генерація
+async function generateWithAI() {
+    const topic = document.getElementById('ai_topic').value || document.getElementById('title').value;
+    if (!topic) {
+        alert('Введіть тему або заголовок для генерації');
+        return;
+    }
+    
+    const progress = document.getElementById('aiProgress');
+    progress.style.display = 'flex';
+    
+    try {
+        const response = await fetch('/api/blog/generate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                topic: topic,
+                keywords: document.getElementById('meta_keywords').value
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.title) document.getElementById('title').value = data.title;
+            if (data.content) document.getElementById('content').value = data.content;
+            if (data.excerpt) document.getElementById('excerpt').value = data.excerpt;
+            if (data.meta_title) document.getElementById('meta_title').value = data.meta_title;
+            if (data.meta_description) document.getElementById('meta_description').value = data.meta_description;
+            if (data.tags) document.getElementById('tags').value = data.tags;
+            generateSlug();
+        } else {
+            alert(data.error || 'Помилка генерації');
+        }
+    } catch (e) {
+        alert('Помилка підключення: ' + e.message);
+    } finally {
+        progress.style.display = 'none';
+    }
+}
+
+// Ініціалізація лічильників
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('meta-title-count').textContent = document.getElementById('meta_title').value.length;
+    document.getElementById('meta-desc-count').textContent = document.getElementById('meta_description').value.length;
+});
+</script>
+{% endblock %}

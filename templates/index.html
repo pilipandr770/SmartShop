@@ -1011,6 +1011,40 @@
         </div>
     </section>
 
+    <!-- BLOG PREVIEW -->
+    {% if blog_posts %}
+    <section class="products-section">
+        <h2 style="font-size:1.1rem;margin-bottom:0.25rem;">Блог</h2>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-top:0;">
+            Останні публікації на нашому блозі
+        </p>
+        <div class="products-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+            {% for post in blog_posts %}
+            <a href="{{ url_for('blog_post_page', slug=post.slug) }}" class="product-card" style="cursor:pointer;">
+                <div class="product-img">
+                    <div class="product-img-inner"
+                         style="background-image:url('{{ post.featured_image or 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800' }}');">
+                    </div>
+                </div>
+                <div style="font-size:0.7rem;color:var(--accent);margin-bottom:0.2rem;">
+                    {{ post.publish_date.strftime('%d.%m.%Y') if post.publish_date else post.created_at.strftime('%d.%m.%Y') }}
+                    {% if post.is_ai_generated %}
+                    <span style="background:rgba(168,85,247,0.2);color:#a855f7;padding:0.1rem 0.3rem;border-radius:0.2rem;font-size:0.6rem;margin-left:0.3rem;">🤖 AI</span>
+                    {% endif %}
+                </div>
+                <div class="product-title">{{ post.title }}</div>
+                <div class="product-meta">
+                    {{ (post.excerpt[:100] if post.excerpt else (post.content[:100] if post.content else '')) }}...
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div style="text-align:center;margin-top:1rem;">
+            <a href="{{ url_for('blog_page') }}" class="btn-admin" style="text-decoration:none;display:inline-block;">Усі статті →</a>
+        </div>
+    </section>
+    {% endif %}
+
     <!-- FOOTER -->
     <footer class="footer" id="contact">
         <div class="footer-links">

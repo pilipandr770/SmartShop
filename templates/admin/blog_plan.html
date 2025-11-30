@@ -1,0 +1,437 @@
+{% extends 'admin/layout.html' %}
+{% block title %}План публікацій - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div>
+            <a href="{{ url_for('admin_blog') }}" class="back-link">← Назад до блогу</a>
+            <h1>📅 План публікацій на 7 днів</h1>
+            <p class="page-subtitle">Заплануйте теми статей і AI згенерує контент автоматично</p>
+        </div>
+        <button type="button" class="btn btn-accent" onclick="generateAllPending()">
+            🤖 Згенерувати всі pending
+        </button>
+    </div>
+</div>
+
+<!-- Поточний тиждень -->
+<div class="week-grid">
+    {% for day in week_days %}
+    <div class="day-card {{ 'today' if day.is_today else '' }} {{ 'past' if day.is_past else '' }}">
+        <div class="day-header">
+            <span class="day-name">{{ day.day_name }}</span>
+            <span class="day-date">{{ day.date.strftime('%d.%m') }}</span>
+        </div>
+        <div class="day-content">
+            {% if day.plan %}
+                <div class="plan-item {{ day.plan.status }}">
+                    <div class="plan-topic">{{ day.plan.topic }}</div>
+                    {% if day.plan.keywords %}
+                    <div class="plan-keywords">🔑 {{ day.plan.keywords }}</div>
+                    {% endif %}
+                    <div class="plan-status">
+                        {% if day.plan.status == 'pending' %}
+                        <span class="status-dot pending"></span> Очікує генерації
+                        {% elif day.plan.status == 'generated' %}
+                        <span class="status-dot generated"></span> Згенеровано
+                        {% elif day.plan.status == 'published' %}
+                        <span class="status-dot published"></span> Опубліковано
+                        {% endif %}
+                    </div>
+                    <div class="plan-actions">
+                        {% if day.plan.status == 'pending' %}
+                        <button type="button" class="btn-sm btn-accent" onclick="generatePost({{ day.plan.id }})">🤖 Генерувати</button>
+                        {% elif day.plan.blog_post_id %}
+                        <a href="{{ url_for('admin_blog_edit', id=day.plan.blog_post_id) }}" class="btn-sm">✏️ Редагувати</a>
+                        {% endif %}
+                        <button type="button" class="btn-sm btn-danger" onclick="deletePlan({{ day.plan.id }})">🗑</button>
+                    </div>
+                </div>
+            {% else %}
+                <div class="plan-empty">
+                    <span>Немає плану</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Форма додавання плану -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>➕ Створити план на 7 днів</h3>
+    </div>
+    <form method="post" id="planForm">
+        <div class="form-section">
+            <p class="form-hint" style="margin-bottom: 1rem;">
+                💡 Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані статті автоматично.
+            </p>
+            
+            <div class="plan-inputs">
+                {% for i in range(7) %}
+                <div class="plan-input-row">
+                    <div class="plan-day-label">День {{ i + 1 }}</div>
+                    <div class="plan-inputs-group">
+                        <input type="text" name="topic_{{ i }}" placeholder="Тема статті..." class="plan-topic-input">
+                        <input type="text" name="keywords_{{ i }}" placeholder="SEO ключові слова..." class="plan-keywords-input">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label for="target_audience">Цільова аудиторія (для всіх статей)</label>
+                <input type="text" id="target_audience" name="target_audience" 
+                       placeholder="Наприклад: покупці електроніки, молоді люди 18-35...">
+            </div>
+            
+            <div class="form-group">
+                <label for="additional_instructions">Додаткові інструкції для AI</label>
+                <textarea id="additional_instructions" name="additional_instructions" rows="3"
+                          placeholder="Особливі побажання щодо стилю, тону, структури статей..."></textarea>
+            </div>
+            
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    📅 Створити план на 7 днів
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Історія планів -->
+{% if all_plans %}
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>📋 Історія планів</h3>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Тема</th>
+                <th>Ключові слова</th>
+                <th>Статус</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in all_plans %}
+            <tr class="{{ 'overdue' if plan.is_overdue else '' }}">
+                <td>{{ plan.plan_date.strftime('%d.%m.%Y') }}</td>
+                <td>{{ plan.topic }}</td>
+                <td>{{ plan.keywords or '—' }}</td>
+                <td>
+                    {% if plan.status == 'pending' %}
+                    <span class="status-badge warning">⏳ Очікує</span>
+                    {% elif plan.status == 'generated' %}
+                    <span class="status-badge info">✓ Згенеровано</span>
+                    {% elif plan.status == 'published' %}
+                    <span class="status-badge success">📤 Опубліковано</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if plan.status == 'pending' %}
+                    <button type="button" class="btn-sm btn-accent" onclick="generatePost({{ plan.id }})">🤖</button>
+                    {% endif %}
+                    {% if plan.blog_post_id %}
+                    <a href="{{ url_for('admin_blog_edit', id=plan.blog_post_id) }}" class="btn-sm">✏️</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<style>
+.back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.75rem;
+}
+
+.day-card {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 1rem;
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.day-card.today {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.day-card.past {
+    opacity: 0.6;
+}
+
+.day-header {
+    padding: 0.75rem;
+    background: rgba(148, 163, 184, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-card.today .day-header {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+.day-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.day-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.day-content {
+    padding: 0.75rem;
+}
+
+.plan-item {
+    font-size: 0.85rem;
+}
+
+.plan-topic {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.plan-keywords {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.plan-status {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-dot.pending {
+    background: #eab308;
+}
+
+.status-dot.generated {
+    background: #3b82f6;
+}
+
+.status-dot.published {
+    background: #22c55e;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.plan-empty {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.form-section {
+    padding: 1.5rem;
+}
+
+.plan-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.plan-input-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+.plan-day-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.plan-inputs-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.btn-sm {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+    border-radius: 0.35rem;
+    border: none;
+    background: rgba(148, 163, 184, 0.2);
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.btn-sm:hover {
+    background: rgba(148, 163, 184, 0.3);
+}
+
+.btn-accent {
+    background: linear-gradient(135deg, #a855f7, #8b5cf6);
+    color: white;
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.btn-danger:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+.form-footer {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+}
+
+.status-badge.warning {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+}
+
+.status-badge.info {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.status-badge.success {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.overdue {
+    background: rgba(239, 68, 68, 0.05);
+}
+
+@media (max-width: 1200px) {
+    .week-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .week-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .plan-input-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .plan-inputs-group {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+async function generatePost(planId) {
+    if (!confirm('Згенерувати статтю для цього плану?')) return;
+    
+    try {
+        const response = await fetch('/api/blog/generate-from-plan/' + planId, {
+            method: 'POST'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Статтю згенеровано!');
+            location.reload();
+        } else {
+            alert('❌ Помилка: ' + (data.error || 'Невідома помилка'));
+        }
+    } catch (e) {
+        alert('❌ Помилка підключення: ' + e.message);
+    }
+}
+
+async function generateAllPending() {
+    if (!confirm('Згенерувати всі pending статті? Це може зайняти деякий час.')) return;
+    
+    try {
+        const response = await fetch('/api/blog/generate-all-pending', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(`✅ Згенеровано ${data.generated} статей!`);
+            location.reload();
+        } else {
+            alert('❌ Помилка: ' + (data.error || 'Невідома помилка'));
+        }
+    } catch (e) {
+        alert('❌ Помилка підключення: ' + e.message);
+    }
+}
+
+async function deletePlan(planId) {
+    if (!confirm('Видалити цей план?')) return;
+    
+    try {
+        const response = await fetch('/api/blog/plan/' + planId, {
+            method: 'DELETE'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('❌ Помилка: ' + (data.error || 'Невідома помилка'));
+        }
+    } catch (e) {
+        alert('❌ Помилка підключення: ' + e.message);
+    }
+}
+</script>
+{% endblock %}

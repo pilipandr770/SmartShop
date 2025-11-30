@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Блог – SmartShop AI{% endblock %}
+{% block title %}{{ settings.blog_title or 'Блог' }} – {{ settings.site_name or 'SmartShop AI' }}{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ settings.blog_excerpt or 'Корисні статті, огляди товарів та новини' }}">
+{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -39,6 +43,9 @@
         background: rgba(15, 23, 42, 0.9);
         overflow: hidden;
         transition: transform 0.2s, box-shadow 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
     }
 
     .blog-card:hover {
@@ -87,6 +94,7 @@
         display: flex;
         gap: 0.5rem;
         margin-top: 1rem;
+        flex-wrap: wrap;
     }
 
     .blog-tag {
@@ -106,6 +114,14 @@
         border-radius: 1rem;
         border: 1px solid rgba(148, 163, 184, 0.45);
         background: rgba(15, 23, 42, 0.9);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .featured-post:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.4);
     }
 
     .featured-image {
@@ -146,6 +162,60 @@
         color: var(--text-muted);
         line-height: 1.6;
         margin-bottom: 1.5rem;
+    }
+
+    .ai-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.7rem;
+        padding: 0.15rem 0.4rem;
+        background: rgba(168, 85, 247, 0.2);
+        color: #a855f7;
+        border-radius: 0.25rem;
+        margin-left: 0.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        border: 1px dashed rgba(148, 163, 184, 0.45);
+        border-radius: 1rem;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 0.5rem;
+        color: var(--text-main);
+    }
+
+    .empty-state p {
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .page-btn {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--text-muted);
+        text-decoration: none;
+    }
+
+    .page-btn:hover, .page-btn.active {
+        background: var(--accent);
+        color: white;
     }
 
     .ai-notice {
@@ -192,106 +262,78 @@
         <p>{{ settings.blog_excerpt or 'Корисні статті, огляди товарів та новини нашого магазину' }}</p>
     </div>
 
+    {% if featured_post %}
     <!-- Featured Post -->
-    <div class="featured-post">
+    <a href="{{ url_for('blog_post_page', slug=featured_post.slug) }}" class="featured-post">
         <div class="featured-image">
-            <img src="https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                 alt="Головна стаття">
+            {% if featured_post.featured_image %}
+            <img src="{{ featured_post.featured_image }}" alt="{{ featured_post.title }}">
+            {% else %}
+            <div style="width:100%;height:100%;background:radial-gradient(circle at top, rgba(52, 211, 153, 0.2), rgba(15, 23, 42, 1));display:flex;align-items:center;justify-content:center;font-size:4rem;">📝</div>
+            {% endif %}
         </div>
         <div class="featured-content">
             <span class="featured-badge">✨ Обране</span>
-            <h2>Як ІІ-технології змінюють онлайн-шопінг у 2025 році</h2>
-            <p>Штучний інтелект революціонізує спосіб, яким ми робимо покупки онлайн. Від персоналізованих рекомендацій до розумних чат-ботів — дізнайтеся, як ці технології покращують ваш досвід покупок.</p>
-            <a href="#" class="btn">Читати далі →</a>
+            <h2>
+                {{ featured_post.title }}
+                {% if featured_post.is_ai_generated %}
+                <span class="ai-badge">🤖 AI</span>
+                {% endif %}
+            </h2>
+            <p>{{ featured_post.excerpt or (featured_post.content[:200] + '...' if featured_post.content else '') }}</p>
+            <span class="btn">Читати далі →</span>
         </div>
-    </div>
+    </a>
+    {% endif %}
 
+    {% if posts %}
     <h2 style="margin-bottom: 1rem;">Останні публікації</h2>
 
     <div class="blog-grid">
-        <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
+        {% for post in posts %}
+        <a href="{{ url_for('blog_post_page', slug=post.slug) }}" class="blog-card">
+            <div class="blog-card-image" style="background-image: url('{{ post.featured_image or 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600' }}');"></div>
             <div class="blog-card-content">
-                <div class="blog-card-date">28 листопада 2025</div>
-                <h3>Топ-10 трендових товарів цієї зими</h3>
-                <p>Огляд найпопулярніших товарів, які варто придбати для себе або в подарунок близьким.</p>
-                <div class="blog-card-tags">
-                    <span class="blog-tag">Огляди</span>
-                    <span class="blog-tag">Тренди</span>
+                <div class="blog-card-date">
+                    {{ post.publish_date.strftime('%d.%m.%Y') if post.publish_date else post.created_at.strftime('%d.%m.%Y') }}
+                    {% if post.is_ai_generated %}
+                    <span class="ai-badge">🤖</span>
+                    {% endif %}
                 </div>
-            </div>
-        </article>
-
-        <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
-            <div class="blog-card-content">
-                <div class="blog-card-date">25 листопада 2025</div>
-                <h3>Як правильно обирати подарунки онлайн</h3>
-                <p>Практичні поради щодо вибору ідеального подарунка через інтернет-магазини.</p>
+                <h3>{{ post.title }}</h3>
+                <p>{{ (post.excerpt[:120] if post.excerpt else (post.content[:120] if post.content else '')) }}...</p>
+                {% if post.keywords %}
                 <div class="blog-card-tags">
-                    <span class="blog-tag">Поради</span>
-                    <span class="blog-tag">Подарунки</span>
+                    {% for tag in post.keywords.split(',')[:3] %}
+                    <span class="blog-tag">{{ tag.strip() }}</span>
+                    {% endfor %}
                 </div>
+                {% endif %}
             </div>
-        </article>
-
-        <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
-            <div class="blog-card-content">
-                <div class="blog-card-date">22 листопада 2025</div>
-                <h3>Безпечні онлайн-покупки: що потрібно знати</h3>
-                <p>Важливі правила безпеки при здійсненні покупок в інтернеті та захист ваших даних.</p>
-                <div class="blog-card-tags">
-                    <span class="blog-tag">Безпека</span>
-                    <span class="blog-tag">Поради</span>
-                </div>
-            </div>
-        </article>
-
-        <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
-            <div class="blog-card-content">
-                <div class="blog-card-date">19 листопада 2025</div>
-                <h3>Переваги покупок з ІІ-консультантом</h3>
-                <p>Чому спілкування з розумним помічником робить шопінг швидшим та приємнішим.</p>
-                <div class="blog-card-tags">
-                    <span class="blog-tag">ІІ</span>
-                    <span class="blog-tag">Технології</span>
-                </div>
-            </div>
-        </article>
-
-        <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/4050388/pexels-photo-4050388.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
-            <div class="blog-card-content">
-                <div class="blog-card-date">15 листопада 2025</div>
-                <h3>Як економити при онлайн-покупках</h3>
-                <p>Секрети та лайфхаки для вигідних покупок: знижки, кешбек та акції.</p>
-                <div class="blog-card-tags">
-                    <span class="blog-tag">Економія</span>
-                    <span class="blog-tag">Лайфхаки</span>
-                </div>
-            </div>
-        </article>
-
-        <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=600');"></div>
-            <div class="blog-card-content">
-                <div class="blog-card-date">12 листопада 2025</div>
-                <h3>Огляд новинок каталогу</h3>
-                <p>Представляємо найсвіжіші надходження до нашого магазину — не пропустіть!</p>
-                <div class="blog-card-tags">
-                    <span class="blog-tag">Новинки</span>
-                    <span class="blog-tag">Огляди</span>
-                </div>
-            </div>
-        </article>
+        </a>
+        {% endfor %}
     </div>
+
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% for p in range(1, total_pages + 1) %}
+        <a href="{{ url_for('blog_page', page=p) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% elif not featured_post %}
+    <div class="empty-state">
+        <div class="empty-state-icon">📝</div>
+        <h3>Ще немає публікацій</h3>
+        <p>Скоро тут з'являться цікаві статті!</p>
+    </div>
+    {% endif %}
 
     <div class="ai-notice">
         <h3>🤖 Блог на базі ІІ</h3>
-        <p style="color: var(--text-muted);">Наш блог автоматично генерує унікальний контент за контент-планом на 30 днів.<br>Усі статті перевіряються редактором перед публікацією.</p>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">Налаштуйте теми та стиль у <a href="{{ url_for('admin_blocks') }}" style="color: var(--accent);">адмін-панелі</a></p>
+        <p style="color: var(--text-muted);">Наш блог автоматично генерує унікальний контент за контент-планом.<br>Усі статті перевіряються редактором перед публікацією.</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Налаштуйте теми та стиль у <a href="{{ url_for('admin_ai_settings') }}" style="color: var(--accent);">адмін-панелі</a></p>
     </div>
 </section>
 {% endblock %}

@@ -319,6 +319,19 @@
             <a href="{{ url_for('admin_products') }}" class="nav-link{% if request.endpoint in ['admin_products', 'admin_products_edit'] %} active{% endif %}">
                 <span class="nav-icon">📦</span> Товари
             </a>
+            <a href="{{ url_for('admin_blog') }}" class="nav-link{% if request.endpoint in ['admin_blog', 'admin_blog_edit', 'admin_blog_new'] %} active{% endif %}">
+                <span class="nav-icon">📝</span> Блог
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">ІІ-асистенти</div>
+            <a href="{{ url_for('admin_ai_settings') }}" class="nav-link{% if request.endpoint == 'admin_ai_settings' %} active{% endif %}">
+                <span class="nav-icon">🤖</span> Налаштування ІІ
+            </a>
+            <a href="{{ url_for('admin_blog_plan') }}" class="nav-link{% if request.endpoint == 'admin_blog_plan' %} active{% endif %}">
+                <span class="nav-icon">📅</span> Контент-план
+            </a>
         </div>
 
         <div class="sidebar-footer">

@@ -124,6 +124,7 @@ def create_app():
         WarehouseTask, StockMovement, ReplenishmentOrder, 
         ReplenishmentItem, WarehouseExpense, LowStockAlert
     )
+    from models.blog import BlogPost, BlogPlan, AISettings, BlogPostStatus
 
     # Flask-Login user loader
     @login_manager.user_loader
@@ -146,6 +147,10 @@ def create_app():
     app.StockMovement = StockMovement
     app.ReplenishmentOrder = ReplenishmentOrder
     app.ReplenishmentItem = ReplenishmentItem
+    # Blog
+    app.BlogPost = BlogPost
+    app.BlogPlan = BlogPlan
+    app.AISettings = AISettings
     app.WarehouseExpense = WarehouseExpense
     app.LowStockAlert = LowStockAlert
 
@@ -469,6 +474,68 @@ def create_app():
                     ('created_at', 'TIMESTAMP DEFAULT NOW()'),
                 ]
                 
+                # blog_posts колонки
+                blog_post_columns = [
+                    ('title', 'VARCHAR(255)'),
+                    ('slug', 'VARCHAR(255)'),
+                    ('excerpt', 'VARCHAR(500)'),
+                    ('content', 'TEXT'),
+                    ('featured_image', 'VARCHAR(500)'),
+                    ('meta_title', 'VARCHAR(100)'),
+                    ('meta_description', 'VARCHAR(200)'),
+                    ('meta_keywords', 'VARCHAR(255)'),
+                    ('tags', 'VARCHAR(255)'),
+                    ('category', 'VARCHAR(100)'),
+                    ('status', "VARCHAR(20) DEFAULT 'draft'"),
+                    ('publish_date', 'TIMESTAMP'),
+                    ('is_ai_generated', 'BOOLEAN DEFAULT FALSE'),
+                    ('ai_topic', 'VARCHAR(255)'),
+                    ('blog_plan_id', 'INTEGER'),
+                    ('author', "VARCHAR(100) DEFAULT 'AI'"),
+                    ('views', 'INTEGER DEFAULT 0'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # blog_plans колонки
+                blog_plan_columns = [
+                    ('plan_date', 'DATE'),
+                    ('topic', 'VARCHAR(255)'),
+                    ('keywords', 'VARCHAR(255)'),
+                    ('status', "VARCHAR(20) DEFAULT 'pending'"),
+                    ('blog_post_id', 'INTEGER'),
+                    ('additional_instructions', 'TEXT'),
+                    ('target_audience', 'VARCHAR(255)'),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
+                # ai_settings колонки
+                ai_settings_columns = [
+                    ('chatbot_enabled', 'BOOLEAN DEFAULT TRUE'),
+                    ('chatbot_name', "VARCHAR(100) DEFAULT 'ІІ-продавець'"),
+                    ('chatbot_system_prompt', 'TEXT'),
+                    ('chatbot_custom_instructions', 'TEXT'),
+                    ('chatbot_tone', "VARCHAR(50) DEFAULT 'friendly'"),
+                    ('chatbot_max_tokens', 'INTEGER DEFAULT 500'),
+                    ('chatbot_temperature', 'FLOAT DEFAULT 0.7'),
+                    ('chatbot_forbidden_topics', 'TEXT'),
+                    ('blogger_enabled', 'BOOLEAN DEFAULT TRUE'),
+                    ('blogger_name', "VARCHAR(100) DEFAULT 'AI Блогер'"),
+                    ('blogger_style', "VARCHAR(50) DEFAULT 'informative'"),
+                    ('blogger_language', "VARCHAR(10) DEFAULT 'uk'"),
+                    ('blogger_default_keywords', 'TEXT'),
+                    ('blogger_seo_instructions', 'TEXT'),
+                    ('blogger_article_structure', 'TEXT'),
+                    ('blogger_min_words', 'INTEGER DEFAULT 500'),
+                    ('blogger_max_words', 'INTEGER DEFAULT 1500'),
+                    ('auto_publish', 'BOOLEAN DEFAULT FALSE'),
+                    ('publish_time', "VARCHAR(5) DEFAULT '10:00'"),
+                    ('generate_images', 'BOOLEAN DEFAULT TRUE'),
+                    ('image_style', "VARCHAR(100) DEFAULT 'professional photography, realistic, high quality'"),
+                    ('created_at', 'TIMESTAMP DEFAULT NOW()'),
+                    ('updated_at', 'TIMESTAMP DEFAULT NOW()'),
+                ]
+                
                 migrations = [
                     ('site_settings', site_settings_columns),
                     ('categories', category_columns),
@@ -487,6 +554,10 @@ def create_app():
                     ('replenishment_items', replenishment_item_columns),
                     ('warehouse_expenses', warehouse_expense_columns),
                     ('low_stock_alerts', low_stock_alert_columns),
+                    # Blog
+                    ('blog_posts', blog_post_columns),
+                    ('blog_plans', blog_plan_columns),
+                    ('ai_settings', ai_settings_columns),
                 ]
                 
                 with db.engine.connect() as conn:
@@ -625,6 +696,15 @@ def create_app():
             .filter(Order.status == "paid")
             .scalar()
         )
+        
+        # Останні пости блогу для головної
+        blog_posts = BlogPost.query.filter(
+            BlogPost.status == BlogPostStatus.PUBLISHED,
+            db.or_(
+                BlogPost.publish_date.is_(None),
+                BlogPost.publish_date <= datetime.utcnow()
+            )
+        ).order_by(BlogPost.publish_date.desc()).limit(3).all()
 
         return render_template(
             "index.html",
@@ -634,6 +714,7 @@ def create_app():
             total_products=total_products,
             total_orders=total_orders,
             total_revenue=total_revenue,
+            blog_posts=blog_posts,
         )
 
     # ----- ПУБЛІЧНІ: СТАТИЧНІ СТОРІНКИ -----
@@ -643,12 +724,6 @@ def create_app():
         """Сторінка Про компанію."""
         settings = SiteSettings.get_or_create()
         return render_template("pages/about.html", settings=settings)
-
-    @app.route("/blog")
-    def blog_page():
-        """Сторінка Блогу."""
-        settings = SiteSettings.get_or_create()
-        return render_template("pages/blog.html", settings=settings)
 
     @app.route("/contacts")
     def contacts_page():
@@ -1041,7 +1116,13 @@ def create_app():
         if not user_message:
             return jsonify({"error": "Повідомлення порожнє"}), 400
 
-        # Отримуємо налаштування та каталог
+        # Отримуємо налаштування AI
+        ai_settings = AISettings.get_or_create()
+        
+        if not ai_settings.chatbot_enabled:
+            return jsonify({"error": "Чатбот тимчасово недоступний"}), 400
+        
+        # Отримуємо налаштування сайту та каталог
         settings = SiteSettings.get_or_create()
         products = Product.query.filter_by(is_active=True).all()
         categories = Category.query.all()
@@ -1055,6 +1136,10 @@ def create_app():
                 catalog_info += f"  - {p.name}: {p.price} {p.currency}"
                 if p.short_description:
                     catalog_info += f" ({p.short_description})"
+                if p.stock > 0:
+                    catalog_info += f" [В наявності: {p.stock}]"
+                else:
+                    catalog_info += " [Немає в наявності]"
                 catalog_info += "\n"
         
         # Товари без категорії
@@ -1064,8 +1149,12 @@ def create_app():
             for p in no_cat_products:
                 catalog_info += f"  - {p.name}: {p.price} {p.currency}\n"
 
-        system_prompt = f"""
-{settings.ai_instructions or "Ти — ввічливий продавець цього магазину."}
+        # Формуємо системний промпт з кастомними інструкціями
+        system_prompt = ai_settings.get_full_chatbot_prompt(catalog_info)
+        
+        # Додаємо базові правила якщо немає в налаштуваннях
+        if not ai_settings.chatbot_system_prompt:
+            system_prompt = f"""Ти — {ai_settings.chatbot_name or 'ІІ-продавець'} цього магазину.
 
 {catalog_info}
 
@@ -1075,6 +1164,8 @@ def create_app():
 - Пропонуй релевантні товари
 - Будь ввічливим та корисним
 - Відповідай українською мовою
+
+{ai_settings.chatbot_custom_instructions or ''}
 """
 
         try:
@@ -1084,8 +1175,8 @@ def create_app():
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message},
                 ],
-                max_tokens=500,
-                temperature=0.7,
+                max_tokens=ai_settings.chatbot_max_tokens or 500,
+                temperature=ai_settings.chatbot_temperature or 0.7,
             )
             
             ai_message = response.choices[0].message.content
@@ -3089,6 +3180,629 @@ def create_app():
         )
         
         return jsonify({"success": True, "task_id": task.id, "task_number": task.task_number})
+
+    # =====================================================================
+    # AI SETTINGS ROUTES
+    # =====================================================================
+    
+    @app.route("/admin/ai", methods=["GET", "POST"])
+    @admin_required
+    def admin_ai_settings():
+        """Налаштування AI чатбота та блогера."""
+        ai_settings = AISettings.get_or_create()
+        
+        if request.method == "POST":
+            # Чатбот
+            ai_settings.chatbot_enabled = request.form.get("chatbot_enabled") == "on"
+            ai_settings.chatbot_name = request.form.get("chatbot_name", "")
+            ai_settings.chatbot_tone = request.form.get("chatbot_tone", "friendly")
+            ai_settings.chatbot_system_prompt = request.form.get("chatbot_system_prompt", "")
+            ai_settings.chatbot_custom_instructions = request.form.get("chatbot_custom_instructions", "")
+            ai_settings.chatbot_forbidden_topics = request.form.get("chatbot_forbidden_topics", "")
+            
+            try:
+                ai_settings.chatbot_max_tokens = int(request.form.get("chatbot_max_tokens", 500))
+            except ValueError:
+                ai_settings.chatbot_max_tokens = 500
+            
+            try:
+                ai_settings.chatbot_temperature = float(request.form.get("chatbot_temperature", 0.7))
+            except ValueError:
+                ai_settings.chatbot_temperature = 0.7
+            
+            # Блогер
+            ai_settings.blogger_enabled = request.form.get("blogger_enabled") == "on"
+            ai_settings.blogger_name = request.form.get("blogger_name", "")
+            ai_settings.blogger_style = request.form.get("blogger_style", "informative")
+            ai_settings.blogger_language = request.form.get("blogger_language", "uk")
+            ai_settings.blogger_default_keywords = request.form.get("blogger_default_keywords", "")
+            ai_settings.blogger_seo_instructions = request.form.get("blogger_seo_instructions", "")
+            ai_settings.blogger_article_structure = request.form.get("blogger_article_structure", "")
+            
+            try:
+                ai_settings.blogger_min_words = int(request.form.get("blogger_min_words", 500))
+            except ValueError:
+                ai_settings.blogger_min_words = 500
+            
+            try:
+                ai_settings.blogger_max_words = int(request.form.get("blogger_max_words", 1500))
+            except ValueError:
+                ai_settings.blogger_max_words = 1500
+            
+            ai_settings.auto_publish = request.form.get("auto_publish") == "on"
+            ai_settings.publish_time = request.form.get("publish_time", "10:00")
+            
+            # Генерація зображень
+            ai_settings.generate_images = request.form.get("generate_images") == "on"
+            ai_settings.image_style = request.form.get("image_style", "professional photography, realistic, high quality")
+            
+            db.session.commit()
+            flash("✅ AI налаштування збережено!", "success")
+            return redirect(url_for("admin_ai_settings"))
+        
+        return render_template("admin/ai_settings.html", ai_settings=ai_settings)
+    
+    # =====================================================================
+    # BLOG ADMIN ROUTES
+    # =====================================================================
+    
+    @app.route("/admin/blog")
+    @admin_required
+    def admin_blog():
+        """Список статей блогу."""
+        page = request.args.get("page", 1, type=int)
+        status_filter = request.args.get("status", "")
+        per_page = 20
+        
+        query = BlogPost.query
+        
+        if status_filter:
+            query = query.filter(BlogPost.status == status_filter)
+        
+        query = query.order_by(BlogPost.created_at.desc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        posts = pagination.items
+        
+        # Статистика
+        stats = {
+            "total": BlogPost.query.count(),
+            "published": BlogPost.query.filter_by(status=BlogPostStatus.PUBLISHED).count(),
+            "scheduled": BlogPost.query.filter_by(status=BlogPostStatus.SCHEDULED).count(),
+            "draft": BlogPost.query.filter_by(status=BlogPostStatus.DRAFT).count(),
+        }
+        
+        return render_template(
+            "admin/blog.html",
+            posts=posts,
+            pagination=pagination,
+            stats=stats,
+            status_filter=status_filter,
+            page=page,
+            total_pages=pagination.pages,
+        )
+    
+    @app.route("/admin/blog/new", methods=["GET", "POST"])
+    @admin_required
+    def admin_blog_new():
+        """Створення нової статті."""
+        if request.method == "POST":
+            action = request.form.get("action", "save")
+            
+            title = request.form.get("title", "").strip()
+            slug = request.form.get("slug", "").strip() or BlogPost.generate_slug(title)
+            
+            # Перевіряємо унікальність slug
+            existing = BlogPost.get_by_slug(slug)
+            if existing:
+                slug = f"{slug}-{uuid.uuid4().hex[:6]}"
+            
+            post = BlogPost(
+                title=title,
+                slug=slug,
+                excerpt=request.form.get("excerpt", "").strip() or None,
+                content=request.form.get("content", "").strip() or None,
+                featured_image=request.form.get("featured_image", "").strip() or None,
+                meta_title=request.form.get("meta_title", "").strip() or None,
+                meta_description=request.form.get("meta_description", "").strip() or None,
+                meta_keywords=request.form.get("meta_keywords", "").strip() or None,
+                tags=request.form.get("tags", "").strip() or None,
+                category=request.form.get("category", "").strip() or None,
+                author=request.form.get("author", "AI").strip(),
+                ai_topic=request.form.get("ai_topic", "").strip() or None,
+            )
+            
+            # Статус та дата публікації
+            if action == "publish":
+                post.status = BlogPostStatus.PUBLISHED
+                post.publish_date = datetime.utcnow()
+            else:
+                post.status = request.form.get("status", BlogPostStatus.DRAFT)
+                publish_date = request.form.get("publish_date", "")
+                if publish_date:
+                    try:
+                        post.publish_date = datetime.fromisoformat(publish_date)
+                    except ValueError:
+                        pass
+            
+            db.session.add(post)
+            db.session.commit()
+            
+            flash("✅ Статтю створено!", "success")
+            return redirect(url_for("admin_blog_edit", id=post.id))
+        
+        return render_template("admin/blog_edit.html", post=None)
+    
+    @app.route("/admin/blog/<int:id>", methods=["GET", "POST"])
+    @admin_required
+    def admin_blog_edit(id):
+        """Редагування статті."""
+        post = BlogPost.query.get_or_404(id)
+        
+        if request.method == "POST":
+            action = request.form.get("action", "save")
+            
+            post.title = request.form.get("title", "").strip()
+            
+            new_slug = request.form.get("slug", "").strip() or BlogPost.generate_slug(post.title)
+            if new_slug != post.slug:
+                existing = BlogPost.query.filter(BlogPost.slug == new_slug, BlogPost.id != id).first()
+                if existing:
+                    new_slug = f"{new_slug}-{uuid.uuid4().hex[:6]}"
+                post.slug = new_slug
+            
+            post.excerpt = request.form.get("excerpt", "").strip() or None
+            post.content = request.form.get("content", "").strip() or None
+            post.featured_image = request.form.get("featured_image", "").strip() or None
+            post.meta_title = request.form.get("meta_title", "").strip() or None
+            post.meta_description = request.form.get("meta_description", "").strip() or None
+            post.meta_keywords = request.form.get("meta_keywords", "").strip() or None
+            post.tags = request.form.get("tags", "").strip() or None
+            post.category = request.form.get("category", "").strip() or None
+            post.author = request.form.get("author", "AI").strip()
+            post.ai_topic = request.form.get("ai_topic", "").strip() or None
+            
+            if action == "publish":
+                post.status = BlogPostStatus.PUBLISHED
+                if not post.publish_date:
+                    post.publish_date = datetime.utcnow()
+            else:
+                post.status = request.form.get("status", BlogPostStatus.DRAFT)
+                publish_date = request.form.get("publish_date", "")
+                if publish_date:
+                    try:
+                        post.publish_date = datetime.fromisoformat(publish_date)
+                    except ValueError:
+                        pass
+            
+            db.session.commit()
+            flash("✅ Статтю оновлено!", "success")
+            return redirect(url_for("admin_blog_edit", id=id))
+        
+        return render_template("admin/blog_edit.html", post=post)
+    
+    @app.route("/admin/blog/<int:id>/delete", methods=["POST"])
+    @admin_required
+    def admin_blog_delete(id):
+        """Видалення статті."""
+        post = BlogPost.query.get_or_404(id)
+        db.session.delete(post)
+        db.session.commit()
+        flash("Статтю видалено.", "info")
+        return redirect(url_for("admin_blog"))
+    
+    @app.route("/admin/blog/<int:id>/publish", methods=["POST"])
+    @admin_required
+    def admin_blog_publish(id):
+        """Швидка публікація статті."""
+        post = BlogPost.query.get_or_404(id)
+        post.status = BlogPostStatus.PUBLISHED
+        # Якщо дата публікації в майбутньому або відсутня - ставимо поточний час
+        if not post.publish_date or post.publish_date > datetime.utcnow():
+            post.publish_date = datetime.utcnow()
+        db.session.commit()
+        flash(f"✅ Статтю '{post.title}' опубліковано!", "success")
+        return redirect(url_for("admin_blog"))
+    
+    @app.route("/admin/blog/plan", methods=["GET", "POST"])
+    @admin_required
+    def admin_blog_plan():
+        """План публікацій на 7 днів."""
+        from datetime import date, timedelta
+        
+        if request.method == "POST":
+            # Збираємо теми з форми
+            topics_list = []
+            target_audience = request.form.get("target_audience", "")
+            additional_instructions = request.form.get("additional_instructions", "")
+            
+            for i in range(7):
+                topic = request.form.get(f"topic_{i}", "").strip()
+                if topic:
+                    topics_list.append({
+                        "topic": topic,
+                        "keywords": request.form.get(f"keywords_{i}", "").strip(),
+                        "audience": target_audience,
+                        "instructions": additional_instructions,
+                    })
+            
+            if topics_list:
+                BlogPlan.create_weekly_plan(topics_list)
+                flash(f"✅ Створено план на {len(topics_list)} днів!", "success")
+            else:
+                flash("Введіть хоча б одну тему.", "warning")
+            
+            return redirect(url_for("admin_blog_plan"))
+        
+        # Поточний тиждень
+        today = date.today()
+        week_days = []
+        day_names = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"]
+        
+        for i in range(7):
+            current_date = today + timedelta(days=i)
+            plan = BlogPlan.query.filter_by(plan_date=current_date).first()
+            
+            week_days.append({
+                "date": current_date,
+                "day_name": day_names[current_date.weekday()],
+                "is_today": current_date == today,
+                "is_past": current_date < today,
+                "plan": plan,
+            })
+        
+        # Всі плани
+        all_plans = BlogPlan.query.order_by(BlogPlan.plan_date.desc()).limit(30).all()
+        
+        return render_template(
+            "admin/blog_plan.html",
+            week_days=week_days,
+            all_plans=all_plans,
+        )
+    
+    # =====================================================================
+    # BLOG API ROUTES (AI Generation)
+    # =====================================================================
+    
+    @app.route("/api/blog/generate", methods=["POST"])
+    @admin_required
+    def api_blog_generate():
+        """API генерації статті через AI."""
+        if not OPENAI_AVAILABLE or not openai_client:
+            return jsonify({"error": "AI не налаштовано"}), 400
+        
+        data = request.get_json()
+        topic = data.get("topic", "").strip()
+        keywords = data.get("keywords", "").strip()
+        
+        if not topic:
+            return jsonify({"error": "Тема обов'язкова"}), 400
+        
+        ai_settings = AISettings.get_or_create()
+        
+        try:
+            # Формуємо промпт
+            prompt = ai_settings.get_blogger_prompt(topic, keywords)
+            
+            response = openai_client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": f"""Ти - досвідчений контент-райтер та SEO-спеціаліст.
+Пиши мовою: {ai_settings.blogger_language}
+Стиль: {ai_settings.blogger_style}
+Обсяг: {ai_settings.blogger_min_words}-{ai_settings.blogger_max_words} слів
+
+Результат у форматі JSON:
+{{
+  "title": "SEO-оптимізований заголовок",
+  "excerpt": "Короткий опис до 200 символів",
+  "content": "Повний текст статті з HTML форматуванням (h2, h3, p, ul, li)",
+  "meta_title": "Meta title до 60 символів",
+  "meta_description": "Meta description до 160 символів",
+  "tags": "тег1, тег2, тег3"
+}}"""},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=2000,
+                temperature=0.7,
+            )
+            
+            content = response.choices[0].message.content
+            
+            # Парсимо JSON
+            import json
+            try:
+                # Видаляємо можливі markdown блоки
+                if "```json" in content:
+                    content = content.split("```json")[1].split("```")[0]
+                elif "```" in content:
+                    content = content.split("```")[1].split("```")[0]
+                
+                result = json.loads(content.strip())
+                result["success"] = True
+                return jsonify(result)
+            except json.JSONDecodeError:
+                # Якщо не вдалось розпарсити - повертаємо як є
+                return jsonify({
+                    "success": True,
+                    "title": topic,
+                    "content": content,
+                    "excerpt": content[:200] if content else "",
+                })
+        
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
+    @app.route("/api/blog/generate-from-plan/<int:plan_id>", methods=["POST"])
+    @admin_required
+    def api_blog_generate_from_plan(plan_id):
+        """Генерація статті з плану."""
+        if not OPENAI_AVAILABLE or not openai_client:
+            return jsonify({"error": "AI не налаштовано"}), 400
+        
+        plan = BlogPlan.query.get_or_404(plan_id)
+        
+        if plan.status != "pending":
+            return jsonify({"error": "План вже оброблено"}), 400
+        
+        ai_settings = AISettings.get_or_create()
+        
+        try:
+            # Формуємо промпт
+            topic = plan.topic
+            keywords = plan.keywords or ""
+            
+            if plan.additional_instructions:
+                keywords += f"\n\nДодаткові інструкції: {plan.additional_instructions}"
+            
+            prompt = ai_settings.get_blogger_prompt(topic, keywords)
+            
+            response = openai_client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": f"""Ти - досвідчений контент-райтер та SEO-спеціаліст.
+Пиши мовою: {ai_settings.blogger_language}
+Стиль: {ai_settings.blogger_style}
+Обсяг: {ai_settings.blogger_min_words}-{ai_settings.blogger_max_words} слів
+
+Результат у форматі JSON:
+{{
+  "title": "SEO-оптимізований заголовок",
+  "excerpt": "Короткий опис до 200 символів",
+  "content": "Повний текст статті з HTML форматуванням (h2, h3, p, ul, li)",
+  "meta_title": "Meta title до 60 символів",
+  "meta_description": "Meta description до 160 символів",
+  "tags": "тег1, тег2, тег3"
+}}"""},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=2000,
+                temperature=0.7,
+            )
+            
+            content = response.choices[0].message.content
+            
+            # Парсимо JSON
+            import json
+            try:
+                if "```json" in content:
+                    content = content.split("```json")[1].split("```")[0]
+                elif "```" in content:
+                    content = content.split("```")[1].split("```")[0]
+                
+                result = json.loads(content.strip())
+            except json.JSONDecodeError:
+                result = {
+                    "title": topic,
+                    "content": content,
+                    "excerpt": content[:200] if content else "",
+                }
+            
+            # Генеруємо зображення для статті через DALL-E (якщо увімкнено)
+            featured_image_url = None
+            if ai_settings.generate_images:
+                try:
+                    # Отримуємо стиль зображення з налаштувань
+                    image_style = ai_settings.image_style or "professional photography, realistic, high quality"
+                    
+                    # Створюємо промпт для генерації зображення на основі статті
+                    image_prompt_response = openai_client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": f"""Ти - експерт з створення промптів для генерації зображень.
+Створи короткий промпт (до 200 символів) англійською мовою для DALL-E, щоб згенерувати реалістичне фото для статті блогу.
+Промпт має описувати:
+- Головний об'єкт/сцену що відповідає темі
+- Стиль: {image_style}
+- Світло та композицію
+Відповідай ТІЛЬКИ промптом, без додаткового тексту."""},
+                            {"role": "user", "content": f"Тема статті: {result.get('title', topic)}\n\nКороткий опис: {result.get('excerpt', '')[:200]}"},
+                        ],
+                        max_tokens=100,
+                        temperature=0.7,
+                    )
+                    
+                    image_prompt = image_prompt_response.choices[0].message.content.strip()
+                    print(f"🎨 Генерую зображення: {image_prompt[:80]}...")
+                    
+                    # Генеруємо зображення через DALL-E
+                    image_response = openai_client.images.generate(
+                        model="dall-e-3",
+                        prompt=image_prompt,
+                        size="1792x1024",
+                        quality="standard",
+                        n=1,
+                    )
+                    
+                    # Завантажуємо зображення та зберігаємо локально
+                    image_url = image_response.data[0].url
+                    
+                    import requests as req
+                    img_response = req.get(image_url, timeout=30)
+                    if img_response.status_code == 200:
+                        # Створюємо унікальне ім'я файлу
+                        image_filename = f"blog_{uuid.uuid4().hex}.png"
+                        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                        
+                        with open(image_path, 'wb') as f:
+                            f.write(img_response.content)
+                        
+                        featured_image_url = f"/static/uploads/{image_filename}"
+                        print(f"✅ Зображення збережено: {featured_image_url}")
+                        
+                except Exception as img_error:
+                    # Логуємо помилку, але продовжуємо без зображення
+                    print(f"⚠️ Помилка генерації зображення: {img_error}")
+            
+            # Створюємо пост
+            slug = BlogPost.generate_slug(result.get("title", topic))
+            existing = BlogPost.get_by_slug(slug)
+            if existing:
+                slug = f"{slug}-{uuid.uuid4().hex[:6]}"
+            
+            # Визначаємо дату публікації
+            publish_datetime = datetime.combine(plan.plan_date, datetime.strptime(ai_settings.publish_time, "%H:%M").time())
+            
+            # Визначаємо статус: якщо auto_publish і час настав - публікуємо одразу
+            if ai_settings.auto_publish:
+                if publish_datetime <= datetime.utcnow():
+                    post_status = BlogPostStatus.PUBLISHED
+                else:
+                    post_status = BlogPostStatus.SCHEDULED
+            else:
+                post_status = BlogPostStatus.DRAFT
+            
+            post = BlogPost(
+                title=result.get("title", topic),
+                slug=slug,
+                excerpt=result.get("excerpt", ""),
+                content=result.get("content", ""),
+                featured_image=featured_image_url,
+                meta_title=result.get("meta_title", ""),
+                meta_description=result.get("meta_description", ""),
+                tags=result.get("tags", ""),
+                status=post_status,
+                publish_date=publish_datetime,
+                is_ai_generated=True,
+                ai_topic=topic,
+                blog_plan_id=plan.id,
+                author=ai_settings.blogger_name or "AI",
+            )
+            db.session.add(post)
+            
+            # Оновлюємо план
+            plan.status = "generated"
+            plan.blog_post_id = post.id
+            
+            db.session.commit()
+            
+            return jsonify({"success": True, "post_id": post.id})
+        
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
+    @app.route("/api/blog/generate-all-pending", methods=["POST"])
+    @admin_required
+    def api_blog_generate_all_pending():
+        """Генерація всіх pending статей."""
+        pending_plans = BlogPlan.get_pending_for_date()
+        generated = 0
+        
+        for plan in pending_plans:
+            try:
+                # Використовуємо той самий API
+                with app.test_client() as client:
+                    response = client.post(
+                        f"/api/blog/generate-from-plan/{plan.id}",
+                        headers={"Cookie": request.headers.get("Cookie", "")},
+                    )
+                    if response.status_code == 200:
+                        generated += 1
+            except Exception as e:
+                print(f"Error generating plan {plan.id}: {e}")
+                continue
+        
+        return jsonify({"success": True, "generated": generated})
+    
+    @app.route("/api/blog/plan/<int:plan_id>", methods=["DELETE"])
+    @admin_required
+    def api_blog_plan_delete(plan_id):
+        """Видалення плану."""
+        plan = BlogPlan.query.get_or_404(plan_id)
+        db.session.delete(plan)
+        db.session.commit()
+        return jsonify({"success": True})
+    
+    # =====================================================================
+    # PUBLIC BLOG ROUTES
+    # =====================================================================
+    
+    @app.route("/blog")
+    def blog_page():
+        """Публічна сторінка блогу."""
+        settings = SiteSettings.get_or_create()
+        page = request.args.get("page", 1, type=int)
+        per_page = 9
+        
+        # Отримуємо опубліковані пости
+        query = BlogPost.query.filter(
+            BlogPost.status == BlogPostStatus.PUBLISHED,
+            db.or_(
+                BlogPost.publish_date.is_(None),
+                BlogPost.publish_date <= datetime.utcnow()
+            )
+        ).order_by(BlogPost.publish_date.desc(), BlogPost.created_at.desc())
+        
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        posts = pagination.items
+        
+        # Останній пост як featured
+        featured_post = posts[0] if posts else None
+        other_posts = posts[1:] if len(posts) > 1 else []
+        
+        return render_template(
+            "pages/blog.html",
+            settings=settings,
+            featured_post=featured_post,
+            posts=other_posts,
+            pagination=pagination,
+            page=page,
+            total_pages=pagination.pages,
+        )
+    
+    @app.route("/blog/<slug>")
+    def blog_post_page(slug):
+        """Сторінка окремого посту."""
+        settings = SiteSettings.get_or_create()
+        post = BlogPost.get_by_slug(slug)
+        
+        if not post or not post.is_published:
+            abort(404)
+        
+        # Збільшуємо перегляди
+        post.increment_views()
+        
+        # Схожі пости
+        related = []
+        if post.category:
+            related = BlogPost.query.filter(
+                BlogPost.status == BlogPostStatus.PUBLISHED,
+                BlogPost.category == post.category,
+                BlogPost.id != post.id,
+            ).limit(3).all()
+        
+        if not related:
+            related = BlogPost.query.filter(
+                BlogPost.status == BlogPostStatus.PUBLISHED,
+                BlogPost.id != post.id,
+            ).order_by(BlogPost.views.desc()).limit(3).all()
+        
+        return render_template(
+            "pages/blog_post.html",
+            settings=settings,
+            post=post,
+            related=related,
+        )
 
     # Ініціалізація БД при старті
     init_db()
