@@ -58,6 +58,14 @@ class WarehouseTask(db.Model):
     # Пріоритет (1-5, 1 = найвищий)
     priority = db.Column(db.Integer, default=3)
     
+    # Інформація про клієнта (копія з замовлення)
+    customer_name = db.Column(db.String(200), nullable=True)
+    customer_phone = db.Column(db.String(50), nullable=True)
+    customer_email = db.Column(db.String(200), nullable=True)
+    shipping_address = db.Column(db.Text, nullable=True)
+    shipping_method = db.Column(db.String(100), nullable=True)
+    is_b2b = db.Column(db.Boolean, default=False)
+    
     # Коментарі
     notes = db.Column(db.Text, nullable=True)
     admin_notes = db.Column(db.Text, nullable=True)
@@ -164,14 +172,28 @@ class WarehouseTask(db.Model):
     @staticmethod
     def create_from_order(order_id, priority=3, notes=None):
         """Створює завдання для замовлення."""
+        from models.order import Order
+        
+        order = Order.query.get(order_id)
+        if not order:
+            raise ValueError(f"Order #{order_id} not found")
+        
         task = WarehouseTask(
             order_id=order_id,
             priority=priority,
             notes=notes,
+            # Копіюємо дані з замовлення
+            customer_name=getattr(order, 'customer_name', None) or getattr(order, 'name', None),
+            customer_phone=getattr(order, 'customer_phone', None) or getattr(order, 'phone', None),
+            customer_email=getattr(order, 'customer_email', None) or getattr(order, 'email', None),
+            shipping_address=getattr(order, 'shipping_address', None) or getattr(order, 'address', None),
+            shipping_method=getattr(order, 'shipping_method', None),
+            is_b2b=getattr(order, 'is_b2b', False),
         )
         db.session.add(task)
         db.session.flush()
         task.generate_task_number()
+        db.session.commit()
         return task
 
 

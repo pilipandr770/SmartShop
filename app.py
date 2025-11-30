@@ -374,6 +374,12 @@ def create_app():
                     ('task_number', 'VARCHAR(50)'),
                     ('status', "VARCHAR(20) DEFAULT 'pending'"),
                     ('priority', 'INTEGER DEFAULT 3'),
+                    ('customer_name', 'VARCHAR(200)'),
+                    ('customer_phone', 'VARCHAR(50)'),
+                    ('customer_email', 'VARCHAR(200)'),
+                    ('shipping_address', 'TEXT'),
+                    ('shipping_method', 'VARCHAR(100)'),
+                    ('is_b2b', 'BOOLEAN DEFAULT FALSE'),
                     ('notes', 'TEXT'),
                     ('admin_notes', 'TEXT'),
                     ('assigned_to', 'VARCHAR(100)'),
@@ -1490,11 +1496,28 @@ def create_app():
         """Оновити статус замовлення."""
         order = Order.query.get_or_404(order_id)
         new_status = request.form.get("status", "").strip()
+        old_status = order.status
         
         valid_statuses = ["created", "pending", "paid", "shipped", "delivered", "cancelled"]
         if new_status in valid_statuses:
             order.status = new_status
             db.session.commit()
+            
+            # Якщо статус змінився на "paid" - створюємо завдання для складу
+            if new_status == "paid" and old_status != "paid":
+                try:
+                    from models.warehouse import WarehouseTask
+                    existing_task = WarehouseTask.query.filter_by(order_id=order.id).first()
+                    if not existing_task:
+                        task = WarehouseTask.create_from_order(
+                            order_id=order.id,
+                            priority=2 if getattr(order, 'is_b2b', False) else 3,
+                            notes=getattr(order, 'notes', '') or '',
+                        )
+                        flash(f"📦 Завдання для складу #{task.task_number} створено!", "info")
+                except Exception as e:
+                    print(f"Error creating warehouse task: {e}")
+            
             flash(f"Статус змінено на «{new_status}».", "success")
         else:
             flash("Невірний статус.", "danger")

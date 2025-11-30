@@ -94,7 +94,7 @@
                     </td>
                     <td>
                         {% if task.order %}
-                        <a href="{{ url_for('admin_order_detail', id=task.order_id) }}">
+                        <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}">
                             #{{ task.order.id }}
                         </a>
                         {% else %}
@@ -106,7 +106,7 @@
                         <small class="text-muted">{{ task.customer_phone or '' }}</small>
                     </td>
                     <td>
-                        <small>{{ task.shipping_address[:50] }}{% if task.shipping_address|length > 50 %}...{% endif %}</small>
+                        <small>{{ (task.shipping_address or '—')[:50] }}{% if task.shipping_address and task.shipping_address|length > 50 %}...{% endif %}</small>
                     </td>
                     <td>
                         {% if task.priority == 1 %}
