@@ -1,0 +1,111 @@
+# ============================================
+# SmartShop AI - Git Ignore
+# ============================================
+
+# ===== ENVIRONMENT & SECRETS =====
+.env
+.env.local
+.env.production
+.env.*.local
+*.pem
+*.key
+
+# ===== PYTHON =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ===== VIRTUAL ENVIRONMENTS =====
+venv/
+.venv/
+ENV/
+env/
+.env.bak/
+
+# ===== DATABASE =====
+*.db
+*.sqlite
+*.sqlite3
+instance/
+migrations/
+
+# ===== IDE & EDITORS =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ===== OS FILES =====
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===== LOGS =====
+*.log
+logs/
+log/
+
+# ===== CACHE =====
+.cache/
+*.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== COVERAGE =====
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# ===== JUPYTER =====
+.ipynb_checkpoints/
+
+# ===== STATIC FILES (if generated) =====
+staticfiles/
+static/collected/
+
+# ===== TEMP FILES =====
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+
+# ===== DOCKER =====
+.docker/
+
+# ===== NODE (if using frontend build) =====
+node_modules/
+npm-debug.log
+yarn-error.log

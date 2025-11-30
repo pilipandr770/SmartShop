@@ -49,11 +49,23 @@ def create_app():
 
     # Базові налаштування
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
-    # SQLite-файл у корені проєкту
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    
+    # Database configuration
+    # Підтримка DATABASE_URL (Render, Heroku, Railway) та SQLALCHEMY_DATABASE_URI
+    database_url = os.environ.get("DATABASE_URL") or os.environ.get(
         "SQLALCHEMY_DATABASE_URI", "sqlite:///smartshop_ai.db"
     )
+    # Render/Heroku використовують postgres://, але SQLAlchemy потребує postgresql://
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # Для PostgreSQL - налаштування пулу з'єднань
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
+    }
 
     # Stripe налаштування
     app.config["STRIPE_SECRET_KEY"] = os.environ.get("STRIPE_SECRET_KEY", "")
