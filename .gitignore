@@ -94,6 +94,7 @@ coverage.xml
 # ===== STATIC FILES (if generated) =====
 staticfiles/
 static/collected/
+static/uploads/
 
 # ===== TEMP FILES =====
 tmp/

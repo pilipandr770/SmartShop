@@ -38,9 +38,25 @@
             <input type="number" id="old_price" name="old_price" step="0.01" min="0" placeholder="Для знижки">
         </div>
         
-        <div class="form-group">
-            <label for="image_url">URL зображення</label>
-            <input type="url" id="image_url" name="image_url" placeholder="https://example.com/image.jpg">
+        <div class="form-group full-width">
+            <label>Зображення товару</label>
+            <div class="image-upload-wrapper">
+                <div class="image-preview" id="imagePreview">
+                    <span class="preview-placeholder">📷 Немає зображення</span>
+                </div>
+                <div class="upload-controls">
+                    <div class="upload-btn-wrapper">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageFile').click()">
+                            📤 Завантажити з комп'ютера
+                        </button>
+                        <input type="file" id="imageFile" accept="image/*" style="display: none;" onchange="uploadImage(this)">
+                    </div>
+                    <span class="upload-or">або</span>
+                    <input type="url" id="image_url" name="image_url" placeholder="Вставте URL зображення" class="url-input">
+                </div>
+                <input type="hidden" id="uploaded_image_url" name="image_url">
+                <div id="uploadStatus" class="upload-status"></div>
+            </div>
         </div>
         
         <div class="form-group">
@@ -284,5 +300,136 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Image Upload Styles */
+.image-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.image-preview {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-placeholder {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.upload-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.upload-or {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.url-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.upload-status {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.upload-status.success {
+    color: var(--success-color);
+}
+
+.upload-status.error {
+    color: var(--danger-color);
+}
+
+.upload-status.loading {
+    color: var(--primary-color);
+}
 </style>
+
+<script>
+async function uploadImage(input) {
+    if (!input.files || !input.files[0]) return;
+    
+    const file = input.files[0];
+    const statusEl = document.getElementById('uploadStatus');
+    const previewEl = document.getElementById('imagePreview');
+    const hiddenInput = document.getElementById('uploaded_image_url');
+    const urlInput = document.getElementById('image_url');
+    
+    // Перевірка розміру (max 16MB)
+    if (file.size > 16 * 1024 * 1024) {
+        statusEl.textContent = '❌ Файл занадто великий (макс. 16 МБ)';
+        statusEl.className = 'upload-status error';
+        return;
+    }
+    
+    statusEl.textContent = '⏳ Завантаження...';
+    statusEl.className = 'upload-status loading';
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch('/admin/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Показуємо превʼю
+            previewEl.innerHTML = `<img src="${data.url}" alt="Preview">`;
+            
+            // Зберігаємо URL
+            hiddenInput.value = data.url;
+            urlInput.value = data.url;
+            
+            statusEl.textContent = '✅ Зображення завантажено!';
+            statusEl.className = 'upload-status success';
+        } else {
+            statusEl.textContent = '❌ ' + (data.error || 'Помилка завантаження');
+            statusEl.className = 'upload-status error';
+        }
+    } catch (error) {
+        statusEl.textContent = '❌ Помилка з\'єднання';
+        statusEl.className = 'upload-status error';
+    }
+}
+
+// Оновлення превʼю при вводі URL
+document.getElementById('image_url').addEventListener('input', function() {
+    const url = this.value.trim();
+    const previewEl = document.getElementById('imagePreview');
+    const hiddenInput = document.getElementById('uploaded_image_url');
+    
+    if (url) {
+        previewEl.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>❌ Невірний URL</span>'">`;
+        hiddenInput.value = url;
+    } else {
+        previewEl.innerHTML = '<span class="preview-placeholder">📷 Немає зображення</span>';
+        hiddenInput.value = '';
+    }
+});
+</script>
 {% endblock %}

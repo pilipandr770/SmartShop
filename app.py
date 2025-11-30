@@ -1,7 +1,9 @@
 
 import os
+import uuid
 from datetime import datetime
 from functools import wraps
+from werkzeug.utils import secure_filename
 
 # Завантаження змінних з .env
 try:
@@ -19,6 +21,7 @@ from flask import (
     session,
     flash,
     jsonify,
+    send_from_directory,
     abort,
 )
 from flask_sqlalchemy import SQLAlchemy
@@ -89,6 +92,18 @@ def create_app():
     openai_client = None
     if OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
         openai_client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
+
+    # Налаштування для завантаження файлів
+    UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max
+    
+    # Створюємо папку uploads якщо не існує
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    
+    def allowed_file(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     db.init_app(app)
 
@@ -969,6 +984,36 @@ def create_app():
 
         categories = Category.query.order_by(Category.name.asc()).all()
         return render_template("admin/categories.html", categories=categories)
+
+    # ----- АДМІНКА: ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ -----
+
+    @app.route("/admin/upload", methods=["POST"])
+    @admin_required
+    def admin_upload():
+        """Завантаження зображення на сервер."""
+        if 'file' not in request.files:
+            return jsonify({"error": "Файл не обрано"}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "Файл не обрано"}), 400
+        
+        if file and allowed_file(file.filename):
+            # Генеруємо унікальне ім'я файлу
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            filename = f"{uuid.uuid4().hex}.{ext}"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            # Повертаємо URL до файлу
+            file_url = url_for('static', filename=f'uploads/{filename}', _external=True)
+            return jsonify({
+                "success": True, 
+                "url": file_url,
+                "filename": filename
+            })
+        
+        return jsonify({"error": "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"}), 400
 
     # ----- АДМІНКА: ТОВАРИ -----
 
