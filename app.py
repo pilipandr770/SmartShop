@@ -92,9 +92,18 @@ def create_app():
 
     # OpenAI налаштування
     app.config["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
-    openai_client = None
-    if OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
-        openai_client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
+    openai_client = None  # Will be initialized lazily
+
+    def get_openai_client():
+        """Lazy initialization of OpenAI client."""
+        nonlocal openai_client
+        if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
+            try:
+                openai_client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
+            except Exception as e:
+                print(f"Failed to initialize OpenAI client: {e}")
+                openai_client = None
+        return openai_client
 
     # Налаштування для завантаження файлів
     UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
@@ -1173,6 +1182,7 @@ def create_app():
     @app.route("/api/chat", methods=["POST"])
     def api_chat():
         """API для чату з ІІ-продавцем."""
+        openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
             return jsonify({"error": "AI не налаштовано"}), 400
 
@@ -3579,6 +3589,7 @@ def create_app():
     @admin_required
     def api_blog_generate():
         """API генерації статті через AI."""
+        openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
             return jsonify({"error": "AI не налаштовано"}), 400
         
@@ -3648,6 +3659,7 @@ def create_app():
     @admin_required
     def api_blog_generate_from_plan(plan_id):
         """Генерація статті з плану."""
+        openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
             return jsonify({"error": "AI не налаштовано"}), 400
         
@@ -3905,6 +3917,7 @@ def create_app():
     @admin_required
     def api_blog_translate(post_id):
         """Автоматичний переклад статті на інші мови."""
+        openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
             return jsonify({"error": "AI не налаштовано. Додайте OPENAI_API_KEY"}), 400
         
