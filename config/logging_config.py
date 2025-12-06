@@ -131,7 +131,7 @@ def setup_sentry(app):
         
         app.logger.info('Sentry initialized successfully', extra={
             'environment': environment,
-            'traces_sample_rate': traces_sample_rate
+            'traces_sample_rate': float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.1'))
         })
         
     except ImportError:
