@@ -56,6 +56,53 @@ def create_app():
     # Базові налаштування
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
     
+    # Security Headers Middleware
+    @app.after_request
+    def set_security_headers(response):
+        """Add comprehensive security headers to all responses"""
+        # HSTS - Force HTTPS for 1 year, including subdomains
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
+        
+        # Prevent MIME sniffing
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        
+        # Clickjacking protection
+        response.headers['X-Frame-Options'] = 'DENY'
+        
+        # XSS Protection (legacy but still useful)
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        
+        # Content Security Policy - XSS protection
+        csp_policy = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+            "img-src 'self' data: https: blob:; "
+            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; "
+            "connect-src 'self' https://api.openai.com https://api.stripe.com; "
+            "frame-src https://js.stripe.com https://hooks.stripe.com; "
+            "frame-ancestors 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self' https://checkout.stripe.com; "
+            "upgrade-insecure-requests;"
+        )
+        response.headers['Content-Security-Policy'] = csp_policy
+        
+        # Referrer Policy - Control referrer information
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        
+        # Permissions Policy (formerly Feature Policy)
+        response.headers['Permissions-Policy'] = (
+            "geolocation=(), microphone=(), camera=(), payment=(self)"
+        )
+        
+        # Hide server information
+        response.headers['Server'] = 'SmartShop'
+        if 'X-Powered-By' in response.headers:
+            del response.headers['X-Powered-By']
+        
+        return response
+    
     # Database configuration
     # Підтримка DATABASE_URL (Render, Heroku, Railway) та SQLALCHEMY_DATABASE_URI
     database_url = os.environ.get("DATABASE_URL") or os.environ.get(
@@ -105,17 +152,39 @@ def create_app():
                 openai_client = None
         return openai_client
 
-    # Налаштування для завантаження файлів
+    # Налаштування для завантаження файлів з додатковою безпекою
     UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    ALLOWED_MIME_TYPES = {
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'image/webp'
+    }
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max
     
     # Створюємо папку uploads якщо не існує
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     
-    def allowed_file(filename):
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    def allowed_file(filename, content_type=None):
+        """Validate file extension and optionally MIME type"""
+        if not filename or '.' not in filename:
+            return False
+        
+        # Secure the filename
+        filename = secure_filename(filename)
+        
+        # Check extension
+        ext = filename.rsplit('.', 1)[1].lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            return False
+        
+        # Check MIME type if provided
+        if content_type and content_type not in ALLOWED_MIME_TYPES:
+            return False
+        
+        return True
 
     # Flask-Babel налаштування для мультимовності
     app.config['BABEL_DEFAULT_LOCALE'] = 'uk'
@@ -1411,7 +1480,7 @@ def create_app():
     @app.route("/admin/upload", methods=["POST"])
     @admin_required
     def admin_upload():
-        """Завантаження зображення на сервер."""
+        """Завантаження зображення на сервер з валідацією безпеки."""
         if 'file' not in request.files:
             return jsonify({"error": "Файл не обрано"}), 400
         
@@ -1419,12 +1488,26 @@ def create_app():
         if file.filename == '':
             return jsonify({"error": "Файл не обрано"}), 400
         
-        if file and allowed_file(file.filename):
+        # Get MIME type from request
+        content_type = file.content_type
+        
+        # Validate file with both extension and MIME type
+        if file and allowed_file(file.filename, content_type):
+            # Secure the filename
+            secured_name = secure_filename(file.filename)
+            
             # Генеруємо унікальне ім'я файлу
-            ext = file.filename.rsplit('.', 1)[1].lower()
+            ext = secured_name.rsplit('.', 1)[1].lower()
             filename = f"{uuid.uuid4().hex}.{ext}"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
+            
+            # Save with secure permissions
+            try:
+                file.save(filepath)
+                # Set restrictive file permissions (read-only for group/others)
+                os.chmod(filepath, 0o644)
+            except Exception as e:
+                return jsonify({"error": f"Помилка збереження файлу: {str(e)}"}), 500
             
             # Повертаємо URL до файлу
             file_url = url_for('static', filename=f'uploads/{filename}', _external=True)
