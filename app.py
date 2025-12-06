@@ -1512,7 +1512,7 @@ def create_app():
     @app.route("/admin/upload", methods=["POST"])
     @admin_required
     def admin_upload():
-        """Завантаження зображення на сервер або Cloudinary з валідацією безпеки."""
+        """Завантаження зображення в базу даних PostgreSQL."""
         if 'file' not in request.files:
             return jsonify({"error": "Файл не обрано"}), 400
         
@@ -1525,6 +1525,8 @@ def create_app():
         
         # Validate file with both extension and MIME type
         if file and allowed_file(file.filename, content_type):
+            from models.product import Image
+            
             # Secure the filename
             secured_name = secure_filename(file.filename)
             
@@ -1532,52 +1534,106 @@ def create_app():
             ext = secured_name.rsplit('.', 1)[1].lower()
             filename = f"{uuid.uuid4().hex}.{ext}"
             
+            # Читаємо файл у пам'ять
+            file_data = file.read()
+            file_size = len(file_data)
+            
+            # Перевірка розміру (max 16 MB)
+            max_size = app.config.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024)
+            if file_size > max_size:
+                return jsonify({"error": f"Файл занадто великий (max {max_size // 1024 // 1024} MB)"}), 400
+            
             # Upload to Cloudinary if configured
-            if app.config["IMAGE_STORAGE"] == "cloudinary" and CLOUDINARY_AVAILABLE:
-                try:
-                    # Upload to Cloudinary
-                    upload_result = cloudinary.uploader.upload(
-                        file,
-                        folder="smartshop",
-                        public_id=filename.rsplit('.', 1)[0],
-                        resource_type="image",
-                        allowed_formats=['png', 'jpg', 'jpeg', 'gif', 'webp']
-                    )
-                    
-                    file_url = upload_result['secure_url']
-                    
-                    return jsonify({
-                        "success": True,
-                        "url": file_url,
-                        "filename": filename,
-                        "storage": "cloudinary"
-                    })
-                    
-                except Exception as e:
-                    print(f"Cloudinary upload error: {e}")
-                    return jsonify({"error": f"Помилка завантаження в Cloudinary: {str(e)}"}), 500
+            if app.config.get("IMAGE_STORAGE") == "cloudinary" and CLOUDINARY_AVAILABLE:
+                if all([app.config.get("CLOUDINARY_CLOUD_NAME"), 
+                       app.config.get("CLOUDINARY_API_KEY"), 
+                       app.config.get("CLOUDINARY_API_SECRET")]):
+                    try:
+                        # Reset file pointer
+                        file.seek(0)
+                        # Upload to Cloudinary
+                        upload_result = cloudinary.uploader.upload(
+                            file,
+                            folder="smartshop",
+                            public_id=filename.rsplit('.', 1)[0],
+                            resource_type="image",
+                            allowed_formats=['png', 'jpg', 'jpeg', 'gif', 'webp']
+                        )
+                        
+                        file_url = upload_result['secure_url']
+                        
+                        return jsonify({
+                            "success": True,
+                            "url": file_url,
+                            "filename": filename,
+                            "storage": "cloudinary"
+                        })
+                        
+                    except Exception as e:
+                        print(f"Cloudinary upload error: {e}")
+                        # Fallback to database
             
-            # Fallback to local storage
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            
-            # Save with secure permissions
+            # Зберігаємо в базі даних
             try:
-                file.save(filepath)
-                # Set restrictive file permissions (read-only for group/others)
-                os.chmod(filepath, 0o644)
+                # Перевіряємо, чи вже існує файл з таким іменем
+                existing_image = Image.query.filter_by(filename=filename).first()
+                if existing_image:
+                    # Оновлюємо існуюче зображення
+                    existing_image.data = file_data
+                    existing_image.mime_type = content_type
+                    existing_image.size = file_size
+                    image = existing_image
+                else:
+                    # Створюємо нове зображення
+                    image = Image(
+                        filename=filename,
+                        data=file_data,
+                        mime_type=content_type,
+                        size=file_size
+                    )
+                    db.session.add(image)
+                
+                db.session.commit()
+                
+                # Повертаємо URL для отримання зображення
+                file_url = url_for('serve_image', filename=filename, _external=True)
+                
+                return jsonify({
+                    "success": True, 
+                    "url": file_url,
+                    "filename": filename,
+                    "storage": "database",
+                    "size": file_size
+                })
+                
             except Exception as e:
-                return jsonify({"error": f"Помилка збереження файлу: {str(e)}"}), 500
-            
-            # Повертаємо URL до файлу
-            file_url = url_for('static', filename=f'uploads/{filename}', _external=True)
-            return jsonify({
-                "success": True, 
-                "url": file_url,
-                "filename": filename,
-                "storage": "local"
-            })
+                db.session.rollback()
+                print(f"Database save error: {e}")
+                return jsonify({"error": f"Помилка збереження: {str(e)}"}), 500
         
         return jsonify({"error": "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"}), 400
+    
+    # ----- СЕРВІС ЗОБРАЖЕНЬ З БД -----
+    
+    @app.route("/images/<filename>")
+    def serve_image(filename):
+        """Віддає зображення з бази даних."""
+        from models.product import Image
+        from flask import send_file
+        import io
+        
+        image = Image.query.filter_by(filename=filename).first_or_404()
+        
+        # Створюємо буфер з даними зображення
+        image_io = io.BytesIO(image.data)
+        image_io.seek(0)
+        
+        return send_file(
+            image_io,
+            mimetype=image.mime_type,
+            as_attachment=False,
+            download_name=image.filename
+        )
 
     # ----- АДМІНКА: ТОВАРИ -----
 

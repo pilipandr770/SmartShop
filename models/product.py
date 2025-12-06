@@ -2,7 +2,32 @@
 Моделі товарів та категорій
 """
 from datetime import datetime
+import base64
 from extensions import db
+
+
+class Image(db.Model):
+    """Зображення, що зберігаються в базі даних."""
+    __tablename__ = "images"
+    __table_args__ = {'extend_existing': True}
+    
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), unique=True, nullable=False)
+    data = db.Column(db.LargeBinary, nullable=False)  # Binary image data
+    mime_type = db.Column(db.String(50), nullable=False)  # image/jpeg, image/png, etc.
+    size = db.Column(db.Integer, nullable=False)  # File size in bytes
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<Image {self.filename}>"
+    
+    def to_base64(self):
+        """Convert image data to base64 for embedding in HTML."""
+        return base64.b64encode(self.data).decode('utf-8')
+    
+    def get_data_uri(self):
+        """Get data URI for direct embedding in HTML."""
+        return f"data:{self.mime_type};base64,{self.to_base64()}"
 
 
 class Category(db.Model):
