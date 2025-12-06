@@ -42,6 +42,15 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
+# Cloudinary для зберігання зображень
+try:
+    import cloudinary
+    import cloudinary.uploader
+    import cloudinary.api
+    CLOUDINARY_AVAILABLE = True
+except ImportError:
+    CLOUDINARY_AVAILABLE = False
+
 # Ініціалізація SQLAlchemy та Flask-Login - імпортуємо з extensions для уникнення дублювання
 from extensions import db, login_manager
 
@@ -151,6 +160,29 @@ def create_app():
                 print(f"Failed to initialize OpenAI client: {e}")
                 openai_client = None
         return openai_client
+
+    # Cloudinary налаштування для постійного зберігання зображень
+    app.config["CLOUDINARY_CLOUD_NAME"] = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
+    app.config["CLOUDINARY_API_KEY"] = os.environ.get("CLOUDINARY_API_KEY", "")
+    app.config["CLOUDINARY_API_SECRET"] = os.environ.get("CLOUDINARY_API_SECRET", "")
+    app.config["IMAGE_STORAGE"] = os.environ.get("IMAGE_STORAGE", "local")  # 'cloudinary' or 'local'
+    
+    if CLOUDINARY_AVAILABLE and app.config["IMAGE_STORAGE"] == "cloudinary":
+        if all([app.config["CLOUDINARY_CLOUD_NAME"], 
+                app.config["CLOUDINARY_API_KEY"], 
+                app.config["CLOUDINARY_API_SECRET"]]):
+            cloudinary.config(
+                cloud_name=app.config["CLOUDINARY_CLOUD_NAME"],
+                api_key=app.config["CLOUDINARY_API_KEY"],
+                api_secret=app.config["CLOUDINARY_API_SECRET"],
+                secure=True
+            )
+            print("✅ Cloudinary configured for image storage")
+        else:
+            print("⚠️ Cloudinary credentials missing, falling back to local storage")
+            app.config["IMAGE_STORAGE"] = "local"
+    else:
+        print("📁 Using local storage for images (will be lost on Render redeployment)")
 
     # Налаштування для завантаження файлів з додатковою безпекою
     UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
@@ -1480,7 +1512,7 @@ def create_app():
     @app.route("/admin/upload", methods=["POST"])
     @admin_required
     def admin_upload():
-        """Завантаження зображення на сервер з валідацією безпеки."""
+        """Завантаження зображення на сервер або Cloudinary з валідацією безпеки."""
         if 'file' not in request.files:
             return jsonify({"error": "Файл не обрано"}), 400
         
@@ -1499,6 +1531,33 @@ def create_app():
             # Генеруємо унікальне ім'я файлу
             ext = secured_name.rsplit('.', 1)[1].lower()
             filename = f"{uuid.uuid4().hex}.{ext}"
+            
+            # Upload to Cloudinary if configured
+            if app.config["IMAGE_STORAGE"] == "cloudinary" and CLOUDINARY_AVAILABLE:
+                try:
+                    # Upload to Cloudinary
+                    upload_result = cloudinary.uploader.upload(
+                        file,
+                        folder="smartshop",
+                        public_id=filename.rsplit('.', 1)[0],
+                        resource_type="image",
+                        allowed_formats=['png', 'jpg', 'jpeg', 'gif', 'webp']
+                    )
+                    
+                    file_url = upload_result['secure_url']
+                    
+                    return jsonify({
+                        "success": True,
+                        "url": file_url,
+                        "filename": filename,
+                        "storage": "cloudinary"
+                    })
+                    
+                except Exception as e:
+                    print(f"Cloudinary upload error: {e}")
+                    return jsonify({"error": f"Помилка завантаження в Cloudinary: {str(e)}"}), 500
+            
+            # Fallback to local storage
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             
             # Save with secure permissions
@@ -1514,7 +1573,8 @@ def create_app():
             return jsonify({
                 "success": True, 
                 "url": file_url,
-                "filename": filename
+                "filename": filename,
+                "storage": "local"
             })
         
         return jsonify({"error": "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"}), 400

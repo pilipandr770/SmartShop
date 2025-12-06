@@ -11,3 +11,4 @@ requests==2.31.0
 Werkzeug==3.0.3
 beautifulsoup4==4.12.3
 APScheduler==3.10.4
+cloudinary==1.41.0
