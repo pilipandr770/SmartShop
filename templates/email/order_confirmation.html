@@ -1,0 +1,46 @@
+{% extends "email/layout.html" %}
+
+{% block title %}Замовлення підтверджено - SmartShop AI{% endblock %}
+
+{% block content %}
+<h2>✅ Дякуємо за замовлення!</h2>
+
+<p>Ваше замовлення <strong>#{{ order.id }}</strong> успішно оформлено та оплачено.</p>
+
+<div class="success-box">
+    <p style="margin: 0;"><strong>📦 Деталі замовлення:</strong></p>
+    <table style="width: 100%; margin-top: 10px; font-size: 14px;">
+        <tr>
+            <td>Номер замовлення:</td>
+            <td><strong>#{{ order.id }}</strong></td>
+        </tr>
+        <tr>
+            <td>Дата:</td>
+            <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+        </tr>
+        <tr>
+            <td>Статус:</td>
+            <td><strong>{{ order.status }}</strong></td>
+        </tr>
+        <tr style="border-top: 1px solid #ddd;">
+            <td><strong>Сума:</strong></td>
+            <td><strong>{{ order.total }} EUR</strong></td>
+        </tr>
+    </table>
+</div>
+
+<p><strong>📍 Адреса доставки:</strong></p>
+<div class="info-box" style="font-size: 14px;">
+    <p style="margin: 0;">{{ order.shipping_name }}</p>
+    <p style="margin: 5px 0 0;">{{ order.shipping_address }}</p>
+    <p style="margin: 5px 0 0;">{{ order.shipping_city }}, {{ order.shipping_postal_code }}</p>
+</div>
+
+<p>Ми надішлемо вам email, коли замовлення буде відправлено.</p>
+
+<p style="text-align: center;">
+    <a href="{{ url_for('cabinet', _external=True) }}" class="button">
+        📋 Переглянути замовлення
+    </a>
+</p>
+{% endblock %}

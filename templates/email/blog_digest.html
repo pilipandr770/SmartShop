@@ -1,0 +1,31 @@
+{% extends "email/layout.html" %}
+
+{% block title %}Нові статті в блозі - SmartShop AI{% endblock %}
+
+{% block content %}
+<h2>📰 Щотижневий дайджест блогу</h2>
+
+<p>Нові статті в блозі SmartShop AI за цей тиждень:</p>
+
+{% for post in posts %}
+<div class="info-box" style="margin: 20px 0;">
+    <h3 style="margin: 0 0 10px; color: #667eea;">{{ post.title }}</h3>
+    <p style="margin: 0; font-size: 14px; color: #6c757d;">{{ post.excerpt }}</p>
+    <p style="margin: 10px 0 0;">
+        <a href="{{ url_for('blog_post', slug=post.slug, _external=True) }}" style="color: #667eea; text-decoration: none; font-weight: 600;">
+            Читати далі →
+        </a>
+    </p>
+</div>
+{% endfor %}
+
+<p style="text-align: center;">
+    <a href="{{ url_for('blog_page', _external=True) }}" class="button">
+        📚 Всі статті блогу
+    </a>
+</p>
+
+<p style="font-size: 12px; color: #adb5bd; margin-top: 30px;">
+    Не хочете отримувати дайджест? <a href="#">Відписатися</a>
+</p>
+{% endblock %}

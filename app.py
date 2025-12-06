@@ -65,6 +65,22 @@ def create_app():
     # Базові налаштування
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
     
+    # Налаштування логування та моніторингу (критично для production)
+    from config.logging_config import setup_logging, setup_sentry, log_request, log_exceptions
+    setup_logging(app)
+    setup_sentry(app)
+    log_request(app)
+    log_exceptions(app)
+    
+    app.logger.info('SmartShop AI application starting...', extra={
+        'environment': os.environ.get('FLASK_ENV', 'production'),
+        'python_version': os.sys.version
+    })
+    
+    # Ініціалізація email сервісу
+    from services.email_service import init_mail
+    init_mail(app)
+    
     # Security Headers Middleware
     @app.after_request
     def set_security_headers(response):
@@ -1201,6 +1217,15 @@ def create_app():
                     order.stripe_payment_intent = checkout_session.payment_intent
                     db.session.commit()
                     
+                    # Відправити email підтвердження замовлення
+                    if order.email:
+                        try:
+                            from services.email_service import send_order_confirmation
+                            send_order_confirmation(order.email, order)
+                            app.logger.info(f'Order confirmation email sent to {order.email}')
+                        except Exception as e:
+                            app.logger.error(f'Failed to send order confirmation: {str(e)}')
+                    
                     # Створюємо завдання для складу
                     try:
                         from models.warehouse import WarehouseTask
@@ -1890,6 +1915,15 @@ def create_app():
             order.status = new_status
             db.session.commit()
             
+            # Відправити email про зміну статусу
+            if order.email and old_status != new_status:
+                try:
+                    from services.email_service import send_order_status_update
+                    send_order_status_update(order.email, order, old_status, new_status)
+                    app.logger.info(f'Order status email sent to {order.email}')
+                except Exception as e:
+                    app.logger.error(f'Failed to send order status email: {str(e)}')
+            
             # Якщо статус змінився на "paid" - створюємо завдання для складу
             if new_status == "paid" and old_status != "paid":
                 try:
@@ -2226,6 +2260,15 @@ def create_app():
                 phone=phone or None,
             )
             
+            # Відправити welcome email
+            try:
+                from services.email_service import send_registration_email
+                user_name = f"{first_name} {last_name}".strip() or "Клієнт"
+                send_registration_email(email, user_name)
+                app.logger.info(f'Registration email sent to {email}')
+            except Exception as e:
+                app.logger.error(f'Failed to send registration email: {str(e)}')
+            
             from flask_login import login_user as flask_login_user
             flask_login_user(user)
             flash("Реєстрація успішна! Ласкаво просимо!", "success")
@@ -2338,6 +2381,18 @@ def create_app():
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
+            
+            # Відправити email залежно від статусу
+            try:
+                from services.email_service import send_b2b_verification_pending, send_b2b_verification_approved
+                if company.is_verified:
+                    send_b2b_verification_approved(email, company_name, company.discount_percent or 0)
+                    app.logger.info(f'B2B approval email sent to {email}')
+                else:
+                    send_b2b_verification_pending(email, company_name)
+                    app.logger.info(f'B2B pending email sent to {email}')
+            except Exception as e:
+                app.logger.error(f'Failed to send B2B email: {str(e)}')
             
             from flask_login import login_user as flask_login_user
             flask_login_user(user)
@@ -2710,6 +2765,19 @@ def create_app():
         company.verified_at = datetime.utcnow()
         db.session.commit()
         
+        # Відправити email про успішну верифікацію
+        if company.contact_email:
+            try:
+                from services.email_service import send_b2b_verification_approved
+                send_b2b_verification_approved(
+                    company.contact_email, 
+                    company.name,
+                    company.discount_percent or 0
+                )
+                app.logger.info(f'B2B approval email sent to {company.contact_email}')
+            except Exception as e:
+                app.logger.error(f'Failed to send B2B approval email: {str(e)}')
+        
         return jsonify({"success": True})
     
     @app.route("/admin/crm/partner/<int:id>/reject", methods=["POST"])
@@ -2721,6 +2789,19 @@ def create_app():
         company.status = "rejected"
         company.rejection_reason = data.get("reason", "")
         db.session.commit()
+        
+        # Відправити email про відхилення
+        if company.contact_email:
+            try:
+                from services.email_service import send_b2b_verification_rejected
+                send_b2b_verification_rejected(
+                    company.contact_email,
+                    company.name,
+                    company.rejection_reason
+                )
+                app.logger.info(f'B2B rejection email sent to {company.contact_email}')
+            except Exception as e:
+                app.logger.error(f'Failed to send B2B rejection email: {str(e)}')
         
         return jsonify({"success": True})
     

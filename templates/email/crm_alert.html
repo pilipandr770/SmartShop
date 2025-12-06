@@ -1,0 +1,39 @@
+{% extends "email/layout.html" %}
+
+{% block title %}CRM Alert - SmartShop AI{% endblock %}
+
+{% block content %}
+<h2>🔔 CRM Alert</h2>
+
+<p><strong>{{ alert.title }}</strong></p>
+
+{% if alert.severity == 'critical' %}
+<div class="error-box">
+    <p style="margin: 0;"><strong>🔴 Критичний рівень</strong></p>
+    <p style="margin: 5px 0 0;">{{ alert.message }}</p>
+</div>
+{% elif alert.severity == 'warning' %}
+<div class="warning-box">
+    <p style="margin: 0;"><strong>🟠 Попередження</strong></p>
+    <p style="margin: 5px 0 0;">{{ alert.message }}</p>
+</div>
+{% else %}
+<div class="info-box">
+    <p style="margin: 0;"><strong>🔵 Інформація</strong></p>
+    <p style="margin: 5px 0 0;">{{ alert.message }}</p>
+</div>
+{% endif %}
+
+<p><strong>📋 Деталі:</strong></p>
+<ul>
+    <li>Компанія: {{ alert.company.name }}</li>
+    <li>Тип: {{ alert.alert_type }}</li>
+    <li>Дата: {{ alert.created_at.strftime('%d.%m.%Y %H:%M') }}</li>
+</ul>
+
+<p style="text-align: center;">
+    <a href="{{ url_for('admin_crm_alerts', _external=True) }}" class="button">
+        🔍 Переглянути в CRM
+    </a>
+</p>
+{% endblock %}
