@@ -173,21 +173,29 @@ def create_app():
         nonlocal openai_client
         if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
             try:
-                # Minimal initialization - only api_key parameter
-                # Avoids issues with older OpenAI SDK versions on production
+                # Minimal initialization - explicitly disable proxy to avoid environment variable issues
+                # OpenAI SDK reads HTTP_PROXY/HTTPS_PROXY from environment, which may not be compatible
                 openai_client = OpenAI(
-                    api_key=app.config["OPENAI_API_KEY"]
+                    api_key=app.config["OPENAI_API_KEY"],
+                    http_client=None  # Use default client without proxy
                 )
                 # Test the client
                 sdk_version = getattr(openai, '__version__', 'unknown')
                 print(f"✅ OpenAI client initialized successfully (SDK version: {sdk_version})")
             except TypeError as e:
-                # Handle version compatibility issues
+                # Handle version compatibility issues - try without any optional parameters
                 sdk_version = getattr(openai, '__version__', 'unknown')
-                print(f"❌ OpenAI client initialization failed (likely SDK version issue): {e}")
-                print(f"OpenAI SDK version: {sdk_version}")
-                print("Tip: Update OpenAI SDK on production: pip install --upgrade openai")
-                openai_client = None
+                print(f"⚠️ OpenAI client init with http_client failed, trying basic init: {e}")
+                try:
+                    # Last resort: absolute minimal initialization
+                    import importlib
+                    openai_module = importlib.import_module('openai')
+                    openai_client = openai_module.OpenAI(api_key=app.config["OPENAI_API_KEY"])
+                    print(f"✅ OpenAI client initialized with fallback method (SDK version: {sdk_version})")
+                except Exception as fallback_e:
+                    print(f"❌ OpenAI client initialization failed completely: {fallback_e}")
+                    print(f"OpenAI SDK version: {sdk_version}")
+                    openai_client = None
             except Exception as e:
                 print(f"❌ Failed to initialize OpenAI client: {e}")
                 openai_client = None
