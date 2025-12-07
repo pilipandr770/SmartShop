@@ -1,5 +1,83 @@
 {% extends 'base.html' %}
-{% block title %}{{ product.get_name(get_locale()|string) }} – SmartShop AI{% endblock %}
+
+{% block title %}{{ product.get_name(get_locale()|string) }} - {{ "€%.2f"|format(product.price) }} - SmartShop AI{% endblock %}
+
+{% block meta_description %}{{ product.get_description(get_locale()|string)[:155] if product.get_description(get_locale()|string) else 'Buy ' ~ product.get_name(get_locale()|string) ~ ' online at SmartShop. High quality products with fast delivery.' }}{% endblock %}
+
+{% block meta_keywords %}{{ product.get_name(get_locale()|string) }}, buy {{ product.get_name(get_locale()|string) }}, {{ product.category.get_name(get_locale()|string) if product.category else 'products' }}, online shopping{% endblock %}
+
+{% block og_type %}product{% endblock %}
+{% block og_title %}{{ product.get_name(get_locale()|string) }} - {{ "€%.2f"|format(product.price) }}{% endblock %}
+{% block og_description %}{{ product.get_description(get_locale()|string)[:200] if product.get_description(get_locale()|string) else 'Buy ' ~ product.get_name(get_locale()|string) ~ ' online' }}{% endblock %}
+{% block og_image %}{{ product.image_url or (request.url_root ~ 'static/images/og-default.jpg') }}{% endblock %}
+
+{% block canonical_url %}{{ url_for('product_page', product_id=product.id, _external=True) }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "{{ product.get_name(get_locale()|string) }}",
+    "description": "{{ product.get_description(get_locale()|string)|safe if product.get_description(get_locale()|string) else 'Buy ' ~ product.get_name(get_locale()|string) ~ ' online at SmartShop' }}",
+    "sku": "{{ product.sku or 'PROD-' ~ product.id }}",
+    "image": "{{ product.image_url or (request.url_root ~ 'static/images/og-default.jpg') }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "SmartShop"
+    },
+    "offers": {
+        "@type": "Offer",
+        "url": "{{ url_for('product_page', product_id=product.id, _external=True) }}",
+        "priceCurrency": "EUR",
+        "price": "{{ product.price }}",
+        "availability": "{{ 'https://schema.org/InStock' if product.stock > 0 else 'https://schema.org/OutOfStock' }}",
+        "itemCondition": "https://schema.org/NewCondition"
+    }{% if product.category %},
+    "category": "{{ product.category.get_name(get_locale()|string) }}"{% endif %}
+}
+</script>
+
+{# Breadcrumb Schema #}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "{{ _('Home') }}",
+            "item": "{{ url_for('index', _external=True) }}"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "{{ _('Shop') }}",
+            "item": "{{ url_for('shop', _external=True) }}"
+        }{% if product.category %},
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "{{ product.category.get_name(get_locale()|string) }}",
+            "item": "{{ url_for('category_page', slug=product.category.slug, _external=True) }}"
+        },
+        {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "{{ product.get_name(get_locale()|string) }}",
+            "item": "{{ url_for('product_page', product_id=product.id, _external=True) }}"
+        }{% else %},
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "{{ product.get_name(get_locale()|string) }}",
+            "item": "{{ url_for('product_page', product_id=product.id, _external=True) }}"
+        }{% endif %}
+    ]
+}
+</script>
+{% endblock %}
 
 {% block extra_styles %}
 <style>

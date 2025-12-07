@@ -947,6 +947,34 @@ def create_app():
             categories=categories,
         )
 
+    # ----- SEO: ROBOTS.TXT & SITEMAPS -----
+
+    @app.route("/robots.txt")
+    def robots_txt():
+        """Serve robots.txt for search engine crawlers."""
+        return send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain')
+
+    @app.route("/sitemap.xml")
+    def sitemap():
+        """Generate main XML sitemap."""
+        from services.seo_service import SEOService
+        xml_content = SEOService.generate_sitemap()
+        return app.response_class(xml_content, mimetype='application/xml')
+
+    @app.route("/sitemap-products.xml")
+    def sitemap_products():
+        """Generate products sitemap."""
+        from services.seo_service import SEOService
+        xml_content = SEOService.generate_products_sitemap()
+        return app.response_class(xml_content, mimetype='application/xml')
+
+    @app.route("/sitemap-blog.xml")
+    def sitemap_blog():
+        """Generate blog sitemap."""
+        from services.seo_service import SEOService
+        xml_content = SEOService.generate_blog_sitemap()
+        return app.response_class(xml_content, mimetype='application/xml')
+
     # ----- ПУБЛІЧНІ: МАГАЗИН -----
 
     @app.route("/shop")

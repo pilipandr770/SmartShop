@@ -3,7 +3,64 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}SmartShop AI{% endblock %}</title>
+    
+    {# SEO Meta Tags #}
+    <title>{% block title %}SmartShop AI - Intelligent Online Shopping{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}AI-powered online shopping platform with smart product recommendations. Find the best products with our intelligent assistant.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}online shopping, AI shopping assistant, smart products, e-commerce, product recommendations{% endblock %}">
+    <meta name="author" content="SmartShop AI">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% block canonical_url %}{{ request.url }}{% endblock %}">
+    
+    {# Open Graph / Facebook #}
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.url_root }}static/images/og-default.jpg{% endblock %}">
+    <meta property="og:site_name" content="SmartShop AI">
+    <meta property="og:locale" content="{{ get_locale() }}_{{ get_locale().upper() }}">
+    
+    {# Twitter Card #}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ request.url }}">
+    <meta name="twitter:title" content="{{ self.title() }}">
+    <meta name="twitter:description" content="{{ self.meta_description() }}">
+    <meta name="twitter:image" content="{{ self.og_image() }}">
+    <meta name="twitter:site" content="@smartshop">
+    <meta name="twitter:creator" content="@smartshop">
+    
+    {# Favicon #}
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    
+    {# Multilingual Support #}
+    <link rel="alternate" hreflang="en" href="{{ request.base_url }}?lang=en">
+    <link rel="alternate" hreflang="de" href="{{ request.base_url }}?lang=de">
+    <link rel="alternate" hreflang="uk" href="{{ request.base_url }}?lang=uk">
+    <link rel="alternate" hreflang="x-default" href="{{ request.base_url }}">
+    
+    {# Structured Data - Organization Schema #}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "SmartShop AI",
+        "url": "{{ request.url_root }}",
+        "logo": "{{ request.url_root }}static/images/logo.png",
+        "description": "AI-powered online shopping platform with intelligent product recommendations",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Service",
+            "areaServed": ["DE", "EU"],
+            "availableLanguage": ["en", "de", "uk"]
+        }
+    }
+    </script>
+    
+    {# Additional Structured Data from Pages #}
+    {% block structured_data %}{% endblock %}
+    
     <style>
         :root {
             --bg-main: #050816;
