@@ -19,7 +19,7 @@
     <meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{{ request.url_root }}static/images/og-default.jpg{% endblock %}">
     <meta property="og:site_name" content="SmartShop AI">
-    <meta property="og:locale" content="{{ get_locale() }}_{{ get_locale().upper() }}">
+    <meta property="og:locale" content="{{ get_locale().language }}_{{ get_locale().territory or get_locale().language|upper }}">
     
     {# Twitter Card #}
     <meta name="twitter:card" content="summary_large_image">

@@ -181,7 +181,7 @@ def create_app():
     app.config["CLOUDINARY_CLOUD_NAME"] = os.environ.get("CLOUDINARY_CLOUD_NAME", "")
     app.config["CLOUDINARY_API_KEY"] = os.environ.get("CLOUDINARY_API_KEY", "")
     app.config["CLOUDINARY_API_SECRET"] = os.environ.get("CLOUDINARY_API_SECRET", "")
-    app.config["IMAGE_STORAGE"] = os.environ.get("IMAGE_STORAGE", "local")  # 'cloudinary' or 'local'
+    app.config["IMAGE_STORAGE"] = os.environ.get("IMAGE_STORAGE", "database")  # 'cloudinary', 'database', or 'local'
     
     if CLOUDINARY_AVAILABLE and app.config["IMAGE_STORAGE"] == "cloudinary":
         if all([app.config["CLOUDINARY_CLOUD_NAME"], 
