@@ -169,36 +169,35 @@ def create_app():
     openai_client = None  # Will be initialized lazily
 
     def get_openai_client():
-        """Lazy initialization of OpenAI client with proxy handling."""
+        """Lazy initialization of OpenAI client with custom httpx client (no proxy)."""
         nonlocal openai_client
         if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
-            print("🔧 [BUILD 8d77fcc] Initializing OpenAI client with proxy workaround...")
+            print("🔧 [BUILD 57e7f39] Initializing OpenAI with custom httpx client (no proxy)...")
             try:
-                # Remove HTTP_PROXY and HTTPS_PROXY from environment temporarily
-                # OpenAI SDK reads these and may pass unsupported 'proxy' parameter
-                import os
-                old_http_proxy = os.environ.pop('HTTP_PROXY', None)
-                old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
-                old_http_proxy_lower = os.environ.pop('http_proxy', None)
-                old_https_proxy_lower = os.environ.pop('https_proxy', None)
+                # Create custom httpx client with NO proxy support
+                # This prevents OpenAI SDK from trying to use HTTP_PROXY env var
+                import httpx
                 
-                try:
-                    openai_client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
-                    sdk_version = getattr(openai, '__version__', 'unknown')
-                    print(f"✅ OpenAI client initialized successfully (SDK version: {sdk_version})")
-                finally:
-                    # Restore proxy environment variables
-                    if old_http_proxy:
-                        os.environ['HTTP_PROXY'] = old_http_proxy
-                    if old_https_proxy:
-                        os.environ['HTTPS_PROXY'] = old_https_proxy
-                    if old_http_proxy_lower:
-                        os.environ['http_proxy'] = old_http_proxy_lower
-                    if old_https_proxy_lower:
-                        os.environ['https_proxy'] = old_https_proxy_lower
+                # Create httpx client that explicitly ignores proxy
+                custom_http_client = httpx.Client(
+                    timeout=60.0,
+                    limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
+                    # Don't pass proxy at all - let it default to None
+                )
+                
+                # Create OpenAI client with custom http_client
+                openai_client = OpenAI(
+                    api_key=app.config["OPENAI_API_KEY"],
+                    http_client=custom_http_client
+                )
+                
+                sdk_version = getattr(openai, '__version__', 'unknown')
+                print(f"✅ OpenAI client initialized successfully with custom httpx client (SDK version: {sdk_version})")
                         
             except Exception as e:
                 print(f"❌ Failed to initialize OpenAI client: {type(e).__name__}: {e}")
+                import traceback
+                print(f"Traceback: {traceback.format_exc()}")
                 sdk_version = getattr(openai, '__version__', 'unknown')
                 print(f"OpenAI SDK version: {sdk_version}")
                 openai_client = None
