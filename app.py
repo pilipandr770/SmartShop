@@ -173,31 +173,33 @@ def create_app():
         nonlocal openai_client
         if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
             try:
-                # Minimal initialization - explicitly disable proxy to avoid environment variable issues
-                # OpenAI SDK reads HTTP_PROXY/HTTPS_PROXY from environment, which may not be compatible
-                openai_client = OpenAI(
-                    api_key=app.config["OPENAI_API_KEY"],
-                    http_client=None  # Use default client without proxy
-                )
-                # Test the client
-                sdk_version = getattr(openai, '__version__', 'unknown')
-                print(f"✅ OpenAI client initialized successfully (SDK version: {sdk_version})")
-            except TypeError as e:
-                # Handle version compatibility issues - try without any optional parameters
-                sdk_version = getattr(openai, '__version__', 'unknown')
-                print(f"⚠️ OpenAI client init with http_client failed, trying basic init: {e}")
+                # Remove HTTP_PROXY and HTTPS_PROXY from environment temporarily
+                # OpenAI SDK reads these and may pass unsupported 'proxy' parameter
+                import os
+                old_http_proxy = os.environ.pop('HTTP_PROXY', None)
+                old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
+                old_http_proxy_lower = os.environ.pop('http_proxy', None)
+                old_https_proxy_lower = os.environ.pop('https_proxy', None)
+                
                 try:
-                    # Last resort: absolute minimal initialization
-                    import importlib
-                    openai_module = importlib.import_module('openai')
-                    openai_client = openai_module.OpenAI(api_key=app.config["OPENAI_API_KEY"])
-                    print(f"✅ OpenAI client initialized with fallback method (SDK version: {sdk_version})")
-                except Exception as fallback_e:
-                    print(f"❌ OpenAI client initialization failed completely: {fallback_e}")
-                    print(f"OpenAI SDK version: {sdk_version}")
-                    openai_client = None
+                    openai_client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
+                    sdk_version = getattr(openai, '__version__', 'unknown')
+                    print(f"✅ OpenAI client initialized successfully (SDK version: {sdk_version})")
+                finally:
+                    # Restore proxy environment variables
+                    if old_http_proxy:
+                        os.environ['HTTP_PROXY'] = old_http_proxy
+                    if old_https_proxy:
+                        os.environ['HTTPS_PROXY'] = old_https_proxy
+                    if old_http_proxy_lower:
+                        os.environ['http_proxy'] = old_http_proxy_lower
+                    if old_https_proxy_lower:
+                        os.environ['https_proxy'] = old_https_proxy_lower
+                        
             except Exception as e:
-                print(f"❌ Failed to initialize OpenAI client: {e}")
+                print(f"❌ Failed to initialize OpenAI client: {type(e).__name__}: {e}")
+                sdk_version = getattr(openai, '__version__', 'unknown')
+                print(f"OpenAI SDK version: {sdk_version}")
                 openai_client = None
         return openai_client
 

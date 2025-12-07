@@ -246,9 +246,10 @@ def log_exceptions(app):
         from flask import request
         from werkzeug.exceptions import HTTPException
         
-        # Не логуємо 404 та 403 помилки (занадто багато шуму від favicon.ico, robots.txt, etc.)
+        # Не логуємо та не обробляємо 404 і 403 помилки (занадто багато шуму)
+        # Просто повертаємо стандартну відповідь Flask
         if isinstance(e, HTTPException) and e.code in (404, 403):
-            raise e
+            return e.get_response()
         
         app.logger.error('Unhandled exception', extra={
             'exception_type': type(e).__name__,
