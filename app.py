@@ -949,6 +949,14 @@ def create_app():
 
     # ----- SEO: ROBOTS.TXT & SITEMAPS -----
 
+    @app.route("/favicon.ico")
+    def favicon():
+        """Serve favicon or return 204 if not found."""
+        try:
+            return send_from_directory(app.static_folder, 'favicon.ico', mimetype='image/x-icon')
+        except:
+            return '', 204
+
     @app.route("/robots.txt")
     def robots_txt():
         """Serve robots.txt for search engine crawlers."""

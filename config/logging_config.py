@@ -127,6 +127,12 @@ def setup_sentry(app):
             
             # Фільтрація sensitive даних
             before_send=filter_sensitive_data,
+            
+            # Python 3.13 compatibility fix
+            _experiments={
+                "max_request_body_size": "medium",
+                "record_sql_params": False,
+            },
         )
         
         app.logger.info('Sentry initialized successfully', extra={
@@ -201,11 +207,17 @@ def log_request(app):
     def log_response_info(response):
         from flask import request
         
+        # Skip logging response size for streaming responses
+        try:
+            response_size = len(response.get_data()) if not response.direct_passthrough else 'streaming'
+        except RuntimeError:
+            response_size = 'streaming'
+        
         app.logger.info('Request completed', extra={
             'method': request.method,
             'path': request.path,
             'status_code': response.status_code,
-            'response_size': len(response.get_data())
+            'response_size': response_size
         })
         
         return response
