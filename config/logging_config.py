@@ -94,6 +94,14 @@ def setup_sentry(app):
     """
     sentry_dsn = os.environ.get('SENTRY_DSN')
     
+    # Disable Sentry for Python 3.13 due to FrameLocalsProxy pickling issues
+    # https://github.com/getsentry/sentry-python/issues/3473
+    import sys
+    python_version = sys.version_info
+    if python_version.major == 3 and python_version.minor >= 13:
+        app.logger.warning('⚠️ Sentry SDK disabled for Python 3.13+ due to FrameLocalsProxy compatibility issues')
+        return
+    
     if not sentry_dsn:
         app.logger.warning('SENTRY_DSN not configured - error tracking disabled')
         return
@@ -236,6 +244,11 @@ def log_exceptions(app):
     @app.errorhandler(Exception)
     def handle_exception(e):
         from flask import request
+        from werkzeug.exceptions import HTTPException
+        
+        # Не логуємо 404 та 403 помилки (занадто багато шуму від favicon.ico, robots.txt, etc.)
+        if isinstance(e, HTTPException) and e.code in (404, 403):
+            raise e
         
         app.logger.error('Unhandled exception', extra={
             'exception_type': type(e).__name__,
