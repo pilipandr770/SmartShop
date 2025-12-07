@@ -1788,6 +1788,40 @@ def create_app():
                 mimetype='image/png',
                 as_attachment=False
             ), 500
+    
+    def delete_old_image(old_image_url):
+        """Видаляє старе зображення з бази даних або файлової системи."""
+        if not old_image_url:
+            return
+        
+        from models.product import Image
+        
+        try:
+            # Перевіряємо, чи це зображення з бази даних
+            if old_image_url.startswith('/images/'):
+                filename = old_image_url.split('/images/')[-1]
+                old_image = Image.query.filter_by(filename=filename).first()
+                
+                if old_image:
+                    db.session.delete(old_image)
+                    db.session.commit()
+                    app.logger.info(f"🗑️ Deleted old image from database: {filename}")
+                    return True
+            
+            # Якщо це локальний файл
+            elif old_image_url.startswith('/static/uploads/'):
+                filename = old_image_url.split('/static/uploads/')[-1]
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    app.logger.info(f"🗑️ Deleted old local file: {filename}")
+                    return True
+            
+        except Exception as e:
+            app.logger.warning(f"⚠️ Could not delete old image {old_image_url}: {e}")
+        
+        return False
 
     # ----- АДМІНКА: ТОВАРИ -----
 
@@ -1870,6 +1904,11 @@ def create_app():
     @admin_required
     def admin_products_delete(product_id):
         product = Product.query.get_or_404(product_id)
+        
+        # Видаляємо зображення перед видаленням товару
+        if product.image_url:
+            delete_old_image(product.image_url)
+        
         db.session.delete(product)
         db.session.commit()
         flash("Товар видалено.", "info")
@@ -1907,7 +1946,14 @@ def create_app():
             product.category_id = int(category_id) if category_id else None
             product.short_description = request.form.get("short_description", "").strip() or None
             product.long_description = request.form.get("long_description", "").strip() or None
-            product.image_url = request.form.get("image_url", "").strip() or None
+            
+            # Оновлюємо image_url та видаляємо старе зображення
+            new_image_url = request.form.get("image_url", "").strip() or None
+            if new_image_url and new_image_url != product.image_url:
+                # Видаляємо старе зображення з бази даних
+                delete_old_image(product.image_url)
+            product.image_url = new_image_url
+            
             product.sku = request.form.get("sku", "").strip() or None
             product.is_active = request.form.get("is_active") == "on"
 
@@ -1959,6 +2005,11 @@ def create_app():
     def admin_categories_delete(category_id):
         """Видалення категорії."""
         category = Category.query.get_or_404(category_id)
+        
+        # Видаляємо зображення категорії
+        if category.image_url:
+            delete_old_image(category.image_url)
+        
         # Товари в цій категорії стануть без категорії
         Product.query.filter_by(category_id=category_id).update({"category_id": None})
         db.session.delete(category)
@@ -3875,7 +3926,14 @@ def create_app():
             
             post.excerpt = request.form.get("excerpt", "").strip() or None
             post.content = request.form.get("content", "").strip() or None
-            post.featured_image = request.form.get("featured_image", "").strip() or None
+            
+            # Оновлюємо featured_image та видаляємо старе зображення
+            new_featured_image = request.form.get("featured_image", "").strip() or None
+            if new_featured_image and new_featured_image != post.featured_image:
+                # Видаляємо старе зображення з бази даних
+                delete_old_image(post.featured_image)
+            post.featured_image = new_featured_image
+            
             post.meta_title = request.form.get("meta_title", "").strip() or None
             post.meta_description = request.form.get("meta_description", "").strip() or None
             post.meta_keywords = request.form.get("meta_keywords", "").strip() or None
@@ -3916,6 +3974,11 @@ def create_app():
     def admin_blog_delete(id):
         """Видалення статті."""
         post = BlogPost.query.get_or_404(id)
+        
+        # Видаляємо зображення перед видаленням статті
+        if post.featured_image:
+            delete_old_image(post.featured_image)
+        
         db.session.delete(post)
         db.session.commit()
         flash("Статтю видалено.", "info")
@@ -4073,6 +4136,13 @@ def create_app():
             return jsonify({"error": "AI не налаштовано"}), 400
         
         plan = BlogPlan.query.get_or_404(plan_id)
+        
+        # Якщо план вже має пост - видаляємо старе зображення при перегенерації
+        old_post = None
+        if plan.blog_post_id:
+            old_post = BlogPost.query.get(plan.blog_post_id)
+            if old_post and old_post.featured_image:
+                app.logger.info(f"🔄 Regenerating post, will delete old image: {old_post.featured_image}")
         
         if plan.status != "pending":
             return jsonify({"error": "План вже оброблено"}), 400
@@ -4245,6 +4315,10 @@ def create_app():
                 author=ai_settings.blogger_name or "AI",
             )
             db.session.add(post)
+            
+            # Видаляємо старе зображення якщо це регенерація
+            if old_post and old_post.featured_image and featured_image_url:
+                delete_old_image(old_post.featured_image)
             
             # Оновлюємо план
             plan.status = "generated"
