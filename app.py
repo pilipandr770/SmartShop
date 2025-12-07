@@ -38,9 +38,11 @@ except ImportError:
 
 try:
     from openai import OpenAI
+    import openai
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
+    openai = None
 
 # Cloudinary для зберігання зображень
 try:
@@ -171,9 +173,23 @@ def create_app():
         nonlocal openai_client
         if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
             try:
-                openai_client = OpenAI(api_key=app.config["OPENAI_API_KEY"])
+                # Minimal initialization - only api_key parameter
+                # Avoids issues with older OpenAI SDK versions on production
+                openai_client = OpenAI(
+                    api_key=app.config["OPENAI_API_KEY"]
+                )
+                # Test the client
+                sdk_version = getattr(openai, '__version__', 'unknown')
+                print(f"✅ OpenAI client initialized successfully (SDK version: {sdk_version})")
+            except TypeError as e:
+                # Handle version compatibility issues
+                sdk_version = getattr(openai, '__version__', 'unknown')
+                print(f"❌ OpenAI client initialization failed (likely SDK version issue): {e}")
+                print(f"OpenAI SDK version: {sdk_version}")
+                print("Tip: Update OpenAI SDK on production: pip install --upgrade openai")
+                openai_client = None
             except Exception as e:
-                print(f"Failed to initialize OpenAI client: {e}")
+                print(f"❌ Failed to initialize OpenAI client: {e}")
                 openai_client = None
         return openai_client
 
@@ -1357,7 +1373,9 @@ def create_app():
         """API для чату з ІІ-продавцем."""
         openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
-            return jsonify({"error": "AI не налаштовано"}), 400
+            error_msg = "AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше."
+            print(f"❌ Chat API error: OpenAI not available (OPENAI_AVAILABLE={OPENAI_AVAILABLE}, client={openai_client})")
+            return jsonify({"error": error_msg}), 503
 
         data = request.get_json()
         user_message = data.get("message", "").strip()
@@ -1366,10 +1384,14 @@ def create_app():
             return jsonify({"error": "Повідомлення порожнє"}), 400
 
         # Отримуємо налаштування AI
-        ai_settings = AISettings.get_or_create()
-        
-        if not ai_settings.chatbot_enabled:
-            return jsonify({"error": "Чатбот тимчасово недоступний"}), 400
+        try:
+            ai_settings = AISettings.get_or_create()
+            
+            if not ai_settings.chatbot_enabled:
+                return jsonify({"error": "Чатбот тимчасово недоступний"}), 503
+        except Exception as e:
+            print(f"❌ Error getting AI settings: {e}")
+            return jsonify({"error": "Помилка налаштувань чатбота"}), 500
         
         # Отримуємо налаштування сайту та каталог
         settings = SiteSettings.get_or_create()
@@ -1429,10 +1451,18 @@ def create_app():
             )
             
             ai_message = response.choices[0].message.content
+            print(f"✅ Chat API success: User message length={len(user_message)}, AI response length={len(ai_message)}")
             return jsonify({"message": ai_message})
 
+        except AttributeError as e:
+            # OpenAI client not properly initialized
+            error_msg = "Помилка ініціалізації AI клієнта"
+            print(f"❌ Chat API error (AttributeError): {e}")
+            return jsonify({"error": error_msg}), 500
         except Exception as e:
-            return jsonify({"error": f"Помилка AI: {str(e)}"}), 500
+            error_msg = "Помилка обробки запиту"
+            print(f"❌ Chat API error (Exception): {type(e).__name__}: {e}")
+            return jsonify({"error": error_msg}), 500
 
     @app.context_processor
     def cart_context():

@@ -133,6 +133,9 @@ def setup_sentry(app):
                 "max_request_body_size": "medium",
                 "record_sql_params": False,
             },
+            
+            # Disable stacktrace attachment to avoid FrameLocalsProxy pickling errors in Python 3.13
+            attach_stacktrace=False,
         )
         
         app.logger.info('Sentry initialized successfully', extra={
