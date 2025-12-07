@@ -371,7 +371,9 @@ def create_app():
             db.create_all()
             
             if app.config["IMAGE_STORAGE"] == "database":
-                print("✅ Таблиця 'images' готова для зберігання зображень")
+                from models.product import Image
+                image_count = Image.query.count()
+                print(f"✅ Таблиця 'images' готова для зберігання зображень (зараз: {image_count} зображень)")
             
             if "postgresql" in database_url:
                 # МІГРАЦІЇ - додаємо відсутні колонки ПЕРЕД запитами до БД
@@ -787,7 +789,11 @@ def create_app():
                             except Exception as e:
                                 pass
                     conn.commit()
-                print("✅ Міграції застосовані")
+                
+                # Перевіряємо стан зображень після міграцій
+                from models.product import Image
+                image_count = Image.query.count()
+                print(f"✅ Міграції застосовані (images в БД: {image_count})")
             
             # Тепер безпечно працювати з моделями
             SiteSettings.get_or_create()
@@ -1734,18 +1740,37 @@ def create_app():
         from flask import send_file
         import io
         
-        image = Image.query.filter_by(filename=filename).first_or_404()
-        
-        # Створюємо буфер з даними зображення
-        image_io = io.BytesIO(image.data)
-        image_io.seek(0)
-        
-        return send_file(
-            image_io,
-            mimetype=image.mime_type,
-            as_attachment=False,
-            download_name=image.filename
-        )
+        try:
+            image = Image.query.filter_by(filename=filename).first()
+            
+            if not image:
+                app.logger.warning(f"❌ Image not found in database: {filename}")
+                # Повертаємо placeholder замість 404
+                return send_file(
+                    io.BytesIO(b''),
+                    mimetype='image/png',
+                    as_attachment=False
+                ), 404
+            
+            # Створюємо буфер з даними зображення
+            image_io = io.BytesIO(image.data)
+            image_io.seek(0)
+            
+            app.logger.debug(f"✅ Serving image from database: {filename} ({image.size} bytes)")
+            
+            return send_file(
+                image_io,
+                mimetype=image.mime_type,
+                as_attachment=False,
+                download_name=image.filename
+            )
+        except Exception as e:
+            app.logger.error(f"❌ Error serving image {filename}: {type(e).__name__}: {e}")
+            return send_file(
+                io.BytesIO(b''),
+                mimetype='image/png',
+                as_attachment=False
+            ), 500
 
     # ----- АДМІНКА: ТОВАРИ -----
 
