@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ product.get_name(get_locale()|string) }} - {{ "€%.2f"|format(product.price) }} - SmartShop AI{% endblock %}
+{% set locale = get_locale()|string %}
+{% set product_name = product.name_en if locale == 'en' else (product.name_de if locale == 'de' else product.name) %}
+{% set product_desc = product.description_en if locale == 'en' else (product.description_de if locale == 'de' else (product.description or '')) %}
+{% set product_short_desc = product.short_description_en if locale == 'en' else (product.short_description_de if locale == 'de' else (product.short_description or '')) %}
+{% set product_long_desc = product.long_description_en if locale == 'en' else (product.long_description_de if locale == 'de' else (product.long_description or '')) %}
+{% set category_name = product.category.name_en if (product.category and locale == 'en') else (product.category.name_de if (product.category and locale == 'de') else (product.category.name if product.category else 'products')) %}
 
-{% block meta_description %}{{ product.get_description(get_locale()|string)[:155] if product.get_description(get_locale()|string) else 'Buy ' ~ product.get_name(get_locale()|string) ~ ' online at SmartShop. High quality products with fast delivery.' }}{% endblock %}
+{% block title %}{{ product_name }} - {{ "€%.2f"|format(product.price) }} - SmartShop AI{% endblock %}
 
-{% block meta_keywords %}{{ product.get_name(get_locale()|string) }}, buy {{ product.get_name(get_locale()|string) }}, {{ product.category.get_name(get_locale()|string) if product.category else 'products' }}, online shopping{% endblock %}
+{% block meta_description %}{{ product_desc[:155] if product_desc else 'Buy ' ~ product_name ~ ' online at SmartShop. High quality products with fast delivery.' }}{% endblock %}
+
+{% block meta_keywords %}{{ product_name }}, buy {{ product_name }}, {{ category_name }}, online shopping{% endblock %}
 
 {% block og_type %}product{% endblock %}
-{% block og_title %}{{ product.get_name(get_locale()|string) }} - {{ "€%.2f"|format(product.price) }}{% endblock %}
-{% block og_description %}{{ product.get_description(get_locale()|string)[:200] if product.get_description(get_locale()|string) else 'Buy ' ~ product.get_name(get_locale()|string) ~ ' online' }}{% endblock %}
+{% block og_title %}{{ product_name }} - {{ "€%.2f"|format(product.price) }}{% endblock %}
+{% block og_description %}{{ product_desc[:200] if product_desc else 'Buy ' ~ product_name ~ ' online' }}{% endblock %}
 {% block og_image %}{{ product.image_url or (request.url_root ~ 'static/images/og-default.jpg') }}{% endblock %}
 
 {% block canonical_url %}{{ url_for('product_page', product_id=product.id, _external=True) }}{% endblock %}
@@ -18,8 +25,8 @@
 {
     "@context": "https://schema.org/",
     "@type": "Product",
-    "name": "{{ product.get_name(get_locale()|string) }}",
-    "description": "{{ product.get_description(get_locale()|string)|safe if product.get_description(get_locale()|string) else 'Buy ' ~ product.get_name(get_locale()|string) ~ ' online at SmartShop' }}",
+    "name": "{{ product_name }}",
+    "description": "{{ product_desc|safe if product_desc else 'Buy ' ~ product_name ~ ' online at SmartShop' }}",
     "sku": "{{ product.sku or 'PROD-' ~ product.id }}",
     "image": "{{ product.image_url or (request.url_root ~ 'static/images/og-default.jpg') }}",
     "brand": {
@@ -34,7 +41,7 @@
         "availability": "{{ 'https://schema.org/InStock' if product.stock > 0 else 'https://schema.org/OutOfStock' }}",
         "itemCondition": "https://schema.org/NewCondition"
     }{% if product.category %},
-    "category": "{{ product.category.get_name(get_locale()|string) }}"{% endif %}
+    "category": "{{ category_name }}"{% endif %}
 }
 </script>
 
@@ -59,19 +66,19 @@
         {
             "@type": "ListItem",
             "position": 3,
-            "name": "{{ product.category.get_name(get_locale()|string) }}",
+            "name": "{{ category_name }}",
             "item": "{{ url_for('category_page', slug=product.category.slug, _external=True) }}"
         },
         {
             "@type": "ListItem",
             "position": 4,
-            "name": "{{ product.get_name(get_locale()|string) }}",
+            "name": "{{ product_name }}",
             "item": "{{ url_for('product_page', product_id=product.id, _external=True) }}"
         }{% else %},
         {
             "@type": "ListItem",
             "position": 3,
-            "name": "{{ product.get_name(get_locale()|string) }}",
+            "name": "{{ product_name }}",
             "item": "{{ url_for('product_page', product_id=product.id, _external=True) }}"
         }{% endif %}
     ]
@@ -173,22 +180,22 @@
         <a href="{{ url_for('shop') }}">{{ _('Shop') }}</a>
         {% if product.category %}
         <span>/</span>
-        <a href="{{ url_for('category_page', slug=product.category.slug) }}">{{ product.category.get_name(get_locale()|string) }}</a>
+        <a href="{{ url_for('category_page', slug=product.category.slug) }}">{{ category_name }}</a>
         {% endif %}
         <span>/</span>
-        <span style="color: var(--text-main);">{{ product.get_name(get_locale()|string) }}</span>
+        <span style="color: var(--text-main);">{{ product_name }}</span>
     </div>
 
     <div class="product-detail">
         <!-- Галерея -->
         <div class="product-gallery">
             <img src="{{ product.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}" 
-                 alt="{{ product.get_name(get_locale()|string) }}">
+                 alt="{{ product_name }}">
         </div>
 
         <!-- Інформація -->
         <div class="product-info">
-            <h1>{{ product.get_name(get_locale()|string) }}</h1>
+            <h1>{{ product_name }}</h1>
             
             {% if product.sku %}
             <div class="sku">SKU: {{ product.sku }}</div>
@@ -196,8 +203,8 @@
 
             <div class="price">{{ "%.2f"|format(product.price) }} {{ product.currency }}</div>
 
-            {% if product.get_short_description(get_locale()|string) %}
-            <div class="description">{{ product.get_short_description(get_locale()|string) }}</div>
+            {% if product_short_desc %}
+            <div class="description">{{ product_short_desc }}</div>
             {% endif %}
 
             <!-- Форма додавання в кошик -->
@@ -212,14 +219,14 @@
             <div style="margin-top: 0.5rem;">
                 <span style="color: var(--text-muted);">{{ _('Category') }}:</span>
                 <a href="{{ url_for('category_page', slug=product.category.slug) }}" 
-                   class="social-pill" style="margin-left: 0.5rem;">{{ product.category.get_name(get_locale()|string) }}</a>
+                   class="social-pill" style="margin-left: 0.5rem;">{{ category_name }}</a>
             </div>
             {% endif %}
 
-            {% if product.get_long_description(get_locale()|string) %}
+            {% if product_long_desc %}
             <div class="card" style="margin-top: 1rem;">
                 <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 0.5rem;">{{ _('Description') }}</h3>
-                <div class="description" style="white-space: pre-line;">{{ product.get_long_description(get_locale()|string) }}</div>
+                <div class="description" style="white-space: pre-line;">{{ product_long_desc }}</div>
             </div>
             {% endif %}
         </div>
@@ -231,11 +238,12 @@
         <h2>{{ _('Related Products') }}</h2>
         <div class="products-grid">
             {% for p in related %}
+            {% set p_name = p.name_en if locale == 'en' else (p.name_de if locale == 'de' else p.name) %}
             <a href="{{ url_for('product_page', product_id=p.id) }}" class="product-card">
                 <div class="product-img">
                     <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
                 </div>
-                <div class="product-title">{{ p.get_name(get_locale()|string) }}</div>
+                <div class="product-title">{{ p_name }}</div>
                 <div class="product-price">{{ "%.2f"|format(p.price) }} {{ p.currency }}</div>
             </a>
             {% endfor %}
