@@ -169,7 +169,7 @@ def create_app():
     openai_client = None  # Will be initialized lazily
 
     def get_openai_client():
-        """Lazy initialization of OpenAI client."""
+        """Lazy initialization of OpenAI client with proxy handling."""
         nonlocal openai_client
         if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
             try:
