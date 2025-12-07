@@ -69,12 +69,12 @@
         </div>
         
         <div class="form-group">
-            <label for="price">Ціна (грн) *</label>
+            <label for="price">Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *</label>
             <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
         </div>
         
         <div class="form-group">
-            <label for="old_price">Стара ціна (грн)</label>
+            <label for="old_price">Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})</label>
             <input type="number" id="old_price" name="old_price" step="0.01" min="0" placeholder="Для знижки">
         </div>
         
@@ -164,9 +164,9 @@
                     </td>
                     <td>
                         <div class="price-cell">
-                            <strong class="text-success">{{ "%.2f"|format(product.price) }} ₴</strong>
+                            <strong class="text-success">{{ "%.2f"|format(product.price) }} {{ get_currency_symbol(product.currency) }}</strong>
                             {% if product.old_price %}
-                            <br><small class="text-muted" style="text-decoration: line-through;">{{ "%.2f"|format(product.old_price) }} ₴</small>
+                            <br><small class="text-muted" style="text-decoration: line-through;">{{ "%.2f"|format(product.old_price) }} {{ get_currency_symbol(product.currency) }}</small>
                             {% endif %}
                         </div>
                     </td>

@@ -153,7 +153,7 @@
                             </div>
                         </div>
                     </td>
-                    <td>{{ "%.2f"|format(item.product.price) }} {{ item.product.currency }}</td>
+                    <td>{{ "%.2f"|format(item.product.price) }} {{ get_currency_symbol(item.product.currency) }}</td>
                     <td>
                         <form action="{{ url_for('cart_update', product_id=item.product.id) }}" method="post" class="quantity-form">
                             <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99">

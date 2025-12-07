@@ -518,7 +518,7 @@
                     </div>
                     <div class="product-title">{{ p.name }}</div>
                     <div class="product-price">
-                        {{ "%.2f"|format(p.price) }} {{ p.currency }}
+                        {{ "%.2f"|format(p.price) }} {{ get_currency_symbol(p.currency) }}
                     </div>
                     <div class="product-meta">
                         {{ p.short_description or '' }}

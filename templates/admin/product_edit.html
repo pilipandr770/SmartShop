@@ -21,11 +21,11 @@
                     <input type="text" id="name" name="name" value="{{ product.name }}" required>
                 </div>
                 <div class="form-group">
-                    <label for="price">Ціна *</label>
+                    <label for="price">Ціна ({{ get_currency_symbol(product.currency) }}) *</label>
                     <input type="number" id="price" name="price" value="{{ product.price }}" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <label for="old_price">Стара ціна</label>
+                    <label for="old_price">Стара ціна ({{ get_currency_symbol(product.currency) }})</label>
                     <input type="number" id="old_price" name="old_price" value="{{ product.old_price or '' }}" step="0.01" min="0" placeholder="Для знижки">
                 </div>
             </div>

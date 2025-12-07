@@ -31,7 +31,7 @@
                 <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
             </div>
             <div class="product-title">{{ p.get_name(get_locale()|string) }}</div>
-            <div class="product-price">{{ "%.2f"|format(p.price) }} {{ p.currency }}</div>
+            <div class="product-price">{{ "%.2f"|format(p.price) }} {{ get_currency_symbol(p.currency) }}</div>
             <div class="product-meta">{{ p.get_short_description(get_locale()|string) or (cat.get_name(get_locale()|string) if p.category else '') }}</div>
         </a>
         {% endfor %}

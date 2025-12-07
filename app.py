@@ -1503,6 +1503,21 @@ def create_app():
         cart = get_cart()
         cart_count = sum(cart.values()) if cart else 0
         return {"cart_count": cart_count}
+    
+    @app.context_processor
+    def currency_context():
+        """Додає функцію для отримання символу валюти."""
+        def get_currency_symbol(currency_code):
+            symbols = {
+                "EUR": "€",
+                "USD": "$",
+                "UAH": "₴",
+                "GBP": "£",
+                "PLN": "zł",
+                "CZK": "Kč"
+            }
+            return symbols.get(currency_code, currency_code)
+        return {"get_currency_symbol": get_currency_symbol}
 
     # ----- АДМІНКА: АВТОРИЗАЦІЯ -----
 
@@ -1833,8 +1848,9 @@ def create_app():
             .all()
         )
         categories = Category.query.order_by(Category.name.asc()).all()
+        settings = SiteSettings.get_or_create()
         return render_template(
-            "admin/products.html", products=products, categories=categories
+            "admin/products.html", products=products, categories=categories, settings=settings
         )
 
     @app.route("/admin/products/new", methods=["POST"])
@@ -1870,11 +1886,12 @@ def create_app():
         except ValueError:
             stock_value = 0
 
+        settings = SiteSettings.get_or_create()
         product = Product(
             name=name,
             price=price_value,
             old_price=old_price_value,
-            currency="UAH",
+            currency=settings.default_currency or "EUR",
             category_id=int(category_id) if category_id else None,
             short_description=description or None,
             image_url=image_url or None,
@@ -1965,6 +1982,7 @@ def create_app():
             "admin/product_edit.html",
             product=product,
             categories=categories,
+            settings=SiteSettings.get_or_create(),
         )
 
     # ----- АДМІНКА: КАТЕГОРІЇ (повний CRUD) -----
