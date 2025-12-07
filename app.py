@@ -877,6 +877,23 @@ def create_app():
                 
                 db.session.commit()
                 print("✅ Створено тестову категорію та 4 товари")
+            
+            # Автопублікація scheduled постів блогу
+            try:
+                from models.blog import BlogPost, BlogPostStatus
+                scheduled_posts = BlogPost.query.filter(
+                    BlogPost.status == BlogPostStatus.SCHEDULED,
+                    BlogPost.publish_date <= datetime.utcnow()
+                ).all()
+                
+                if scheduled_posts:
+                    for post in scheduled_posts:
+                        post.status = BlogPostStatus.PUBLISHED
+                        print(f"📰 Автопублікація: {post.title}")
+                    db.session.commit()
+                    print(f"✅ Опубліковано {len(scheduled_posts)} заплановані статті")
+            except Exception as e:
+                print(f"⚠️ Помилка автопублікації: {e}")
 
     # DEMO MODE: Авторизація вимкнена для демонстрації
     DEMO_MODE = os.environ.get("DEMO_MODE", "true").lower() == "true"
@@ -4149,20 +4166,44 @@ def create_app():
                         n=1,
                     )
                     
-                    # Завантажуємо зображення та зберігаємо локально
+                    # Завантажуємо зображення та зберігаємо в базі даних
                     image_url = image_response.data[0].url
                     
                     import requests as req
                     img_response = req.get(image_url, timeout=30)
                     if img_response.status_code == 200:
+                        from models.product import Image
+                        
                         # Створюємо унікальне ім'я файлу
                         image_filename = f"blog_{uuid.uuid4().hex}.png"
-                        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
                         
-                        with open(image_path, 'wb') as f:
-                            f.write(img_response.content)
+                        if app.config["IMAGE_STORAGE"] == "database":
+                            # Зберігаємо в базу даних PostgreSQL (ПОСТІЙНЕ ЗБЕРІГАННЯ)
+                            image_data = img_response.content
+                            
+                            # Перевіряємо чи не існує таке зображення
+                            existing_image = Image.query.filter_by(filename=image_filename).first()
+                            if not existing_image:
+                                new_image = Image(
+                                    filename=image_filename,
+                                    data=image_data,
+                                    mime_type='image/png',
+                                    size=len(image_data)
+                                )
+                                db.session.add(new_image)
+                                db.session.commit()
+                                print(f"💾 Зображення збережено в БД: {image_filename} ({len(image_data)} bytes)")
+                            
+                            featured_image_url = f"/images/{image_filename}"
+                        else:
+                            # Зберігаємо локально (ВТРАТИТЬСЯ ПРИ РЕДЕПЛОЇ!)
+                            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                            
+                            with open(image_path, 'wb') as f:
+                                f.write(img_response.content)
+                            
+                            featured_image_url = f"/static/uploads/{image_filename}"
                         
-                        featured_image_url = f"/static/uploads/{image_filename}"
                         print(f"✅ Зображення збережено: {featured_image_url}")
                         
                 except Exception as img_error:
@@ -4295,6 +4336,33 @@ def create_app():
                 continue
         
         return jsonify({"success": True, "generated": generated})
+    
+    @app.route("/api/blog/auto-publish", methods=["POST"])
+    @admin_required
+    def api_blog_auto_publish():
+        """Автоматична публікація scheduled постів, час яких настав."""
+        try:
+            scheduled_posts = BlogPost.query.filter(
+                BlogPost.status == BlogPostStatus.SCHEDULED,
+                BlogPost.publish_date <= datetime.utcnow()
+            ).all()
+            
+            published_count = 0
+            for post in scheduled_posts:
+                post.status = BlogPostStatus.PUBLISHED
+                published_count += 1
+                app.logger.info(f"📰 Auto-published: {post.title}")
+            
+            if published_count > 0:
+                db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "published": published_count,
+                "message": f"Опубліковано {published_count} статей"
+            })
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
     
     @app.route("/api/blog/plan/<int:plan_id>", methods=["DELETE"])
     @admin_required
