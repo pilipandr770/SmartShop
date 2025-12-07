@@ -172,6 +172,7 @@ def create_app():
         """Lazy initialization of OpenAI client with proxy handling."""
         nonlocal openai_client
         if openai_client is None and OPENAI_AVAILABLE and app.config["OPENAI_API_KEY"]:
+            print("🔧 [BUILD 8d77fcc] Initializing OpenAI client with proxy workaround...")
             try:
                 # Remove HTTP_PROXY and HTTPS_PROXY from environment temporarily
                 # OpenAI SDK reads these and may pass unsupported 'proxy' parameter
