@@ -1,5 +1,6 @@
 """
 Моделі товарів та категорій
+Updated: 2025-12-07 - Force reload for Render deployment
 """
 from datetime import datetime
 import base64
