@@ -195,8 +195,10 @@ def create_app():
             )
             print("✅ Cloudinary configured for image storage")
         else:
-            print("⚠️ Cloudinary credentials missing, falling back to local storage")
-            app.config["IMAGE_STORAGE"] = "local"
+            print("⚠️ Cloudinary credentials missing, falling back to database storage")
+            app.config["IMAGE_STORAGE"] = "database"
+    elif app.config["IMAGE_STORAGE"] == "database":
+        print("💾 Using PostgreSQL database for permanent image storage")
     else:
         print("📁 Using local storage for images (will be lost on Render redeployment)")
 
@@ -320,6 +322,12 @@ def create_app():
     def init_db():
         """Створити схему, таблиці й дефолтні налаштування, якщо їх ще немає."""
         with app.app_context():
+            # Імпортуємо всі моделі перед створенням таблиць
+            from models.product import Image, Category, Product
+            from models.user import User
+            from models.blog import BlogPost
+            from models.order import Order
+            
             # Для PostgreSQL - створюємо окрему схему
             db_schema = app.config.get("DB_SCHEMA", "smartshop")
             database_url = app.config.get("SQLALCHEMY_DATABASE_URI", "")
@@ -335,6 +343,9 @@ def create_app():
             
             # Створюємо таблиці
             db.create_all()
+            
+            if app.config["IMAGE_STORAGE"] == "database":
+                print("✅ Таблиця 'images' готова для зберігання зображень")
             
             if "postgresql" in database_url:
                 # МІГРАЦІЇ - додаємо відсутні колонки ПЕРЕД запитами до БД
