@@ -10,10 +10,11 @@ from extensions import db
 
 class UserRole(str, Enum):
     """Ролі користувачів."""
-    CUSTOMER = "customer"      # B2C клієнт
-    PARTNER = "partner"        # B2B партнер
-    MANAGER = "manager"        # Менеджер
-    ADMIN = "admin"            # Адміністратор
+    CUSTOMER = "customer"          # B2C клієнт
+    PARTNER = "partner"            # B2B партнер
+    MANAGER = "manager"            # Менеджер магазину (staff)
+    ADMIN = "admin"                # Адміністратор (legacy, один магазин)
+    STORE_OWNER = "store_owner"    # Власник магазину (SaaS-орендар)
 
 
 class User(UserMixin, db.Model):
@@ -38,6 +39,11 @@ class User(UserMixin, db.Model):
     # B2B - зв'язок з компанією
     company_id = db.Column(db.Integer, db.ForeignKey("companies.id"), nullable=True)
     company = db.relationship("Company", back_populates="users")
+
+    # Магазин, до якого належить цей акаунт (покупець/співробітник конкретного
+    # store). NULL для власника (він посилається через Store.owner_user_id) і
+    # для акаунтів, створених до впровадження multi-tenancy.
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -67,13 +73,30 @@ class User(UserMixin, db.Model):
     
     @property
     def is_admin(self):
-        """Чи є адміністратором."""
+        """Чи є адміністратором (legacy, одномагазинний режим)."""
         return self.role == UserRole.ADMIN.value
-    
+
+    @property
+    def is_store_owner(self):
+        """Чи є власником магазину (SaaS-орендар)."""
+        return self.role == UserRole.STORE_OWNER.value
+
     @property
     def is_manager(self):
-        """Чи є менеджером або адміном."""
-        return self.role in [UserRole.ADMIN.value, UserRole.MANAGER.value]
+        """Чи має права керування магазином (адмінка)."""
+        return self.role in [
+            UserRole.ADMIN.value,
+            UserRole.MANAGER.value,
+            UserRole.STORE_OWNER.value,
+        ]
+
+    def can_manage_store(self, store):
+        """Чи може цей користувач керувати конкретним магазином store."""
+        if store is None:
+            return False
+        if store.owner_user_id == self.id:
+            return True
+        return self.store_id == store.id and self.is_manager
     
     @property
     def is_b2b(self):

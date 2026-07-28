@@ -184,11 +184,17 @@
                 <button type="submit" class="btn btn-outline">{{ _('Очистити кошик') }}</button>
             </form>
             <a href="{{ url_for('shop') }}" class="btn btn-outline">{{ _('Продовжити покупки') }}</a>
+            {% if has_shipping_carriers %}
+            <a href="{{ url_for('checkout_address') }}" class="btn">
+                💳 {{ _('Оформити замовлення') }}
+            </a>
+            {% else %}
             <form action="{{ url_for('checkout') }}" method="post" style="display: inline;">
                 <button type="submit" class="btn">
                     💳 {{ _('Оформити замовлення') }}
                 </button>
             </form>
+            {% endif %}
         </div>
     </div>
 

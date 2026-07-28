@@ -16,13 +16,17 @@ class BlogPostStatus:
 class BlogPost(db.Model):
     """Публікація блогу з SEO-оптимізацією."""
     __tablename__ = "blog_posts"
-    __table_args__ = {'extend_existing': True}
-    
+    __table_args__ = (
+        db.UniqueConstraint('store_id', 'slug', name='uq_blog_posts_store_slug'),
+        {'extend_existing': True},
+    )
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Основний контент
     title = db.Column(db.String(255), nullable=False)
-    slug = db.Column(db.String(255), unique=True, nullable=False)
+    slug = db.Column(db.String(255), nullable=False)
     excerpt = db.Column(db.String(500), nullable=True)  # Короткий опис для картки
     content = db.Column(db.Text, nullable=True)  # Повний текст статті
     
@@ -111,24 +115,30 @@ class BlogPost(db.Model):
         db.session.commit()
     
     @classmethod
-    def get_published(cls, limit=None):
-        """Отримати опубліковані пости."""
+    def get_published(cls, store_id=None, limit=None):
+        """Отримати опубліковані пости (в межах магазину, якщо store_id заданий)."""
         query = cls.query.filter(
             cls.status == BlogPostStatus.PUBLISHED,
             db.or_(
                 cls.publish_date.is_(None),
                 cls.publish_date <= datetime.utcnow()
             )
-        ).order_by(cls.publish_date.desc(), cls.created_at.desc())
-        
+        )
+        if store_id is not None:
+            query = query.filter(cls.store_id == store_id)
+        query = query.order_by(cls.publish_date.desc(), cls.created_at.desc())
+
         if limit:
             return query.limit(limit).all()
         return query.all()
-    
+
     @classmethod
-    def get_by_slug(cls, slug):
-        """Знайти пост за slug."""
-        return cls.query.filter_by(slug=slug).first()
+    def get_by_slug(cls, slug, store_id=None):
+        """Знайти пост за slug (в межах магазину, якщо store_id заданий)."""
+        query = cls.query.filter_by(slug=slug)
+        if store_id is not None:
+            query = query.filter_by(store_id=store_id)
+        return query.first()
     
     def get_title(self, locale='uk'):
         """Повертає заголовок відповідно до мови."""
@@ -159,9 +169,10 @@ class BlogPlan(db.Model):
     """План публікацій на 7 днів."""
     __tablename__ = "blog_plans"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Дата плану
     plan_date = db.Column(db.Date, nullable=False)
     
@@ -191,18 +202,19 @@ class BlogPlan(db.Model):
         return self.status == "pending" and self.plan_date < date.today()
     
     @classmethod
-    def create_weekly_plan(cls, topics_list):
+    def create_weekly_plan(cls, topics_list, store_id=None):
         """
         Створює план на 7 днів.
         topics_list: список словників з topic, keywords, etc.
         """
         plans = []
         today = date.today()
-        
+
         for i, topic_data in enumerate(topics_list[:7]):
             plan_date = today + timedelta(days=i)
-            
+
             plan = cls(
+                store_id=store_id,
                 plan_date=plan_date,
                 topic=topic_data.get('topic', f'Тема {i+1}'),
                 keywords=topic_data.get('keywords', ''),
@@ -211,41 +223,48 @@ class BlogPlan(db.Model):
             )
             db.session.add(plan)
             plans.append(plan)
-        
+
         db.session.commit()
         return plans
-    
+
     @classmethod
-    def get_pending_for_date(cls, target_date=None):
-        """Отримати pending плани для дати."""
+    def get_pending_for_date(cls, target_date=None, store_id=None):
+        """Отримати pending плани для дати (в межах магазину, якщо задано)."""
         if target_date is None:
             target_date = date.today()
-        
-        return cls.query.filter(
+
+        query = cls.query.filter(
             cls.plan_date <= target_date,
             cls.status == "pending"
-        ).order_by(cls.plan_date.asc()).all()
-    
+        )
+        if store_id is not None:
+            query = query.filter(cls.store_id == store_id)
+        return query.order_by(cls.plan_date.asc()).all()
+
     @classmethod
-    def get_current_week(cls):
-        """Отримати план на поточний тиждень."""
+    def get_current_week(cls, store_id=None):
+        """Отримати план на поточний тиждень (в межах магазину, якщо задано)."""
         today = date.today()
         week_start = today - timedelta(days=today.weekday())  # Понеділок
         week_end = week_start + timedelta(days=6)
-        
-        return cls.query.filter(
+
+        query = cls.query.filter(
             cls.plan_date >= week_start,
             cls.plan_date <= week_end
-        ).order_by(cls.plan_date.asc()).all()
+        )
+        if store_id is not None:
+            query = query.filter(cls.store_id == store_id)
+        return query.order_by(cls.plan_date.asc()).all()
 
 
 class AISettings(db.Model):
-    """Налаштування ІІ: чатбот та блогер."""
+    """Налаштування ІІ: чатбот та блогер (одна на магазин)."""
     __tablename__ = "ai_settings"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, unique=True, index=True)
+
     # === ЧАТБОТ ===
     chatbot_enabled = db.Column(db.Boolean, default=True)
     chatbot_name = db.Column(db.String(100), default="ІІ-продавець")
@@ -303,11 +322,14 @@ class AISettings(db.Model):
         return f"<AISettings id={self.id}>"
     
     @staticmethod
-    def get_or_create():
-        """Отримує або створює налаштування AI."""
-        settings = AISettings.query.first()
+    def get_or_create(store_id=None):
+        """Отримує або створює налаштування AI для магазину store_id."""
+        query = AISettings.query
+        query = query.filter_by(store_id=store_id) if store_id is not None else query.filter_by(store_id=None)
+        settings = query.first()
         if not settings:
             settings = AISettings(
+                store_id=store_id,
                 chatbot_system_prompt="""Ти — ввічливий продавець цього магазину. Твоє завдання:
 - Допомогти клієнту обрати товар
 - Ставити уточнюючі запитання  

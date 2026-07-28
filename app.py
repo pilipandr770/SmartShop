@@ -1,4 +1,16 @@
 
+import sys
+
+# Windows-консоль за замовчуванням використовує cp1251/cp866, що не підтримує
+# emoji (⚠️, 📁 тощо), які використовуються в print()/logger по всьому коду.
+# Без цього процес падає з UnicodeEncodeError ще до старту Flask.
+if sys.platform == "win32":
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
 import os
 import uuid
 from datetime import datetime
@@ -25,6 +37,7 @@ from flask import (
     send_from_directory,
     abort,
     g,
+    Response,
 )
 from flask_login import login_required, current_user
 from flask_babel import Babel, gettext as _, lazy_gettext as _l, get_locale
@@ -54,7 +67,7 @@ except ImportError:
     CLOUDINARY_AVAILABLE = False
 
 # Ініціалізація SQLAlchemy та Flask-Login - імпортуємо з extensions для уникнення дублювання
-from extensions import db, login_manager
+from extensions import db, login_manager, migrate
 
 
 def create_app():
@@ -296,7 +309,8 @@ def create_app():
         }
 
     db.init_app(app)
-    
+    migrate.init_app(app, db)
+
     # Ініціалізація Flask-Login
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
@@ -314,6 +328,7 @@ def create_app():
         ReplenishmentItem, WarehouseExpense, LowStockAlert
     )
     from models.blog import BlogPost, BlogPlan, AISettings, BlogPostStatus
+    from models.store import Store
 
     # Flask-Login user loader
     @login_manager.user_loader
@@ -342,6 +357,48 @@ def create_app():
     app.AISettings = AISettings
     app.WarehouseExpense = WarehouseExpense
     app.LowStockAlert = LowStockAlert
+    app.Store = Store
+
+    # ----- MULTI-TENANCY: РЕЗОЛЮЦІЯ ПОТОЧНОГО МАГАЗИНУ (g.store) -----
+    # SaaS-режим: кожен магазин (Store) відповідає за свій піддомен
+    # <slug>.<BASE_DOMAIN>. Поки BASE_DOMAIN не налаштований (або запит прийшов
+    # без піддомену - як зараз на проді без wildcard DNS) - використовується
+    # перший/дефолтний Store, щоб існуючий однотенантний деплой не зламався.
+    BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "").lower().strip().strip(".")
+    RESERVED_SUBDOMAINS = {"www", "api", "admin", "app"}
+    # Шляхи, доступні навіть якщо жодного Store ще не існує в БД (порожня
+    # інсталяція до першої реєстрації) - реєстрація, статика, healthcheck.
+    STORE_OPTIONAL_PATH_PREFIXES = ("/signup", "/static", "/webhook", "/health")
+
+    def resolve_current_store():
+        """Визначає поточний Store за піддоменом запиту (або дефолтний, якщо
+        піддомену немає/BASE_DOMAIN не налаштований)."""
+        host = (request.host or "").split(":")[0].lower()
+        subdomain = None
+
+        if BASE_DOMAIN and host.endswith("." + BASE_DOMAIN):
+            subdomain = host[: -(len(BASE_DOMAIN) + 1)]
+            if "." in subdomain:
+                subdomain = subdomain.split(".")[0]
+        elif host.endswith(".localhost"):
+            subdomain = host[: -len(".localhost")]
+
+        store = None
+        if subdomain and subdomain not in RESERVED_SUBDOMAINS:
+            store = Store.get_by_slug(subdomain)
+
+        if store is None:
+            # Немає piддомену (або магазин не знайдено) - дефолтний магазин
+            # (Store #1, тобто той, що існував до впровадження multi-tenancy).
+            store = Store.query.order_by(Store.id.asc()).first()
+
+        return store
+
+    @app.before_request
+    def load_current_store():
+        g.store = resolve_current_store()
+        if g.store is None and not request.path.startswith(STORE_OPTIONAL_PATH_PREFIXES):
+            abort(404, description="Магазин не знайдено. Можливо, платформа ще не налаштована — почніть з /signup.")
 
     # ----- СЛУЖБОВІ ФУНКЦІЇ -----
 
@@ -372,8 +429,11 @@ def create_app():
             
             if app.config["IMAGE_STORAGE"] == "database":
                 from models.product import Image
-                image_count = Image.query.count()
-                print(f"✅ Таблиця 'images' готова для зберігання зображень (зараз: {image_count} зображень)")
+                try:
+                    image_count = Image.query.count()
+                    print(f"✅ Таблиця 'images' готова для зберігання зображень (зараз: {image_count} зображень)")
+                except Exception:
+                    db.session.rollback()  # схема ще не мігрована (store_id відсутній) - пропускаємо діагностику
             
             if "postgresql" in database_url:
                 # МІГРАЦІЇ - додаємо відсутні колонки ПЕРЕД запитами до БД
@@ -792,91 +852,181 @@ def create_app():
                 
                 # Перевіряємо стан зображень після міграцій
                 from models.product import Image
-                image_count = Image.query.count()
-                print(f"✅ Міграції застосовані (images в БД: {image_count})")
+                try:
+                    image_count = Image.query.count()
+                    print(f"✅ Міграції застосовані (images в БД: {image_count})")
+                except Exception:
+                    db.session.rollback()  # схема ще не мігрована (store_id відсутній) - пропускаємо діагностику
             
-            # Тепер безпечно працювати з моделями
-            SiteSettings.get_or_create()
-            
-            # Створюємо тестові дані, якщо БД порожня
-            if Category.query.count() == 0:
-                # Тестова категорія
-                test_category = Category(
-                    name="Електроніка",
-                    slug="electronics",
-                    description="Смартфони, ноутбуки, планшети та інша техніка"
-                )
-                db.session.add(test_category)
-                db.session.flush()  # Отримуємо ID категорії
-                
-                # Тестовий товар
-                test_product = Product(
-                    name="iPhone 15 Pro",
-                    sku="IPHONE15PRO-256",
-                    price=54999.00,
-                    old_price=59999.00,
-                    currency="UAH",
-                    short_description="Новий iPhone з титановим корпусом",
-                    long_description="Apple iPhone 15 Pro з чіпом A17 Pro, камерою 48 Мп та USB-C. Титановий корпус, Dynamic Island, Always-On дисплей.",
-                    image_url="https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=800",
-                    category_id=test_category.id,
-                    stock=15,
-                    is_active=True
-                )
-                db.session.add(test_product)
-                
-                # Ще кілька тестових товарів
-                products_data = [
-                    {
-                        "name": "MacBook Air M3",
-                        "sku": "MBA-M3-256",
-                        "price": 52999.00,
-                        "old_price": None,
-                        "stock": 8,
-                        "short_description": "Ультратонкий ноутбук з чіпом M3",
-                        "long_description": "Apple MacBook Air з чіпом M3, 13.6 дюймів Liquid Retina дисплей, до 18 годин автономної роботи.",
-                        "image_url": "https://images.pexels.com/photos/812264/pexels-photo-812264.jpeg?auto=compress&cs=tinysrgb&w=800",
-                    },
-                    {
-                        "name": "AirPods Pro 2",
-                        "sku": "APP2-USB-C",
-                        "price": 10999.00,
-                        "old_price": 12499.00,
-                        "stock": 25,
-                        "short_description": "Бездротові навушники з активним шумоподавленням",
-                        "long_description": "Apple AirPods Pro 2 з USB-C, активне шумоподавлення, адаптивний звук, до 6 годин прослуховування.",
-                        "image_url": "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=800",
-                    },
-                    {
-                        "name": "iPad Air",
-                        "sku": "IPAD-AIR-256",
-                        "price": 32999.00,
-                        "old_price": None,
-                        "stock": 5,
-                        "short_description": "Потужний планшет для роботи та розваг",
-                        "long_description": "Apple iPad Air з чіпом M1, 10.9 дюймів Liquid Retina дисплей, підтримка Apple Pencil та Magic Keyboard.",
-                        "image_url": "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=800",
-                    },
-                ]
-                
-                for p_data in products_data:
-                    product = Product(
-                        name=p_data["name"],
-                        sku=p_data["sku"],
-                        price=p_data["price"],
-                        old_price=p_data.get("old_price"),
+            # ----- MULTI-TENANCY BOOTSTRAP -----
+            # init_db() виконується поза HTTP-запитом (при старті процесу), тому
+            # g.store тут недоступний (before_request ще не відпрацював). Замість
+            # цього тут гарантуємо існування дефолтного Store (для зворотної
+            # сумісності з однотенантним режимом, що існував до multi-tenancy) і
+            # заповнюємо store_id=NULL у вже існуючих рядках (перехід зі старої
+            # схеми).
+            #
+            # ВАЖЛИВО: на існуючій (доміграційній) базі таблиці "stores" і
+            # колонок "store_id" ще не існує в момент цього виклику - вони
+            # з'являються лише після `flask db upgrade`. Але `flask db upgrade`
+            # сам імпортує app.py, а це викликає init_db() ще ДО того, як
+            # міграція встигла застосуватися. Тому весь цей блок обгорнутий у
+            # try/except: якщо схема ще стара - тихо пропускаємо бутстрап
+            # (наступний запуск процесу, вже після міграції, довиконає його).
+            try:
+                from models.store import Store, StoreSubscriptionStatus
+
+                default_store = Store.query.order_by(Store.id.asc()).first()
+                if default_store is None:
+                    owner = (
+                        User.query.filter_by(role=UserRole.STORE_OWNER.value).first()
+                        or User.query.filter_by(role=UserRole.ADMIN.value).first()
+                    )
+                    bootstrap_email = os.environ.get("ADMIN_USERNAME", "admin")
+                    if "@" not in bootstrap_email:
+                        bootstrap_email = f"{bootstrap_email}@smartshop.local"
+                    if owner is None:
+                        owner = User.get_by_email(bootstrap_email)
+                    if owner is None:
+                        owner = User(
+                            email=bootstrap_email,
+                            role=UserRole.STORE_OWNER.value,
+                            first_name="Admin",
+                            is_verified=True,
+                        )
+                        owner.set_password(os.environ.get("ADMIN_PASSWORD", "admin123"))
+                        db.session.add(owner)
+                        db.session.flush()
+                    else:
+                        owner.role = UserRole.STORE_OWNER.value
+
+                    # Використовуємо назву з існуючих (дотенантних) site_settings, якщо є
+                    legacy_settings = SiteSettings.query.filter_by(store_id=None).first()
+                    default_store_name = (
+                        os.environ.get("DEFAULT_STORE_NAME")
+                        or (legacy_settings.site_name if legacy_settings else None)
+                        or "SmartShop Demo"
+                    )
+
+                    default_store = Store(
+                        name=default_store_name,
+                        slug=os.environ.get("DEFAULT_STORE_SLUG", "default"),
+                        owner_user_id=owner.id,
+                        plan="starter",
+                        subscription_status=StoreSubscriptionStatus.ACTIVE,
+                    )
+                    db.session.add(default_store)
+                    db.session.flush()
+                    db.session.commit()
+                    print(f"✅ Створено дефолтний Store #{default_store.id} ('{default_store.slug}')")
+
+                DEFAULT_STORE_ID = default_store.id
+
+                # Заповнюємо store_id=NULL для рядків, що існували до multi-tenancy
+                from models.company import VerificationLog, AdminAlert
+                for model_cls in (
+                    Category, Product, Order, OrderItem, BlogPost, BlogPlan,
+                    SiteSettings, ContactMessage, Image, AISettings,
+                    Company, VerificationLog, AdminAlert,
+                    WarehouseTask, StockMovement, ReplenishmentOrder,
+                    ReplenishmentItem, WarehouseExpense, LowStockAlert,
+                ):
+                    try:
+                        model_cls.query.filter(model_cls.store_id.is_(None)).update(
+                            {"store_id": DEFAULT_STORE_ID}, synchronize_session=False
+                        )
+                    except Exception:
+                        pass
+                db.session.commit()
+
+                # Тепер безпечно працювати з моделями
+                SiteSettings.get_or_create(DEFAULT_STORE_ID)
+
+                # Створюємо тестові дані, якщо БД порожня
+                if Category.query.filter_by(store_id=DEFAULT_STORE_ID).count() == 0:
+                    # Тестова категорія
+                    test_category = Category(
+                        store_id=DEFAULT_STORE_ID,
+                        name="Електроніка",
+                        slug="electronics",
+                        description="Смартфони, ноутбуки, планшети та інша техніка"
+                    )
+                    db.session.add(test_category)
+                    db.session.flush()  # Отримуємо ID категорії
+
+                    # Тестовий товар
+                    test_product = Product(
+                        store_id=DEFAULT_STORE_ID,
+                        name="iPhone 15 Pro",
+                        sku="IPHONE15PRO-256",
+                        price=54999.00,
+                        old_price=59999.00,
                         currency="UAH",
-                        short_description=p_data["short_description"],
-                        long_description=p_data["long_description"],
-                        image_url=p_data["image_url"],
+                        short_description="Новий iPhone з титановим корпусом",
+                        long_description="Apple iPhone 15 Pro з чіпом A17 Pro, камерою 48 Мп та USB-C. Титановий корпус, Dynamic Island, Always-On дисплей.",
+                        image_url="https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg?auto=compress&cs=tinysrgb&w=800",
                         category_id=test_category.id,
-                        stock=p_data.get("stock", 0),
+                        stock=15,
                         is_active=True
                     )
-                    db.session.add(product)
+                    db.session.add(test_product)
                 
-                db.session.commit()
-                print("✅ Створено тестову категорію та 4 товари")
+                    # Ще кілька тестових товарів
+                    products_data = [
+                        {
+                            "name": "MacBook Air M3",
+                            "sku": "MBA-M3-256",
+                            "price": 52999.00,
+                            "old_price": None,
+                            "stock": 8,
+                            "short_description": "Ультратонкий ноутбук з чіпом M3",
+                            "long_description": "Apple MacBook Air з чіпом M3, 13.6 дюймів Liquid Retina дисплей, до 18 годин автономної роботи.",
+                            "image_url": "https://images.pexels.com/photos/812264/pexels-photo-812264.jpeg?auto=compress&cs=tinysrgb&w=800",
+                        },
+                        {
+                            "name": "AirPods Pro 2",
+                            "sku": "APP2-USB-C",
+                            "price": 10999.00,
+                            "old_price": 12499.00,
+                            "stock": 25,
+                            "short_description": "Бездротові навушники з активним шумоподавленням",
+                            "long_description": "Apple AirPods Pro 2 з USB-C, активне шумоподавлення, адаптивний звук, до 6 годин прослуховування.",
+                            "image_url": "https://images.pexels.com/photos/3780681/pexels-photo-3780681.jpeg?auto=compress&cs=tinysrgb&w=800",
+                        },
+                        {
+                            "name": "iPad Air",
+                            "sku": "IPAD-AIR-256",
+                            "price": 32999.00,
+                            "old_price": None,
+                            "stock": 5,
+                            "short_description": "Потужний планшет для роботи та розваг",
+                            "long_description": "Apple iPad Air з чіпом M1, 10.9 дюймів Liquid Retina дисплей, підтримка Apple Pencil та Magic Keyboard.",
+                            "image_url": "https://images.pexels.com/photos/1334597/pexels-photo-1334597.jpeg?auto=compress&cs=tinysrgb&w=800",
+                        },
+                    ]
+                
+                    for p_data in products_data:
+                        product = Product(
+                            store_id=DEFAULT_STORE_ID,
+                            name=p_data["name"],
+                            sku=p_data["sku"],
+                            price=p_data["price"],
+                            old_price=p_data.get("old_price"),
+                            currency="UAH",
+                            short_description=p_data["short_description"],
+                            long_description=p_data["long_description"],
+                            image_url=p_data["image_url"],
+                            category_id=test_category.id,
+                            stock=p_data.get("stock", 0),
+                            is_active=True
+                        )
+                        db.session.add(product)
+                
+                    db.session.commit()
+                    print("✅ Створено тестову категорію та 4 товари")
+            except Exception as e:
+                db.session.rollback()
+                print(f"⚠️ Multi-tenancy bootstrap: схема ще не мігрована ({e}), пропускаю (застосується після flask db upgrade)")
             
             # Автопублікація scheduled постів блогу
             try:
@@ -900,28 +1050,37 @@ def create_app():
     print(f"🔧 DEMO_MODE = {DEMO_MODE}")
 
     def is_admin_logged_in() -> bool:
+        """
+        Legacy-назва збережена для сумісності з рештою коду, що її викликає.
+        Тепер означає: залогінений через Flask-Login користувач, який керує
+        поточним g.store (власник або staff), а не булевий session-прапорець.
+        """
         if DEMO_MODE:
             return True  # В демо-режимі завжди авторизовано
-        return session.get("is_admin", False)
+        return current_user.is_authenticated and current_user.can_manage_store(g.get("store"))
 
     def admin_required(fn):
-        """Декоратор для захисту адмін-маршрутів."""
+        """Декоратор для захисту адмін-маршрутів поточного магазину (g.store)."""
         @wraps(fn)
         def wrapper(*args, **kwargs):
             if DEMO_MODE:
                 return fn(*args, **kwargs)  # В демо-режимі пропускаємо перевірку
-            if not is_admin_logged_in():
+            if not current_user.is_authenticated:
                 flash("Потрібен вхід в адмін-панель.", "warning")
-                return redirect(url_for("admin_login"))
+                return redirect(url_for("user_login", next=request.path))
+            if not current_user.can_manage_store(g.get("store")):
+                abort(403)
             return fn(*args, **kwargs)
         return wrapper
 
     # ----- РЕЄСТРАЦІЯ BLUEPRINTS -----
     from routes.auth import auth_bp
     from routes.cabinet import cabinet_bp
-    
+    from routes.signup import signup_bp
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(cabinet_bp)
+    app.register_blueprint(signup_bp)
 
     # ----- ПЕРЕКЛЮЧЕННЯ МОВИ -----
 
@@ -937,20 +1096,21 @@ def create_app():
 
     @app.route("/")
     def index():
-        settings = SiteSettings.get_or_create()
-        products = Product.query.filter_by(is_active=True).limit(8).all()
-        categories = Category.query.all()
+        settings = SiteSettings.get_or_create(g.store.id)
+        products = Product.query.filter_by(is_active=True, store_id=g.store.id).limit(8).all()
+        categories = Category.query.filter_by(store_id=g.store.id).all()
 
-        total_products = Product.query.count()
-        total_orders = Order.query.count()
+        total_products = Product.query.filter_by(store_id=g.store.id).count()
+        total_orders = Order.query.filter_by(store_id=g.store.id).count()
         total_revenue = (
             db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))
-            .filter(Order.status == "paid")
+            .filter(Order.status == "paid", Order.store_id == g.store.id)
             .scalar()
         )
-        
+
         # Останні пости блогу для головної
         blog_posts = BlogPost.query.filter(
+            BlogPost.store_id == g.store.id,
             BlogPost.status == BlogPostStatus.PUBLISHED,
             db.or_(
                 BlogPost.publish_date.is_(None),
@@ -974,21 +1134,21 @@ def create_app():
     @app.route("/about")
     def about_page():
         """Сторінка Про компанію."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         return render_template("pages/about.html", settings=settings)
 
     @app.route("/contacts")
     def contacts_page():
         """Сторінка Контакти."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         return render_template("pages/contacts.html", settings=settings)
 
     @app.route("/ai-assistant")
     def ai_assistant_page():
         """Сторінка ІІ-продавця."""
-        settings = SiteSettings.get_or_create()
-        products = Product.query.filter_by(is_active=True).all()
-        categories = Category.query.all()
+        settings = SiteSettings.get_or_create(g.store.id)
+        products = Product.query.filter_by(is_active=True, store_id=g.store.id).all()
+        categories = Category.query.filter_by(store_id=g.store.id).all()
         return render_template(
             "pages/ai_assistant.html",
             settings=settings,
@@ -1037,16 +1197,16 @@ def create_app():
     @app.route("/shop")
     def shop():
         """Сторінка всіх товарів з пагінацією."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         page = request.args.get("page", 1, type=int)
         per_page = 12
 
         products = (
-            Product.query.filter_by(is_active=True)
+            Product.query.filter_by(is_active=True, store_id=g.store.id)
             .order_by(Product.created_at.desc())
             .paginate(page=page, per_page=per_page, error_out=False)
         )
-        categories = Category.query.order_by(Category.name.asc()).all()
+        categories = Category.query.filter_by(store_id=g.store.id).order_by(Category.name.asc()).all()
 
         return render_template(
             "shop.html",
@@ -1058,17 +1218,17 @@ def create_app():
     @app.route("/category/<slug>")
     def category_page(slug):
         """Сторінка категорії з товарами."""
-        settings = SiteSettings.get_or_create()
-        category = Category.query.filter_by(slug=slug).first_or_404()
+        settings = SiteSettings.get_or_create(g.store.id)
+        category = Category.query.filter_by(slug=slug, store_id=g.store.id).first_or_404()
         page = request.args.get("page", 1, type=int)
         per_page = 12
 
         products = (
-            Product.query.filter_by(is_active=True, category_id=category.id)
+            Product.query.filter_by(is_active=True, category_id=category.id, store_id=g.store.id)
             .order_by(Product.created_at.desc())
             .paginate(page=page, per_page=per_page, error_out=False)
         )
-        categories = Category.query.order_by(Category.name.asc()).all()
+        categories = Category.query.filter_by(store_id=g.store.id).order_by(Category.name.asc()).all()
 
         return render_template(
             "category.html",
@@ -1081,8 +1241,8 @@ def create_app():
     @app.route("/product/<int:product_id>")
     def product_page(product_id):
         """Сторінка окремого товару."""
-        settings = SiteSettings.get_or_create()
-        product = Product.query.get_or_404(product_id)
+        settings = SiteSettings.get_or_create(g.store.id)
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
 
         if not product.is_active:
             abort(404)
@@ -1095,6 +1255,7 @@ def create_app():
                     Product.is_active == True,
                     Product.category_id == product.category_id,
                     Product.id != product.id,
+                    Product.store_id == g.store.id,
                 )
                 .limit(4)
                 .all()
@@ -1121,13 +1282,13 @@ def create_app():
     @app.route("/cart")
     def cart_page():
         """Сторінка кошика."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         cart = get_cart()
         items = []
         total = 0.0
 
         for product_id_str, qty in cart.items():
-            product = Product.query.get(int(product_id_str))
+            product = Product.query.filter_by(id=int(product_id_str), store_id=g.store.id).first()
             if product and product.is_active:
                 item_total = product.price * qty
                 total += item_total
@@ -1137,17 +1298,21 @@ def create_app():
                     "item_total": item_total,
                 })
 
+        from services.shipping.registry import get_enabled_providers
+        has_shipping_carriers = bool(get_enabled_providers(g.store.id))
+
         return render_template(
             "cart.html",
             settings=settings,
             items=items,
             total=total,
+            has_shipping_carriers=has_shipping_carriers,
         )
 
     @app.route("/cart/add/<int:product_id>", methods=["POST"])
     def cart_add(product_id):
         """Додати товар у кошик."""
-        product = Product.query.get_or_404(product_id)
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
         if not product.is_active:
             abort(404)
 
@@ -1206,6 +1371,108 @@ def create_app():
         flash("Кошик очищено.", "info")
         return redirect(url_for("cart_page"))
 
+    # ----- ДОСТАВКА: АДРЕСА ТА ВИБІР ТАРИФУ -----
+
+    def _cart_weight_kg():
+        """Сумарна вага кошика (кг) для запиту тарифів. За відсутності
+        ваги товару використовується дефолт 1.0 кг за одиницю."""
+        cart = get_cart()
+        total_weight = 0.0
+        for product_id_str, qty in cart.items():
+            product = Product.query.filter_by(id=int(product_id_str), store_id=g.store.id).first()
+            if product and product.is_active:
+                total_weight += (product.weight_kg or 1.0) * qty
+        return total_weight or 1.0
+
+    @app.route("/checkout/address", methods=["GET", "POST"])
+    def checkout_address():
+        """Форма адреси доставки - показується тільки якщо в магазині
+        налаштовано хоча б одну службу доставки (інакше кнопка в кошику
+        веде одразу на /checkout, як і раніше)."""
+        settings = SiteSettings.get_or_create(g.store.id)
+        cart = get_cart()
+        if not cart:
+            flash("Ваш кошик порожній.", "warning")
+            return redirect(url_for("cart_page"))
+
+        if request.method == "POST":
+            address = {
+                "name": request.form.get("name", "").strip(),
+                "phone": request.form.get("phone", "").strip(),
+                "email": request.form.get("email", "").strip(),
+                "street": request.form.get("street", "").strip(),
+                "city": request.form.get("city", "").strip(),
+                "postal_code": request.form.get("postal_code", "").strip(),
+                "country_code": request.form.get("country_code", "").strip().upper(),
+            }
+            missing = [k for k in ("name", "street", "city", "postal_code", "country_code") if not address[k]]
+            if missing:
+                flash("Заповніть усі обов'язкові поля адреси.", "danger")
+                return render_template("checkout_address.html", settings=settings, form=address)
+
+            session["checkout_address"] = address
+            return redirect(url_for("checkout_shipping"))
+
+        return render_template(
+            "checkout_address.html",
+            settings=settings,
+            form=session.get("checkout_address", {}),
+        )
+
+    @app.route("/checkout/shipping", methods=["GET", "POST"])
+    def checkout_shipping():
+        """Вибір тарифу доставки на основі адреси з попереднього кроку."""
+        from services.shipping.registry import get_enabled_providers
+        from services.shipping.base import Address, ShippingProviderError
+
+        settings = SiteSettings.get_or_create(g.store.id)
+        address = session.get("checkout_address")
+        if not address:
+            return redirect(url_for("checkout_address"))
+
+        if request.method == "POST":
+            session["checkout_shipping"] = {
+                "carrier": request.form.get("carrier", ""),
+                "service_code": request.form.get("service_code", ""),
+                "name": request.form.get("name", ""),
+                "price": request.form.get("price", 0.0, type=float),
+            }
+            return redirect(url_for("checkout"))
+
+        providers = get_enabled_providers(g.store.id)
+        destination = Address.from_dict(address)
+        weight_kg = _cart_weight_kg()
+
+        options = []
+        for account, provider in providers:
+            try:
+                rates = provider.get_rates(Address.from_dict(account.origin_address), destination, weight_kg)
+                for rate in rates:
+                    options.append({
+                        "carrier": account.carrier,
+                        "carrier_label": account.carrier_label,
+                        "service_code": rate.service_code,
+                        "name": rate.name,
+                        "price": rate.price,
+                        "currency": rate.currency,
+                        "eta_days": rate.eta_days,
+                    })
+            except ShippingProviderError as e:
+                app.logger.warning(f"Shipping rate lookup failed for {account.carrier}: {e}")
+
+        if not options:
+            # Жодна служба не відповіла (або жодної не налаштовано) -
+            # продовжуємо без доставки, як і раніше.
+            session["checkout_shipping"] = None
+            return redirect(url_for("checkout"))
+
+        return render_template(
+            "checkout_shipping.html",
+            settings=settings,
+            options=options,
+            address=address,
+        )
+
     # ----- STRIPE CHECKOUT -----
 
     @app.route("/checkout", methods=["POST"])
@@ -1225,7 +1492,7 @@ def create_app():
         total = 0.0
 
         for product_id_str, qty in cart.items():
-            product = Product.query.get(int(product_id_str))
+            product = Product.query.filter_by(id=int(product_id_str), store_id=g.store.id).first()
             if product and product.is_active:
                 line_items.append({
                     "price_data": {
@@ -1252,12 +1519,39 @@ def create_app():
             flash("Не вдалося знайти товари в кошику.", "danger")
             return redirect(url_for("cart_page"))
 
+        # Адреса й тариф доставки (опційно - якщо магазин не налаштував
+        # службу доставки, обидва відсутні і поведінка лишається такою ж,
+        # як до впровадження цієї фічі).
+        checkout_address = session.pop("checkout_address", None)
+        checkout_shipping = session.pop("checkout_shipping", None)
+        shipping_price = float(checkout_shipping["price"]) if checkout_shipping else 0.0
+
+        if shipping_price > 0:
+            line_items.append({
+                "price_data": {
+                    "currency": "eur",
+                    "product_data": {"name": f"Доставка: {checkout_shipping['name']}"},
+                    "unit_amount": int(shipping_price * 100),
+                },
+                "quantity": 1,
+            })
+
         try:
             # Створюємо замовлення в БД
             order = Order(
+                store_id=g.store.id,
                 status="pending",
-                amount=total,
+                amount=total + shipping_price,
+                subtotal=total,
                 currency="EUR",
+                shipping_cost=shipping_price,
+                shipping_method=checkout_shipping["name"] if checkout_shipping else None,
+                shipping_address=checkout_address["street"] if checkout_address else None,
+                shipping_city=checkout_address["city"] if checkout_address else None,
+                shipping_postal_code=checkout_address["postal_code"] if checkout_address else None,
+                shipping_country=checkout_address["country_code"] if checkout_address else None,
+                customer_name=checkout_address["name"] if checkout_address else None,
+                customer_phone=checkout_address["phone"] if checkout_address else None,
             )
             db.session.add(order)
             db.session.flush()  # Отримуємо ID
@@ -1265,6 +1559,7 @@ def create_app():
             # Додаємо товари до замовлення
             for item_data in order_items_data:
                 order_item = OrderItem(
+                    store_id=g.store.id,
                     order_id=order.id,
                     product_id=item_data["product_id"],
                     product_name=item_data["product_name"],
@@ -1281,7 +1576,12 @@ def create_app():
                 mode="payment",
                 success_url=url_for("checkout_success", _external=True) + "?session_id={CHECKOUT_SESSION_ID}",
                 cancel_url=url_for("checkout_cancel", _external=True),
-                metadata={"order_id": str(order.id)},
+                metadata={
+                    "order_id": str(order.id),
+                    "store_id": str(g.store.id),
+                    "shipping_carrier": checkout_shipping["carrier"] if checkout_shipping else "",
+                    "shipping_service_code": checkout_shipping["service_code"] if checkout_shipping else "",
+                },
             )
 
             order.stripe_session_id = checkout_session.id
@@ -1294,20 +1594,67 @@ def create_app():
             flash(f"Помилка Stripe: {str(e)}", "danger")
             return redirect(url_for("cart_page"))
 
+    def _auto_create_shipment(order, task, carrier_code, service_code):
+        """
+        Автоматично створює відправлення в перевізника (лейбл + трек-номер)
+        для щойно оплаченого замовлення, якщо для цього магазину налаштовано
+        відповідний CarrierAccount. Ніколи не пробрасує виняток назовні -
+        збій перевізника не повинен ламати підтвердження оплати; в такому
+        разі WarehouseTask лишається з порожнім tracking_number, і адмін
+        може ввести його вручну на сторінці завдання складу (як і раніше).
+        """
+        if not carrier_code or not task:
+            return
+        try:
+            from services.shipping.registry import get_provider_for_carrier
+            from services.shipping.base import Address, ShippingProviderError
+
+            account, provider = get_provider_for_carrier(order.store_id, carrier_code)
+            if not provider:
+                return
+
+            origin = Address.from_dict(account.origin_address)
+            destination = Address(
+                name=order.customer_name or "",
+                street=order.shipping_address or "",
+                city=order.shipping_city or "",
+                postal_code=order.shipping_postal_code or "",
+                country_code=order.shipping_country or "",
+                phone=order.customer_phone or "",
+            )
+            weight_kg = sum(
+                (item.product.weight_kg or 1.0) * item.quantity
+                for item in order.items if item.product
+            ) or 1.0
+
+            result = provider.create_shipment(
+                origin, destination, weight_kg, service_code,
+                reference=order.order_number or str(order.id),
+            )
+            task.tracking_number = result.tracking_number
+            task.carrier = account.carrier_label
+            task.label_url = result.label_url
+            db.session.commit()
+        except ShippingProviderError as e:
+            app.logger.warning(f"Automatic shipment creation failed for order #{order.id}: {e}")
+        except Exception as e:
+            app.logger.warning(f"Automatic shipment creation error for order #{order.id}: {e}")
+
     @app.route("/checkout/success")
     def checkout_success():
         """Сторінка успішної оплати."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         session_id = request.args.get("session_id")
         
         order = None
         if session_id and STRIPE_AVAILABLE and app.config["STRIPE_SECRET_KEY"]:
             try:
                 checkout_session = stripe.checkout.Session.retrieve(session_id)
-                order = Order.query.filter_by(stripe_session_id=session_id).first()
-                
+                order = Order.query.filter_by(stripe_session_id=session_id, store_id=g.store.id).first()
+
                 if order and order.status == "pending":
                     order.status = "paid"
+                    order.paid_at = datetime.utcnow()
                     order.customer_email = checkout_session.customer_details.email if checkout_session.customer_details else None
                     order.customer_name = checkout_session.customer_details.name if checkout_session.customer_details else None
                     order.stripe_payment_intent = checkout_session.payment_intent
@@ -1327,14 +1674,20 @@ def create_app():
                         from models.warehouse import WarehouseTask
                         existing_task = WarehouseTask.query.filter_by(order_id=order.id).first()
                         if not existing_task:
-                            WarehouseTask.create_from_order(
+                            task = WarehouseTask.create_from_order(
                                 order_id=order.id,
                                 priority=2 if getattr(order, 'is_b2b', False) else 3,
                                 notes=getattr(order, 'notes', ''),
                             )
+                            metadata = checkout_session.metadata or {}
+                            _auto_create_shipment(
+                                order, task,
+                                metadata.get("shipping_carrier"),
+                                metadata.get("shipping_service_code"),
+                            )
                     except Exception:
                         pass  # Якщо модуль складу не доступний
-                    
+
                     # Очищаємо кошик
                     save_cart({})
             except Exception:
@@ -1345,7 +1698,7 @@ def create_app():
     @app.route("/checkout/cancel")
     def checkout_cancel():
         """Сторінка скасованої оплати."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         flash("Оплату скасовано. Ви можете спробувати ще раз.", "info")
         return redirect(url_for("cart_page"))
 
@@ -1375,27 +1728,59 @@ def create_app():
         if event["type"] == "checkout.session.completed":
             session_data = event["data"]["object"]
             session_id = session_data["id"]
-            
-            order = Order.query.filter_by(stripe_session_id=session_id).first()
-            if order:
-                order.status = "paid"
-                order.customer_email = session_data.get("customer_details", {}).get("email")
-                order.customer_name = session_data.get("customer_details", {}).get("name")
-                order.stripe_payment_intent = session_data.get("payment_intent")
+
+            if session_data.get("mode") == "subscription":
+                # SaaS-підписка нового/існуючого Store (не замовлення в магазині)
+                store_id = (session_data.get("metadata") or {}).get("store_id")
+                if store_id:
+                    store = Store.query.get(int(store_id))
+                    if store:
+                        store.stripe_customer_id = session_data.get("customer")
+                        store.stripe_subscription_id = session_data.get("subscription")
+                        store.subscription_status = "active"
+                        db.session.commit()
+            else:
+                order = Order.query.filter_by(stripe_session_id=session_id).first()
+                if order:
+                    order.status = "paid"
+                    order.paid_at = datetime.utcnow()
+                    order.customer_email = session_data.get("customer_details", {}).get("email")
+                    order.customer_name = session_data.get("customer_details", {}).get("name")
+                    order.stripe_payment_intent = session_data.get("payment_intent")
+                    db.session.commit()
+
+                    # Створюємо завдання для складу
+                    try:
+                        from models.warehouse import WarehouseTask
+                        existing_task = WarehouseTask.query.filter_by(order_id=order.id).first()
+                        if not existing_task:
+                            task = WarehouseTask.create_from_order(
+                                order_id=order.id,
+                                priority=2 if getattr(order, 'is_b2b', False) else 3,
+                                notes=getattr(order, 'notes', ''),
+                            )
+                            webhook_metadata = session_data.get("metadata") or {}
+                            _auto_create_shipment(
+                                order, task,
+                                webhook_metadata.get("shipping_carrier"),
+                                webhook_metadata.get("shipping_service_code"),
+                            )
+                    except Exception:
+                        pass  # Якщо модуль складу не доступний
+
+        elif event["type"] in ("customer.subscription.updated", "customer.subscription.deleted"):
+            # Синхронізуємо статус підписки Store (оплата не пройшла, скасування тощо)
+            subscription_data = event["data"]["object"]
+            store = Store.query.filter_by(stripe_subscription_id=subscription_data["id"]).first()
+            if store:
+                stripe_status = subscription_data.get("status")
+                if event["type"] == "customer.subscription.deleted" or stripe_status == "canceled":
+                    store.subscription_status = "canceled"
+                elif stripe_status in ("past_due", "unpaid", "incomplete_expired"):
+                    store.subscription_status = "past_due"
+                elif stripe_status in ("active", "trialing"):
+                    store.subscription_status = stripe_status
                 db.session.commit()
-                
-                # Створюємо завдання для складу
-                try:
-                    from models.warehouse import WarehouseTask
-                    existing_task = WarehouseTask.query.filter_by(order_id=order.id).first()
-                    if not existing_task:
-                        WarehouseTask.create_from_order(
-                            order_id=order.id,
-                            priority=2 if getattr(order, 'is_b2b', False) else 3,
-                            notes=getattr(order, 'notes', ''),
-                        )
-                except Exception:
-                    pass  # Якщо модуль складу не доступний
 
         return jsonify({"status": "success"}), 200
 
@@ -1418,7 +1803,7 @@ def create_app():
 
         # Отримуємо налаштування AI
         try:
-            ai_settings = AISettings.get_or_create()
+            ai_settings = AISettings.get_or_create(g.store.id)
             
             if not ai_settings.chatbot_enabled:
                 return jsonify({"error": "Чатбот тимчасово недоступний"}), 503
@@ -1427,7 +1812,7 @@ def create_app():
             return jsonify({"error": "Помилка налаштувань чатбота"}), 500
         
         # Отримуємо налаштування сайту та каталог
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         products = Product.query.filter_by(is_active=True).all()
         categories = Category.query.all()
 
@@ -1523,63 +1908,38 @@ def create_app():
 
     @app.route("/admin/login", methods=["GET", "POST"])
     def admin_login():
-        # В демо-режимі одразу переходимо в адмінку
+        """
+        Legacy URL, залишений для сумісності зі старими закладками/лінками.
+        Реальний логін тепер один для всіх (customer/partner/store owner) —
+        через Flask-Login у routes/auth.py, щоб адмінка могла бути прив'язана
+        до конкретного current_user і, відповідно, до конкретного Store.
+        """
         if DEMO_MODE:
             return redirect(url_for("admin_dashboard"))
-            
-        if request.method == "POST":
-            username = request.form.get("username", "").strip()
-            password = request.form.get("password", "").strip()
-
-            # Спочатку перевіряємо в БД
-            settings = SiteSettings.get_or_create()
-            
-            # Якщо є логін/пароль в БД - використовуємо їх
-            if settings.admin_username and settings.admin_password_hash:
-                if username == settings.admin_username and check_password_hash(settings.admin_password_hash, password):
-                    session["is_admin"] = True
-                    flash("Вітаю, ви увійшли в адмін-панель.", "success")
-                    return redirect(url_for("admin_dashboard"))
-                else:
-                    flash("Невірний логін або пароль.", "danger")
-            else:
-                # Fallback на змінні середовища
-                expected_user = os.environ.get("ADMIN_USERNAME", "admin")
-                expected_pass = os.environ.get("ADMIN_PASSWORD", "admin123")
-
-                if username == expected_user and password == expected_pass:
-                    session["is_admin"] = True
-                    flash("Вітаю, ви увійшли в адмін-панель.", "success")
-                    return redirect(url_for("admin_dashboard"))
-                else:
-                    flash("Невірний логін або пароль.", "danger")
-
-        return render_template("admin/login.html")
+        return redirect(url_for("user_login", next=url_for("admin_dashboard")))
 
     @app.route("/admin/logout")
     def admin_logout():
-        session.pop("is_admin", None)
-        flash("Ви вийшли з адмін-панелі.", "info")
-        return redirect(url_for("admin_login"))
+        return redirect(url_for("user_logout"))
 
     # ----- АДМІНКА: ДАШБОРД -----
 
     @app.route("/admin/")
     @admin_required
     def admin_dashboard():
-        settings = SiteSettings.get_or_create()
-        product_count = Product.query.count()
-        category_count = Category.query.count()
-        order_count = Order.query.count()
+        settings = SiteSettings.get_or_create(g.store.id)
+        product_count = Product.query.filter_by(store_id=g.store.id).count()
+        category_count = Category.query.filter_by(store_id=g.store.id).count()
+        order_count = Order.query.filter_by(store_id=g.store.id).count()
 
         total_revenue = (
             db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))
-            .filter(Order.status == "paid")
+            .filter(Order.status == "paid", Order.store_id == g.store.id)
             .scalar()
         )
 
         last_orders = (
-            Order.query.order_by(Order.created_at.desc()).limit(5).all()
+            Order.query.filter_by(store_id=g.store.id).order_by(Order.created_at.desc()).limit(5).all()
         )
 
         return render_template(
@@ -1597,7 +1957,7 @@ def create_app():
     @app.route("/admin/blocks", methods=["GET", "POST"])
     @admin_required
     def admin_blocks():
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
 
         if request.method == "POST":
             settings.hero_subtitle = request.form.get("hero_subtitle") or ""
@@ -1636,11 +1996,12 @@ def create_app():
             if not name or not slug:
                 flash("Назва і slug категорії обовʼязкові.", "danger")
             else:
-                exists = Category.query.filter_by(slug=slug).first()
+                exists = Category.query.filter_by(slug=slug, store_id=g.store.id).first()
                 if exists:
                     flash("Категорія з таким slug уже існує.", "warning")
                 else:
                     category = Category(
+                        store_id=g.store.id,
                         name=name,
                         slug=slug,
                         description=description or None,
@@ -1654,7 +2015,7 @@ def create_app():
                     flash("Категорія створена.", "success")
             return redirect(url_for("admin_categories"))
 
-        categories = Category.query.order_by(Category.name.asc()).all()
+        categories = Category.query.filter_by(store_id=g.store.id).order_by(Category.name.asc()).all()
         return render_template("admin/categories.html", categories=categories)
 
     # ----- АДМІНКА: ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ -----
@@ -1736,6 +2097,7 @@ def create_app():
                 else:
                     # Створюємо нове зображення
                     image = Image(
+                        store_id=g.store.id,
                         filename=filename,
                         data=file_data,
                         mime_type=content_type,
@@ -1844,11 +2206,11 @@ def create_app():
     @admin_required
     def admin_products():
         products = (
-            Product.query.order_by(Product.created_at.desc())
+            Product.query.filter_by(store_id=g.store.id).order_by(Product.created_at.desc())
             .all()
         )
-        categories = Category.query.order_by(Category.name.asc()).all()
-        settings = SiteSettings.get_or_create()
+        categories = Category.query.filter_by(store_id=g.store.id).order_by(Category.name.asc()).all()
+        settings = SiteSettings.get_or_create(g.store.id)
         return render_template(
             "admin/products.html", products=products, categories=categories, settings=settings
         )
@@ -1886,13 +2248,19 @@ def create_app():
         except ValueError:
             stock_value = 0
 
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
+        # category_id має належати поточному магазину - інакше ігноруємо
+        safe_category_id = None
+        if category_id:
+            cat = Category.query.filter_by(id=int(category_id), store_id=g.store.id).first()
+            safe_category_id = cat.id if cat else None
         product = Product(
+            store_id=g.store.id,
             name=name,
             price=price_value,
             old_price=old_price_value,
             currency=settings.default_currency or "EUR",
-            category_id=int(category_id) if category_id else None,
+            category_id=safe_category_id,
             short_description=description or None,
             image_url=image_url or None,
             stock=stock_value,
@@ -1911,7 +2279,7 @@ def create_app():
     @app.route("/admin/products/<int:product_id>/toggle", methods=["POST"])
     @admin_required
     def admin_products_toggle(product_id):
-        product = Product.query.get_or_404(product_id)
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
         product.is_active = not product.is_active
         db.session.commit()
         flash("Статус товару оновлено.", "info")
@@ -1920,8 +2288,8 @@ def create_app():
     @app.route("/admin/products/<int:product_id>/delete", methods=["POST"])
     @admin_required
     def admin_products_delete(product_id):
-        product = Product.query.get_or_404(product_id)
-        
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
+
         # Видаляємо зображення перед видаленням товару
         if product.image_url:
             delete_old_image(product.image_url)
@@ -1935,8 +2303,8 @@ def create_app():
     @admin_required
     def admin_products_edit(product_id):
         """Редагування товару."""
-        product = Product.query.get_or_404(product_id)
-        categories = Category.query.order_by(Category.name.asc()).all()
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
+        categories = Category.query.filter_by(store_id=g.store.id).order_by(Category.name.asc()).all()
 
         if request.method == "POST":
             product.name = request.form.get("name", "").strip()
@@ -1960,7 +2328,11 @@ def create_app():
                 product.stock = 0
                 
             category_id = request.form.get("category_id")
-            product.category_id = int(category_id) if category_id else None
+            safe_category_id = None
+            if category_id:
+                cat = Category.query.filter_by(id=int(category_id), store_id=g.store.id).first()
+                safe_category_id = cat.id if cat else None
+            product.category_id = safe_category_id
             product.short_description = request.form.get("short_description", "").strip() or None
             product.long_description = request.form.get("long_description", "").strip() or None
             
@@ -1974,6 +2346,12 @@ def create_app():
             product.sku = request.form.get("sku", "").strip() or None
             product.is_active = request.form.get("is_active") == "on"
 
+            weight_kg = request.form.get("weight_kg", "").strip()
+            try:
+                product.weight_kg = float(weight_kg) if weight_kg else None
+            except ValueError:
+                product.weight_kg = None
+
             db.session.commit()
             flash("Товар оновлено.", "success")
             return redirect(url_for("admin_products"))
@@ -1982,7 +2360,7 @@ def create_app():
             "admin/product_edit.html",
             product=product,
             categories=categories,
-            settings=SiteSettings.get_or_create(),
+            settings=SiteSettings.get_or_create(g.store.id),
         )
 
     # ----- АДМІНКА: КАТЕГОРІЇ (повний CRUD) -----
@@ -1991,7 +2369,7 @@ def create_app():
     @admin_required
     def admin_categories_edit(category_id):
         """Редагування категорії."""
-        category = Category.query.get_or_404(category_id)
+        category = Category.query.filter_by(id=category_id, store_id=g.store.id).first_or_404()
 
         if request.method == "POST":
             name = request.form.get("name", "").strip()
@@ -2001,9 +2379,10 @@ def create_app():
             if not name or not slug:
                 flash("Назва і slug категорії обовʼязкові.", "danger")
             else:
-                # Перевіряємо, чи slug не зайнятий іншою категорією
+                # Перевіряємо, чи slug не зайнятий іншою категорією цього ж магазину
                 exists = Category.query.filter(
                     Category.slug == slug,
+                    Category.store_id == g.store.id,
                     Category.id != category_id
                 ).first()
                 if exists:
@@ -2022,14 +2401,14 @@ def create_app():
     @admin_required
     def admin_categories_delete(category_id):
         """Видалення категорії."""
-        category = Category.query.get_or_404(category_id)
-        
+        category = Category.query.filter_by(id=category_id, store_id=g.store.id).first_or_404()
+
         # Видаляємо зображення категорії
         if category.image_url:
             delete_old_image(category.image_url)
-        
+
         # Товари в цій категорії стануть без категорії
-        Product.query.filter_by(category_id=category_id).update({"category_id": None})
+        Product.query.filter_by(category_id=category_id, store_id=g.store.id).update({"category_id": None})
         db.session.delete(category)
         db.session.commit()
         flash("Категорія видалена. Товари залишились без категорії.", "info")
@@ -2040,15 +2419,15 @@ def create_app():
     @app.route("/admin/stats")
     @admin_required
     def admin_stats():
-        total_orders = Order.query.count()
-        paid_orders = Order.query.filter_by(status="paid").count()
+        total_orders = Order.query.filter_by(store_id=g.store.id).count()
+        paid_orders = Order.query.filter_by(status="paid", store_id=g.store.id).count()
         total_revenue = (
             db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))
-            .filter(Order.status == "paid")
+            .filter(Order.status == "paid", Order.store_id == g.store.id)
             .scalar()
         )
         latest_orders = (
-            Order.query.order_by(Order.created_at.desc()).limit(20).all()
+            Order.query.filter_by(store_id=g.store.id).order_by(Order.created_at.desc()).limit(20).all()
         )
 
         return render_template(
@@ -2069,8 +2448,8 @@ def create_app():
         per_page = 20
         status_filter = request.args.get("status", "").strip()
 
-        query = Order.query.order_by(Order.created_at.desc())
-        
+        query = Order.query.filter_by(store_id=g.store.id).order_by(Order.created_at.desc())
+
         if status_filter:
             query = query.filter(Order.status == status_filter)
 
@@ -2079,11 +2458,11 @@ def create_app():
 
         # Статистика
         stats = {
-            "total": Order.query.count(),
-            "paid": Order.query.filter_by(status="paid").count(),
-            "pending": Order.query.filter_by(status="pending").count(),
+            "total": Order.query.filter_by(store_id=g.store.id).count(),
+            "paid": Order.query.filter_by(status="paid", store_id=g.store.id).count(),
+            "pending": Order.query.filter_by(status="pending", store_id=g.store.id).count(),
             "revenue": db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))
-                .filter(Order.status == "paid").scalar(),
+                .filter(Order.status == "paid", Order.store_id == g.store.id).scalar(),
         }
 
         return render_template(
@@ -2097,14 +2476,14 @@ def create_app():
     @admin_required
     def admin_order_detail(order_id):
         """Деталі замовлення."""
-        order = Order.query.get_or_404(order_id)
+        order = Order.query.filter_by(id=order_id, store_id=g.store.id).first_or_404()
         return render_template("admin/order_detail.html", order=order)
 
     @app.route("/admin/orders/<int:order_id>/status", methods=["POST"])
     @admin_required
     def admin_order_update_status(order_id):
         """Оновити статус замовлення."""
-        order = Order.query.get_or_404(order_id)
+        order = Order.query.filter_by(id=order_id, store_id=g.store.id).first_or_404()
         new_status = request.form.get("status", "").strip()
         old_status = order.status
         
@@ -2147,7 +2526,7 @@ def create_app():
     @admin_required
     def admin_order_update_notes(order_id):
         """Оновити нотатки замовлення."""
-        order = Order.query.get_or_404(order_id)
+        order = Order.query.filter_by(id=order_id, store_id=g.store.id).first_or_404()
         order.notes = request.form.get("notes", "").strip() or None
         db.session.commit()
         flash("Нотатки збережено.", "success")
@@ -2157,9 +2536,9 @@ def create_app():
     @admin_required
     def admin_order_delete(order_id):
         """Видалити замовлення."""
-        order = Order.query.get_or_404(order_id)
+        order = Order.query.filter_by(id=order_id, store_id=g.store.id).first_or_404()
         # Видаляємо товари замовлення
-        OrderItem.query.filter_by(order_id=order_id).delete()
+        OrderItem.query.filter_by(order_id=order_id, store_id=g.store.id).delete()
         db.session.delete(order)
         db.session.commit()
         flash("Замовлення видалено.", "info")
@@ -2174,20 +2553,21 @@ def create_app():
         page = request.args.get("page", 1, type=int)
         per_page = 20
 
-        pagination = ContactMessage.query.order_by(
+        pagination = ContactMessage.query.filter_by(store_id=g.store.id).order_by(
             ContactMessage.is_read.asc(),
             ContactMessage.created_at.desc()
         ).paginate(page=page, per_page=per_page, error_out=False)
-        
+
         contacts = pagination.items
 
         # Статистика
         today = datetime.utcnow().date()
         stats = {
-            "total": ContactMessage.query.count(),
-            "unread": ContactMessage.query.filter_by(is_read=False).count(),
+            "total": ContactMessage.query.filter_by(store_id=g.store.id).count(),
+            "unread": ContactMessage.query.filter_by(is_read=False, store_id=g.store.id).count(),
             "today": ContactMessage.query.filter(
-                db.func.date(ContactMessage.created_at) == today
+                db.func.date(ContactMessage.created_at) == today,
+                ContactMessage.store_id == g.store.id,
             ).count(),
         }
 
@@ -2202,7 +2582,7 @@ def create_app():
     @admin_required
     def admin_contact_mark_read(contact_id):
         """Позначити заявку як прочитану."""
-        contact = ContactMessage.query.get_or_404(contact_id)
+        contact = ContactMessage.query.filter_by(id=contact_id, store_id=g.store.id).first_or_404()
         contact.is_read = True
         db.session.commit()
         flash("Заявку позначено як прочитану.", "success")
@@ -2212,7 +2592,7 @@ def create_app():
     @admin_required
     def admin_contact_delete(contact_id):
         """Видалити заявку."""
-        contact = ContactMessage.query.get_or_404(contact_id)
+        contact = ContactMessage.query.filter_by(id=contact_id, store_id=g.store.id).first_or_404()
         db.session.delete(contact)
         db.session.commit()
         flash("Заявку видалено.", "info")
@@ -2222,7 +2602,7 @@ def create_app():
     @admin_required
     def admin_contacts_mark_all_read():
         """Позначити всі заявки як прочитані."""
-        ContactMessage.query.filter_by(is_read=False).update({"is_read": True})
+        ContactMessage.query.filter_by(is_read=False, store_id=g.store.id).update({"is_read": True})
         db.session.commit()
         flash("Усі заявки позначено як прочитані.", "success")
         return redirect(url_for("admin_contacts"))
@@ -2231,7 +2611,7 @@ def create_app():
     @admin_required
     def admin_contacts_delete_read():
         """Видалити всі прочитані заявки."""
-        ContactMessage.query.filter_by(is_read=True).delete()
+        ContactMessage.query.filter_by(is_read=True, store_id=g.store.id).delete()
         db.session.commit()
         flash("Прочитані заявки видалено.", "info")
         return redirect(url_for("admin_contacts"))
@@ -2242,7 +2622,7 @@ def create_app():
     @admin_required
     def admin_settings():
         """Глобальні налаштування сайту."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
 
         if request.method == "POST":
             # Основні
@@ -2327,6 +2707,118 @@ def create_app():
 
         return render_template("admin/settings.html", settings=settings)
 
+    # ----- АДМІНКА: НАЛАШТУВАННЯ ДОСТАВКИ (DHL/UPS) -----
+
+    @app.route("/admin/settings/shipping")
+    @admin_required
+    def admin_shipping_settings():
+        """Список налаштованих служб доставки магазину."""
+        from models.shipping import CarrierAccount, Carrier
+        accounts = CarrierAccount.query.filter_by(store_id=g.store.id).all()
+        configured_carriers = {a.carrier for a in accounts}
+        available_carriers = [c for c in Carrier.CHOICES if c not in configured_carriers]
+        return render_template(
+            "admin/shipping_settings.html",
+            accounts=accounts,
+            available_carriers=available_carriers,
+            carrier_labels=Carrier.LABELS,
+        )
+
+    @app.route("/admin/settings/shipping/new", methods=["GET", "POST"])
+    @admin_required
+    def admin_shipping_account_new():
+        """Додати обліковий запис перевізника (DHL/UPS)."""
+        from models.shipping import CarrierAccount, Carrier
+
+        carrier = request.args.get("carrier") or request.form.get("carrier", "")
+        if carrier not in Carrier.CHOICES:
+            flash("Невідома служба доставки.", "danger")
+            return redirect(url_for("admin_shipping_settings"))
+
+        if CarrierAccount.query.filter_by(store_id=g.store.id, carrier=carrier).first():
+            flash(f"{Carrier.LABELS.get(carrier, carrier)} вже налаштовано для цього магазину.", "warning")
+            return redirect(url_for("admin_shipping_settings"))
+
+        if request.method == "POST":
+            is_sandbox = request.form.get("is_sandbox") == "on"
+            if carrier == Carrier.DHL:
+                credentials = {
+                    "api_key": request.form.get("api_key", "").strip(),
+                    "api_secret": request.form.get("api_secret", "").strip(),
+                    "account_number": request.form.get("account_number", "").strip(),
+                }
+            else:  # ups
+                credentials = {
+                    "client_id": request.form.get("client_id", "").strip(),
+                    "client_secret": request.form.get("client_secret", "").strip(),
+                    "account_number": request.form.get("account_number", "").strip(),
+                }
+
+            account = CarrierAccount(
+                store_id=g.store.id,
+                carrier=carrier,
+                is_enabled=True,
+                is_sandbox=is_sandbox,
+                credentials=credentials,
+                origin_name=request.form.get("origin_name", "").strip() or None,
+                origin_phone=request.form.get("origin_phone", "").strip() or None,
+                origin_street=request.form.get("origin_street", "").strip() or None,
+                origin_city=request.form.get("origin_city", "").strip() or None,
+                origin_postal_code=request.form.get("origin_postal_code", "").strip() or None,
+                origin_country_code=(request.form.get("origin_country_code", "").strip() or None),
+            )
+            db.session.add(account)
+            db.session.commit()
+            flash(f"{account.carrier_label} налаштовано.", "success")
+            return redirect(url_for("admin_shipping_settings"))
+
+        return render_template("admin/shipping_account_form.html", carrier=carrier, carrier_label=Carrier.LABELS.get(carrier, carrier), account=None)
+
+    @app.route("/admin/settings/shipping/<int:id>/edit", methods=["GET", "POST"])
+    @admin_required
+    def admin_shipping_account_edit(id):
+        """Редагувати обліковий запис перевізника."""
+        from models.shipping import CarrierAccount, Carrier
+        account = CarrierAccount.query.filter_by(id=id, store_id=g.store.id).first_or_404()
+
+        if request.method == "POST":
+            account.is_enabled = request.form.get("is_enabled") == "on"
+            account.is_sandbox = request.form.get("is_sandbox") == "on"
+            if account.carrier == Carrier.DHL:
+                account.credentials = {
+                    "api_key": request.form.get("api_key", "").strip(),
+                    "api_secret": request.form.get("api_secret", "").strip(),
+                    "account_number": request.form.get("account_number", "").strip(),
+                }
+            else:
+                account.credentials = {
+                    "client_id": request.form.get("client_id", "").strip(),
+                    "client_secret": request.form.get("client_secret", "").strip(),
+                    "account_number": request.form.get("account_number", "").strip(),
+                }
+            account.origin_name = request.form.get("origin_name", "").strip() or None
+            account.origin_phone = request.form.get("origin_phone", "").strip() or None
+            account.origin_street = request.form.get("origin_street", "").strip() or None
+            account.origin_city = request.form.get("origin_city", "").strip() or None
+            account.origin_postal_code = request.form.get("origin_postal_code", "").strip() or None
+            account.origin_country_code = request.form.get("origin_country_code", "").strip() or None
+            db.session.commit()
+            flash(f"{account.carrier_label} оновлено.", "success")
+            return redirect(url_for("admin_shipping_settings"))
+
+        return render_template("admin/shipping_account_form.html", carrier=account.carrier, carrier_label=account.carrier_label, account=account)
+
+    @app.route("/admin/settings/shipping/<int:id>/delete", methods=["POST"])
+    @admin_required
+    def admin_shipping_account_delete(id):
+        """Видалити обліковий запис перевізника."""
+        from models.shipping import CarrierAccount
+        account = CarrierAccount.query.filter_by(id=id, store_id=g.store.id).first_or_404()
+        db.session.delete(account)
+        db.session.commit()
+        flash("Обліковий запис видалено.", "info")
+        return redirect(url_for("admin_shipping_settings"))
+
     # ----- ПУБЛІЧНИЙ: ФОРМА КОНТАКТІВ -----
 
     @app.route("/api/contact", methods=["POST"])
@@ -2347,6 +2839,7 @@ def create_app():
             return redirect(url_for("contacts_page"))
         
         contact = ContactMessage(
+            store_id=g.store.id,
             name=name,
             email=email,
             phone=phone or None,
@@ -2403,7 +2896,7 @@ def create_app():
             
             flash("Невірний email або пароль.", "danger")
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         return render_template("auth/login.html", settings=settings)
 
     @app.route("/logout")
@@ -2446,7 +2939,7 @@ def create_app():
             if errors:
                 for error in errors:
                     flash(error, "danger")
-                settings = SiteSettings.get_or_create()
+                settings = SiteSettings.get_or_create(g.store.id)
                 return render_template("auth/register.html", settings=settings)
             
             user = User.create_user(
@@ -2456,6 +2949,7 @@ def create_app():
                 first_name=first_name or None,
                 last_name=last_name or None,
                 phone=phone or None,
+                store_id=g.store.id,
             )
             
             # Відправити welcome email
@@ -2472,7 +2966,7 @@ def create_app():
             flash("Реєстрація успішна! Ласкаво просимо!", "success")
             return redirect(url_for("user_cabinet"))
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         return render_template("auth/register.html", settings=settings)
 
     @app.route("/register/b2b", methods=["GET", "POST"])
@@ -2481,7 +2975,7 @@ def create_app():
         if current_user.is_authenticated:
             return redirect(url_for("b2b_dashboard"))
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         if not getattr(settings, 'b2b_registration_open', True):
             flash("B2B реєстрація тимчасово закрита.", "warning")
             return redirect(url_for("user_login"))
@@ -2548,6 +3042,7 @@ def create_app():
             
             # Створення компанії
             company = Company(
+                store_id=g.store.id,
                 name=company_name,
                 vat_number=vat_number or None,
                 vat_country=country[:2].upper() if country else None,
@@ -2574,6 +3069,7 @@ def create_app():
                 last_name=last_name,
                 phone=phone or None,
                 company_id=company.id,
+                store_id=g.store.id,
                 is_verified=vat_verified,
             )
             user.set_password(password)
@@ -2632,11 +3128,11 @@ def create_app():
         if current_user.is_b2b:
             return redirect(url_for("b2b_dashboard"))
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         
-        # Статистика
-        total_orders = Order.query.filter_by(customer_email=current_user.email).count()
-        recent_orders = Order.query.filter_by(customer_email=current_user.email)\
+        # Статистика (тільки замовлення в межах поточного магазину)
+        total_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id).count()
+        recent_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id)\
             .order_by(Order.created_at.desc()).limit(5).all()
         
         for order in recent_orders:
@@ -2665,18 +3161,18 @@ def create_app():
         if not current_user.is_b2b:
             return redirect(url_for("user_cabinet"))
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         company = current_user.company
         
-        # Статистика
-        total_orders = Order.query.filter_by(customer_email=current_user.email).count()
-        pending_orders = Order.query.filter_by(customer_email=current_user.email, status="pending").count()
+        # Статистика (в межах поточного магазину)
+        total_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id).count()
+        pending_orders = Order.query.filter_by(customer_email=current_user.email, status="pending", store_id=g.store.id).count()
         total_spent = db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))\
-            .filter_by(customer_email=current_user.email, status="paid").scalar()
-        
+            .filter_by(customer_email=current_user.email, status="paid", store_id=g.store.id).scalar()
+
         discount = company.discount_percent if company else 0
-        
-        recent_orders = Order.query.filter_by(customer_email=current_user.email)\
+
+        recent_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id)\
             .order_by(Order.created_at.desc()).limit(5).all()
         
         for order in recent_orders:
@@ -2709,9 +3205,9 @@ def create_app():
         if not current_user.is_b2b:
             return redirect(url_for("user_cabinet"))
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         
-        orders = Order.query.filter_by(customer_email=current_user.email)\
+        orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id)\
             .order_by(Order.created_at.desc()).all()
         
         for order in orders:
@@ -2737,7 +3233,7 @@ def create_app():
         if not current_user.is_b2b:
             return redirect(url_for("user_cabinet"))
         
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         company = current_user.company
         
         if request.method == "POST" and company:
@@ -2761,13 +3257,14 @@ def create_app():
         )
 
     # ========== CRM ADMIN ROUTES ==========
-    
+    # Company/AdminAlert тепер tenant-scoped (store_id), Phase 2 завершено.
+
     @app.route("/admin/crm")
     @admin_required
     def admin_crm():
         """CRM - список партнерів."""
-        settings = SiteSettings.query.first()
-        
+        settings = SiteSettings.get_or_create(g.store.id)
+
         # Фільтри
         filter_status = request.args.get("status", "")
         filter_reliability = request.args.get("reliability", "")
@@ -2775,10 +3272,10 @@ def create_app():
         search = request.args.get("search", "")
         page = request.args.get("page", 1, type=int)
         per_page = 20
-        
-        # Базовий запит
-        query = Company.query
-        
+
+        # Базовий запит (тільки компанії поточного магазину)
+        query = Company.query.filter_by(store_id=g.store.id)
+
         # Застосовуємо фільтри
         if filter_status:
             query = query.filter(Company.status == filter_status)
@@ -2803,7 +3300,7 @@ def create_app():
         total_pages = (total + per_page - 1) // per_page
         
         # Статистика
-        all_companies = Company.query.all()
+        all_companies = Company.query.filter_by(store_id=g.store.id).all()
         stats = {
             "total": len(all_companies),
             "verified": len([c for c in all_companies if c.status == "verified"]),
@@ -2825,13 +3322,15 @@ def create_app():
         from models.company import AdminAlert, AlertSeverity
         critical_alerts = AdminAlert.query.filter_by(
             severity=AlertSeverity.CRITICAL.value,
-            is_resolved=False
+            is_resolved=False,
+            store_id=g.store.id,
         ).order_by(AdminAlert.created_at.desc()).all()
-        unread_alerts_count = AdminAlert.query.filter_by(is_read=False).count()
-        
+        unread_alerts_count = AdminAlert.query.filter_by(is_read=False, store_id=g.store.id).count()
+
         # Унікальні країни
         countries = db.session.query(Company.country_code, Company.country).distinct().filter(
-            Company.country_code.isnot(None)
+            Company.country_code.isnot(None),
+            Company.store_id == g.store.id,
         ).all()
         
         return render_template(
@@ -2854,15 +3353,15 @@ def create_app():
     @admin_required
     def admin_crm_partner(id):
         """Деталі партнера."""
-        settings = SiteSettings.query.first()
-        company = Company.query.get_or_404(id)
-        
+        settings = SiteSettings.get_or_create(g.store.id)
+        company = Company.query.filter_by(id=id, store_id=g.store.id).first_or_404()
+
         from models.company import AdminAlert, VerificationLog
         company_alerts = AdminAlert.query.filter_by(
-            company_id=id, 
+            company_id=id,
             is_resolved=False
         ).order_by(AdminAlert.created_at.desc()).all()
-        
+
         verification_logs = VerificationLog.query.filter_by(
             company_id=id
         ).order_by(VerificationLog.checked_at.desc()).limit(20).all()
@@ -2879,7 +3378,7 @@ def create_app():
     @admin_required
     def admin_crm_partner_verify(id):
         """Запустити верифікацію партнера."""
-        company = Company.query.get_or_404(id)
+        company = Company.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         
         try:
             from services.partner_verifier import partner_verifier
@@ -2958,7 +3457,7 @@ def create_app():
     @admin_required
     def admin_crm_partner_approve(id):
         """Підтвердити партнера."""
-        company = Company.query.get_or_404(id)
+        company = Company.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         company.status = "verified"
         company.verified_at = datetime.utcnow()
         db.session.commit()
@@ -2983,7 +3482,7 @@ def create_app():
     def admin_crm_partner_reject(id):
         """Відхилити партнера."""
         data = request.get_json() or {}
-        company = Company.query.get_or_404(id)
+        company = Company.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         company.status = "rejected"
         company.rejection_reason = data.get("reason", "")
         db.session.commit()
@@ -3008,7 +3507,7 @@ def create_app():
     def admin_crm_partner_suspend(id):
         """Призупинити партнера."""
         data = request.get_json() or {}
-        company = Company.query.get_or_404(id)
+        company = Company.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         company.status = "suspended"
         company.rejection_reason = data.get("reason", "")
         db.session.commit()
@@ -3019,7 +3518,7 @@ def create_app():
     @admin_required
     def admin_crm_partner_update(id):
         """Оновити B2B налаштування партнера."""
-        company = Company.query.get_or_404(id)
+        company = Company.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         company.credit_limit = float(request.form.get("credit_limit", 0))
         company.payment_terms = int(request.form.get("payment_terms", 0))
         company.discount_percent = float(request.form.get("discount_percent", 0))
@@ -3032,17 +3531,17 @@ def create_app():
     @admin_required
     def admin_crm_alerts():
         """Список алертів."""
-        settings = SiteSettings.query.first()
-        
+        settings = SiteSettings.get_or_create(g.store.id)
+
         from models.company import AdminAlert
-        
+
         filter_severity = request.args.get("severity", "")
         filter_status = request.args.get("status", "")
         page = request.args.get("page", 1, type=int)
         per_page = 30
-        
-        query = AdminAlert.query
-        
+
+        query = AdminAlert.query.filter_by(store_id=g.store.id)
+
         if filter_severity:
             query = query.filter(AdminAlert.severity == filter_severity)
         if filter_status == "unread":
@@ -3058,7 +3557,7 @@ def create_app():
         total_pages = (total + per_page - 1) // per_page
         
         # Статистика
-        all_alerts = AdminAlert.query.all()
+        all_alerts = AdminAlert.query.filter_by(store_id=g.store.id).all()
         stats = {
             "critical": len([a for a in all_alerts if a.severity == "critical" and not a.is_resolved]),
             "warning": len([a for a in all_alerts if a.severity == "warning" and not a.is_resolved]),
@@ -3082,7 +3581,7 @@ def create_app():
     def admin_crm_alert_read(id):
         """Позначити алерт прочитаним."""
         from models.company import AdminAlert
-        alert = AdminAlert.query.get_or_404(id)
+        alert = AdminAlert.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         alert.mark_read()
         
         return jsonify({"success": True})
@@ -3093,7 +3592,7 @@ def create_app():
         """Вирішити алерт."""
         from models.company import AdminAlert
         data = request.get_json() or {}
-        alert = AdminAlert.query.get_or_404(id)
+        alert = AdminAlert.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         
         # Знаходимо поточного адміна (потребує ID)
         alert.is_resolved = True
@@ -3108,7 +3607,7 @@ def create_app():
     def admin_crm_alerts_mark_all_read():
         """Позначити всі алерти прочитаними."""
         from models.company import AdminAlert
-        AdminAlert.query.filter_by(is_read=False).update({"is_read": True})
+        AdminAlert.query.filter_by(is_read=False, store_id=g.store.id).update({"is_read": True})
         db.session.commit()
         
         return jsonify({"success": True})
@@ -3122,7 +3621,8 @@ def create_app():
             from models.company import VerificationLog, AdminAlert
             
             companies = Company.query.filter(
-                Company.status.in_(["verified", "pending"])
+                Company.status.in_(["verified", "pending"]),
+                Company.store_id == g.store.id,
             ).all()
             
             checked = 0
@@ -3206,8 +3706,9 @@ def create_app():
 
     # =====================================================================
     # СКЛАД (WAREHOUSE) ROUTES
+    # warehouse_* моделі tenant-scoped (store_id), Phase 2 завершено.
     # =====================================================================
-    
+
     @app.route("/admin/warehouse")
     @admin_required
     def admin_warehouse():
@@ -3218,8 +3719,8 @@ def create_app():
         status_filter = request.args.get("status", "")
         per_page = 20
         
-        query = WarehouseTask.query
-        
+        query = WarehouseTask.query.filter_by(store_id=g.store.id)
+
         if status_filter:
             query = query.filter(WarehouseTask.status == status_filter)
         
@@ -3240,11 +3741,12 @@ def create_app():
         
         # Статистика
         stats = {
-            "pending": WarehouseTask.query.filter_by(status=ShipmentStatus.PENDING.value).count(),
-            "processing": WarehouseTask.query.filter_by(status=ShipmentStatus.PROCESSING.value).count(),
-            "packed": WarehouseTask.query.filter_by(status=ShipmentStatus.PACKED.value).count(),
+            "pending": WarehouseTask.query.filter_by(status=ShipmentStatus.PENDING.value, store_id=g.store.id).count(),
+            "processing": WarehouseTask.query.filter_by(status=ShipmentStatus.PROCESSING.value, store_id=g.store.id).count(),
+            "packed": WarehouseTask.query.filter_by(status=ShipmentStatus.PACKED.value, store_id=g.store.id).count(),
             "shipped_today": WarehouseTask.query.filter(
                 WarehouseTask.status == ShipmentStatus.SHIPPED.value,
+                WarehouseTask.store_id == g.store.id,
                 db.func.date(WarehouseTask.shipped_at) == db.func.current_date()
             ).count(),
         }
@@ -3264,8 +3766,8 @@ def create_app():
     def admin_warehouse_task(id):
         """Деталі завдання складу."""
         from models.warehouse import WarehouseTask, ShipmentStatus
-        
-        task = WarehouseTask.query.get_or_404(id)
+
+        task = WarehouseTask.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         
         if request.method == "POST":
             action = request.form.get("action")
@@ -3325,8 +3827,8 @@ def create_app():
         search = request.args.get("search", "")
         per_page = 50
         
-        query = Product.query.filter_by(is_active=True)
-        
+        query = Product.query.filter_by(is_active=True, store_id=g.store.id)
+
         if show_low:
             query = query.filter(
                 Product.stock <= Product.min_stock,
@@ -3348,15 +3850,16 @@ def create_app():
         
         # Статистика
         stats = {
-            "total_products": Product.query.filter_by(is_active=True).count(),
-            "out_of_stock": Product.query.filter_by(is_active=True, stock=0).count(),
+            "total_products": Product.query.filter_by(is_active=True, store_id=g.store.id).count(),
+            "out_of_stock": Product.query.filter_by(is_active=True, stock=0, store_id=g.store.id).count(),
             "low_stock": Product.query.filter(
                 Product.is_active == True,
                 Product.stock > 0,
                 Product.stock <= Product.min_stock,
-                Product.min_stock > 0
+                Product.min_stock > 0,
+                Product.store_id == g.store.id,
             ).count(),
-            "unresolved_alerts": LowStockAlert.query.filter_by(is_resolved=False).count(),
+            "unresolved_alerts": LowStockAlert.query.filter_by(is_resolved=False, store_id=g.store.id).count(),
         }
         
         return render_template(
@@ -3375,17 +3878,17 @@ def create_app():
     def admin_warehouse_stock_adjust(product_id):
         """Коригування залишку товару."""
         from models.warehouse import StockMovement
-        
-        product = Product.query.get_or_404(product_id)
-        
+
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
+
         adjustment = request.form.get("adjustment", 0, type=int)
         reason = request.form.get("reason", "adjustment")
         notes = request.form.get("notes", "")
-        
+
         if adjustment == 0:
             flash("Введіть кількість для коригування", "warning")
             return redirect(url_for("admin_warehouse_stock"))
-        
+
         try:
             StockMovement.record_movement(
                 product_id=product_id,
@@ -3394,6 +3897,7 @@ def create_app():
                 reason=reason,
                 notes=notes,
                 performed_by="admin",
+                store_id=g.store.id,
             )
             flash(f"✅ Залишок '{product.name}' скориговано на {adjustment:+d}", "success")
         except ValueError as e:
@@ -3406,13 +3910,13 @@ def create_app():
     def admin_warehouse_stock_history(product_id):
         """Історія руху товару."""
         from models.warehouse import StockMovement
-        
-        product = Product.query.get_or_404(product_id)
-        
+
+        product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
+
         page = request.args.get("page", 1, type=int)
         per_page = 50
-        
-        query = StockMovement.query.filter_by(product_id=product_id)\
+
+        query = StockMovement.query.filter_by(product_id=product_id, store_id=g.store.id)\
             .order_by(StockMovement.created_at.desc())
         
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
@@ -3435,22 +3939,22 @@ def create_app():
         status_filter = request.args.get("status", "")
         per_page = 20
         
-        query = ReplenishmentOrder.query
-        
+        query = ReplenishmentOrder.query.filter_by(store_id=g.store.id)
+
         if status_filter:
             query = query.filter(ReplenishmentOrder.status == status_filter)
-        
+
         query = query.order_by(ReplenishmentOrder.created_at.desc())
-        
+
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
         orders = pagination.items
-        
+
         # Статистика
         stats = {
-            "draft": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.DRAFT.value).count(),
-            "pending": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.PENDING.value).count(),
-            "ordered": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.ORDERED.value).count(),
-            "shipped": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.SHIPPED.value).count(),
+            "draft": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.DRAFT.value, store_id=g.store.id).count(),
+            "pending": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.PENDING.value, store_id=g.store.id).count(),
+            "ordered": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.ORDERED.value, store_id=g.store.id).count(),
+            "shipped": ReplenishmentOrder.query.filter_by(status=ReplenishmentStatus.SHIPPED.value, store_id=g.store.id).count(),
         }
         
         return render_template(
@@ -3471,6 +3975,7 @@ def create_app():
         
         if request.method == "POST":
             order = ReplenishmentOrder(
+                store_id=g.store.id,
                 supplier_name=request.form.get("supplier_name", ""),
                 supplier_contact=request.form.get("supplier_contact", ""),
                 notes=request.form.get("notes", ""),
@@ -3480,17 +3985,18 @@ def create_app():
             db.session.add(order)
             db.session.flush()
             order.generate_order_number()
-            
-            # Додаємо товари
+
+            # Додаємо товари (тільки з поточного магазину)
             product_ids = request.form.getlist("product_ids")
             quantities = request.form.getlist("quantities")
             prices = request.form.getlist("prices")
-            
+
             for i, product_id in enumerate(product_ids):
                 if product_id:
-                    product = Product.query.get(int(product_id))
+                    product = Product.query.filter_by(id=int(product_id), store_id=g.store.id).first()
                     if product:
                         item = ReplenishmentItem(
+                            store_id=g.store.id,
                             replenishment_id=order.id,
                             product_id=product.id,
                             product_name=product.name,
@@ -3499,24 +4005,25 @@ def create_app():
                             unit_price=float(prices[i]) if i < len(prices) and prices[i] else 0.0,
                         )
                         db.session.add(item)
-            
+
             order.calculate_totals()
             db.session.commit()
-            
+
             flash(f"✅ Замовлення {order.order_number} створено", "success")
             return redirect(url_for("admin_warehouse_replenishment_detail", id=order.id))
-        
+
         # Товари з низьким залишком для пропозиції
         low_stock_products = Product.query.filter(
             Product.is_active == True,
             Product.stock <= Product.min_stock,
-            Product.min_stock > 0
+            Product.min_stock > 0,
+            Product.store_id == g.store.id,
         ).all()
-        
+
         return render_template(
             "admin/warehouse/replenishment_new.html",
             low_stock_products=low_stock_products,
-            products=Product.query.filter_by(is_active=True).order_by(Product.name).all(),
+            products=Product.query.filter_by(is_active=True, store_id=g.store.id).order_by(Product.name).all(),
         )
     
     @app.route("/admin/warehouse/replenishment/<int:id>", methods=["GET", "POST"])
@@ -3524,8 +4031,8 @@ def create_app():
     def admin_warehouse_replenishment_detail(id):
         """Деталі замовлення на поповнення."""
         from models.warehouse import ReplenishmentOrder, ReplenishmentStatus
-        
-        order = ReplenishmentOrder.query.get_or_404(id)
+
+        order = ReplenishmentOrder.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         
         if request.method == "POST":
             action = request.form.get("action")
@@ -3579,32 +4086,33 @@ def create_app():
         date_to = request.args.get("date_to", "")
         per_page = 50
         
-        query = WarehouseExpense.query
-        
+        query = WarehouseExpense.query.filter_by(store_id=g.store.id)
+
         if category_filter:
             query = query.filter(WarehouseExpense.category == category_filter)
-        
+
         if date_from:
             query = query.filter(WarehouseExpense.expense_date >= date_from)
-        
+
         if date_to:
             query = query.filter(WarehouseExpense.expense_date <= date_to)
-        
+
         query = query.order_by(WarehouseExpense.expense_date.desc())
-        
+
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
         expenses = pagination.items
-        
+
         # Статистика за місяць
         from datetime import date
         today = date.today()
         first_day = today.replace(day=1)
-        
+
         monthly_stats = db.session.query(
             WarehouseExpense.category,
             db.func.sum(WarehouseExpense.amount)
         ).filter(
-            WarehouseExpense.expense_date >= first_day
+            WarehouseExpense.expense_date >= first_day,
+            WarehouseExpense.store_id == g.store.id,
         ).group_by(WarehouseExpense.category).all()
         
         stats_by_category = {cat: amt for cat, amt in monthly_stats}
@@ -3633,6 +4141,7 @@ def create_app():
         
         if request.method == "POST":
             expense = WarehouseExpense(
+                store_id=g.store.id,
                 category=request.form.get("category", ExpenseCategory.OTHER.value),
                 description=request.form.get("description", ""),
                 amount=request.form.get("amount", 0, type=float),
@@ -3677,43 +4186,51 @@ def create_app():
         
         # Відправки
         shipments = {
-            "total": WarehouseTask.query.filter(WarehouseTask.created_at >= start_date).count(),
+            "total": WarehouseTask.query.filter(
+                WarehouseTask.created_at >= start_date, WarehouseTask.store_id == g.store.id
+            ).count(),
             "shipped": WarehouseTask.query.filter(
                 WarehouseTask.shipped_at >= start_date,
-                WarehouseTask.shipped_at.isnot(None)
+                WarehouseTask.shipped_at.isnot(None),
+                WarehouseTask.store_id == g.store.id,
             ).count(),
             "delivered": WarehouseTask.query.filter(
                 WarehouseTask.delivered_at >= start_date,
-                WarehouseTask.delivered_at.isnot(None)
+                WarehouseTask.delivered_at.isnot(None),
+                WarehouseTask.store_id == g.store.id,
             ).count(),
         }
-        
+
         # Поповнення
         replenishments = {
-            "total": ReplenishmentOrder.query.filter(ReplenishmentOrder.created_at >= start_date).count(),
+            "total": ReplenishmentOrder.query.filter(
+                ReplenishmentOrder.created_at >= start_date, ReplenishmentOrder.store_id == g.store.id
+            ).count(),
             "received": ReplenishmentOrder.query.filter(
                 ReplenishmentOrder.received_at >= start_date,
-                ReplenishmentOrder.received_at.isnot(None)
+                ReplenishmentOrder.received_at.isnot(None),
+                ReplenishmentOrder.store_id == g.store.id,
             ).count(),
             "total_cost": db.session.query(db.func.sum(ReplenishmentOrder.total)).filter(
                 ReplenishmentOrder.received_at >= start_date,
-                ReplenishmentOrder.received_at.isnot(None)
+                ReplenishmentOrder.received_at.isnot(None),
+                ReplenishmentOrder.store_id == g.store.id,
             ).scalar() or 0,
         }
-        
+
         # Витрати
         expenses = {
             "total": db.session.query(db.func.sum(WarehouseExpense.amount)).filter(
-                WarehouseExpense.expense_date >= start_date
+                WarehouseExpense.expense_date >= start_date, WarehouseExpense.store_id == g.store.id
             ).scalar() or 0,
         }
-        
+
         # По категоріях
         expense_by_category = db.session.query(
             WarehouseExpense.category,
             db.func.sum(WarehouseExpense.amount)
         ).filter(
-            WarehouseExpense.expense_date >= start_date
+            WarehouseExpense.expense_date >= start_date, WarehouseExpense.store_id == g.store.id
         ).group_by(WarehouseExpense.category).all()
         
         return render_template(
@@ -3726,6 +4243,176 @@ def create_app():
             expense_by_category=dict(expense_by_category),
         )
     
+    # ----- АДМІНКА: БУХГАЛТЕРІЯ (звіти та експорт CSV) -----
+
+    def _accounting_period():
+        """Читає ?from=&to= з рядка запиту, за замовчуванням - поточний місяць."""
+        from datetime import date
+        today = date.today()
+        default_from = today.replace(day=1)
+        try:
+            date_from = datetime.strptime(request.args.get("from", ""), "%Y-%m-%d").date()
+        except ValueError:
+            date_from = default_from
+        try:
+            date_to = datetime.strptime(request.args.get("to", ""), "%Y-%m-%d").date()
+        except ValueError:
+            date_to = today
+        return date_from, date_to
+
+    def _csv_response(filename, header, rows):
+        import csv
+        from io import StringIO
+        buffer = StringIO()
+        writer = csv.writer(buffer)
+        writer.writerow(header)
+        writer.writerows(rows)
+        return Response(
+            buffer.getvalue(),
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+
+    @app.route("/admin/accounting")
+    @admin_required
+    def admin_accounting():
+        """Огляд для бухгалтерії: дохід/витрати за період + посилання на експорт CSV."""
+        date_from, date_to = _accounting_period()
+
+        paid_orders_q = Order.query.filter(
+            Order.store_id == g.store.id,
+            Order.status == "paid",
+            db.func.date(Order.paid_at) >= date_from,
+            db.func.date(Order.paid_at) <= date_to,
+        )
+        stats = {
+            "orders_count": paid_orders_q.count(),
+            "revenue": paid_orders_q.with_entities(db.func.coalesce(db.func.sum(Order.amount), 0.0)).scalar(),
+            "subtotal": paid_orders_q.with_entities(db.func.coalesce(db.func.sum(Order.subtotal), 0.0)).scalar(),
+            "shipping": paid_orders_q.with_entities(db.func.coalesce(db.func.sum(Order.shipping_cost), 0.0)).scalar(),
+            "tax": paid_orders_q.with_entities(db.func.coalesce(db.func.sum(Order.tax), 0.0)).scalar(),
+        }
+
+        from models.warehouse import WarehouseExpense
+        expenses_total = db.session.query(db.func.coalesce(db.func.sum(WarehouseExpense.amount), 0.0)).filter(
+            WarehouseExpense.store_id == g.store.id,
+            WarehouseExpense.expense_date >= date_from,
+            WarehouseExpense.expense_date <= date_to,
+        ).scalar()
+        stats["expenses"] = expenses_total
+        stats["net"] = stats["revenue"] - expenses_total
+
+        return render_template(
+            "admin/accounting.html",
+            stats=stats,
+            date_from=date_from,
+            date_to=date_to,
+        )
+
+    @app.route("/admin/accounting/export/orders.csv")
+    @admin_required
+    def admin_accounting_export_orders():
+        """CSV-експорт оплачених замовлень за період - основний звіт для бухгалтерії."""
+        date_from, date_to = _accounting_period()
+        orders = Order.query.filter(
+            Order.store_id == g.store.id,
+            Order.status.in_(["paid", "shipped", "delivered"]),
+            db.func.date(Order.paid_at) >= date_from,
+            db.func.date(Order.paid_at) <= date_to,
+        ).order_by(Order.paid_at.asc()).all()
+
+        rows = []
+        for order in orders:
+            company = order.company if order.company_id else None
+            rows.append([
+                order.order_number or order.id,
+                order.paid_at.strftime("%Y-%m-%d %H:%M") if order.paid_at else "",
+                order.customer_name or "",
+                order.customer_email or "",
+                company.name if company else "",
+                company.full_vat_number if company else "",
+                order.shipping_country or "",
+                f"{order.subtotal or 0.0:.2f}",
+                f"{order.discount or 0.0:.2f}",
+                f"{order.shipping_cost or 0.0:.2f}",
+                f"{order.tax or 0.0:.2f}",
+                f"{order.amount or 0.0:.2f}",
+                order.currency,
+                order.payment_method or "",
+                order.status,
+            ])
+
+        return _csv_response(
+            f"orders_{date_from}_{date_to}.csv",
+            ["Номер замовлення", "Дата оплати", "Клієнт", "Email", "Компанія (B2B)", "VAT номер",
+             "Країна доставки", "Товари", "Знижка", "Доставка", "Податок", "Разом", "Валюта",
+             "Спосіб оплати", "Статус"],
+            rows,
+        )
+
+    @app.route("/admin/accounting/export/expenses.csv")
+    @admin_required
+    def admin_accounting_export_expenses():
+        """CSV-експорт витрат складу за період."""
+        from models.warehouse import WarehouseExpense
+        date_from, date_to = _accounting_period()
+        expenses = WarehouseExpense.query.filter(
+            WarehouseExpense.store_id == g.store.id,
+            WarehouseExpense.expense_date >= date_from,
+            WarehouseExpense.expense_date <= date_to,
+        ).order_by(WarehouseExpense.expense_date.asc()).all()
+
+        rows = [
+            [
+                e.expense_date.strftime("%Y-%m-%d") if e.expense_date else "",
+                e.category_display,
+                e.description or "",
+                f"{e.amount:.2f}",
+                e.currency,
+                e.receipt_number or "",
+                e.created_by or "",
+            ]
+            for e in expenses
+        ]
+
+        return _csv_response(
+            f"expenses_{date_from}_{date_to}.csv",
+            ["Дата", "Категорія", "Опис", "Сума", "Валюта", "№ чека", "Ким додано"],
+            rows,
+        )
+
+    @app.route("/admin/accounting/export/revenue-by-country.csv")
+    @admin_required
+    def admin_accounting_export_revenue_by_country():
+        """
+        CSV: дохід згруповано за країною доставки - довідково для VAT/OSS звітності.
+        Це НЕ розрахунок ПДВ (в системі немає розбивки по ставках) - лише сума
+        оплачених замовлень по країнах, з якою бухгалтер вже рахує податок сам.
+        """
+        date_from, date_to = _accounting_period()
+        rows_query = db.session.query(
+            Order.shipping_country,
+            db.func.count(Order.id),
+            db.func.sum(Order.subtotal),
+            db.func.sum(Order.amount),
+        ).filter(
+            Order.store_id == g.store.id,
+            Order.status.in_(["paid", "shipped", "delivered"]),
+            db.func.date(Order.paid_at) >= date_from,
+            db.func.date(Order.paid_at) <= date_to,
+        ).group_by(Order.shipping_country).order_by(Order.shipping_country.asc()).all()
+
+        rows = [
+            [country or "(не вказано)", count, f"{subtotal:.2f}", f"{total:.2f}"]
+            for country, count, subtotal, total in rows_query
+        ]
+
+        return _csv_response(
+            f"revenue_by_country_{date_from}_{date_to}.csv",
+            ["Країна доставки", "К-сть замовлень", "Сума товарів", "Разом (з доставкою)"],
+            rows,
+        )
+
     # Автоматичне створення завдання після оплати
     @app.route("/webhook/payment-success", methods=["POST"])
     def webhook_payment_success():
@@ -3764,7 +4451,7 @@ def create_app():
     @admin_required
     def admin_ai_settings():
         """Налаштування AI чатбота та блогера."""
-        ai_settings = AISettings.get_or_create()
+        ai_settings = AISettings.get_or_create(g.store.id)
         
         if request.method == "POST":
             # Чатбот
@@ -3838,22 +4525,22 @@ def create_app():
         status_filter = request.args.get("status", "")
         per_page = 20
         
-        query = BlogPost.query
-        
+        query = BlogPost.query.filter_by(store_id=g.store.id)
+
         if status_filter:
             query = query.filter(BlogPost.status == status_filter)
-        
+
         query = query.order_by(BlogPost.created_at.desc())
-        
+
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
         posts = pagination.items
-        
+
         # Статистика
         stats = {
-            "total": BlogPost.query.count(),
-            "published": BlogPost.query.filter_by(status=BlogPostStatus.PUBLISHED).count(),
-            "scheduled": BlogPost.query.filter_by(status=BlogPostStatus.SCHEDULED).count(),
-            "draft": BlogPost.query.filter_by(status=BlogPostStatus.DRAFT).count(),
+            "total": BlogPost.query.filter_by(store_id=g.store.id).count(),
+            "published": BlogPost.query.filter_by(status=BlogPostStatus.PUBLISHED, store_id=g.store.id).count(),
+            "scheduled": BlogPost.query.filter_by(status=BlogPostStatus.SCHEDULED, store_id=g.store.id).count(),
+            "draft": BlogPost.query.filter_by(status=BlogPostStatus.DRAFT, store_id=g.store.id).count(),
         }
         
         return render_template(
@@ -3876,12 +4563,13 @@ def create_app():
             title = request.form.get("title", "").strip()
             slug = request.form.get("slug", "").strip() or BlogPost.generate_slug(title)
             
-            # Перевіряємо унікальність slug
-            existing = BlogPost.get_by_slug(slug)
+            # Перевіряємо унікальність slug (в межах магазину)
+            existing = BlogPost.get_by_slug(slug, store_id=g.store.id)
             if existing:
                 slug = f"{slug}-{uuid.uuid4().hex[:6]}"
-            
+
             post = BlogPost(
+                store_id=g.store.id,
                 title=title,
                 slug=slug,
                 excerpt=request.form.get("excerpt", "").strip() or None,
@@ -3928,7 +4616,7 @@ def create_app():
     @admin_required
     def admin_blog_edit(id):
         """Редагування статті."""
-        post = BlogPost.query.get_or_404(id)
+        post = BlogPost.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         
         if request.method == "POST":
             action = request.form.get("action", "save")
@@ -3937,7 +4625,9 @@ def create_app():
             
             new_slug = request.form.get("slug", "").strip() or BlogPost.generate_slug(post.title)
             if new_slug != post.slug:
-                existing = BlogPost.query.filter(BlogPost.slug == new_slug, BlogPost.id != id).first()
+                existing = BlogPost.query.filter(
+                    BlogPost.slug == new_slug, BlogPost.store_id == g.store.id, BlogPost.id != id
+                ).first()
                 if existing:
                     new_slug = f"{new_slug}-{uuid.uuid4().hex[:6]}"
                 post.slug = new_slug
@@ -3991,7 +4681,7 @@ def create_app():
     @admin_required
     def admin_blog_delete(id):
         """Видалення статті."""
-        post = BlogPost.query.get_or_404(id)
+        post = BlogPost.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         
         # Видаляємо зображення перед видаленням статті
         if post.featured_image:
@@ -4006,7 +4696,7 @@ def create_app():
     @admin_required
     def admin_blog_publish(id):
         """Швидка публікація статті."""
-        post = BlogPost.query.get_or_404(id)
+        post = BlogPost.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         post.status = BlogPostStatus.PUBLISHED
         # Якщо дата публікації в майбутньому або відсутня - ставимо поточний час
         if not post.publish_date or post.publish_date > datetime.utcnow():
@@ -4038,7 +4728,7 @@ def create_app():
                     })
             
             if topics_list:
-                BlogPlan.create_weekly_plan(topics_list)
+                BlogPlan.create_weekly_plan(topics_list, store_id=g.store.id)
                 flash(f"✅ Створено план на {len(topics_list)} днів!", "success")
             else:
                 flash("Введіть хоча б одну тему.", "warning")
@@ -4052,7 +4742,7 @@ def create_app():
         
         for i in range(7):
             current_date = today + timedelta(days=i)
-            plan = BlogPlan.query.filter_by(plan_date=current_date).first()
+            plan = BlogPlan.query.filter_by(plan_date=current_date, store_id=g.store.id).first()
             
             week_days.append({
                 "date": current_date,
@@ -4063,7 +4753,7 @@ def create_app():
             })
         
         # Всі плани
-        all_plans = BlogPlan.query.order_by(BlogPlan.plan_date.desc()).limit(30).all()
+        all_plans = BlogPlan.query.filter_by(store_id=g.store.id).order_by(BlogPlan.plan_date.desc()).limit(30).all()
         
         return render_template(
             "admin/blog_plan.html",
@@ -4090,7 +4780,7 @@ def create_app():
         if not topic:
             return jsonify({"error": "Тема обов'язкова"}), 400
         
-        ai_settings = AISettings.get_or_create()
+        ai_settings = AISettings.get_or_create(g.store.id)
         
         try:
             # Формуємо промпт
@@ -4153,7 +4843,7 @@ def create_app():
         if not OPENAI_AVAILABLE or not openai_client:
             return jsonify({"error": "AI не налаштовано"}), 400
         
-        plan = BlogPlan.query.get_or_404(plan_id)
+        plan = BlogPlan.query.filter_by(id=plan_id, store_id=g.store.id).first_or_404()
         
         # Якщо план вже має пост - видаляємо старе зображення при перегенерації
         old_post = None
@@ -4165,7 +4855,7 @@ def create_app():
         if plan.status != "pending":
             return jsonify({"error": "План вже оброблено"}), 400
         
-        ai_settings = AISettings.get_or_create()
+        ai_settings = AISettings.get_or_create(g.store.id)
         
         try:
             # Формуємо промпт
@@ -4273,6 +4963,7 @@ def create_app():
                             existing_image = Image.query.filter_by(filename=image_filename).first()
                             if not existing_image:
                                 new_image = Image(
+                                    store_id=g.store.id,
                                     filename=image_filename,
                                     data=image_data,
                                     mime_type='image/png',
@@ -4300,7 +4991,7 @@ def create_app():
             
             # Створюємо пост
             slug = BlogPost.generate_slug(result.get("title", topic))
-            existing = BlogPost.get_by_slug(slug)
+            existing = BlogPost.get_by_slug(slug, store_id=g.store.id)
             if existing:
                 slug = f"{slug}-{uuid.uuid4().hex[:6]}"
             
@@ -4317,6 +5008,7 @@ def create_app():
                 post_status = BlogPostStatus.DRAFT
             
             post = BlogPost(
+                store_id=g.store.id,
                 title=result.get("title", topic),
                 slug=slug,
                 excerpt=result.get("excerpt", ""),
@@ -4410,7 +5102,7 @@ def create_app():
     @admin_required
     def api_blog_generate_all_pending():
         """Генерація всіх pending статей."""
-        pending_plans = BlogPlan.get_pending_for_date()
+        pending_plans = BlogPlan.get_pending_for_date(store_id=g.store.id)
         generated = 0
         
         for plan in pending_plans:
@@ -4436,7 +5128,8 @@ def create_app():
         try:
             scheduled_posts = BlogPost.query.filter(
                 BlogPost.status == BlogPostStatus.SCHEDULED,
-                BlogPost.publish_date <= datetime.utcnow()
+                BlogPost.publish_date <= datetime.utcnow(),
+                BlogPost.store_id == g.store.id,
             ).all()
             
             published_count = 0
@@ -4460,7 +5153,7 @@ def create_app():
     @admin_required
     def api_blog_plan_delete(plan_id):
         """Видалення плану."""
-        plan = BlogPlan.query.get_or_404(plan_id)
+        plan = BlogPlan.query.filter_by(id=plan_id, store_id=g.store.id).first_or_404()
         db.session.delete(plan)
         db.session.commit()
         return jsonify({"success": True})
@@ -4473,7 +5166,7 @@ def create_app():
         if not OPENAI_AVAILABLE or not openai_client:
             return jsonify({"error": "AI не налаштовано. Додайте OPENAI_API_KEY"}), 400
         
-        post = BlogPost.query.get_or_404(post_id)
+        post = BlogPost.query.filter_by(id=post_id, store_id=g.store.id).first_or_404()
         data = request.get_json() or {}
         languages = data.get("languages", ["en", "de"])
         
@@ -4561,13 +5254,14 @@ def create_app():
     @app.route("/blog")
     def blog_page():
         """Публічна сторінка блогу."""
-        settings = SiteSettings.get_or_create()
+        settings = SiteSettings.get_or_create(g.store.id)
         page = request.args.get("page", 1, type=int)
         per_page = 9
         
         # Отримуємо опубліковані пости
         query = BlogPost.query.filter(
             BlogPost.status == BlogPostStatus.PUBLISHED,
+            BlogPost.store_id == g.store.id,
             db.or_(
                 BlogPost.publish_date.is_(None),
                 BlogPost.publish_date <= datetime.utcnow()
@@ -4594,27 +5288,29 @@ def create_app():
     @app.route("/blog/<slug>")
     def blog_post_page(slug):
         """Сторінка окремого посту."""
-        settings = SiteSettings.get_or_create()
-        post = BlogPost.get_by_slug(slug)
-        
+        settings = SiteSettings.get_or_create(g.store.id)
+        post = BlogPost.get_by_slug(slug, store_id=g.store.id)
+
         if not post or not post.is_published:
             abort(404)
-        
+
         # Збільшуємо перегляди
         post.increment_views()
-        
+
         # Схожі пости
         related = []
         if post.category:
             related = BlogPost.query.filter(
                 BlogPost.status == BlogPostStatus.PUBLISHED,
                 BlogPost.category == post.category,
+                BlogPost.store_id == g.store.id,
                 BlogPost.id != post.id,
             ).limit(3).all()
-        
+
         if not related:
             related = BlogPost.query.filter(
                 BlogPost.status == BlogPostStatus.PUBLISHED,
+                BlogPost.store_id == g.store.id,
                 BlogPost.id != post.id,
             ).order_by(BlogPost.views.desc()).limit(3).all()
         

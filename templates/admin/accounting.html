@@ -1,0 +1,70 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Бухгалтерія - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🧾 Бухгалтерія</h1>
+    <p class="page-subtitle">Звіти та експорт CSV за період — дохід, витрати, розбивка по країнах</p>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <form method="GET" style="display:flex; gap:1rem; align-items:flex-end; flex-wrap: wrap; padding: 1rem;">
+        <div class="form-group" style="margin-bottom:0;">
+            <label for="from">Період з</label>
+            <input type="date" id="from" name="from" value="{{ date_from.isoformat() }}">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+            <label for="to">по</label>
+            <input type="date" id="to" name="to" value="{{ date_to.isoformat() }}">
+        </div>
+        <button type="submit" class="btn">Показати</button>
+    </form>
+</div>
+
+<div class="stats-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div class="card stat-card">
+        <div class="stat-label">Замовлень оплачено</div>
+        <div class="stat-value">{{ stats.orders_count }}</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-label">Дохід (разом)</div>
+        <div class="stat-value">{{ "%.2f"|format(stats.revenue) }}</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-label">Товари (без доставки)</div>
+        <div class="stat-value">{{ "%.2f"|format(stats.subtotal) }}</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-label">Доставка</div>
+        <div class="stat-value">{{ "%.2f"|format(stats.shipping) }}</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-label">Витрати складу</div>
+        <div class="stat-value">{{ "%.2f"|format(stats.expenses) }}</div>
+    </div>
+    <div class="card stat-card">
+        <div class="stat-label">Net (дохід − витрати)</div>
+        <div class="stat-value">{{ "%.2f"|format(stats.net) }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>📥 Експорт CSV</h3>
+    </div>
+    <p style="color: var(--text-muted); padding: 0 1rem; font-size: 0.9rem;">
+        Файли враховують обраний вище період. Це не податкові документи — просто
+        структуровані дані для передачі бухгалтеру/імпорту в його програму.
+    </p>
+    <div style="padding: 1rem; display:flex; gap: 1rem; flex-wrap: wrap;">
+        <a class="btn" href="{{ url_for('admin_accounting_export_orders', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
+            🧾 Замовлення (продажі)
+        </a>
+        <a class="btn" href="{{ url_for('admin_accounting_export_expenses', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
+            💸 Витрати складу
+        </a>
+        <a class="btn" href="{{ url_for('admin_accounting_export_revenue_by_country', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
+            🌍 Дохід по країнах
+        </a>
+    </div>
+</div>
+{% endblock %}

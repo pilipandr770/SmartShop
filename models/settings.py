@@ -6,12 +6,13 @@ from extensions import db
 
 
 class SiteSettings(db.Model):
-    """Налаштування сайту (синглтон)."""
+    """Налаштування сайту (одна на магазин)."""
     __tablename__ = "site_settings"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, unique=True, index=True)
+
     # Головна сторінка
     hero_subtitle = db.Column(db.String(255), nullable=True)
     about_title = db.Column(db.String(120), nullable=True)
@@ -89,11 +90,14 @@ class SiteSettings(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     @staticmethod
-    def get_or_create():
-        """Отримує або створює налаштування."""
-        settings = SiteSettings.query.first()
+    def get_or_create(store_id=None):
+        """Отримує або створює налаштування для магазину store_id."""
+        query = SiteSettings.query
+        query = query.filter_by(store_id=store_id) if store_id is not None else query.filter_by(store_id=None)
+        settings = query.first()
         if not settings:
             settings = SiteSettings(
+                store_id=store_id,
                 hero_subtitle="Магазин, який ви налаштовуєте з адмінки за 1 годину.",
                 about_title="Про компанію",
                 about_text="Тут ви зможете розповісти про свій бренд, команду та цінності.",
@@ -119,9 +123,10 @@ class ContactMessage(db.Model):
     """Повідомлення з форми контактів."""
     __tablename__ = "contact_messages"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     name = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(50), nullable=True)

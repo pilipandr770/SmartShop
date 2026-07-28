@@ -30,3 +30,13 @@ python .\app.py
 
 - сайт: http://127.0.0.1:5000/
 - адмінка: http://127.0.0.1:5000/admin/login
+
+## Запуск через Docker (додаток + PostgreSQL)
+
+```bash
+cp .env.docker.example .env.docker
+# відредагуйте .env.docker під себе
+docker compose up -d --build
+```
+
+Деталі, міграції, перенесення даних з Render — див. [DOCKER.md](DOCKER.md).

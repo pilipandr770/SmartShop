@@ -2,10 +2,10 @@
 SEO Service: Sitemap generation, meta tags, structured data
 """
 from datetime import datetime
-from flask import url_for, request
+from flask import url_for, request, g
 from extensions import db
 from models.product import Product, Category
-from models.blog import BlogPost
+from models.blog import BlogPost, BlogPostStatus
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
@@ -43,14 +43,16 @@ class SEOService:
         for path, priority, changefreq in static_pages:
             SEOService._add_url(urlset, f"{base_url}{path}", priority=priority, changefreq=changefreq)
         
+        store_id = getattr(g.get("store"), "id", None)
+
         # Categories
-        categories = Category.query.filter_by(is_active=True).all()
+        categories = Category.query.filter_by(is_active=True, store_id=store_id).all()
         for category in categories:
             url = f"{base_url}/category/{category.slug}"
             SEOService._add_url(urlset, url, priority='0.8', changefreq='weekly')
-        
+
         # Products
-        products = Product.query.filter_by(is_active=True).all()
+        products = Product.query.filter_by(is_active=True, store_id=store_id).all()
         for product in products:
             url = f"{base_url}/product/{product.id}"
             lastmod = product.updated_at or product.created_at
@@ -63,7 +65,7 @@ class SEOService:
             )
         
         # Blog posts
-        posts = BlogPost.query.filter_by(is_published=True).all()
+        posts = BlogPost.get_published(store_id=store_id)
         for post in posts:
             url = f"{base_url}/blog/{post.slug}"
             SEOService._add_url(
@@ -73,19 +75,20 @@ class SEOService:
                 lastmod=post.updated_at or post.created_at,
                 image_url=post.featured_image
             )
-        
+
         return SEOService._prettify_xml(urlset)
-    
+
     @staticmethod
     def generate_products_sitemap():
         """Generate dedicated sitemap for products only."""
         urlset = ET.Element('urlset')
         urlset.set('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9')
         urlset.set('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1')
-        
+
         base_url = request.url_root.rstrip('/')
-        products = Product.query.filter_by(is_active=True).all()
-        
+        store_id = getattr(g.get("store"), "id", None)
+        products = Product.query.filter_by(is_active=True, store_id=store_id).all()
+
         for product in products:
             url = f"{base_url}/product/{product.id}"
             lastmod = product.updated_at or product.created_at
@@ -107,8 +110,9 @@ class SEOService:
         urlset.set('xmlns:image', 'http://www.google.com/schemas/sitemap-image/1.1')
         
         base_url = request.url_root.rstrip('/')
-        posts = BlogPost.query.filter_by(is_published=True).all()
-        
+        store_id = getattr(g.get("store"), "id", None)
+        posts = BlogPost.get_published(store_id=store_id)
+
         for post in posts:
             url = f"{base_url}/blog/{post.slug}"
             SEOService._add_url(

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Створити магазин - SmartShop AI{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>🚀 Створіть свій магазин</h1>
+            <p>Каталог, ІІ-продавець і SEO-блог за кілька хвилин</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="store_name">Назва магазину *</label>
+                <input type="text" id="store_name" name="store_name" required
+                       placeholder="Мій магазин" value="{{ form.get('store_name', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="slug">Адреса магазину (subdomain) *</label>
+                <input type="text" id="slug" name="slug"
+                       placeholder="my-shop (my-shop.smartshop.example)" value="{{ form.get('slug', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="owner_name">Ваше ім'я</label>
+                <input type="text" id="owner_name" name="owner_name"
+                       placeholder="Іван Петренко" value="{{ form.get('owner_name', '') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required
+                       placeholder="your@email.com" value="{{ form.get('email', '') }}">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Пароль *</label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="Мін. 8 символів">
+                </div>
+
+                <div class="form-group">
+                    <label for="password_confirm">Підтвердження *</label>
+                    <input type="password" id="password_confirm" name="password_confirm" required
+                           placeholder="Повторіть пароль">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Тарифний план *</label>
+                <div class="plan-choices">
+                    {% for plan in plans %}
+                    <label class="plan-choice">
+                        <input type="radio" name="plan" value="{{ plan }}" {% if loop.first %}checked{% endif %}>
+                        <span>{{ plan|capitalize }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                Створити магазин
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Вже є магазин? <a href="{{ url_for('user_login') }}">Увійти</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+.auth-container { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.auth-card { background: var(--card-bg, #1e293b); border-radius: 1rem; padding: 2.5rem; width: 100%; max-width: 480px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid rgba(148, 163, 184, 0.1); }
+.auth-header { text-align: center; margin-bottom: 2rem; }
+.auth-header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; color: var(--text-primary, #f1f5f9); }
+.auth-header p { color: var(--text-secondary, #94a3b8); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.auth-form .form-group { margin-bottom: 1.25rem; }
+.auth-form label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary, #f1f5f9); }
+.auth-form input[type="text"], .auth-form input[type="email"], .auth-form input[type="password"] {
+    width: 100%; padding: 0.875rem 1rem; border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.8); color: var(--text-primary, #f1f5f9); font-size: 1rem; transition: all 0.2s;
+}
+.auth-form input:focus { outline: none; border-color: var(--primary-color, #10b981); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+.plan-choices { display: flex; gap: 0.75rem; }
+.plan-choice { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 0.5rem; cursor: pointer; color: var(--text-primary, #f1f5f9); }
+.plan-choice input { accent-color: #10b981; }
+.btn-block { width: 100%; padding: 1rem; font-size: 1rem; }
+.btn-primary { background: linear-gradient(135deg, #10b981, #14b8a6); border: none; color: #022c22; font-weight: 600;
+    border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+.auth-footer { margin-top: 2rem; text-align: center; }
+.auth-footer p { color: var(--text-secondary, #94a3b8); }
+.auth-footer a { color: var(--primary-color, #10b981); text-decoration: none; }
+.auth-footer a:hover { text-decoration: underline; }
+.alert { padding: 0.875rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem; }
+.alert-danger { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+.alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7; }
+.alert-warning { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fcd34d; }
+@media (max-width: 480px) { .form-row, .plan-choices { grid-template-columns: 1fr; flex-direction: column; } }
+</style>
+{% endblock %}

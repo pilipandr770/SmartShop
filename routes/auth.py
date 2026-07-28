@@ -2,7 +2,7 @@
 Маршрути авторизації: login, logout, register (B2C та B2B)
 """
 from datetime import datetime
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, g
 from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db
 from models.user import User, UserRole
@@ -101,6 +101,7 @@ def register():
             first_name=first_name or None,
             last_name=last_name or None,
             phone=phone or None,
+            store_id=g.store.id,
         )
         
         login_user(user)
@@ -118,7 +119,7 @@ def register_b2b():
     
     # Перевіряємо чи відкрита B2B реєстрація
     from models.settings import SiteSettings
-    settings = SiteSettings.get_or_create()
+    settings = SiteSettings.get_or_create(g.store.id)
     if not settings.b2b_registration_open:
         flash("B2B реєстрація тимчасово закрита.", "warning")
         return redirect(url_for("auth.login"))
@@ -197,6 +198,7 @@ def register_b2b():
         
         # Створення компанії
         company = Company(
+            store_id=g.store.id,
             name=company_name,
             legal_name=legal_name or company_name,
             vat_number=vat_number or None,
@@ -245,6 +247,7 @@ def register_b2b():
             last_name=last_name,
             phone=phone or None,
             company_id=company.id,
+            store_id=g.store.id,
             is_verified=vat_verified,  # Якщо VAT підтверджено - верифікуємо і юзера
         )
         user.set_password(password)

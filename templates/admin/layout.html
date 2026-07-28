@@ -306,6 +306,12 @@
             <a href="{{ url_for('admin_warehouse_reports') }}" class="nav-link{% if request.endpoint == 'admin_warehouse_reports' %} active{% endif %}">
                 <span class="nav-icon">📈</span> Звіти
             </a>
+            <a href="{{ url_for('admin_shipping_settings') }}" class="nav-link{% if request.endpoint in ['admin_shipping_settings', 'admin_shipping_account_new', 'admin_shipping_account_edit'] %} active{% endif %}">
+                <span class="nav-icon">🚚</span> Доставка
+            </a>
+            <a href="{{ url_for('admin_accounting') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin_accounting') %} active{% endif %}">
+                <span class="nav-icon">🧾</span> Бухгалтерія
+            </a>
         </div>
 
         <div class="nav-section">

@@ -1,7 +1,7 @@
 """
 Маршрути особистого кабінету (B2C та B2B)
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, g
 from flask_login import login_required, current_user
 from extensions import db
 from models.order import Order, OrderStatus
@@ -22,14 +22,14 @@ def dashboard():
 @login_required
 def b2c_dashboard():
     """Dashboard для B2C клієнта."""
-    # Останні замовлення
-    recent_orders = Order.query.filter_by(user_id=current_user.id)\
+    # Останні замовлення (тільки в межах поточного магазину)
+    recent_orders = Order.query.filter_by(user_id=current_user.id, store_id=g.store.id)\
         .order_by(Order.created_at.desc())\
         .limit(5)\
         .all()
-    
+
     # Статистика
-    total_orders = Order.query.filter_by(user_id=current_user.id).count()
+    total_orders = Order.query.filter_by(user_id=current_user.id, store_id=g.store.id).count()
     
     return render_template(
         "cabinet/b2c/dashboard.html",
@@ -45,27 +45,33 @@ def b2b_dashboard():
     if not current_user.is_b2b:
         flash("Доступ лише для B2B партнерів.", "warning")
         return redirect(url_for("cabinet.b2c_dashboard"))
-    
+
     company = current_user.company
-    
+
+    # Компанія зареєстрована як B2B-партнер конкретного магазину - на іншому
+    # піддомені кабінет не показуємо (немає доступу до чужого store).
+    if company.store_id and company.store_id != g.store.id:
+        flash("Цей кабінет недоступний на цьому магазині.", "warning")
+        return redirect(url_for("index"))
+
     # Перевірка статусу компанії
     if not company.is_verified:
         return render_template(
             "cabinet/b2b/pending.html",
             company=company,
         )
-    
+
     # Останні замовлення компанії
-    recent_orders = Order.query.filter_by(company_id=company.id)\
+    recent_orders = Order.query.filter_by(company_id=company.id, store_id=g.store.id)\
         .order_by(Order.created_at.desc())\
         .limit(10)\
         .all()
-    
+
     # Статистика
-    total_orders = Order.query.filter_by(company_id=company.id).count()
-    paid_orders = Order.query.filter_by(company_id=company.id, status=OrderStatus.PAID.value).count()
+    total_orders = Order.query.filter_by(company_id=company.id, store_id=g.store.id).count()
+    paid_orders = Order.query.filter_by(company_id=company.id, status=OrderStatus.PAID.value, store_id=g.store.id).count()
     total_spent = db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))\
-        .filter(Order.company_id == company.id, Order.status == OrderStatus.PAID.value)\
+        .filter(Order.company_id == company.id, Order.status == OrderStatus.PAID.value, Order.store_id == g.store.id)\
         .scalar()
     
     return render_template(
@@ -86,9 +92,9 @@ def orders():
     per_page = 20
     
     if current_user.is_b2b and current_user.company_id:
-        query = Order.query.filter_by(company_id=current_user.company_id)
+        query = Order.query.filter_by(company_id=current_user.company_id, store_id=g.store.id)
     else:
-        query = Order.query.filter_by(user_id=current_user.id)
+        query = Order.query.filter_by(user_id=current_user.id, store_id=g.store.id)
     
     pagination = query.order_by(Order.created_at.desc())\
         .paginate(page=page, per_page=per_page, error_out=False)
@@ -104,9 +110,9 @@ def orders():
 def order_detail(order_id):
     """Деталі замовлення."""
     if current_user.is_b2b and current_user.company_id:
-        order = Order.query.filter_by(id=order_id, company_id=current_user.company_id).first_or_404()
+        order = Order.query.filter_by(id=order_id, company_id=current_user.company_id, store_id=g.store.id).first_or_404()
     else:
-        order = Order.query.filter_by(id=order_id, user_id=current_user.id).first_or_404()
+        order = Order.query.filter_by(id=order_id, user_id=current_user.id, store_id=g.store.id).first_or_404()
     
     template = "cabinet/b2b/order_detail.html" if current_user.is_b2b else "cabinet/b2c/order_detail.html"
     return render_template(template, order=order)

@@ -32,8 +32,9 @@ class Order(db.Model):
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     order_number = db.Column(db.String(50), unique=True, nullable=True)  # SM-2025-0001
-    
+
     # Користувач (може бути NULL для гостей)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     company_id = db.Column(db.Integer, db.ForeignKey("companies.id"), nullable=True)
@@ -129,6 +130,7 @@ class OrderItem(db.Model):
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=True)
     

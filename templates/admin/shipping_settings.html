@@ -1,0 +1,69 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Доставка - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🚚 Служби доставки</h1>
+    <p class="page-subtitle">DHL/UPS - тарифи в checkout і автоматичні лейбли</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>Налаштовані акаунти</h3>
+    </div>
+    {% if accounts %}
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Служба</th>
+                <th>Режим</th>
+                <th>Статус</th>
+                <th>Місто відправлення</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in accounts %}
+            <tr>
+                <td>{{ account.carrier_label }}</td>
+                <td>{% if account.is_sandbox %}🧪 Sandbox{% if account.is_test_mode %} (тестовий провайдер, без мережі){% endif %}{% else %}🟢 Production{% endif %}</td>
+                <td>{% if account.is_enabled %}✅ Увімкнено{% else %}⏸️ Вимкнено{% endif %}</td>
+                <td>{{ account.origin_city or '—' }}</td>
+                <td>
+                    <a href="{{ url_for('admin_shipping_account_edit', id=account.id) }}" class="btn btn-outline">✏️ Редагувати</a>
+                    <form method="POST" action="{{ url_for('admin_shipping_account_delete', id=account.id) }}" style="display:inline;"
+                          onsubmit="return confirm('Видалити цей обліковий запис?');">
+                        <button type="submit" class="btn btn-outline" style="color:#ef4444;border-color:#ef4444;">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="padding: 1rem; color: var(--text-muted);">Жодної служби доставки ще не налаштовано. Checkout працює без вибору доставки (як і раніше).</p>
+    {% endif %}
+</div>
+
+{% if available_carriers %}
+<div class="card">
+    <div class="card-header">
+        <h3>➕ Додати службу доставки</h3>
+    </div>
+    <div style="padding: 1rem; display:flex; gap: 1rem;">
+        {% for carrier in available_carriers %}
+        <a href="{{ url_for('admin_shipping_account_new', carrier=carrier) }}" class="btn">
+            + {{ carrier_labels.get(carrier, carrier) }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

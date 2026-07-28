@@ -9,6 +9,7 @@
 """
 
 import os
+import sys
 import logging
 from logging.handlers import RotatingFileHandler
 from pythonjsonlogger import jsonlogger
@@ -41,7 +42,8 @@ def setup_logging(app):
         file_handler = RotatingFileHandler(
             os.path.join(log_dir, 'smartshop.log'),
             maxBytes=10 * 1024 * 1024,  # 10MB
-            backupCount=10
+            backupCount=10,
+            encoding='utf-8'
         )
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(json_formatter)
@@ -51,7 +53,8 @@ def setup_logging(app):
         error_handler = RotatingFileHandler(
             os.path.join(log_dir, 'errors.log'),
             maxBytes=10 * 1024 * 1024,
-            backupCount=10
+            backupCount=10,
+            encoding='utf-8'
         )
         error_handler.setLevel(logging.ERROR)
         error_handler.setFormatter(json_formatter)
@@ -63,8 +66,9 @@ def setup_logging(app):
             '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
         )
         
-        # Console handler
-        console_handler = logging.StreamHandler()
+        # Console handler (stdout: reliably reconfigured to UTF-8 at app.py startup,
+        # unlike the default stderr which some Windows shells leave on the ANSI codepage)
+        console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(logging.DEBUG)
         console_handler.setFormatter(formatter)
         app.logger.addHandler(console_handler)
@@ -73,7 +77,8 @@ def setup_logging(app):
         file_handler = RotatingFileHandler(
             os.path.join(log_dir, 'dev.log'),
             maxBytes=5 * 1024 * 1024,
-            backupCount=3
+            backupCount=3,
+            encoding='utf-8'
         )
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(formatter)

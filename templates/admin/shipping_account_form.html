@@ -1,0 +1,87 @@
+{% extends 'admin/layout.html' %}
+{% block title %}{{ carrier_label }} - Доставка - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ '✏️ Редагувати' if account else '➕ Додати' }} {{ carrier_label }}</h1>
+    <p class="page-subtitle">
+        Немає реальних ключів? Вкажіть <code>test</code> в усіх полях креденшелів і увімкніть Sandbox -
+        checkout буде показувати синтетичні тарифи без звернення до мережі.
+    </p>
+</div>
+
+<div class="card">
+    <form method="post" class="form-grid">
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_sandbox" {% if not account or account.is_sandbox %}checked{% endif %}>
+                Sandbox / тестовий режим
+            </label>
+        </div>
+        {% if account %}
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="is_enabled" {% if account.is_enabled %}checked{% endif %}>
+                Увімкнено (показувати тарифи в checkout)
+            </label>
+        </div>
+        {% endif %}
+
+        <h3 style="margin-top:1rem;">Креденшели API</h3>
+        {% if carrier == 'dhl' %}
+        <div class="form-group">
+            <label>API Key</label>
+            <input type="text" name="api_key" value="{{ account.credentials.get('api_key','') if account else '' }}" placeholder="test">
+        </div>
+        <div class="form-group">
+            <label>API Secret</label>
+            <input type="text" name="api_secret" value="{{ account.credentials.get('api_secret','') if account else '' }}" placeholder="test">
+        </div>
+        {% else %}
+        <div class="form-group">
+            <label>Client ID</label>
+            <input type="text" name="client_id" value="{{ account.credentials.get('client_id','') if account else '' }}" placeholder="test">
+        </div>
+        <div class="form-group">
+            <label>Client Secret</label>
+            <input type="text" name="client_secret" value="{{ account.credentials.get('client_secret','') if account else '' }}" placeholder="test">
+        </div>
+        {% endif %}
+        <div class="form-group">
+            <label>Номер акаунту перевізника</label>
+            <input type="text" name="account_number" value="{{ account.credentials.get('account_number','') if account else '' }}">
+        </div>
+
+        <h3 style="margin-top:1rem;">Адреса відправлення (звідки їдуть посилки)</h3>
+        <div class="form-group">
+            <label>Назва відправника / компанія</label>
+            <input type="text" name="origin_name" value="{{ account.origin_name or '' if account else '' }}">
+        </div>
+        <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" name="origin_phone" value="{{ account.origin_phone or '' if account else '' }}">
+        </div>
+        <div class="form-group">
+            <label>Вулиця, будинок</label>
+            <input type="text" name="origin_street" value="{{ account.origin_street or '' if account else '' }}">
+        </div>
+        <div class="form-group">
+            <label>Місто</label>
+            <input type="text" name="origin_city" value="{{ account.origin_city or '' if account else '' }}">
+        </div>
+        <div class="form-group">
+            <label>Поштовий індекс</label>
+            <input type="text" name="origin_postal_code" value="{{ account.origin_postal_code or '' if account else '' }}">
+        </div>
+        <div class="form-group">
+            <label>Країна (ISO2)</label>
+            <input type="text" name="origin_country_code" maxlength="2" style="text-transform:uppercase;"
+                   value="{{ account.origin_country_code or '' if account else '' }}">
+        </div>
+
+        <div style="margin-top:1.5rem;">
+            <button type="submit" class="btn">💾 Зберегти</button>
+            <a href="{{ url_for('admin_shipping_settings') }}" class="btn btn-outline">Скасувати</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

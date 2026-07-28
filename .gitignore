@@ -6,6 +6,7 @@
 .env
 .env.local
 .env.production
+.env.docker
 .env.*.local
 *.pem
 *.key
@@ -44,7 +45,7 @@ env/
 *.sqlite
 *.sqlite3
 instance/
-migrations/
+# migrations/ is intentionally tracked (Flask-Migrate/Alembic version history)
 
 # ===== IDE & EDITORS =====
 .idea/

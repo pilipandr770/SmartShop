@@ -43,9 +43,10 @@ class WarehouseTask(db.Model):
     """Завдання для складу (на відправку посилки)."""
     __tablename__ = "warehouse_tasks"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Зв'язок з замовленням
     order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
     
@@ -76,6 +77,7 @@ class WarehouseTask(db.Model):
     # Трекінг
     tracking_number = db.Column(db.String(100), nullable=True)
     carrier = db.Column(db.String(50), nullable=True)  # nova_poshta, ukrposhta, etc.
+    label_url = db.Column(db.String(1000), nullable=True)  # посилання на лейбл (DHL/UPS API)
     
     # Вага та розміри
     weight_kg = db.Column(db.Float, nullable=True)
@@ -171,14 +173,15 @@ class WarehouseTask(db.Model):
     
     @staticmethod
     def create_from_order(order_id, priority=3, notes=None):
-        """Створює завдання для замовлення."""
+        """Створює завдання для замовлення. store_id береться із самого замовлення."""
         from models.order import Order
-        
+
         order = Order.query.get(order_id)
         if not order:
             raise ValueError(f"Order #{order_id} not found")
-        
+
         task = WarehouseTask(
+            store_id=order.store_id,
             order_id=order_id,
             priority=priority,
             notes=notes,
@@ -201,9 +204,10 @@ class StockMovement(db.Model):
     """Рух товарів на складі."""
     __tablename__ = "stock_movements"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Товар
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     
@@ -235,22 +239,31 @@ class StockMovement(db.Model):
         return f"<StockMovement {self.movement_type} {self.quantity} for Product #{self.product_id}>"
     
     @staticmethod
-    def record_movement(product_id, quantity, movement_type, reason=None, reference_id=None, notes=None, performed_by=None):
-        """Записує рух товару."""
+    def record_movement(product_id, quantity, movement_type, reason=None, reference_id=None,
+                         notes=None, performed_by=None, store_id=None):
+        """
+        Записує рух товару. store_id на новому записі береться з товару.
+        Якщо store_id переданий явно - товар шукається ТІЛЬКИ в межах цього
+        магазину (захист від зміни залишків чужого товару за підібраним ID).
+        """
         from models.product import Product
-        product = Product.query.get(product_id)
+        if store_id is not None:
+            product = Product.query.filter_by(id=product_id, store_id=store_id).first()
+        else:
+            product = Product.query.get(product_id)
         if not product:
             raise ValueError(f"Product #{product_id} not found")
-        
+
         # Оновлюємо залишок
         new_stock = product.stock + quantity
         if new_stock < 0:
             raise ValueError(f"Недостатньо товару на складі. Залишок: {product.stock}, потрібно: {abs(quantity)}")
-        
+
         product.stock = new_stock
-        
+
         # Записуємо рух
         movement = StockMovement(
+            store_id=product.store_id,
             product_id=product_id,
             movement_type=movement_type,
             quantity=quantity,
@@ -269,9 +282,10 @@ class ReplenishmentOrder(db.Model):
     """Замовлення на поповнення складу."""
     __tablename__ = "replenishment_orders"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Номер замовлення
     order_number = db.Column(db.String(50), unique=True, nullable=True)  # REP-2025-0001
     
@@ -352,6 +366,7 @@ class ReplenishmentOrder(db.Model):
                 reason="replenishment",
                 reference_id=self.id,
                 notes=f"Поповнення #{self.order_number}",
+                store_id=self.store_id,
             )
         
         db.session.commit()
@@ -361,9 +376,10 @@ class ReplenishmentItem(db.Model):
     """Позиція замовлення на поповнення."""
     __tablename__ = "replenishment_items"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     replenishment_id = db.Column(db.Integer, db.ForeignKey("replenishment_orders.id"), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     
@@ -393,9 +409,10 @@ class WarehouseExpense(db.Model):
     """Витрати складу."""
     __tablename__ = "warehouse_expenses"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Категорія
     category = db.Column(db.String(50), nullable=False, default=ExpenseCategory.OTHER.value)
     
@@ -444,9 +461,10 @@ class LowStockAlert(db.Model):
     """Алерти про низький залишок товарів."""
     __tablename__ = "low_stock_alerts"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     
     # Залишок на момент алерту
@@ -470,33 +488,37 @@ class LowStockAlert(db.Model):
         return f"<LowStockAlert Product #{self.product_id}: {self.current_stock}/{self.min_stock}>"
     
     @staticmethod
-    def check_and_create_alerts():
-        """Перевіряє всі товари та створює алерти для низьких залишків."""
+    def check_and_create_alerts(store_id=None):
+        """Перевіряє товари (в межах магазину, якщо задано) та створює алерти для низьких залишків."""
         from models.product import Product
-        
+
         alerts_created = 0
-        products = Product.query.filter(
+        query = Product.query.filter(
             Product.stock <= Product.min_stock,
             Product.min_stock > 0,
             Product.is_active == True
-        ).all()
-        
+        )
+        if store_id is not None:
+            query = query.filter(Product.store_id == store_id)
+        products = query.all()
+
         for product in products:
             # Перевіряємо чи немає активного алерту
             existing = LowStockAlert.query.filter_by(
                 product_id=product.id,
                 is_resolved=False
             ).first()
-            
+
             if not existing:
                 alert = LowStockAlert(
+                    store_id=product.store_id,
                     product_id=product.id,
                     current_stock=product.stock,
                     min_stock=product.min_stock,
                 )
                 db.session.add(alert)
                 alerts_created += 1
-        
+
         db.session.commit()
         return alerts_created
     

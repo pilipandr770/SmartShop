@@ -41,9 +41,10 @@ class Company(db.Model):
     """Модель компанії для B2B партнерів."""
     __tablename__ = "companies"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
+
     # Основна інформація
     name = db.Column(db.String(255), nullable=False)  # Назва компанії
     legal_name = db.Column(db.String(255), nullable=True)  # Юридична назва
@@ -159,8 +160,9 @@ class VerificationLog(db.Model):
     """Логи верифікації компаній."""
     __tablename__ = "verification_logs"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     company_id = db.Column(db.Integer, db.ForeignKey("companies.id"), nullable=False)
     
     # Тип перевірки
@@ -189,11 +191,15 @@ class VerificationLog(db.Model):
         return f"<VerificationLog {self.check_type} for Company #{self.company_id}>"
     
     @staticmethod
-    def log_check(company_id, check_type, status, is_valid=None, 
+    def log_check(company_id, check_type, status, is_valid=None,
                   request_data=None, response_data=None, error_message=None,
-                  changes_detected=False, changes_description=None):
-        """Створює запис логу."""
+                  changes_detected=False, changes_description=None, store_id=None):
+        """Створює запис логу. store_id за замовчуванням береться з компанії."""
+        if store_id is None:
+            company = Company.query.get(company_id)
+            store_id = company.store_id if company else None
         log = VerificationLog(
+            store_id=store_id,
             company_id=company_id,
             check_type=check_type,
             status=status,
@@ -213,8 +219,9 @@ class AdminAlert(db.Model):
     """Алерти для адміністраторів в CRM."""
     __tablename__ = "admin_alerts"
     __table_args__ = {'extend_existing': True}
-    
+
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     company_id = db.Column(db.Integer, db.ForeignKey("companies.id"), nullable=True)
     
     # Тип алерту
@@ -251,10 +258,15 @@ class AdminAlert(db.Model):
         message: str = None,
         company_id: int = None,
         severity: str = "info",
-        data: dict = None
+        data: dict = None,
+        store_id: int = None,
     ):
-        """Створює новий алерт."""
+        """Створює новий алерт. store_id за замовчуванням береться з компанії."""
+        if store_id is None and company_id is not None:
+            company = Company.query.get(company_id)
+            store_id = company.store_id if company else None
         alert = AdminAlert(
+            store_id=store_id,
             alert_type=alert_type,
             title=title,
             message=message,
@@ -265,19 +277,25 @@ class AdminAlert(db.Model):
         db.session.add(alert)
         db.session.commit()
         return alert
-    
+
     @staticmethod
-    def get_unread_count():
-        """Повертає кількість непрочитаних алертів."""
-        return AdminAlert.query.filter_by(is_read=False).count()
-    
+    def get_unread_count(store_id=None):
+        """Повертає кількість непрочитаних алертів (в межах магазину, якщо задано)."""
+        query = AdminAlert.query.filter_by(is_read=False)
+        if store_id is not None:
+            query = query.filter_by(store_id=store_id)
+        return query.count()
+
     @staticmethod
-    def get_critical_unresolved():
-        """Повертає критичні невирішені алерти."""
-        return AdminAlert.query.filter_by(
+    def get_critical_unresolved(store_id=None):
+        """Повертає критичні невирішені алерти (в межах магазину, якщо задано)."""
+        query = AdminAlert.query.filter_by(
             severity=AlertSeverity.CRITICAL.value,
             is_resolved=False
-        ).order_by(AdminAlert.created_at.desc()).all()
+        )
+        if store_id is not None:
+            query = query.filter_by(store_id=store_id)
+        return query.order_by(AdminAlert.created_at.desc()).all()
     
     def mark_read(self):
         """Позначає алерт як прочитаний."""

@@ -50,6 +50,10 @@
                     <label for="stock">Кількість на складі</label>
                     <input type="number" id="stock" name="stock" value="{{ product.stock or 0 }}" min="0">
                 </div>
+                <div class="form-group">
+                    <label for="weight_kg">Вага (кг) - для розрахунку тарифів доставки</label>
+                    <input type="number" id="weight_kg" name="weight_kg" value="{{ product.weight_kg or '' }}" step="0.01" min="0" placeholder="1.0">
+                </div>
             </div>
         </div>
     </div>

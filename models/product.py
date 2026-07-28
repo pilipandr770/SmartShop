@@ -13,6 +13,7 @@ class Image(db.Model):
     __table_args__ = {'extend_existing': True}
     
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     filename = db.Column(db.String(255), unique=True, nullable=False)
     data = db.Column(db.LargeBinary, nullable=False)  # Binary image data
     mime_type = db.Column(db.String(50), nullable=False)  # image/jpeg, image/png, etc.
@@ -34,11 +35,15 @@ class Image(db.Model):
 class Category(db.Model):
     """Категорія товарів."""
     __tablename__ = "categories"
-    __table_args__ = {'extend_existing': True}
+    __table_args__ = (
+        db.UniqueConstraint('store_id', 'slug', name='uq_categories_store_slug'),
+        {'extend_existing': True},
+    )
     
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     name = db.Column(db.String(120), nullable=False)
-    slug = db.Column(db.String(120), unique=True, nullable=False)
+    slug = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=True)
     image_url = db.Column(db.String(500), nullable=True)
     is_active = db.Column(db.Boolean, default=True)
@@ -78,11 +83,15 @@ class Category(db.Model):
 class Product(db.Model):
     """Товар."""
     __tablename__ = "products"
-    __table_args__ = {'extend_existing': True}
-    
+    __table_args__ = (
+        db.UniqueConstraint('store_id', 'sku', name='uq_products_store_sku'),
+        {'extend_existing': True},
+    )
+
     id = db.Column(db.Integer, primary_key=True)
+    store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     name = db.Column(db.String(200), nullable=False)
-    sku = db.Column(db.String(64), nullable=True, unique=True)
+    sku = db.Column(db.String(64), nullable=True)
     
     # Ціни
     price = db.Column(db.Float, nullable=False, default=0.0)
@@ -114,6 +123,9 @@ class Product(db.Model):
     # Медіа
     image_url = db.Column(db.String(500), nullable=True)
     gallery = db.Column(db.JSON, nullable=True)  # Список URL додаткових фото
+
+    # Доставка
+    weight_kg = db.Column(db.Float, nullable=True)  # для розрахунку тарифів перевізника
     
     # Зв'язки
     category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=True)
