@@ -406,6 +406,13 @@ def create_app():
         g.store, g.is_platform_root = resolve_current_store()
         if g.store is None and not request.path.startswith(STORE_OPTIONAL_PATH_PREFIXES):
             abort(404, description="Магазин не знайдено. Можливо, платформа ще не налаштована — почніть з /signup.")
+        if (
+            g.store is not None
+            and not g.store.is_active
+            and not g.is_platform_root
+            and not request.path.startswith(("/platform-admin", "/static"))
+        ):
+            abort(503, description="Цей магазин тимчасово заблоковано адміністрацією платформи.")
 
     # ----- СЛУЖБОВІ ФУНКЦІЇ -----
 
@@ -1084,10 +1091,12 @@ def create_app():
     from routes.auth import auth_bp
     from routes.cabinet import cabinet_bp
     from routes.signup import signup_bp
+    from routes.platform_admin import platform_admin_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(cabinet_bp)
     app.register_blueprint(signup_bp)
+    app.register_blueprint(platform_admin_bp)
 
     # ----- ПЕРЕКЛЮЧЕННЯ МОВИ -----
 
@@ -3057,10 +3066,12 @@ def create_app():
     def user_login():
         """Сторінка входу для користувачів."""
         if current_user.is_authenticated:
+            if current_user.is_platform_owner:
+                return redirect(url_for("platform_admin.dashboard"))
             if current_user.is_b2b:
                 return redirect(url_for("b2b_dashboard"))
             return redirect(url_for("user_cabinet"))
-        
+
         if request.method == "POST":
             email = request.form.get("email", "").strip().lower()
             password = request.form.get("password", "")
@@ -3083,11 +3094,13 @@ def create_app():
                 if next_page:
                     return redirect(next_page)
                 
-                if user.is_admin or user.is_manager:
+                if user.is_platform_owner:
+                    return redirect(url_for("platform_admin.dashboard"))
+                elif user.is_admin or user.is_manager:
                     return redirect(url_for("admin_dashboard"))
                 elif user.is_b2b:
                     return redirect(url_for("b2b_dashboard"))
-                
+
                 return redirect(url_for("user_cabinet"))
             
             flash("Невірний email або пароль.", "danger")

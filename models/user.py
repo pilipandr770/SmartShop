@@ -15,6 +15,7 @@ class UserRole(str, Enum):
     MANAGER = "manager"            # Менеджер магазину (staff)
     ADMIN = "admin"                # Адміністратор (legacy, один магазин)
     STORE_OWNER = "store_owner"    # Власник магазину (SaaS-орендар)
+    PLATFORM_OWNER = "platform_owner"  # Оператор SaaS-платформи (усі магазини)
 
 
 class User(UserMixin, db.Model):
@@ -80,6 +81,11 @@ class User(UserMixin, db.Model):
     def is_store_owner(self):
         """Чи є власником магазину (SaaS-орендар)."""
         return self.role == UserRole.STORE_OWNER.value
+
+    @property
+    def is_platform_owner(self):
+        """Чи є оператором усієї SaaS-платформи (бачить усі магазини)."""
+        return self.role == UserRole.PLATFORM_OWNER.value
 
     @property
     def is_manager(self):

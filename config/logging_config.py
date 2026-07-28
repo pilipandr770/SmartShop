@@ -251,11 +251,23 @@ def log_exceptions(app):
         from flask import request
         from werkzeug.exceptions import HTTPException
         
-        # Не логуємо та не обробляємо 404 і 403 помилки (занадто багато шуму)
-        # Просто повертаємо стандартну відповідь Flask
-        if isinstance(e, HTTPException) and e.code in (404, 403):
+        # Будь-який навмисний abort() (HTTPException) має повертати свій
+        # справжній код і повідомлення, а не перетворюватися на generic 500 -
+        # раніше тут робився `raise e`, але повторний підйом винятку з
+        # errorhandler-а Flask сприймає як "помилку під час обробки помилки"
+        # і віддає 500 незалежно від початкового коду. 404/403 додатково не
+        # логуємо (занадто багато шуму), решту - логуємо, але з правильним кодом.
+        if isinstance(e, HTTPException):
+            if e.code not in (404, 403):
+                app.logger.warning('HTTP exception', extra={
+                    'exception_type': type(e).__name__,
+                    'status_code': e.code,
+                    'method': request.method,
+                    'path': request.path,
+                    'remote_addr': request.remote_addr
+                })
             return e.get_response()
-        
+
         app.logger.error('Unhandled exception', extra={
             'exception_type': type(e).__name__,
             'exception_message': str(e),
@@ -263,6 +275,6 @@ def log_exceptions(app):
             'path': request.path,
             'remote_addr': request.remote_addr
         }, exc_info=True)
-        
+
         # Пропускаємо далі для стандартної обробки Flask
         raise e

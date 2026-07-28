@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Панель платформи – SmartShop AI</title>
+    <style>
+        :root {
+            --bg-main: #050816;
+            --bg-card: #0b1020;
+            --accent: #10b981;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-soft: rgba(148, 163, 184, 0.25);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+        a { color: inherit; }
+        .wrap { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        h1 { font-size: 1.5rem; margin: 0; }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 0.9rem;
+            padding: 1.1rem 1.25rem;
+        }
+        .stat-card .label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .stat-card .value { font-size: 1.6rem; font-weight: 700; margin-top: 0.3rem; }
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 0.9rem; overflow: hidden; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border-soft); font-size: 0.88rem; }
+        th { color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        tr:last-child td { border-bottom: none; }
+        .badge { padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-active { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+        .badge-trialing { background: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+        .badge-past_due { background: rgba(251, 191, 36, 0.15); color: #fde68a; }
+        .badge-canceled { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+        .badge-inactive { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+        .btn {
+            padding: 0.35rem 0.8rem; border-radius: 999px; border: 1px solid var(--border-soft);
+            background: transparent; color: var(--text-main); font-size: 0.78rem; cursor: pointer;
+        }
+        .flash { margin-bottom: 1rem; padding: 0.6rem 1rem; border-radius: 0.6rem; font-size: 0.9rem; }
+        .flash-success { background: rgba(16,185,129,0.12); color: #6ee7b7; }
+        .flash-danger { background: rgba(239,68,68,0.12); color: #fca5a5; }
+        .table-wrap { overflow-x: auto; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <h1>🛠️ Панель платформи</h1>
+        <a href="{{ url_for('index') }}" class="btn">← На сайт</a>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="label">Магазинів усього</div>
+            <div class="value">{{ stores|length }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Активні підписки</div>
+            <div class="value">{{ active_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Trial</div>
+            <div class="value">{{ trialing_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Прострочені</div>
+            <div class="value">{{ past_due_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Скасовані</div>
+            <div class="value">{{ canceled_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Користувачів усього</div>
+            <div class="value">{{ total_users }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Оцінка MRR</div>
+            <div class="value">~{{ mrr_estimate }}€</div>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Магазин</th>
+                <th>Slug</th>
+                <th>Власник</th>
+                <th>План</th>
+                <th>Підписка</th>
+                <th>Статус</th>
+                <th>Створено</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for store in stores %}
+            <tr>
+                <td>{{ store.name }}</td>
+                <td>{{ store.slug }}</td>
+                <td>{{ store.owner.email if store.owner else '—' }}</td>
+                <td>{{ store.plan }}</td>
+                <td><span class="badge badge-{{ store.subscription_status }}">{{ store.subscription_status }}</span></td>
+                <td>
+                    {% if store.is_active %}
+                        <span class="badge badge-active">увімкнено</span>
+                    {% else %}
+                        <span class="badge badge-inactive">заблоковано</span>
+                    {% endif %}
+                </td>
+                <td>{{ store.created_at.strftime("%Y-%m-%d") if store.created_at else '—' }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('platform_admin.toggle_store_active', store_id=store.id) }}"
+                          onsubmit="return confirm('{{ 'Заблокувати' if store.is_active else 'Розблокувати' }} магазин «{{ store.name }}»?');">
+                        <button type="submit" class="btn">{{ '⛔ Заблокувати' if store.is_active else '✅ Розблокувати' }}</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Магазинів ще немає.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+</body>
+</html>
