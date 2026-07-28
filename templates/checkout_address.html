@@ -42,8 +42,8 @@
                     <input type="text" name="name" required value="{{ form.get('name', '') }}">
                 </div>
                 <div class="form-group">
-                    <label>{{ _('Телефон') }}</label>
-                    <input type="tel" name="phone" value="{{ form.get('phone', '') }}">
+                    <label>{{ _('Телефон') }} *</label>
+                    <input type="tel" name="phone" required value="{{ form.get('phone', '') }}">
                 </div>
             </div>
 
@@ -52,25 +52,29 @@
                 <input type="email" name="email" value="{{ form.get('email', '') }}">
             </div>
 
+            <p style="color:var(--text-muted); font-size:0.85rem; margin: 0.5rem 0 1rem;">
+                {{ _('Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, її можна не заповнювати.') }}
+            </p>
+
             <div class="form-group">
-                <label>{{ _('Вулиця, будинок') }} *</label>
-                <input type="text" name="street" required value="{{ form.get('street', '') }}">
+                <label>{{ _('Вулиця, будинок') }}</label>
+                <input type="text" name="street" value="{{ form.get('street', '') }}">
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>{{ _('Місто') }} *</label>
-                    <input type="text" name="city" required value="{{ form.get('city', '') }}">
+                    <label>{{ _('Місто') }}</label>
+                    <input type="text" name="city" value="{{ form.get('city', '') }}">
                 </div>
                 <div class="form-group">
-                    <label>{{ _('Поштовий індекс') }} *</label>
-                    <input type="text" name="postal_code" required value="{{ form.get('postal_code', '') }}">
+                    <label>{{ _('Поштовий індекс') }}</label>
+                    <input type="text" name="postal_code" value="{{ form.get('postal_code', '') }}">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>{{ _('Країна (код ISO2, напр. DE, UA, PL)') }} *</label>
-                <input type="text" name="country_code" required maxlength="2" style="text-transform:uppercase;"
+                <label>{{ _('Країна (код ISO2, напр. DE, UA, PL)') }}</label>
+                <input type="text" name="country_code" maxlength="2" style="text-transform:uppercase;"
                        value="{{ form.get('country_code', '') }}">
             </div>
 

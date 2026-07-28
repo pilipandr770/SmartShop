@@ -305,6 +305,10 @@ class AISettings(db.Model):
     # Автоматична публікація
     auto_publish = db.Column(db.Boolean, default=False)
     publish_time = db.Column(db.String(5), default="10:00")  # HH:MM
+
+    # Автоматична генерація постів з плану за розкладом (без ручного натискання
+    # адміном) - окремий opt-in, оскільки викликає OpenAI і коштує грошей.
+    blogger_auto_generate = db.Column(db.Boolean, default=False)
     
     # Генерація зображень
     generate_images = db.Column(db.Boolean, default=True)

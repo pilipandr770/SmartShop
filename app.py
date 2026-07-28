@@ -372,7 +372,13 @@ def create_app():
 
     def resolve_current_store():
         """Визначає поточний Store за піддоменом запиту (або дефолтний, якщо
-        піддомену немає/BASE_DOMAIN не налаштований)."""
+        піддомену немає/BASE_DOMAIN не налаштований).
+
+        Повертає (store, is_platform_root): is_platform_root=True означає,
+        що запит прийшов БЕЗ розпізнаного піддомену конкретного магазину
+        (голий домен платформи, або поки BASE_DOMAIN/wildcard DNS ще не
+        налаштовано) - в такому разі "/" має показувати маркетинговий
+        лендинг платформи, а не вітрину дефолтного магазину."""
         host = (request.host or "").split(":")[0].lower()
         subdomain = None
 
@@ -387,16 +393,17 @@ def create_app():
         if subdomain and subdomain not in RESERVED_SUBDOMAINS:
             store = Store.get_by_slug(subdomain)
 
+        is_platform_root = store is None
         if store is None:
             # Немає piддомену (або магазин не знайдено) - дефолтний магазин
             # (Store #1, тобто той, що існував до впровадження multi-tenancy).
             store = Store.query.order_by(Store.id.asc()).first()
 
-        return store
+        return store, is_platform_root
 
     @app.before_request
     def load_current_store():
-        g.store = resolve_current_store()
+        g.store, g.is_platform_root = resolve_current_store()
         if g.store is None and not request.path.startswith(STORE_OPTIONAL_PATH_PREFIXES):
             abort(404, description="Магазин не знайдено. Можливо, платформа ще не налаштована — почніть з /signup.")
 
@@ -1096,6 +1103,9 @@ def create_app():
 
     @app.route("/")
     def index():
+        if g.is_platform_root:
+            return render_template("pages/landing.html")
+
         settings = SiteSettings.get_or_create(g.store.id)
         products = Product.query.filter_by(is_active=True, store_id=g.store.id).limit(8).all()
         categories = Category.query.filter_by(store_id=g.store.id).all()
@@ -1142,6 +1152,24 @@ def create_app():
         """Сторінка Контакти."""
         settings = SiteSettings.get_or_create(g.store.id)
         return render_template("pages/contacts.html", settings=settings)
+
+    @app.route("/datenschutz")
+    def datenschutz_page():
+        """Політика конфіденційності (Datenschutzerklärung)."""
+        settings = SiteSettings.get_or_create(g.store.id)
+        return render_template("pages/datenschutz.html", settings=settings)
+
+    @app.route("/agb")
+    def agb_page():
+        """Умови використання (Allgemeine Geschäftsbedingungen)."""
+        settings = SiteSettings.get_or_create(g.store.id)
+        return render_template("pages/agb.html", settings=settings)
+
+    @app.route("/impressum")
+    def impressum_page():
+        """Юридичні реквізити власника магазину (Impressum, §5 TMG)."""
+        settings = SiteSettings.get_or_create(g.store.id)
+        return render_template("pages/impressum.html", settings=settings)
 
     @app.route("/ai-assistant")
     def ai_assistant_page():
@@ -1299,14 +1327,14 @@ def create_app():
                 })
 
         from services.shipping.registry import get_enabled_providers
-        has_shipping_carriers = bool(get_enabled_providers(g.store.id))
+        has_shipping_options = bool(get_enabled_providers(g.store.id)) or settings.pickup_enabled
 
         return render_template(
             "cart.html",
             settings=settings,
             items=items,
             total=total,
-            has_shipping_carriers=has_shipping_carriers,
+            has_shipping_carriers=has_shipping_options,
         )
 
     @app.route("/cart/add/<int:product_id>", methods=["POST"])
@@ -1405,9 +1433,11 @@ def create_app():
                 "postal_code": request.form.get("postal_code", "").strip(),
                 "country_code": request.form.get("country_code", "").strip().upper(),
             }
-            missing = [k for k in ("name", "street", "city", "postal_code", "country_code") if not address[k]]
+            # Адреса потрібна лише для доставки перевізником - для самовивозу
+            # обов'язкові тільки контактні дані, тому тут вимагаємо мінімум.
+            missing = [k for k in ("name", "phone") if not address[k]]
             if missing:
-                flash("Заповніть усі обов'язкові поля адреси.", "danger")
+                flash("Вкажіть ім'я та телефон.", "danger")
                 return render_template("checkout_address.html", settings=settings, form=address)
 
             session["checkout_address"] = address
@@ -1431,11 +1461,13 @@ def create_app():
             return redirect(url_for("checkout_address"))
 
         if request.method == "POST":
+            carrier = request.form.get("carrier", "")
             session["checkout_shipping"] = {
-                "carrier": request.form.get("carrier", ""),
+                "carrier": carrier,
                 "service_code": request.form.get("service_code", ""),
                 "name": request.form.get("name", ""),
                 "price": request.form.get("price", 0.0, type=float),
+                "is_pickup": carrier == "pickup",
             }
             return redirect(url_for("checkout"))
 
@@ -1444,6 +1476,17 @@ def create_app():
         weight_kg = _cart_weight_kg()
 
         options = []
+        if settings.pickup_enabled:
+            options.append({
+                "carrier": "pickup",
+                "carrier_label": "🏬 Самовивіз",
+                "service_code": "",
+                "name": settings.pickup_address or "Самовивіз з магазину",
+                "price": 0.0,
+                "currency": settings.default_currency or "EUR",
+                "eta_days": None,
+            })
+
         for account, provider in providers:
             try:
                 rates = provider.get_rates(Address.from_dict(account.origin_address), destination, weight_kg)
@@ -1475,7 +1518,7 @@ def create_app():
 
     # ----- STRIPE CHECKOUT -----
 
-    @app.route("/checkout", methods=["POST"])
+    @app.route("/checkout", methods=["GET", "POST"])
     def checkout():
         """Створити Stripe Checkout сесію."""
         if not STRIPE_AVAILABLE or not app.config["STRIPE_SECRET_KEY"]:
@@ -1546,6 +1589,7 @@ def create_app():
                 currency="EUR",
                 shipping_cost=shipping_price,
                 shipping_method=checkout_shipping["name"] if checkout_shipping else None,
+                is_pickup=bool(checkout_shipping and checkout_shipping.get("is_pickup")),
                 shipping_address=checkout_address["street"] if checkout_address else None,
                 shipping_city=checkout_address["city"] if checkout_address else None,
                 shipping_postal_code=checkout_address["postal_code"] if checkout_address else None,
@@ -1555,6 +1599,7 @@ def create_app():
             )
             db.session.add(order)
             db.session.flush()  # Отримуємо ID
+            order.order_number = f"{'B2B' if order.is_b2b else 'SM'}-{datetime.utcnow().year}-{order.id:05d}"
 
             # Додаємо товари до замовлення
             for item_data in order_items_data:
@@ -1786,9 +1831,57 @@ def create_app():
 
     # ----- AI CHAT -----
 
+    CHAT_TOOLS = [
+        {
+            "type": "function",
+            "function": {
+                "name": "lookup_order_status",
+                "description": (
+                    "Перевірити статус замовлення клієнта за номером замовлення та email. "
+                    "Використовуй ЛИШЕ якщо клієнт явно запитує про статус свого замовлення "
+                    "і вже назвав ОБИДВА значення - номер замовлення і email. Якщо чогось "
+                    "не вистачає - спочатку ввічливо запитай це у клієнта звичайним текстом, "
+                    "не викликай цю функцію з порожніми полями."
+                ),
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "order_number": {"type": "string", "description": "Номер замовлення, напр. SM-2025-0001"},
+                        "email": {"type": "string", "description": "Email клієнта, вказаний при оформленні замовлення"},
+                    },
+                    "required": ["order_number", "email"],
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "escalate_to_human",
+                "description": (
+                    "Передати розмову менеджеру-людині - коли клієнт явно просить оператора/людину, "
+                    "скаржиться, або коли ти не можеш допомогти. Перед викликом ввічливо запитай "
+                    "ім'я та email або телефон клієнта для зворотного зв'язку, якщо він їх ще не назвав."
+                ),
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "reason": {"type": "string", "description": "Коротко: чому потрібна ескалація і що просить клієнт"},
+                        "contact_name": {"type": "string", "description": "Ім'я клієнта, якщо назвав"},
+                        "contact_email": {"type": "string", "description": "Email клієнта, якщо назвав"},
+                        "contact_phone": {"type": "string", "description": "Телефон клієнта, якщо назвав"},
+                    },
+                    "required": ["reason"],
+                },
+            },
+        },
+    ]
+    CHAT_HISTORY_TURNS = 6  # зберігаємо останні N пар (user+assistant) у сесії
+
     @app.route("/api/chat", methods=["POST"])
     def api_chat():
         """API для чату з ІІ-продавцем."""
+        import json as json_module
+
         openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
             error_msg = "AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше."
@@ -1804,17 +1897,17 @@ def create_app():
         # Отримуємо налаштування AI
         try:
             ai_settings = AISettings.get_or_create(g.store.id)
-            
+
             if not ai_settings.chatbot_enabled:
                 return jsonify({"error": "Чатбот тимчасово недоступний"}), 503
         except Exception as e:
             print(f"❌ Error getting AI settings: {e}")
             return jsonify({"error": "Помилка налаштувань чатбота"}), 500
-        
-        # Отримуємо налаштування сайту та каталог
+
+        # Отримуємо налаштування сайту та каталог (лише поточного магазину!)
         settings = SiteSettings.get_or_create(g.store.id)
-        products = Product.query.filter_by(is_active=True).all()
-        categories = Category.query.all()
+        products = Product.query.filter_by(is_active=True, store_id=g.store.id).all()
+        categories = Category.query.filter_by(store_id=g.store.id).all()
 
         # Формуємо контекст каталогу
         catalog_info = "Каталог товарів:\n"
@@ -1830,7 +1923,7 @@ def create_app():
                 else:
                     catalog_info += " [Немає в наявності]"
                 catalog_info += "\n"
-        
+
         # Товари без категорії
         no_cat_products = [p for p in products if not p.category_id]
         if no_cat_products:
@@ -1840,7 +1933,7 @@ def create_app():
 
         # Формуємо системний промпт з кастомними інструкціями
         system_prompt = ai_settings.get_full_chatbot_prompt(catalog_info)
-        
+
         # Додаємо базові правила якщо немає в налаштуваннях
         if not ai_settings.chatbot_system_prompt:
             system_prompt = f"""Ти — {ai_settings.chatbot_name or 'ІІ-продавець'} цього магазину.
@@ -1857,19 +1950,100 @@ def create_app():
 {ai_settings.chatbot_custom_instructions or ''}
 """
 
+        system_prompt += (
+            "\n\nЯкщо клієнт запитує про статус свого замовлення - використай функцію "
+            "lookup_order_status (потрібні номер замовлення і email). Якщо клієнт просить "
+            "оператора/людину або ти не можеш допомогти - використай функцію escalate_to_human."
+        )
+
+        def _execute_chat_tool(tool_name, arguments_json):
+            try:
+                args = json_module.loads(arguments_json or "{}")
+            except json_module.JSONDecodeError:
+                args = {}
+
+            if tool_name == "lookup_order_status":
+                order_number = (args.get("order_number") or "").strip()
+                email = (args.get("email") or "").strip().lower()
+                if not order_number or not email:
+                    return {"found": False, "error": "missing_order_number_or_email"}
+                order = Order.query.filter_by(store_id=g.store.id, order_number=order_number).first()
+                if not order or (order.customer_email or "").strip().lower() != email:
+                    return {"found": False}
+                return {
+                    "found": True,
+                    "status": order.status_display,
+                    "is_pickup": bool(order.is_pickup),
+                    "tracking_number": order.tracking_number or None,
+                    "shipping_method": order.shipping_method or None,
+                    "paid_at": order.paid_at.strftime("%Y-%m-%d %H:%M") if order.paid_at else None,
+                    "shipped_at": order.shipped_at.strftime("%Y-%m-%d %H:%M") if order.shipped_at else None,
+                }
+
+            if tool_name == "escalate_to_human":
+                reason = (args.get("reason") or "Клієнт потребує допомоги людини").strip()
+                contact = ContactMessage(
+                    store_id=g.store.id,
+                    name=(args.get("contact_name") or "Клієнт з ІІ-чату").strip() or "Клієнт з ІІ-чату",
+                    email=(args.get("contact_email") or "no-email@chat.smartshop.local").strip(),
+                    phone=(args.get("contact_phone") or None),
+                    subject="🤖 Ескалація з ІІ-чату",
+                    message=f"{reason}\n\nОстаннє повідомлення клієнта: {user_message}",
+                )
+                db.session.add(contact)
+                db.session.commit()
+                return {"escalated": True}
+
+            return {"error": "unknown_tool"}
+
+        history = session.get("chat_history", [])
+        messages = [{"role": "system", "content": system_prompt}] + history + [{"role": "user", "content": user_message}]
+
         try:
-            response = openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_message},
-                ],
-                max_tokens=ai_settings.chatbot_max_tokens or 500,
-                temperature=ai_settings.chatbot_temperature or 0.7,
-            )
-            
-            ai_message = response.choices[0].message.content
-            print(f"✅ Chat API success: User message length={len(user_message)}, AI response length={len(ai_message)}")
+            ai_message = None
+            for _ in range(3):  # обмежуємо кількість раундів виклику інструментів
+                response = openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=messages,
+                    tools=CHAT_TOOLS,
+                    tool_choice="auto",
+                    max_tokens=ai_settings.chatbot_max_tokens or 500,
+                    temperature=ai_settings.chatbot_temperature or 0.7,
+                )
+                choice_message = response.choices[0].message
+
+                if not choice_message.tool_calls:
+                    ai_message = choice_message.content
+                    break
+
+                messages.append({
+                    "role": "assistant",
+                    "content": choice_message.content or "",
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {"name": tc.function.name, "arguments": tc.function.arguments},
+                        }
+                        for tc in choice_message.tool_calls
+                    ],
+                })
+                for tc in choice_message.tool_calls:
+                    tool_result = _execute_chat_tool(tc.function.name, tc.function.arguments)
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": json_module.dumps(tool_result, ensure_ascii=False),
+                    })
+            else:
+                ai_message = "Вибачте, не вдалося обробити запит. Спробуйте, будь ласка, ще раз."
+
+            # Оновлюємо історію діалогу в сесії (лише user/assistant репліки, без system/tool)
+            history.append({"role": "user", "content": user_message})
+            history.append({"role": "assistant", "content": ai_message or ""})
+            session["chat_history"] = history[-(CHAT_HISTORY_TURNS * 2):]
+
+            print(f"✅ Chat API success: User message length={len(user_message)}, AI response length={len(ai_message or '')}")
             return jsonify({"message": ai_message})
 
         except AttributeError as e:
@@ -1881,6 +2055,12 @@ def create_app():
             error_msg = "Помилка обробки запиту"
             print(f"❌ Chat API error (Exception): {type(e).__name__}: {e}")
             return jsonify({"error": error_msg}), 500
+
+    @app.route("/api/chat/reset", methods=["POST"])
+    def api_chat_reset():
+        """Скидає історію діалогу з ІІ-продавцем у поточній сесії."""
+        session.pop("chat_history", None)
+        return jsonify({"success": True})
 
     @app.context_processor
     def cart_context():
@@ -2701,6 +2881,11 @@ def create_app():
             settings.admin_company_phone = request.form.get("admin_company_phone") or None
             settings.admin_company_website = request.form.get("admin_company_website") or None
 
+            # Юридичні тексти (Datenschutz/AGB) - порожнє поле повертає сторінку
+            # до загального шаблонного тексту (не перезаписує його порожнечею).
+            settings.privacy_policy_text = request.form.get("privacy_policy_text") or None
+            settings.terms_text = request.form.get("terms_text") or None
+
             db.session.commit()
             flash("Налаштування сайту збережено.", "success")
             return redirect(url_for("admin_settings"))
@@ -2709,16 +2894,27 @@ def create_app():
 
     # ----- АДМІНКА: НАЛАШТУВАННЯ ДОСТАВКИ (DHL/UPS) -----
 
-    @app.route("/admin/settings/shipping")
+    @app.route("/admin/settings/shipping", methods=["GET", "POST"])
     @admin_required
     def admin_shipping_settings():
-        """Список налаштованих служб доставки магазину."""
+        """Список налаштованих служб доставки магазину + самовивіз."""
         from models.shipping import CarrierAccount, Carrier
+        settings = SiteSettings.get_or_create(g.store.id)
+
+        if request.method == "POST":
+            settings.pickup_enabled = request.form.get("pickup_enabled") == "on"
+            settings.pickup_address = request.form.get("pickup_address", "").strip() or None
+            settings.pickup_instructions = request.form.get("pickup_instructions", "").strip() or None
+            db.session.commit()
+            flash("Налаштування самовивозу збережено.", "success")
+            return redirect(url_for("admin_shipping_settings"))
+
         accounts = CarrierAccount.query.filter_by(store_id=g.store.id).all()
         configured_carriers = {a.carrier for a in accounts}
         available_carriers = [c for c in Carrier.CHOICES if c not in configured_carriers]
         return render_template(
             "admin/shipping_settings.html",
+            settings=settings,
             accounts=accounts,
             available_carriers=available_carriers,
             carrier_labels=Carrier.LABELS,
@@ -3813,9 +4009,53 @@ def create_app():
                 flash("💾 Нотатки збережено", "success")
             
             return redirect(url_for("admin_warehouse_task", id=id))
-        
+
         return render_template("admin/warehouse/task_detail.html", task=task)
-    
+
+    @app.route("/admin/warehouse/task/<int:id>/print")
+    @admin_required
+    def admin_warehouse_task_print(id):
+        """
+        Пакувальний лист / відгрузочна наклейка для друку через діалог
+        браузера (Ctrl+P) - працює для БУДЬ-ЯКОГО завдання складу, незалежно
+        від того, чи підключена служба доставки (DHL/UPS) чи трек-номер
+        внесено вручну.
+        """
+        from models.warehouse import WarehouseTask
+        from models.shipping import CarrierAccount
+
+        task = WarehouseTask.query.filter_by(id=id, store_id=g.store.id).first_or_404()
+        settings = SiteSettings.get_or_create(g.store.id)
+        order = task.order
+
+        # Адреса відправника: якщо для перевізника завдання є CarrierAccount
+        # з заповненою адресою - беремо звідти, інакше контакти магазину.
+        sender = None
+        if task.carrier:
+            account = CarrierAccount.query.filter(
+                CarrierAccount.store_id == g.store.id,
+                db.func.lower(CarrierAccount.carrier) == task.carrier.lower(),
+            ).first()
+            if account and account.origin_street:
+                sender = account.origin_address
+        if not sender:
+            sender = {
+                "name": settings.site_name or "",
+                "phone": settings.contact_phone or "",
+                "street": settings.contact_address or "",
+                "city": "",
+                "postal_code": "",
+                "country_code": "",
+            }
+
+        return render_template(
+            "admin/warehouse/print_label.html",
+            task=task,
+            order=order,
+            settings=settings,
+            sender=sender,
+        )
+
     @app.route("/admin/warehouse/stock")
     @admin_required
     def admin_warehouse_stock():
@@ -4493,6 +4733,7 @@ def create_app():
             
             ai_settings.auto_publish = request.form.get("auto_publish") == "on"
             ai_settings.publish_time = request.form.get("publish_time", "10:00")
+            ai_settings.blogger_auto_generate = request.form.get("blogger_auto_generate") == "on"
             
             # Генерація зображень
             ai_settings.generate_images = request.form.get("generate_images") == "on"
@@ -4835,42 +5076,46 @@ def create_app():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     
-    @app.route("/api/blog/generate-from-plan/<int:plan_id>", methods=["POST"])
-    @admin_required
-    def api_blog_generate_from_plan(plan_id):
-        """Генерація статті з плану."""
+    def _generate_post_from_plan(plan):
+        """
+        Генерує BlogPost з BlogPlan через OpenAI (текст + SEO meta + опційно
+        зображення й автопереклад). Винесено з api_blog_generate_from_plan,
+        щоб бути викликаною і з адмін-роута (клік адміна), і з фонового
+        планувальника (services нижче) - працює виключно з plan.store_id,
+        без залежності від g.store/request, тож придатна для виклику поза
+        HTTP-запитом.
+        """
         openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
-            return jsonify({"error": "AI не налаштовано"}), 400
-        
-        plan = BlogPlan.query.filter_by(id=plan_id, store_id=g.store.id).first_or_404()
-        
+            raise RuntimeError("AI не налаштовано")
+
+        store_id = plan.store_id
+
         # Якщо план вже має пост - видаляємо старе зображення при перегенерації
         old_post = None
         if plan.blog_post_id:
             old_post = BlogPost.query.get(plan.blog_post_id)
             if old_post and old_post.featured_image:
                 app.logger.info(f"🔄 Regenerating post, will delete old image: {old_post.featured_image}")
-        
+
         if plan.status != "pending":
-            return jsonify({"error": "План вже оброблено"}), 400
-        
-        ai_settings = AISettings.get_or_create(g.store.id)
-        
-        try:
-            # Формуємо промпт
-            topic = plan.topic
-            keywords = plan.keywords or ""
-            
-            if plan.additional_instructions:
-                keywords += f"\n\nДодаткові інструкції: {plan.additional_instructions}"
-            
-            prompt = ai_settings.get_blogger_prompt(topic, keywords)
-            
-            response = openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": f"""Ти - досвідчений контент-райтер та SEO-спеціаліст.
+            raise ValueError("План вже оброблено")
+
+        ai_settings = AISettings.get_or_create(store_id)
+
+        # Формуємо промпт
+        topic = plan.topic
+        keywords = plan.keywords or ""
+
+        if plan.additional_instructions:
+            keywords += f"\n\nДодаткові інструкції: {plan.additional_instructions}"
+
+        prompt = ai_settings.get_blogger_prompt(topic, keywords)
+
+        response = openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": f"""Ти - досвідчений контент-райтер та SEO-спеціаліст.
 Пиши мовою: {ai_settings.blogger_language}
 Стиль: {ai_settings.blogger_style}
 Обсяг: {ai_settings.blogger_min_words}-{ai_settings.blogger_max_words} слів
@@ -4884,220 +5129,232 @@ def create_app():
   "meta_description": "Meta description до 160 символів",
   "tags": "тег1, тег2, тег3"
 }}"""},
-                    {"role": "user", "content": prompt},
-                ],
-                max_tokens=2000,
-                temperature=0.7,
-            )
-            
-            content = response.choices[0].message.content
-            
-            # Парсимо JSON
-            import json
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=2000,
+            temperature=0.7,
+        )
+
+        content = response.choices[0].message.content
+
+        # Парсимо JSON
+        import json
+        try:
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0]
+            elif "```" in content:
+                content = content.split("```")[1].split("```")[0]
+
+            result = json.loads(content.strip())
+        except json.JSONDecodeError:
+            result = {
+                "title": topic,
+                "content": content,
+                "excerpt": content[:200] if content else "",
+            }
+
+        # Генеруємо зображення для статті через DALL-E (якщо увімкнено)
+        featured_image_url = None
+        if ai_settings.generate_images:
             try:
-                if "```json" in content:
-                    content = content.split("```json")[1].split("```")[0]
-                elif "```" in content:
-                    content = content.split("```")[1].split("```")[0]
-                
-                result = json.loads(content.strip())
-            except json.JSONDecodeError:
-                result = {
-                    "title": topic,
-                    "content": content,
-                    "excerpt": content[:200] if content else "",
-                }
-            
-            # Генеруємо зображення для статті через DALL-E (якщо увімкнено)
-            featured_image_url = None
-            if ai_settings.generate_images:
-                try:
-                    # Отримуємо стиль зображення з налаштувань
-                    image_style = ai_settings.image_style or "professional photography, realistic, high quality"
-                    
-                    # Створюємо промпт для генерації зображення на основі статті
-                    image_prompt_response = openai_client.chat.completions.create(
-                        model="gpt-3.5-turbo",
-                        messages=[
-                            {"role": "system", "content": f"""Ти - експерт з створення промптів для генерації зображень.
+                # Отримуємо стиль зображення з налаштувань
+                image_style = ai_settings.image_style or "professional photography, realistic, high quality"
+
+                # Створюємо промпт для генерації зображення на основі статті
+                image_prompt_response = openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": f"""Ти - експерт з створення промптів для генерації зображень.
 Створи короткий промпт (до 200 символів) англійською мовою для DALL-E, щоб згенерувати реалістичне фото для статті блогу.
 Промпт має описувати:
 - Головний об'єкт/сцену що відповідає темі
 - Стиль: {image_style}
 - Світло та композицію
 Відповідай ТІЛЬКИ промптом, без додаткового тексту."""},
-                            {"role": "user", "content": f"Тема статті: {result.get('title', topic)}\n\nКороткий опис: {result.get('excerpt', '')[:200]}"},
-                        ],
-                        max_tokens=100,
-                        temperature=0.7,
-                    )
-                    
-                    image_prompt = image_prompt_response.choices[0].message.content.strip()
-                    print(f"🎨 Генерую зображення: {image_prompt[:80]}...")
-                    
-                    # Генеруємо зображення через DALL-E
-                    image_response = openai_client.images.generate(
-                        model="dall-e-3",
-                        prompt=image_prompt,
-                        size="1792x1024",
-                        quality="standard",
-                        n=1,
-                    )
-                    
-                    # Завантажуємо зображення та зберігаємо в базі даних
-                    image_url = image_response.data[0].url
-                    
-                    import requests as req
-                    img_response = req.get(image_url, timeout=30)
-                    if img_response.status_code == 200:
-                        from models.product import Image
-                        
-                        # Створюємо унікальне ім'я файлу
-                        image_filename = f"blog_{uuid.uuid4().hex}.png"
-                        
-                        if app.config["IMAGE_STORAGE"] == "database":
-                            # Зберігаємо в базу даних PostgreSQL (ПОСТІЙНЕ ЗБЕРІГАННЯ)
-                            image_data = img_response.content
-                            
-                            # Перевіряємо чи не існує таке зображення
-                            existing_image = Image.query.filter_by(filename=image_filename).first()
-                            if not existing_image:
-                                new_image = Image(
-                                    store_id=g.store.id,
-                                    filename=image_filename,
-                                    data=image_data,
-                                    mime_type='image/png',
-                                    size=len(image_data)
-                                )
-                                db.session.add(new_image)
-                                db.session.commit()
-                                print(f"💾 Зображення збережено в БД: {image_filename} ({len(image_data)} bytes)")
-                            
-                            featured_image_url = f"/images/{image_filename}"
-                        else:
-                            # Зберігаємо локально (ВТРАТИТЬСЯ ПРИ РЕДЕПЛОЇ!)
-                            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
-                            
-                            with open(image_path, 'wb') as f:
-                                f.write(img_response.content)
-                            
-                            featured_image_url = f"/static/uploads/{image_filename}"
-                        
-                        print(f"✅ Зображення збережено: {featured_image_url}")
-                        
-                except Exception as img_error:
-                    # Логуємо помилку, але продовжуємо без зображення
-                    print(f"⚠️ Помилка генерації зображення: {img_error}")
-            
-            # Створюємо пост
-            slug = BlogPost.generate_slug(result.get("title", topic))
-            existing = BlogPost.get_by_slug(slug, store_id=g.store.id)
-            if existing:
-                slug = f"{slug}-{uuid.uuid4().hex[:6]}"
-            
-            # Визначаємо дату публікації
-            publish_datetime = datetime.combine(plan.plan_date, datetime.strptime(ai_settings.publish_time, "%H:%M").time())
-            
-            # Визначаємо статус: якщо auto_publish і час настав - публікуємо одразу
-            if ai_settings.auto_publish:
-                if publish_datetime <= datetime.utcnow():
-                    post_status = BlogPostStatus.PUBLISHED
-                else:
-                    post_status = BlogPostStatus.SCHEDULED
+                        {"role": "user", "content": f"Тема статті: {result.get('title', topic)}\n\nКороткий опис: {result.get('excerpt', '')[:200]}"},
+                    ],
+                    max_tokens=100,
+                    temperature=0.7,
+                )
+
+                image_prompt = image_prompt_response.choices[0].message.content.strip()
+                print(f"🎨 Генерую зображення: {image_prompt[:80]}...")
+
+                # Генеруємо зображення через DALL-E
+                image_response = openai_client.images.generate(
+                    model="dall-e-3",
+                    prompt=image_prompt,
+                    size="1792x1024",
+                    quality="standard",
+                    n=1,
+                )
+
+                # Завантажуємо зображення та зберігаємо в базі даних
+                image_url = image_response.data[0].url
+
+                import requests as req
+                img_response = req.get(image_url, timeout=30)
+                if img_response.status_code == 200:
+                    from models.product import Image
+
+                    # Створюємо унікальне ім'я файлу
+                    image_filename = f"blog_{uuid.uuid4().hex}.png"
+
+                    if app.config["IMAGE_STORAGE"] == "database":
+                        # Зберігаємо в базу даних PostgreSQL (ПОСТІЙНЕ ЗБЕРІГАННЯ)
+                        image_data = img_response.content
+
+                        # Перевіряємо чи не існує таке зображення
+                        existing_image = Image.query.filter_by(filename=image_filename).first()
+                        if not existing_image:
+                            new_image = Image(
+                                store_id=store_id,
+                                filename=image_filename,
+                                data=image_data,
+                                mime_type='image/png',
+                                size=len(image_data)
+                            )
+                            db.session.add(new_image)
+                            db.session.commit()
+                            print(f"💾 Зображення збережено в БД: {image_filename} ({len(image_data)} bytes)")
+
+                        featured_image_url = f"/images/{image_filename}"
+                    else:
+                        # Зберігаємо локально (ВТРАТИТЬСЯ ПРИ РЕДЕПЛОЇ!)
+                        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+
+                        with open(image_path, 'wb') as f:
+                            f.write(img_response.content)
+
+                        featured_image_url = f"/static/uploads/{image_filename}"
+
+                    print(f"✅ Зображення збережено: {featured_image_url}")
+
+            except Exception as img_error:
+                # Логуємо помилку, але продовжуємо без зображення
+                print(f"⚠️ Помилка генерації зображення: {img_error}")
+
+        # Створюємо пост
+        slug = BlogPost.generate_slug(result.get("title", topic))
+        existing = BlogPost.get_by_slug(slug, store_id=store_id)
+        if existing:
+            slug = f"{slug}-{uuid.uuid4().hex[:6]}"
+
+        # Визначаємо дату публікації
+        publish_datetime = datetime.combine(plan.plan_date, datetime.strptime(ai_settings.publish_time, "%H:%M").time())
+
+        # Визначаємо статус: якщо auto_publish і час настав - публікуємо одразу
+        if ai_settings.auto_publish:
+            if publish_datetime <= datetime.utcnow():
+                post_status = BlogPostStatus.PUBLISHED
             else:
-                post_status = BlogPostStatus.DRAFT
-            
-            post = BlogPost(
-                store_id=g.store.id,
-                title=result.get("title", topic),
-                slug=slug,
-                excerpt=result.get("excerpt", ""),
-                content=result.get("content", ""),
-                featured_image=featured_image_url,
-                meta_title=result.get("meta_title", ""),
-                meta_description=result.get("meta_description", ""),
-                tags=result.get("tags", ""),
-                status=post_status,
-                publish_date=publish_datetime,
-                is_ai_generated=True,
-                ai_topic=topic,
-                blog_plan_id=plan.id,
-                author=ai_settings.blogger_name or "AI",
-            )
-            db.session.add(post)
-            
-            # Видаляємо старе зображення якщо це регенерація
-            if old_post and old_post.featured_image and featured_image_url:
-                delete_old_image(old_post.featured_image)
-            
-            # Оновлюємо план
-            plan.status = "generated"
-            plan.blog_post_id = post.id
-            
-            db.session.commit()
-            
-            # Автоматичний переклад якщо увімкнено
-            if ai_settings.auto_translate:
-                try:
-                    translate_languages = (ai_settings.auto_translate_languages or "en,de").split(",")
-                    for lang in translate_languages:
-                        lang = lang.strip()
-                        if lang not in ["en", "de"]:
-                            continue
-                        
-                        lang_name = "English" if lang == "en" else "German"
-                        
-                        # Перекладаємо заголовок
-                        title_resp = openai_client.chat.completions.create(
-                            model="gpt-3.5-turbo",
-                            messages=[
-                                {"role": "system", "content": f"Translate from Ukrainian to {lang_name}. Return ONLY translated text."},
-                                {"role": "user", "content": post.title},
-                            ],
-                            max_tokens=200,
-                            temperature=0.3,
-                        )
-                        
-                        # Перекладаємо excerpt
-                        excerpt_resp = openai_client.chat.completions.create(
-                            model="gpt-3.5-turbo",
-                            messages=[
-                                {"role": "system", "content": f"Translate from Ukrainian to {lang_name}. Return ONLY translated text."},
-                                {"role": "user", "content": post.excerpt or ""},
-                            ],
-                            max_tokens=300,
-                            temperature=0.3,
-                        )
-                        
-                        # Перекладаємо контент
-                        content_resp = openai_client.chat.completions.create(
-                            model="gpt-3.5-turbo",
-                            messages=[
-                                {"role": "system", "content": f"Translate this HTML content from Ukrainian to {lang_name}. Keep all HTML tags. Return ONLY translated HTML."},
-                                {"role": "user", "content": post.content or ""},
-                            ],
-                            max_tokens=3000,
-                            temperature=0.3,
-                        )
-                        
-                        if lang == "en":
-                            post.title_en = title_resp.choices[0].message.content.strip()
-                            post.excerpt_en = excerpt_resp.choices[0].message.content.strip()
-                            post.content_en = content_resp.choices[0].message.content.strip()
-                        elif lang == "de":
-                            post.title_de = title_resp.choices[0].message.content.strip()
-                            post.excerpt_de = excerpt_resp.choices[0].message.content.strip()
-                            post.content_de = content_resp.choices[0].message.content.strip()
-                    
-                    db.session.commit()
-                except Exception as translate_error:
-                    print(f"Auto-translate error: {translate_error}")
-            
+                post_status = BlogPostStatus.SCHEDULED
+        else:
+            post_status = BlogPostStatus.DRAFT
+
+        post = BlogPost(
+            store_id=store_id,
+            title=result.get("title", topic),
+            slug=slug,
+            excerpt=result.get("excerpt", ""),
+            content=result.get("content", ""),
+            featured_image=featured_image_url,
+            meta_title=result.get("meta_title", ""),
+            meta_description=result.get("meta_description", ""),
+            tags=result.get("tags", ""),
+            status=post_status,
+            publish_date=publish_datetime,
+            is_ai_generated=True,
+            ai_topic=topic,
+            blog_plan_id=plan.id,
+            author=ai_settings.blogger_name or "AI",
+        )
+        db.session.add(post)
+        db.session.flush()  # Отримуємо post.id перед прив'язкою до плану
+
+        # Видаляємо старе зображення якщо це регенерація
+        if old_post and old_post.featured_image and featured_image_url:
+            delete_old_image(old_post.featured_image)
+
+        # Оновлюємо план
+        plan.status = "generated"
+        plan.blog_post_id = post.id
+
+        db.session.commit()
+
+        # Автоматичний переклад якщо увімкнено
+        if ai_settings.auto_translate:
+            try:
+                translate_languages = (ai_settings.auto_translate_languages or "en,de").split(",")
+                for lang in translate_languages:
+                    lang = lang.strip()
+                    if lang not in ["en", "de"]:
+                        continue
+
+                    lang_name = "English" if lang == "en" else "German"
+
+                    # Перекладаємо заголовок
+                    title_resp = openai_client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": f"Translate from Ukrainian to {lang_name}. Return ONLY translated text."},
+                            {"role": "user", "content": post.title},
+                        ],
+                        max_tokens=200,
+                        temperature=0.3,
+                    )
+
+                    # Перекладаємо excerpt
+                    excerpt_resp = openai_client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": f"Translate from Ukrainian to {lang_name}. Return ONLY translated text."},
+                            {"role": "user", "content": post.excerpt or ""},
+                        ],
+                        max_tokens=300,
+                        temperature=0.3,
+                    )
+
+                    # Перекладаємо контент
+                    content_resp = openai_client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": f"Translate this HTML content from Ukrainian to {lang_name}. Keep all HTML tags. Return ONLY translated HTML."},
+                            {"role": "user", "content": post.content or ""},
+                        ],
+                        max_tokens=3000,
+                        temperature=0.3,
+                    )
+
+                    if lang == "en":
+                        post.title_en = title_resp.choices[0].message.content.strip()
+                        post.excerpt_en = excerpt_resp.choices[0].message.content.strip()
+                        post.content_en = content_resp.choices[0].message.content.strip()
+                    elif lang == "de":
+                        post.title_de = title_resp.choices[0].message.content.strip()
+                        post.excerpt_de = excerpt_resp.choices[0].message.content.strip()
+                        post.content_de = content_resp.choices[0].message.content.strip()
+
+                db.session.commit()
+            except Exception as translate_error:
+                print(f"Auto-translate error: {translate_error}")
+
+        return post
+
+    @app.route("/api/blog/generate-from-plan/<int:plan_id>", methods=["POST"])
+    @admin_required
+    def api_blog_generate_from_plan(plan_id):
+        """Генерація статті з плану (ручний запуск адміном)."""
+        plan = BlogPlan.query.filter_by(id=plan_id, store_id=g.store.id).first_or_404()
+        if plan.status != "pending":
+            return jsonify({"error": "План вже оброблено"}), 400
+        try:
+            post = _generate_post_from_plan(plan)
             return jsonify({"success": True, "post_id": post.id})
-        
         except Exception as e:
+            db.session.rollback()
             return jsonify({"error": str(e)}), 500
-    
+
     @app.route("/api/blog/generate-all-pending", methods=["POST"])
     @admin_required
     def api_blog_generate_all_pending():
@@ -5321,8 +5578,103 @@ def create_app():
             related=related,
         )
 
+    def _run_blog_automation():
+        """
+        Фонова робота блогера: генерує статті з BlogPlan, дата яких настала
+        (лише для магазинів з увімкненим AISettings.blogger_auto_generate),
+        і публікує BlogPost зі статусом SCHEDULED, час яких настав. Раніше
+        обидві дії робилися лише вручну через адмінку - тепер це реально
+        відбувається саме, без кліку адміна.
+        """
+        from datetime import date as date_cls
+
+        try:
+            due_plans = BlogPlan.get_pending_for_date(target_date=date_cls.today())
+            for plan in due_plans:
+                try:
+                    ai_settings = AISettings.get_or_create(plan.store_id)
+                    if not ai_settings.blogger_auto_generate:
+                        continue
+                    post = _generate_post_from_plan(plan)
+                    app.logger.info(f"🤖 Auto-generated blog post #{post.id} from plan #{plan.id} (store {plan.store_id})")
+                except Exception as e:
+                    db.session.rollback()
+                    app.logger.warning(f"Blog auto-generation failed for plan #{plan.id}: {e}")
+        except Exception as e:
+            app.logger.error(f"Blog automation (generate) job failed: {e}")
+
+        try:
+            due_posts = BlogPost.query.filter(
+                BlogPost.status == BlogPostStatus.SCHEDULED,
+                BlogPost.publish_date <= datetime.utcnow(),
+            ).all()
+            published_count = 0
+            for post in due_posts:
+                post.status = BlogPostStatus.PUBLISHED
+                published_count += 1
+            if published_count:
+                db.session.commit()
+                app.logger.info(f"📰 Auto-published {published_count} scheduled blog post(s)")
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Blog automation (auto-publish) job failed: {e}")
+
+    def _start_blog_scheduler():
+        """
+        Запускає фонове завдання блогера кожні 15 хв. Gunicorn піднімає
+        декілька worker-процесів - кожен запустив би свій BackgroundScheduler,
+        що призвело б до дублювання генерації/публікації. Тому кожен тік
+        спершу бере Postgres advisory lock: лише той worker, що встиг його
+        захопити, реально виконує роботу, інші миттєво виходять.
+        """
+        if DEMO_MODE or os.environ.get("DISABLE_SCHEDULER") == "1":
+            return
+        try:
+            from apscheduler.schedulers.background import BackgroundScheduler
+            import sqlalchemy as sa
+
+            LOCK_KEY = 928374651  # довільне, але стабільне число для цього job'а
+
+            def guarded_job():
+                with app.app_context():
+                    got_lock = True
+                    is_postgres = db.engine.url.get_backend_name().startswith("postgres")
+                    if is_postgres:
+                        try:
+                            got_lock = bool(db.session.execute(
+                                sa.text("SELECT pg_try_advisory_lock(:key)"), {"key": LOCK_KEY}
+                            ).scalar())
+                        except Exception:
+                            got_lock = True  # якщо lock-запит не вдався - все одно спробуємо виконати
+                    if not got_lock:
+                        return
+                    try:
+                        _run_blog_automation()
+                    finally:
+                        if is_postgres:
+                            try:
+                                db.session.execute(sa.text("SELECT pg_advisory_unlock(:key)"), {"key": LOCK_KEY})
+                                db.session.commit()
+                            except Exception:
+                                db.session.rollback()
+
+            scheduler = BackgroundScheduler(daemon=True)
+            scheduler.add_job(
+                func=guarded_job,
+                trigger="interval",
+                minutes=15,
+                id="blog_automation",
+                replace_existing=True,
+                next_run_time=datetime.utcnow(),
+            )
+            scheduler.start()
+            app.logger.info("📅 Blog automation scheduler started (every 15 min)")
+        except Exception as e:
+            app.logger.warning(f"Could not start blog scheduler: {e}")
+
     # Ініціалізація БД при старті
     init_db()
+    _start_blog_scheduler()
     return app
 
 

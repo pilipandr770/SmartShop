@@ -1,0 +1,71 @@
+<div id="cookie-banner" class="cookie-banner" style="display:none;">
+    <div class="cookie-banner-text">
+        Цей сайт використовує cookie для роботи кошика, входу в акаунт та аналітики.
+        Продовжуючи користуватися сайтом, ви погоджуєтесь з
+        <a href="{{ url_for('datenschutz_page') }}">політикою конфіденційності</a>.
+    </div>
+    <div class="cookie-banner-actions">
+        <button type="button" class="cookie-btn cookie-btn-decline" onclick="smartshopCookieConsent(false)">Відхилити необов'язкові</button>
+        <button type="button" class="cookie-btn cookie-btn-accept" onclick="smartshopCookieConsent(true)">Прийняти</button>
+    </div>
+</div>
+
+<style>
+    .cookie-banner {
+        position: fixed;
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 2000;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 1rem 1.25rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(10, 14, 28, 0.97);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+        align-items: center;
+        justify-content: space-between;
+        color: #f9fafb;
+        font-size: 0.85rem;
+    }
+    .cookie-banner-text { color: #9ca3af; flex: 1; min-width: 220px; }
+    .cookie-banner-text a { color: #10b981; }
+    .cookie-banner-actions { display: flex; gap: 0.6rem; flex-shrink: 0; }
+    .cookie-btn {
+        padding: 0.5rem 1rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+        cursor: pointer; border: 1px solid rgba(148, 163, 184, 0.45); white-space: nowrap;
+    }
+    .cookie-btn-decline { background: transparent; color: #f9fafb; }
+    .cookie-btn-accept { background: linear-gradient(135deg, #22c55e, #14b8a6); color: #022c22; border: none; }
+    @media (max-width: 560px) {
+        .cookie-banner { flex-direction: column; align-items: stretch; }
+        .cookie-banner-actions { justify-content: flex-end; }
+    }
+</style>
+
+<script>
+(function () {
+    function getCookie(name) {
+        const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return match ? match.pop() : null;
+    }
+
+    if (!getCookie('smartshop_cookie_consent')) {
+        const banner = document.getElementById('cookie-banner');
+        if (banner) banner.style.display = 'flex';
+    }
+
+    window.smartshopCookieConsent = function (acceptAll) {
+        const maxAge = 60 * 60 * 24 * 180; // 180 днів
+        document.cookie = 'smartshop_cookie_consent=' + (acceptAll ? 'all' : 'essential') +
+            '; path=/; max-age=' + maxAge + '; SameSite=Lax';
+        const banner = document.getElementById('cookie-banner');
+        if (banner) banner.style.display = 'none';
+    };
+})();
+</script>

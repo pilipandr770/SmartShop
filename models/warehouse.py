@@ -66,6 +66,7 @@ class WarehouseTask(db.Model):
     shipping_address = db.Column(db.Text, nullable=True)
     shipping_method = db.Column(db.String(100), nullable=True)
     is_b2b = db.Column(db.Boolean, default=False)
+    is_pickup = db.Column(db.Boolean, default=False)  # самовивіз - без перевізника/лейбла
     
     # Коментарі
     notes = db.Column(db.Text, nullable=True)
@@ -192,6 +193,7 @@ class WarehouseTask(db.Model):
             shipping_address=getattr(order, 'shipping_address', None) or getattr(order, 'address', None),
             shipping_method=getattr(order, 'shipping_method', None),
             is_b2b=getattr(order, 'is_b2b', False),
+            is_pickup=getattr(order, 'is_pickup', False),
         )
         db.session.add(task)
         db.session.flush()

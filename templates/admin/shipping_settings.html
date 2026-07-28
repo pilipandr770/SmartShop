@@ -53,7 +53,7 @@
 </div>
 
 {% if available_carriers %}
-<div class="card">
+<div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <h3>➕ Додати службу доставки</h3>
     </div>
@@ -66,4 +66,31 @@
     </div>
 </div>
 {% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3>🏬 Самовивіз</h3>
+    </div>
+    <p style="padding: 0 1rem; color: var(--text-muted); font-size: 0.9rem;">
+        Безкоштовна альтернатива доставці перевізником - клієнт сам забирає замовлення.
+        Зʼявиться як окрема опція на кроці вибору доставки в checkout, навіть якщо DHL/UPS не налаштовані.
+    </p>
+    <form method="POST" class="form-grid" style="padding: 1rem;">
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="pickup_enabled" {% if settings.pickup_enabled %}checked{% endif %}>
+                Увімкнути самовивіз
+            </label>
+        </div>
+        <div class="form-group">
+            <label>Адреса пункту видачі</label>
+            <input type="text" name="pickup_address" value="{{ settings.pickup_address or '' }}" placeholder="вул. Складська 1, Київ">
+        </div>
+        <div class="form-group">
+            <label>Інструкції для клієнта (графік роботи тощо)</label>
+            <textarea name="pickup_instructions" rows="3">{{ settings.pickup_instructions or '' }}</textarea>
+        </div>
+        <button type="submit" class="btn">💾 Зберегти</button>
+    </form>
+</div>
 {% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}AGB – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .legal-page { max-width: 780px; margin: 0 auto; line-height: 1.7; }
+    .legal-page h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .legal-page h2 { font-size: 1.15rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+    .legal-page p, .legal-page li { color: var(--text-muted); }
+    .legal-body { white-space: pre-wrap; color: var(--text-muted); }
+    .legal-notice {
+        margin-top: 2rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+        border: 1px solid rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.08);
+        color: #fde68a; font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="legal-page">
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">AGB</span>
+    </div>
+
+    <h1>Allgemeine Geschäftsbedingungen</h1>
+
+    {% if settings.terms_text %}
+        <div class="legal-body">{{ settings.terms_text }}</div>
+    {% else %}
+        <h2>1. Geltungsbereich</h2>
+        <p>
+            Diese Allgemeinen Geschäftsbedingungen gelten für alle Bestellungen, die über
+            diesen Online-Shop aufgegeben werden. Betreiber des Shops ist der im
+            <a href="{{ url_for('impressum_page') }}">Impressum</a> genannte Anbieter.
+        </p>
+
+        <h2>2. Vertragsschluss</h2>
+        <p>
+            Die Darstellung der Produkte im Shop stellt kein bindendes Angebot dar. Mit
+            Abschluss der Bestellung und erfolgreicher Zahlung kommt ein Kaufvertrag zwischen
+            Ihnen und dem Betreiber zustande.
+        </p>
+
+        <h2>3. Preise und Zahlung</h2>
+        <p>
+            Alle angegebenen Preise verstehen sich in der angezeigten Währung. Die Zahlung
+            erfolgt per Kreditkarte über Stripe. Zusätzliche Versandkosten werden vor
+            Abschluss der Bestellung ausgewiesen.
+        </p>
+
+        <h2>4. Lieferung</h2>
+        <p>
+            Die Lieferung erfolgt je nach Verfügbarkeit über die im Bestellprozess gewählte
+            Versandoption oder als Selbstabholung, sofern diese vom Anbieter angeboten wird.
+        </p>
+
+        <h2>5. Widerrufsrecht</h2>
+        <p>
+            Verbrauchern steht grundsätzlich ein gesetzliches Widerrufsrecht zu. Details zu
+            Frist und Ausübung des Widerrufs teilt Ihnen der Anbieter gesondert mit bzw.
+            erfragen Sie bitte über die Kontaktdaten im Impressum.
+        </p>
+
+        <h2>6. Gewährleistung</h2>
+        <p>
+            Es gelten die gesetzlichen Gewährleistungsrechte.
+        </p>
+
+        <div class="legal-notice">
+            ⚠️ Це загальний шаблонний текст, а не юридична консультація. Власник магазину
+            повинен адаптувати умови (адмінка → Налаштування) під власний асортимент,
+            умови доставки та повернення, і за потреби погодити текст з юристом перед запуском.
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

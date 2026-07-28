@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Impressum – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .legal-page { max-width: 780px; margin: 0 auto; line-height: 1.7; }
+    .legal-page h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .legal-page h2 { font-size: 1.15rem; margin-top: 2rem; margin-bottom: 0.5rem; }
+    .legal-page p { color: var(--text-muted); }
+    .legal-page .legal-value { color: var(--text-main); }
+    .legal-notice {
+        margin-top: 2rem; padding: 1rem 1.25rem; border-radius: 0.75rem;
+        border: 1px solid rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.08);
+        color: #fde68a; font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="legal-page">
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">Impressum</span>
+    </div>
+
+    <h1>Impressum</h1>
+    <p>Angaben gemäß § 5 TMG</p>
+
+    {% if settings.admin_company_legal_name or settings.admin_company_name %}
+        <h2>Betreiber</h2>
+        <p class="legal-value">{{ settings.admin_company_legal_name or settings.admin_company_name }}</p>
+        {% if settings.admin_company_address %}
+        <p class="legal-value">
+            {{ settings.admin_company_address }}{% if settings.admin_company_postal_code or settings.admin_company_city %}<br>{{ [settings.admin_company_postal_code, settings.admin_company_city]|select|join(' ') }}{% endif %}
+            {% if settings.admin_company_country %}<br>{{ settings.admin_company_country }}{% endif %}
+        </p>
+        {% endif %}
+
+        <h2>Kontakt</h2>
+        <p class="legal-value">
+            {% if settings.admin_company_phone or settings.contact_phone %}Telefon: {{ settings.admin_company_phone or settings.contact_phone }}<br>{% endif %}
+            {% if settings.admin_company_email or settings.contact_email %}E-Mail: {{ settings.admin_company_email or settings.contact_email }}<br>{% endif %}
+            {% if settings.admin_company_website %}Web: {{ settings.admin_company_website }}{% endif %}
+        </p>
+
+        {% if settings.admin_vat_number %}
+        <h2>Umsatzsteuer-ID</h2>
+        <p class="legal-value">Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz: {{ settings.admin_vat_number }}{% if settings.admin_vat_country %} ({{ settings.admin_vat_country }}){% endif %}</p>
+        {% endif %}
+
+        {% if settings.admin_handelsregister_id %}
+        <h2>Handelsregister</h2>
+        <p class="legal-value">{{ settings.admin_handelsregister_id }}</p>
+        {% endif %}
+    {% else %}
+        <div class="legal-notice">
+            ⚠️ Власник цього магазину ще не заповнив юридичні реквізити (назва компанії, адреса, контакти).
+            Це необхідно зробити в адмінці (Налаштування → Юридична особа), перш ніж магазин почне
+            реально приймати замовлення — Impressum обов'язковий за законодавством Німеччини (§5 TMG)
+            для будь-якого комерційного сайту.
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

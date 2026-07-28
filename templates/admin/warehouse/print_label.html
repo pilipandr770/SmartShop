@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Пакувальний лист — {{ task.task_number or task.id }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #111;
+            background: #fff;
+            margin: 0;
+            padding: 24px;
+        }
+        .toolbar { margin-bottom: 20px; }
+        .toolbar button {
+            padding: 0.6rem 1.2rem; font-size: 1rem; border-radius: 0.4rem;
+            border: 1px solid #333; background: #111; color: #fff; cursor: pointer;
+        }
+        .label-sheet {
+            max-width: 620px;
+            border: 2px solid #111;
+            padding: 20px;
+        }
+        .label-header {
+            display: flex; justify-content: space-between; align-items: baseline;
+            border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 16px;
+        }
+        .label-header h1 { font-size: 1.1rem; margin: 0; }
+        .addr-block { margin-bottom: 14px; }
+        .addr-block .addr-title {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+            color: #555; margin-bottom: 4px;
+        }
+        .addr-block .addr-name { font-size: 1.05rem; font-weight: 700; }
+        .addr-block .addr-line { font-size: 0.95rem; }
+        .tracking-block {
+            margin: 18px 0; padding: 14px; border: 2px dashed #111; text-align: center;
+        }
+        .tracking-block .tr-carrier { font-size: 0.9rem; color: #555; }
+        .tracking-block .tr-number { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.05em; }
+        table.items { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+        table.items th, table.items td { border-bottom: 1px solid #ccc; padding: 6px 4px; text-align: left; }
+        table.items th { font-size: 0.75rem; text-transform: uppercase; color: #555; }
+        .meta-row { display:flex; justify-content: space-between; font-size: 0.85rem; color: #333; margin-top: 14px; }
+
+        @media print {
+            .toolbar { display: none; }
+            body { padding: 0; }
+            .label-sheet { border: none; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="window.print()">🖨️ Друкувати</button>
+    </div>
+
+    <div class="label-sheet">
+        <div class="label-header">
+            <h1>{{ settings.site_name or 'SmartShop' }}</h1>
+            <div>Завдання №{{ task.task_number or task.id }}{% if order %} · Замовлення №{{ order.order_number or order.id }}{% endif %}</div>
+        </div>
+
+        {% if task.is_pickup %}
+        <div class="tracking-block">
+            <div class="tr-carrier">🏬 САМОВИВІЗ</div>
+            <div class="tr-number" style="font-size:1.1rem;">ГОТОВО ДО ВИДАЧІ</div>
+        </div>
+
+        <div class="addr-block">
+            <div class="addr-title">Клієнт</div>
+            <div class="addr-name">{{ task.customer_name or (order.customer_name if order else '') }}</div>
+            {% if task.customer_phone %}<div class="addr-line">📞 {{ task.customer_phone }}</div>{% endif %}
+            {% if task.customer_email %}<div class="addr-line">✉️ {{ task.customer_email }}</div>{% endif %}
+        </div>
+
+        {% if settings.pickup_address %}
+        <div class="addr-block">
+            <div class="addr-title">Пункт видачі</div>
+            <div class="addr-line">{{ settings.pickup_address }}</div>
+            {% if settings.pickup_instructions %}<div class="addr-line">{{ settings.pickup_instructions }}</div>{% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="addr-block">
+            <div class="addr-title">Відправник</div>
+            <div class="addr-name">{{ sender.name or settings.site_name or '' }}</div>
+            {% if sender.street %}<div class="addr-line">{{ sender.street }}</div>{% endif %}
+            <div class="addr-line">
+                {{ [sender.postal_code, sender.city]|select|join(' ') }}{% if sender.country_code %}, {{ sender.country_code }}{% endif %}
+            </div>
+            {% if sender.phone %}<div class="addr-line">{{ sender.phone }}</div>{% endif %}
+        </div>
+
+        <div class="addr-block">
+            <div class="addr-title">Отримувач</div>
+            <div class="addr-name">{{ task.customer_name or (order.customer_name if order else '') }}</div>
+            <div class="addr-line">{{ task.shipping_address or (order.shipping_address if order else '') }}</div>
+            <div class="addr-line">
+                {% if order %}{{ [order.shipping_postal_code, order.shipping_city]|select|join(' ') }}{% if order.shipping_country %}, {{ order.shipping_country }}{% endif %}{% endif %}
+            </div>
+            {% if task.customer_phone %}<div class="addr-line">📞 {{ task.customer_phone }}</div>{% endif %}
+        </div>
+
+        {% if task.tracking_number %}
+        <div class="tracking-block">
+            <div class="tr-carrier">{{ task.carrier or task.shipping_method or 'Перевізник' }}</div>
+            <div class="tr-number">{{ task.tracking_number }}</div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if order and order.items %}
+        <table class="items">
+            <thead>
+                <tr><th>Товар</th><th>SKU</th><th>К-сть</th></tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.product_sku or '—' }}</td>
+                    <td>{{ item.quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <div class="meta-row">
+            <span>Пріоритет: {{ task.priority_display }}</span>
+            <span>{{ task.created_at.strftime("%Y-%m-%d") if task.created_at else '' }}</span>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            setTimeout(function () { window.print(); }, 300);
+        });
+    </script>
+</body>
+</html>

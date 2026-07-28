@@ -158,6 +158,14 @@
                     </div>
                     <div class="form-group">
                         <label class="toggle-label">
+                            <input type="checkbox" name="blogger_auto_generate" {{ 'checked' if ai_settings.blogger_auto_generate else '' }}>
+                            <span class="toggle-switch"></span>
+                            Генерувати статті з плану автоматично (без ручного натискання)
+                        </label>
+                        <small style="color: var(--text-muted);">Фонове завдання перевіряє план кожні 15 хв і генерує статті, дата яких настала. Витрачає OpenAI-кредити магазину.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="toggle-label">
                             <input type="checkbox" name="auto_publish" {{ 'checked' if ai_settings.auto_publish else '' }}>
                             <span class="toggle-switch"></span>
                             Автоматична публікація
@@ -165,7 +173,7 @@
                     </div>
                     <div class="form-group">
                         <label for="publish_time">Час публікації</label>
-                        <input type="time" id="publish_time" name="publish_time" 
+                        <input type="time" id="publish_time" name="publish_time"
                                value="{{ ai_settings.publish_time or '10:00' }}">
                     </div>
                 </div>

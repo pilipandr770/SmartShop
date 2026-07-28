@@ -541,7 +541,9 @@
                 <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Login') }}</a>
                 <a href="{{ url_for('user_register') }}" class="btn">{{ _('Register') }}</a>
             {% endif %}
-            <a href="{{ url_for('admin_login') }}" class="social-pill" title="{{ _('Admin Panel') }}">⚙️</a>
+            {% if current_user.is_authenticated and current_user.can_manage_store(g.store) %}
+                <a href="{{ url_for('admin_login') }}" class="social-pill" title="{{ _('Admin Panel') }}">⚙️</a>
+            {% endif %}
         </div>
     </header>
 
@@ -560,8 +562,9 @@
     <!-- FOOTER -->
     <footer class="footer" id="contact">
         <div class="footer-links">
-            <a href="#">{{ _('Privacy Policy') }}</a>
-            <a href="#">{{ _('Terms of Service') }}</a>
+            <a href="{{ url_for('datenschutz_page') }}">Datenschutz</a>
+            <a href="{{ url_for('agb_page') }}">AGB</a>
+            <a href="{{ url_for('impressum_page') }}">Impressum</a>
             <a href="{{ url_for('contacts_page') }}">{{ _('Contacts') }}</a>
         </div>
         <div class="footer-badge">
@@ -569,6 +572,8 @@
         </div>
     </footer>
 </div>
+
+{% include 'partials/cookie_banner.html' %}
 
 <!-- AI CHAT WIDGET -->
 <div id="ai-chat-widget" class="chat-widget">

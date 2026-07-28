@@ -60,6 +60,11 @@ class SiteSettings(db.Model):
     min_order_amount = db.Column(db.Float, nullable=True, default=0.0)
     shipping_info = db.Column(db.Text, nullable=True)
     
+    # Самовивіз (click & collect) - безкоштовна альтернатива доставці перевізником
+    pickup_enabled = db.Column(db.Boolean, default=False)
+    pickup_address = db.Column(db.String(500), nullable=True)
+    pickup_instructions = db.Column(db.Text, nullable=True)
+
     # B2B налаштування
     b2b_enabled = db.Column(db.Boolean, default=True)
     b2b_registration_open = db.Column(db.Boolean, default=True)
@@ -85,7 +90,12 @@ class SiteSettings(db.Model):
     admin_company_email = db.Column(db.String(255), nullable=True)
     admin_company_phone = db.Column(db.String(50), nullable=True)
     admin_company_website = db.Column(db.String(255), nullable=True)
-    
+
+    # Юридичні тексти (Datenschutz/AGB) - Impressum окремого тексту не
+    # потребує, він збирається з полів admin_company_* вище.
+    privacy_policy_text = db.Column(db.Text, nullable=True)
+    terms_text = db.Column(db.Text, nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

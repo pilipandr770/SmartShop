@@ -8,6 +8,9 @@
         <div>
             <a href="{{ url_for('admin_warehouse') }}" class="btn btn-sm btn-outline">← До списку</a>
             <h1 style="margin: 0.5rem 0;">📦 Завдання {{ task.task_number or '#' ~ task.id }}</h1>
+            <a href="{{ url_for('admin_warehouse_task_print', id=task.id) }}" target="_blank" class="btn btn-sm btn-outline">
+                🖨️ Друкувати пакувальний лист
+            </a>
         </div>
         <div>
             {% if task.status == 'pending' %}
@@ -218,7 +221,13 @@
                 {% endif %}
 
                 {% if task.status == 'ready' %}
-                {% if task.label_url %}
+                {% if task.is_pickup %}
+                <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="action" value="mark_shipped">
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">🏬 Самовивіз — трек-номер не потрібен.</p>
+                    <button type="submit" class="btn btn-success btn-block">✅ Видано клієнту</button>
+                </form>
+                {% elif task.label_url %}
                 <div class="form-group" style="margin-bottom: 1rem;">
                     <p>📦 {{ task.carrier }} — <strong>{{ task.tracking_number }}</strong></p>
                     <a href="{{ task.label_url }}" target="_blank" class="btn btn-outline btn-block">🏷️ Завантажити лейбл</a>

@@ -360,6 +360,28 @@
         </div>
     </div>
 
+    <div class="card" style="margin: 1.5rem 0;">
+        <div class="card-header">
+            <h3>📄 Юридичні тексти (Datenschutz / AGB)</h3>
+        </div>
+        <div class="form-section">
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0;">
+                Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не юридична
+                консультація). Impressum окремого тексту не потребує - він збирається з даних юрособи вище.
+            </p>
+            <div class="form-group">
+                <label for="privacy_policy_text">Політика конфіденційності (Datenschutz)</label>
+                <textarea id="privacy_policy_text" name="privacy_policy_text" rows="8"
+                          placeholder="Залиште порожнім, щоб використовувати шаблонний текст">{{ settings.privacy_policy_text or '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="terms_text">Умови використання (AGB)</label>
+                <textarea id="terms_text" name="terms_text" rows="8"
+                          placeholder="Залиште порожнім, щоб використовувати шаблонний текст">{{ settings.terms_text or '' }}</textarea>
+            </div>
+        </div>
+    </div>
+
     <div class="form-footer">
         <button type="submit" class="btn btn-primary btn-lg">
             <span>💾</span> Зберегти налаштування

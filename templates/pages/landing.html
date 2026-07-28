@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем</title>
+    <meta name="description" content="SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс.">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <style>
+        :root {
+            --bg-main: #050816;
+            --bg-card: #0b1020;
+            --bg-card-hover: #101731;
+            --accent: #10b981;
+            --accent-soft: rgba(16, 185, 129, 0.12);
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-soft: rgba(148, 163, 184, 0.25);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+        a { color: inherit; text-decoration: none; }
+        .wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.25rem 0;
+        }
+        .brand { display: flex; align-items: center; gap: 0.7rem; font-weight: 700; letter-spacing: 0.02em; }
+        .brand-logo {
+            width: 34px; height: 34px; border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #a7f3d0 0, #22c55e 28%, #0f766e 55%, #0b1120 100%);
+        }
+        nav.top-nav { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+        nav.top-nav a:hover { color: var(--text-main); }
+        .header-actions { display: flex; gap: 0.6rem; }
+        .btn {
+            padding: 0.55rem 1.1rem; border-radius: 999px; border: none;
+            font-weight: 600; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #14b8a6); color: #022c22;
+            box-shadow: 0 14px 28px rgba(16, 185, 129, 0.45);
+        }
+        .btn-outline { background: transparent; border: 1px solid rgba(148, 163, 184, 0.45); color: var(--text-main); }
+
+        .hero { text-align: center; padding: 5rem 0 4rem; }
+        .hero h1 { font-size: clamp(2rem, 4.5vw, 3.2rem); line-height: 1.15; margin: 0 0 1.2rem; }
+        .hero p.lead { color: var(--text-muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto 2.2rem; }
+        .hero-ctas { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+        .btn-lg { padding: 0.85rem 1.8rem; font-size: 1rem; }
+
+        section { padding: 3.5rem 0; }
+        section h2 { font-size: 1.8rem; text-align: center; margin-bottom: 0.6rem; }
+        section p.section-lead { text-align: center; color: var(--text-muted); max-width: 620px; margin: 0 auto 2.5rem; }
+
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem;
+        }
+        .feature-card {
+            background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        .feature-card .icon { font-size: 1.8rem; margin-bottom: 0.7rem; }
+        .feature-card h3 { font-size: 1.05rem; margin: 0 0 0.5rem; }
+        .feature-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0; }
+        .feature-card .badge-optional {
+            display: inline-block; margin-top: 0.6rem; font-size: 0.7rem; padding: 0.15rem 0.5rem;
+            border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+        }
+
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;
+        }
+        .price-card {
+            background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 1.25rem;
+            padding: 2rem 1.5rem; text-align: center; display: flex; flex-direction: column; gap: 1rem;
+        }
+        .price-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 20px 40px rgba(16,185,129,0.15); }
+        .price-card h3 { margin: 0; font-size: 1.1rem; }
+        .price-card .price { font-size: 2.2rem; font-weight: 700; }
+        .price-card .price span { font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }
+        .price-card ul { list-style: none; padding: 0; margin: 0; color: var(--text-muted); font-size: 0.88rem; text-align: left; display: flex; flex-direction: column; gap: 0.5rem; }
+        .price-card ul li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+
+        footer {
+            border-top: 1px solid rgba(31, 41, 55, 0.9); margin-top: 2rem; padding: 2rem 0;
+            color: var(--text-muted); font-size: 0.85rem;
+            display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
+        }
+        .footer-links { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .footer-links a:hover { color: var(--text-main); }
+
+        @media (max-width: 720px) {
+            nav.top-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <a href="{{ url_for('index') }}" class="brand">
+            <div class="brand-logo"></div>
+            SmartShop AI
+        </a>
+        <nav class="top-nav">
+            <a href="#features">Можливості</a>
+            <a href="#pricing">Тарифи</a>
+        </nav>
+        <div class="header-actions">
+            <a href="{{ url_for('user_login') }}" class="btn btn-outline">Увійти</a>
+            <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">Створити магазин</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Свій інтернет-магазин з ІІ-продавцем —<br>без розробників і без коду</h1>
+        <p class="lead">
+            Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, тексти, товари.
+            За потреби підключаєте склад, доставку та бухгалтерію. Блог пише і публікує ІІ,
+            а на сайті клієнтів консультує ІІ-продавець.
+        </p>
+        <div class="hero-ctas">
+            <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary btn-lg">Почати безкоштовно</a>
+            <a href="#features" class="btn btn-outline btn-lg">Що входить</a>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2>Все для запуску магазину в одному місці</h2>
+        <p class="section-lead">Базові функції одразу включені в підписку. Складські та фінансові модулі підключаються за потреби — окремо для кожного магазину.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon">🎨</div>
+                <h3>Конструктор вітрини</h3>
+                <p>Логотип, тексти, категорії та товари редагуються прямо з адмінки — фото, опис, ціна, наявність.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🤖</div>
+                <h3>ІІ-продавець</h3>
+                <p>Чат-бот знає ваш каталог, ціни та наявність, пам'ятає розмову, підказує статус замовлення і передає складні звернення менеджеру.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📝</div>
+                <h3>Автоматичний блог</h3>
+                <p>ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими словами.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">💳</div>
+                <h3>Оплата карткою</h3>
+                <p>Приймайте оплату через Stripe одразу після реєстрації — без додаткових інтеграцій.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📦</div>
+                <h3>Склад</h3>
+                <p>Завдання на комплектацію, друк пакувальних листів, самовивіз або служба доставки.</p>
+                <span class="badge-optional">Опційно</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🚚</div>
+                <h3>Доставка</h3>
+                <p>DHL/UPS з розрахунком тарифів та автоматичним створенням накладних — або безкоштовний самовивіз.</p>
+                <span class="badge-optional">Опційно</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📊</div>
+                <h3>Бухгалтерія</h3>
+                <p>Звіти по замовленнях, витратах і доходах по країнах з експортом у CSV.</p>
+                <span class="badge-optional">Опційно</span>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🏢</div>
+                <h3>B2B-кабінет</h3>
+                <p>Окрема реєстрація партнерів з перевіркою компанії та особливими умовами замовлень.</p>
+                <span class="badge-optional">Опційно</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing">
+        <h2>Тарифи</h2>
+        <p class="section-lead">Щомісячна підписка, скасувати можна в будь-який момент з адмінки.</p>
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3>Starter</h3>
+                <div class="price">19€<span>/міс</span></div>
+                <ul>
+                    <li>Вітрина та каталог товарів</li>
+                    <li>ІІ-продавець</li>
+                    <li>Оплата карткою</li>
+                    <li>Самовивіз</li>
+                </ul>
+                <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">Обрати Starter</a>
+            </div>
+            <div class="price-card featured">
+                <h3>Pro</h3>
+                <div class="price">49€<span>/міс</span></div>
+                <ul>
+                    <li>Все з Starter</li>
+                    <li>Автоматичний блог з SEO</li>
+                    <li>Склад і служби доставки</li>
+                    <li>B2B-кабінет</li>
+                </ul>
+                <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">Обрати Pro</a>
+            </div>
+            <div class="price-card">
+                <h3>Business</h3>
+                <div class="price">99€<span>/міс</span></div>
+                <ul>
+                    <li>Все з Pro</li>
+                    <li>Бухгалтерські звіти й експорт</li>
+                    <li>Пріоритетна підтримка</li>
+                </ul>
+                <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">Обрати Business</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-links">
+            <a href="{{ url_for('datenschutz_page') }}">Datenschutz</a>
+            <a href="{{ url_for('agb_page') }}">AGB</a>
+            <a href="{{ url_for('impressum_page') }}">Impressum</a>
+            <a href="{{ url_for('contacts_page') }}">Контакти</a>
+        </div>
+        <div>© <span id="year"></span> SmartShop AI. Всі права захищені</div>
+    </footer>
+</div>
+
+{% include 'partials/cookie_banner.html' %}
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
