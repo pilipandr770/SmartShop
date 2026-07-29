@@ -393,6 +393,11 @@ def create_app():
         if subdomain and subdomain not in RESERVED_SUBDOMAINS:
             store = Store.get_by_slug(subdomain)
 
+        if store is None:
+            # Не піддомен платформи - можливо, це підтверджений власний домен
+            # клієнта (напр. myshop.com), підключений через /admin/settings/domain.
+            store = Store.get_by_custom_domain(host)
+
         is_platform_root = store is None
         if store is None:
             # Немає piддомену (або магазин не знайдено) - дефолтний магазин
@@ -2922,6 +2927,106 @@ def create_app():
             return redirect(url_for("admin_settings"))
 
         return render_template("admin/settings.html", settings=settings)
+
+    # ----- АДМІНКА: ВЛАСНИЙ ДОМЕН МАГАЗИНУ -----
+
+    TRAEFIK_DYNAMIC_DIR = os.environ.get("TRAEFIK_DYNAMIC_DIR", "/app/traefik-dynamic")
+
+    def _custom_domain_router_path(store_id):
+        return os.path.join(TRAEFIK_DYNAMIC_DIR, f"custom-{store_id}.yml")
+
+    def _write_custom_domain_router(store):
+        """Реєструє власний домен магазину в Traefik через файловий провайдер -
+        Traefik стежить за цією директорією (--providers.file.watch=true) і
+        підхоплює новий роутер за кілька секунд, без перезапуску контейнера.
+        Сертифікат для цього домену Traefik запитає автоматично при першому
+        HTTPS-запиті (HTTP-01, оскільки чужий домен не в нашій DNS-зоні)."""
+        if not os.path.isdir(TRAEFIK_DYNAMIC_DIR):
+            app.logger.warning(f"TRAEFIK_DYNAMIC_DIR {TRAEFIK_DYNAMIC_DIR} не існує - пропускаю реєстрацію домену в Traefik")
+            return
+        router_name = f"custom-{store.id}"
+        content = f"""http:
+  routers:
+    {router_name}:
+      rule: "Host(`{store.custom_domain}`)"
+      service: "smartshop@docker"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: letsencrypt
+"""
+        with open(_custom_domain_router_path(store.id), "w", encoding="utf-8") as f:
+            f.write(content)
+
+    def _remove_custom_domain_router(store_id):
+        path = _custom_domain_router_path(store_id)
+        if os.path.exists(path):
+            os.remove(path)
+
+    @app.route("/admin/settings/domain", methods=["GET", "POST"])
+    @admin_required
+    def admin_domain_settings():
+        """Прив'язка власного домену клієнта (напр. myshop.com) до магазину."""
+        store = g.store
+        platform_ip = os.environ.get("PLATFORM_IP", "").strip()
+
+        if request.method == "POST":
+            action = request.form.get("action")
+
+            if action == "save":
+                new_domain = request.form.get("custom_domain", "").strip().lower()
+                for prefix in ("https://", "http://"):
+                    if new_domain.startswith(prefix):
+                        new_domain = new_domain[len(prefix):]
+                new_domain = new_domain.rstrip("/") or None
+
+                if new_domain != store.custom_domain:
+                    if store.custom_domain:
+                        _remove_custom_domain_router(store.id)
+                    store.custom_domain = new_domain
+                    store.custom_domain_verified = False
+                    store.custom_domain_verified_at = None
+                    db.session.commit()
+                    if new_domain:
+                        flash("Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити».", "info")
+                    else:
+                        flash("Власний домен видалено.", "info")
+                return redirect(url_for("admin_domain_settings"))
+
+            elif action == "verify":
+                if not store.custom_domain:
+                    flash("Спочатку вкажіть домен.", "danger")
+                    return redirect(url_for("admin_domain_settings"))
+
+                if not platform_ip:
+                    flash("Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки.", "danger")
+                    return redirect(url_for("admin_domain_settings"))
+
+                import socket
+                try:
+                    resolved_ips = {info[4][0] for info in socket.getaddrinfo(store.custom_domain, None)}
+                except Exception as e:
+                    resolved_ips = set()
+                    app.logger.info(f"Custom domain DNS lookup failed for {store.custom_domain}: {e}")
+
+                if platform_ip in resolved_ips:
+                    store.custom_domain_verified = True
+                    store.custom_domain_verified_at = datetime.utcnow()
+                    db.session.commit()
+                    _write_custom_domain_router(store)
+                    flash(f"✅ Домен {store.custom_domain} підтверджено і активовано! Може знадобитись кілька хвилин, щоб з'явився сертифікат.", "success")
+                else:
+                    store.custom_domain_verified = False
+                    db.session.commit()
+                    resolved_display = ", ".join(resolved_ips) if resolved_ips else "не резолвиться взагалі"
+                    flash(
+                        f"Домен ще не вказує на платформу (зараз резолвиться: {resolved_display}). "
+                        f"Перевірте DNS-налаштування (A-запис на {platform_ip}) і спробуйте ще раз за кілька хвилин.",
+                        "warning",
+                    )
+                return redirect(url_for("admin_domain_settings"))
+
+        return render_template("admin/domain_settings.html", store=store, platform_ip=platform_ip)
 
     # ----- АДМІНКА: НАЛАШТУВАННЯ ДОСТАВКИ (DHL/UPS) -----
 

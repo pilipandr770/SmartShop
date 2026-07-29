@@ -1,0 +1,71 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Власний домен - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🔗 Власний домен</h1>
+    <p class="page-subtitle">Підключіть свій домен (напр. myshop.com) замість стандартного {{ store.slug }}.shop.andrii-it.de</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>Домен</h3>
+    </div>
+    <div class="form-section" style="padding: 1.5rem;">
+        <form method="POST">
+            <input type="hidden" name="action" value="save">
+            <div class="form-group">
+                <label for="custom_domain">Ваш домен</label>
+                <input type="text" id="custom_domain" name="custom_domain"
+                       value="{{ store.custom_domain or '' }}" placeholder="myshop.com">
+            </div>
+            <button type="submit" class="btn">💾 Зберегти</button>
+        </form>
+
+        {% if store.custom_domain %}
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(148,163,184,0.25);">
+            <p>
+                Статус:
+                {% if store.custom_domain_verified %}
+                    <span style="color:#22c55e; font-weight:600;">✅ Підтверджено та активно</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">
+                        ({{ store.custom_domain_verified_at.strftime("%Y-%m-%d %H:%M") if store.custom_domain_verified_at else '' }})
+                    </span>
+                {% else %}
+                    <span style="color:#f59e0b; font-weight:600;">⏳ Очікує підтвердження DNS</span>
+                {% endif %}
+            </p>
+
+            {% if not store.custom_domain_verified %}
+            <div style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.3); border-radius: 0.6rem; padding: 1rem; margin: 1rem 0;">
+                <strong>Що потрібно зробити:</strong>
+                <p style="margin: 0.5rem 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                    У панелі керування вашим доменом додайте A-запис:
+                </p>
+                <table style="margin-top: 0.5rem; font-size: 0.9rem;">
+                    <tr><td style="padding-right:1rem; color: var(--text-muted);">Тип</td><td><code>A</code></td></tr>
+                    <tr><td style="padding-right:1rem; color: var(--text-muted);">Ім'я</td><td><code>@</code> (або <code>www</code>)</td></tr>
+                    <tr><td style="padding-right:1rem; color: var(--text-muted);">Значення</td><td><code>{{ platform_ip or '(IP платформи ще не налаштовано)' }}</code></td></tr>
+                </table>
+                <p style="margin: 0.75rem 0 0; color: var(--text-muted); font-size: 0.85rem;">
+                    DNS-зміни можуть діяти від кількох хвилин до кількох годин. Після налаштування натисніть «Перевірити».
+                </p>
+            </div>
+            {% endif %}
+
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="verify">
+                <button type="submit" class="btn btn-primary">🔄 Перевірити</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

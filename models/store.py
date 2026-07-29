@@ -46,6 +46,14 @@ class Store(db.Model):
 
     is_active = db.Column(db.Boolean, default=True)  # ручне блокування адміном платформи
 
+    # Власний домен клієнта (напр. myshop.com), додатково до <slug>.<BASE_DOMAIN>.
+    # custom_domain_verified=True означає, що ми реально перевірили DNS-резолюцію
+    # на наш VPS - без цього resolve_current_store() не довіряє цьому домену
+    # (інакше будь-який власник міг би просто вписати чужий домен в налаштування).
+    custom_domain = db.Column(db.String(255), unique=True, nullable=True, index=True)
+    custom_domain_verified = db.Column(db.Boolean, default=False)
+    custom_domain_verified_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -72,3 +80,13 @@ class Store(db.Model):
     @staticmethod
     def slug_is_available(slug):
         return Store.query.filter_by(slug=slug.lower().strip()).first() is None
+
+    @staticmethod
+    def get_by_custom_domain(domain):
+        """Повертає Store лише якщо його custom_domain підтверджено (DNS-перевірка пройдена)."""
+        if not domain:
+            return None
+        return Store.query.filter_by(
+            custom_domain=domain.lower().strip(),
+            custom_domain_verified=True,
+        ).first()
