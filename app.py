@@ -3247,6 +3247,11 @@ def create_app():
             from flask_login import logout_user as flask_logout_user
             flask_logout_user()
             flash(_("Ваш акаунт і магазин видалено. Дякуємо, що були з нами."), "info")
+
+            # Перенаправляємо на корневий домен без піддомену, щоб уникнути 404
+            # (поточний піддомен більше не дійсний, оскільки магазин видалено)
+            if BASE_DOMAIN:
+                return redirect(f"https://{BASE_DOMAIN}/")
             return redirect(url_for("index"))
 
         return render_template("admin/delete_account.html", store=store)
