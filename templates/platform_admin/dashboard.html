@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Панель платформи – SmartShop AI</title>
+    <title>{{ _('Панель платформи – SmartShop AI') }}</title>
     <style>
         :root {
             --bg-main: #050816;
@@ -58,12 +58,12 @@
 <body>
 <div class="wrap">
     <header>
-        <h1>🛠️ Панель платформи</h1>
+        <h1>{{ _('🛠️ Панель платформи') }}</h1>
         <div style="display:flex; gap:0.6rem; align-items:center;">
             <span style="color: var(--text-muted); font-size: 0.85rem;">{{ current_user.email }}</span>
-            <a href="{{ url_for('cabinet.change_password') }}" class="btn">🔐 Пароль</a>
-            <a href="{{ url_for('index') }}" class="btn">← На сайт</a>
-            <a href="{{ url_for('user_logout') }}" class="btn">🚪 Вийти</a>
+            <a href="{{ url_for('cabinet.change_password') }}" class="btn">{{ _('🔐 Пароль') }}</a>
+            <a href="{{ url_for('index') }}" class="btn">{{ _('← На сайт') }}</a>
+            <a href="{{ url_for('user_logout') }}" class="btn">{{ _('🚪 Вийти') }}</a>
         </div>
     </header>
 
@@ -75,11 +75,11 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="label">Магазинів усього</div>
+            <div class="label">{{ _('Магазинів усього') }}</div>
             <div class="value">{{ stores|length }}</div>
         </div>
         <div class="stat-card">
-            <div class="label">Активні підписки</div>
+            <div class="label">{{ _('Активні підписки') }}</div>
             <div class="value">{{ active_count }}</div>
         </div>
         <div class="stat-card">
@@ -87,19 +87,19 @@
             <div class="value">{{ trialing_count }}</div>
         </div>
         <div class="stat-card">
-            <div class="label">Прострочені</div>
+            <div class="label">{{ _('Прострочені') }}</div>
             <div class="value">{{ past_due_count }}</div>
         </div>
         <div class="stat-card">
-            <div class="label">Скасовані</div>
+            <div class="label">{{ _('Скасовані') }}</div>
             <div class="value">{{ canceled_count }}</div>
         </div>
         <div class="stat-card">
-            <div class="label">Користувачів усього</div>
+            <div class="label">{{ _('Користувачів усього') }}</div>
             <div class="value">{{ total_users }}</div>
         </div>
         <div class="stat-card">
-            <div class="label">Оцінка MRR</div>
+            <div class="label">{{ _('Оцінка MRR') }}</div>
             <div class="value">~{{ mrr_estimate }}€</div>
         </div>
     </div>
@@ -108,13 +108,13 @@
     <table>
         <thead>
             <tr>
-                <th>Магазин</th>
+                <th>{{ _('Магазин') }}</th>
                 <th>Slug</th>
-                <th>Власник</th>
-                <th>План</th>
-                <th>Підписка</th>
-                <th>Статус</th>
-                <th>Створено</th>
+                <th>{{ _('Власник') }}</th>
+                <th>{{ _('План') }}</th>
+                <th>{{ _('Підписка') }}</th>
+                <th>{{ _('Статус') }}</th>
+                <th>{{ _('Створено') }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -128,9 +128,9 @@
                 <td><span class="badge badge-{{ store.subscription_status }}">{{ store.subscription_status }}</span></td>
                 <td>
                     {% if store.is_active %}
-                        <span class="badge badge-active">увімкнено</span>
+                        <span class="badge badge-active">{{ _('увімкнено') }}</span>
                     {% else %}
-                        <span class="badge badge-inactive">заблоковано</span>
+                        <span class="badge badge-inactive">{{ _('заблоковано') }}</span>
                     {% endif %}
                 </td>
                 <td>{{ store.created_at.strftime("%Y-%m-%d") if store.created_at else '—' }}</td>
@@ -142,7 +142,7 @@
                 </td>
             </tr>
             {% else %}
-            <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Магазинів ще немає.</td></tr>
+            <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">{{ _('Магазинів ще немає.') }}</td></tr>
             {% endfor %}
         </tbody>
     </table>

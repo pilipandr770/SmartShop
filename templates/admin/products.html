@@ -1,22 +1,22 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}Товари - Адмін панель{% endblock %}
+{% block title %}{{ _('Товари') }} - {{ _('Адмін панель') }}{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <h1>📦 Товари</h1>
-    <p class="page-subtitle">Керування каталогом товарів</p>
+    <h1>📦 {{ _('Товари') }}</h1>
+    <p class="page-subtitle">{{ _('Керування каталогом товарів') }}</p>
 </div>
 
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h3>➕ Додати новий товар</h3>
+        <h3>{{ _('➕ Додати новий товар') }}</h3>
     </div>
     <form method="POST" action="{{ url_for('admin_products_new') }}" class="form-grid">
         <!-- Вкладки мов -->
         <div class="full-width">
             <div class="lang-tabs">
-                <button type="button" class="lang-tab active" data-lang="uk">🇺🇦 Українська</button>
+                <button type="button" class="lang-tab active" data-lang="uk">{{ _('🇺🇦 Українська') }}</button>
                 <button type="button" class="lang-tab" data-lang="en">🇬🇧 English</button>
                 <button type="button" class="lang-tab" data-lang="de">🇩🇪 Deutsch</button>
             </div>
@@ -25,12 +25,12 @@
         <!-- Українська (основна) -->
         <div class="lang-content active" data-lang="uk">
             <div class="form-group">
-                <label for="name">Назва товару * (UK)</label>
-                <input type="text" id="name" name="name" required placeholder="Введіть назву товару">
+                <label for="name">{{ _('Назва товару * (UK)') }}</label>
+                <input type="text" id="name" name="name" required placeholder="{{ _('Введіть назву товару') }}">
             </div>
             <div class="form-group full-width">
-                <label for="description">Опис товару (UK)</label>
-                <textarea id="description" name="description" rows="4" placeholder="Детальний опис товару..."></textarea>
+                <label for="description">{{ _('Опис товару (UK)') }}</label>
+                <textarea id="description" name="description" rows="4" placeholder="{{ _('Детальний опис товару...') }}"></textarea>
             </div>
         </div>
         
@@ -59,9 +59,9 @@
         </div>
         
         <div class="form-group">
-            <label for="category_id">Категорія *</label>
+            <label for="category_id">{{ _('Категорія *') }}</label>
             <select id="category_id" name="category_id" required>
-                <option value="">Оберіть категорію</option>
+                <option value="">{{ _('Оберіть категорію') }}</option>
                 {% for category in categories %}
                 <option value="{{ category.id }}">{{ category.name }}</option>
                 {% endfor %}
@@ -69,30 +69,28 @@
         </div>
         
         <div class="form-group">
-            <label for="price">Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *</label>
+            <label for="price">{{ _('Ціна ({{ get_currency_symbol(settings.default_currency or \'EUR\') }}) *') }}</label>
             <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
         </div>
         
         <div class="form-group">
-            <label for="old_price">Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})</label>
-            <input type="number" id="old_price" name="old_price" step="0.01" min="0" placeholder="Для знижки">
+            <label for="old_price">{{ _('Стара ціна ({{ get_currency_symbol(settings.default_currency or \'EUR\') }})') }}</label>
+            <input type="number" id="old_price" name="old_price" step="0.01" min="0" placeholder="{{ _('Для знижки') }}">
         </div>
         
         <div class="form-group full-width">
-            <label>Зображення товару</label>
+            <label>{{ _('Зображення товару') }}</label>
             <div class="image-upload-wrapper">
                 <div class="image-preview" id="imagePreview">
-                    <span class="preview-placeholder">📷 Немає зображення</span>
+                    <span class="preview-placeholder">{{ _('📷 Немає зображення') }}</span>
                 </div>
                 <div class="upload-controls">
                     <div class="upload-btn-wrapper">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageFile').click()">
-                            📤 Завантажити з комп'ютера
-                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageFile').click()">{{ _('📤 Завантажити з комп\'ютера') }}</button>
                         <input type="file" id="imageFile" accept="image/*" style="display: none;" onchange="uploadImage(this)">
                     </div>
-                    <span class="upload-or">або</span>
-                    <input type="url" id="image_url" name="image_url" placeholder="Вставте URL зображення" class="url-input">
+                    <span class="upload-or">{{ _('або') }}</span>
+                    <input type="url" id="image_url" name="image_url" placeholder="{{ _('Вставте URL зображення') }}" class="url-input">
                 </div>
                 <input type="hidden" id="uploaded_image_url" name="image_url">
                 <div id="uploadStatus" class="upload-status"></div>
@@ -100,29 +98,28 @@
         </div>
         
         <div class="form-group">
-            <label for="stock">Кількість на складі</label>
+            <label for="stock">{{ _('Кількість на складі') }}</label>
             <input type="number" id="stock" name="stock" min="0" value="0" placeholder="0">
         </div>
         
         <div class="form-group full-width">
             <label class="checkbox-label">
                 <input type="checkbox" name="is_active" checked>
-                <span>Товар активний (показувати на сайті)</span>
+                <span>{{ _('Товар активний (показувати на сайті)') }}</span>
             </label>
         </div>
         
         <div class="form-actions full-width">
             <button type="submit" class="btn btn-primary">
-                <span>💾</span> Додати товар
-            </button>
+                <span>💾</span>{{ _('Додати товар') }}</button>
         </div>
     </form>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <h3>📋 Список товарів</h3>
-        <span class="badge badge-primary">{{ products|length }} шт.</span>
+        <h3>{{ _('📋 Список товарів') }}</h3>
+        <span class="badge badge-primary">{{ products|length }} {{ _('шт.') }}</span>
     </div>
     
     {% if products %}
@@ -130,13 +127,13 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Фото</th>
-                    <th>Назва</th>
-                    <th>Категорія</th>
-                    <th>Ціна</th>
-                    <th>Склад</th>
-                    <th>Статус</th>
-                    <th>Дії</th>
+                    <th>{{ _('Фото') }}</th>
+                    <th>{{ _('Назва') }}</th>
+                    <th>{{ _('Категорія') }}</th>
+                    <th>{{ _('Ціна') }}</th>
+                    <th>{{ _('Склад') }}</th>
+                    <th>{{ _('Статус') }}</th>
+                    <th>{{ _('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -172,23 +169,23 @@
                     </td>
                     <td>
                         {% if product.stock > 10 %}
-                        <span class="badge badge-success">{{ product.stock }} шт.</span>
+                        <span class="badge badge-success">{{ product.stock }} {{ _('шт.') }}</span>
                         {% elif product.stock > 0 %}
-                        <span class="badge badge-warning">{{ product.stock }} шт.</span>
+                        <span class="badge badge-warning">{{ product.stock }} {{ _('шт.') }}</span>
                         {% else %}
-                        <span class="badge badge-danger">Немає</span>
+                        <span class="badge badge-danger">{{ _('Немає') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if product.is_active %}
-                        <span class="badge badge-success">Активний</span>
+                        <span class="badge badge-success">{{ _('Активний') }}</span>
                         {% else %}
-                        <span class="badge badge-secondary">Прихований</span>
+                        <span class="badge badge-secondary">{{ _('Прихований') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="actions-cell">
-                            <a href="{{ url_for('admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary" title="Редагувати">
+                            <a href="{{ url_for('admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary" title="{{ _('Редагувати') }}">
                                 ✏️
                             </a>
                             <form method="POST" action="{{ url_for('admin_products_delete', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('Видалити товар?')">
@@ -206,8 +203,8 @@
     {% else %}
     <div class="empty-state">
         <div class="empty-icon">📦</div>
-        <h3>Товарів поки немає</h3>
-        <p>Додайте перший товар за допомогою форми вище</p>
+        <h3>{{ _('Товарів поки немає') }}</h3>
+        <p>{{ _('Додайте перший товар за допомогою форми вище') }}</p>
     </div>
     {% endif %}
 </div>
@@ -508,10 +505,10 @@ document.getElementById('image_url').addEventListener('input', function() {
     const hiddenInput = document.getElementById('uploaded_image_url');
     
     if (url) {
-        previewEl.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>❌ Невірний URL</span>'">`;
+        previewEl.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>{{ _('❌ Невірний URL') }}</span>'">`;
         hiddenInput.value = url;
     } else {
-        previewEl.innerHTML = '<span class="preview-placeholder">📷 Немає зображення</span>';
+        previewEl.innerHTML = '<span class="preview-placeholder">{{ _('📷 Немає зображення') }}</span>';
         hiddenInput.value = '';
     }
 });

@@ -53,7 +53,7 @@
 </head>
 <body>
     <div class="toolbar">
-        <button onclick="window.print()">🖨️ Друкувати</button>
+        <button onclick="window.print()">{{ _('🖨️ Друкувати') }}</button>
     </div>
 
     <div class="label-sheet">
@@ -64,12 +64,12 @@
 
         {% if task.is_pickup %}
         <div class="tracking-block">
-            <div class="tr-carrier">🏬 САМОВИВІЗ</div>
-            <div class="tr-number" style="font-size:1.1rem;">ГОТОВО ДО ВИДАЧІ</div>
+            <div class="tr-carrier">{{ _('🏬 САМОВИВІЗ') }}</div>
+            <div class="tr-number" style="font-size:1.1rem;">{{ _('ГОТОВО ДО ВИДАЧІ') }}</div>
         </div>
 
         <div class="addr-block">
-            <div class="addr-title">Клієнт</div>
+            <div class="addr-title">{{ _('Клієнт') }}</div>
             <div class="addr-name">{{ task.customer_name or (order.customer_name if order else '') }}</div>
             {% if task.customer_phone %}<div class="addr-line">📞 {{ task.customer_phone }}</div>{% endif %}
             {% if task.customer_email %}<div class="addr-line">✉️ {{ task.customer_email }}</div>{% endif %}
@@ -77,14 +77,14 @@
 
         {% if settings.pickup_address %}
         <div class="addr-block">
-            <div class="addr-title">Пункт видачі</div>
+            <div class="addr-title">{{ _('Пункт видачі') }}</div>
             <div class="addr-line">{{ settings.pickup_address }}</div>
             {% if settings.pickup_instructions %}<div class="addr-line">{{ settings.pickup_instructions }}</div>{% endif %}
         </div>
         {% endif %}
         {% else %}
         <div class="addr-block">
-            <div class="addr-title">Відправник</div>
+            <div class="addr-title">{{ _('Відправник') }}</div>
             <div class="addr-name">{{ sender.name or settings.site_name or '' }}</div>
             {% if sender.street %}<div class="addr-line">{{ sender.street }}</div>{% endif %}
             <div class="addr-line">
@@ -94,7 +94,7 @@
         </div>
 
         <div class="addr-block">
-            <div class="addr-title">Отримувач</div>
+            <div class="addr-title">{{ _('Отримувач') }}</div>
             <div class="addr-name">{{ task.customer_name or (order.customer_name if order else '') }}</div>
             <div class="addr-line">{{ task.shipping_address or (order.shipping_address if order else '') }}</div>
             <div class="addr-line">
@@ -114,7 +114,7 @@
         {% if order and order.items %}
         <table class="items">
             <thead>
-                <tr><th>Товар</th><th>SKU</th><th>К-сть</th></tr>
+                <tr><th>{{ _('Товар') }}</th><th>SKU</th><th>{{ _('К-сть') }}</th></tr>
             </thead>
             <tbody>
                 {% for item in order.items %}

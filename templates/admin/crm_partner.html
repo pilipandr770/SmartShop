@@ -15,7 +15,7 @@
     <!-- Alerts for this company -->
     {% if company_alerts %}
     <div class="company-alerts">
-        <h3>⚠️ Активні алерти</h3>
+        <h3>⚠️ {{ _('Активні алерти') }}</h3>
         {% for alert in company_alerts %}
         <div class="alert-item {{ alert.severity }}">
             <div class="alert-content">
@@ -23,7 +23,7 @@
                 <p>{{ alert.message }}</p>
                 <small>{{ alert.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
             </div>
-            <button class="btn btn-sm" onclick="resolveAlert({{ alert.id }})">Вирішено</button>
+            <button class="btn btn-sm" onclick="resolveAlert({{ alert.id }})">{{ _('Вирішено') }}</button>
         </div>
         {% endfor %}
     </div>
@@ -32,24 +32,24 @@
     <div class="content-grid">
         <!-- Main Info -->
         <div class="info-card">
-            <h3>📋 Основна інформація</h3>
+            <h3>📋 {{ _('Основна інформація') }}</h3>
             <table class="info-table">
                 <tr>
-                    <td>Юридична назва</td>
+                    <td>{{ _('Юридична назва') }}</td>
                     <td>{{ company.legal_name or company.name }}</td>
                 </tr>
                 <tr>
-                    <td>VAT номер</td>
+                    <td>{{ _('VAT номер') }}</td>
                     <td>
                         {% if company.vat_number %}
                         <code>{{ company.full_vat_number }}</code>
                         {% if company.vat_verified %}
-                        <span class="badge success">✓ Перевірено</span>
+                        <span class="badge success">✓ {{ _('Перевірено') }}</span>
                         {% else %}
-                        <span class="badge warning">Не перевірено</span>
+                        <span class="badge warning">{{ _('Не перевірено') }}</span>
                         {% endif %}
                         {% else %}
-                        <span class="na">Не вказано</span>
+                        <span class="na">{{ _('Не вказано') }}</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -67,7 +67,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Веб-сайт</td>
+                    <td>{{ _('Веб-сайт') }}</td>
                     <td>
                         {% if company.website %}
                         <a href="{{ company.website }}" target="_blank">{{ company.website }}</a>
@@ -80,11 +80,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Адреса</td>
+                    <td>{{ _('Адреса') }}</td>
                     <td>{{ company.full_address or '-' }}</td>
                 </tr>
                 <tr>
-                    <td>Країна</td>
+                    <td>{{ _('Країна') }}</td>
                     <td>{{ company.country }} ({{ company.country_code }})</td>
                 </tr>
             </table>
@@ -92,7 +92,7 @@
         
         <!-- Reliability Score -->
         <div class="info-card reliability-card {{ company.reliability_level }}">
-            <h3>📊 Надійність контрагента</h3>
+            <h3>📊 {{ _('Надійність контрагента') }}</h3>
             <div class="score-display">
                 <div class="score-circle">
                     <svg viewBox="0 0 100 100">
@@ -105,13 +105,13 @@
                 </div>
                 <div class="score-label">
                     {% if company.reliability_level == 'high' %}
-                    ✅ Високий рівень надійності
+                    ✅ {{ _('Високий рівень надійності') }}
                     {% elif company.reliability_level == 'medium' %}
-                    ⚠️ Середній рівень надійності
+                    ⚠️ {{ _('Середній рівень надійності') }}
                     {% elif company.reliability_level == 'low' %}
-                    🔶 Низький рівень надійності
+                    🔶 {{ _('Низький рівень надійності') }}
                     {% else %}
-                    ❌ Критичний рівень
+                    ❌ {{ _('Критичний рівень') }}
                     {% endif %}
                 </div>
             </div>
@@ -134,16 +134,16 @@
             </div>
             
             <button class="btn btn-primary btn-block" onclick="verifyPartner({{ company.id }})">
-                🔍 Запустити перевірку
+                🔍 {{ _('Запустити перевірку') }}
             </button>
         </div>
-        
+
         <!-- Contact Info -->
         <div class="info-card">
-            <h3>📞 Контактна інформація</h3>
+            <h3>📞 {{ _('Контактна інформація') }}</h3>
             <table class="info-table">
                 <tr>
-                    <td>Контактна особа</td>
+                    <td>{{ _('Контактна особа') }}</td>
                     <td>{{ company.contact_person or '-' }}</td>
                 </tr>
                 <tr>
@@ -155,35 +155,35 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Телефон</td>
+                    <td>{{ _('Телефон') }}</td>
                     <td>{{ company.contact_phone or '-' }}</td>
                 </tr>
             </table>
         </div>
-        
+
         <!-- B2B Settings -->
         <div class="info-card">
-            <h3>💰 B2B налаштування</h3>
+            <h3>💰 {{ _('B2B налаштування') }}</h3>
             <form method="post" action="{{ url_for('admin_crm_partner_update', id=company.id) }}">
                 <div class="form-group">
-                    <label>Кредитний ліміт (€)</label>
+                    <label>{{ _('Кредитний ліміт (€)') }}</label>
                     <input type="number" name="credit_limit" value="{{ company.credit_limit }}" step="0.01">
                 </div>
                 <div class="form-group">
-                    <label>Терміни оплати (днів)</label>
+                    <label>{{ _('Терміни оплати (днів)') }}</label>
                     <select name="payment_terms">
-                        <option value="0" {% if company.payment_terms == 0 %}selected{% endif %}>Передоплата</option>
-                        <option value="7" {% if company.payment_terms == 7 %}selected{% endif %}>7 днів</option>
-                        <option value="14" {% if company.payment_terms == 14 %}selected{% endif %}>14 днів</option>
-                        <option value="30" {% if company.payment_terms == 30 %}selected{% endif %}>30 днів</option>
-                        <option value="60" {% if company.payment_terms == 60 %}selected{% endif %}>60 днів</option>
+                        <option value="0" {% if company.payment_terms == 0 %}selected{% endif %}>{{ _('Передоплата') }}</option>
+                        <option value="7" {% if company.payment_terms == 7 %}selected{% endif %}>{{ _('7 днів') }}</option>
+                        <option value="14" {% if company.payment_terms == 14 %}selected{% endif %}>{{ _('14 днів') }}</option>
+                        <option value="30" {% if company.payment_terms == 30 %}selected{% endif %}>{{ _('30 днів') }}</option>
+                        <option value="60" {% if company.payment_terms == 60 %}selected{% endif %}>{{ _('60 днів') }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Знижка (%)</label>
+                    <label>{{ _('Знижка (%)') }}</label>
                     <input type="number" name="discount_percent" value="{{ company.discount_percent }}" step="0.1" min="0" max="50">
                 </div>
-                <button type="submit" class="btn btn-primary">Зберегти</button>
+                <button type="submit" class="btn btn-primary">{{ _('Зберегти') }}</button>
             </form>
         </div>
     </div>
@@ -191,7 +191,7 @@
     <!-- Last Verification Data -->
     {% if company.last_verification_data %}
     <div class="verification-details">
-        <h3>📋 Результати останньої перевірки</h3>
+        <h3>📋 {{ _('Результати останньої перевірки') }}</h3>
         <div class="details-grid">
             {% if company.last_verification_data.vat_result %}
             <div class="detail-card">
@@ -219,15 +219,15 @@
     
     <!-- Verification Logs -->
     <div class="verification-logs">
-        <h3>📜 Історія перевірок</h3>
+        <h3>📜 {{ _('Історія перевірок') }}</h3>
         <table class="logs-table">
             <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Тип</th>
-                    <th>Результат</th>
-                    <th>Зміни</th>
-                    <th>Деталі</th>
+                    <th>{{ _('Дата') }}</th>
+                    <th>{{ _('Тип') }}</th>
+                    <th>{{ _('Результат') }}</th>
+                    <th>{{ _('Зміни') }}</th>
+                    <th>{{ _('Деталі') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -239,14 +239,14 @@
                     </td>
                     <td>
                         {% if log.is_valid %}
-                        <span class="badge success">✓ Успішно</span>
+                        <span class="badge success">✓ {{ _('Успішно') }}</span>
                         {% else %}
-                        <span class="badge danger">✗ Помилка</span>
+                        <span class="badge danger">✗ {{ _('Помилка') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if log.changes_detected %}
-                        <span class="badge warning">⚠️ Зміни!</span>
+                        <span class="badge warning">⚠️ {{ _('Зміни!') }}</span>
                         <small>{{ log.changes_description }}</small>
                         {% else %}
                         <span class="na">-</span>
@@ -259,29 +259,29 @@
                 {% endfor %}
                 {% if not logs %}
                 <tr>
-                    <td colspan="5" class="empty">Немає записів</td>
+                    <td colspan="5" class="empty">{{ _('Немає записів') }}</td>
                 </tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-    
+
     <!-- Actions -->
     <div class="page-actions">
         {% if company.status == 'pending' %}
         <button class="btn btn-success" onclick="approvePartner({{ company.id }})">
-            ✅ Підтвердити партнера
+            ✅ {{ _('Підтвердити партнера') }}
         </button>
         <button class="btn btn-danger" onclick="rejectPartner({{ company.id }})">
-            ❌ Відхилити
+            ❌ {{ _('Відхилити') }}
         </button>
         {% elif company.status == 'verified' %}
         <button class="btn btn-warning" onclick="suspendPartner({{ company.id }})">
-            🚫 Призупинити
+            🚫 {{ _('Призупинити') }}
         </button>
         {% elif company.status == 'suspended' %}
         <button class="btn btn-success" onclick="approvePartner({{ company.id }})">
-            ✅ Відновити
+            ✅ {{ _('Відновити') }}
         </button>
         {% endif %}
     </div>
@@ -514,39 +514,39 @@
 
 <script>
 function verifyPartner(id) {
-    if (!confirm('Запустити повну перевірку партнера?')) return;
-    
+    if (!confirm('{{ _('Запустити повну перевірку партнера?') }}')) return;
+
     fetch(`/admin/crm/partner/${id}/verify`, { method: 'POST' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('Перевірка завершена!\n\n' + data.summary);
+                alert('{{ _('Перевірка завершена!') }}\n\n' + data.summary);
                 location.reload();
             } else {
-                alert('Помилка: ' + data.error);
+                alert('{{ _('Помилка:') }} ' + data.error);
             }
         });
 }
 
 function approvePartner(id) {
-    if (!confirm('Підтвердити партнера?')) return;
-    
+    if (!confirm('{{ _('Підтвердити партнера?') }}')) return;
+
     fetch(`/admin/crm/partner/${id}/approve`, { method: 'POST' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('Партнер підтверджений!');
+                alert('{{ _('Партнер підтверджений!') }}');
                 location.reload();
             } else {
-                alert('Помилка: ' + data.error);
+                alert('{{ _('Помилка:') }} ' + data.error);
             }
         });
 }
 
 function rejectPartner(id) {
-    const reason = prompt('Причина відмови:');
+    const reason = prompt('{{ _('Причина відмови:') }}');
     if (reason === null) return;
-    
+
     fetch(`/admin/crm/partner/${id}/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -555,14 +555,14 @@ function rejectPartner(id) {
         .then(r => r.json())
         .then(data => {
             if (data.success) location.reload();
-            else alert('Помилка: ' + data.error);
+            else alert('{{ _('Помилка:') }} ' + data.error);
         });
 }
 
 function suspendPartner(id) {
-    const reason = prompt('Причина призупинення:');
+    const reason = prompt('{{ _('Причина призупинення:') }}');
     if (reason === null) return;
-    
+
     fetch(`/admin/crm/partner/${id}/suspend`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -571,14 +571,14 @@ function suspendPartner(id) {
         .then(r => r.json())
         .then(data => {
             if (data.success) location.reload();
-            else alert('Помилка: ' + data.error);
+            else alert('{{ _('Помилка:') }} ' + data.error);
         });
 }
 
 function resolveAlert(id) {
-    const note = prompt('Коментар до вирішення:');
+    const note = prompt('{{ _('Коментар до вирішення:') }}');
     if (note === null) return;
-    
+
     fetch(`/admin/crm/alert/${id}/resolve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -587,7 +587,7 @@ function resolveAlert(id) {
         .then(r => r.json())
         .then(data => {
             if (data.success) location.reload();
-            else alert('Помилка: ' + data.error);
+            else alert('{{ _('Помилка:') }} ' + data.error);
         });
 }
 

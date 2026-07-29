@@ -289,9 +289,9 @@ function markAllRead() {
 }
 
 function resolveAlert(id) {
-    const note = prompt('Коментар до вирішення:');
+    const note = prompt('{{ _('Коментар до вирішення:') }}');
     if (note === null) return;
-    
+
     fetch(`/admin/crm/alert/${id}/resolve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -300,7 +300,7 @@ function resolveAlert(id) {
         .then(r => r.json())
         .then(data => {
             if (data.success) location.reload();
-            else alert('Помилка: ' + data.error);
+            else alert('{{ _('Помилка:') }} ' + data.error);
         });
 }
 </script>

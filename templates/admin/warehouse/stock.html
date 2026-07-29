@@ -5,7 +5,7 @@
 {% block content %}
 <div class="stock-dashboard">
     <div class="page-header">
-        <h1>📊 Залишки на складі</h1>
+        <h1>{{ _('📊 Залишки на складі') }}</h1>
     </div>
 
     <!-- Статистика -->
@@ -14,28 +14,28 @@
             <div class="stat-icon">📦</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.total_products }}</span>
-                <span class="stat-label">Всього товарів</span>
+                <span class="stat-label">{{ _('Всього товарів') }}</span>
             </div>
         </div>
         <div class="stat-card warning">
             <div class="stat-icon">⚠️</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.low_stock }}</span>
-                <span class="stat-label">Закінчуються</span>
+                <span class="stat-label">{{ _('Закінчуються') }}</span>
             </div>
         </div>
         <div class="stat-card danger">
             <div class="stat-icon">❌</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.out_of_stock }}</span>
-                <span class="stat-label">Немає в наявності</span>
+                <span class="stat-label">{{ _('Немає в наявності') }}</span>
             </div>
         </div>
         <div class="stat-card info">
             <div class="stat-icon">🔔</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.unresolved_alerts }}</span>
-                <span class="stat-label">Активних сповіщень</span>
+                <span class="stat-label">{{ _('Активних сповіщень') }}</span>
             </div>
         </div>
     </div>
@@ -45,21 +45,15 @@
         <form method="GET" style="display: flex; gap: 0.5rem; flex-grow: 1;">
             <input type="text" name="search" value="{{ search }}" placeholder="🔍 Пошук за назвою або SKU..." 
                    class="form-control" style="max-width: 300px;">
-            <button type="submit" class="btn btn-primary">Знайти</button>
+            <button type="submit" class="btn btn-primary">{{ _('Знайти') }}</button>
         </form>
         
         <a href="{{ url_for('admin_warehouse_stock') }}" 
-           class="btn {% if not show_low %}btn-primary{% else %}btn-outline{% endif %}">
-            Всі товари
-        </a>
+           class="btn {% if not show_low %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Всі товари') }}</a>
         <a href="{{ url_for('admin_warehouse_stock', low=1) }}" 
-           class="btn {% if show_low %}btn-warning{% else %}btn-outline{% endif %}">
-            ⚠️ Низький залишок
-        </a>
+           class="btn {% if show_low %}btn-warning{% else %}btn-outline{% endif %}">{{ _('⚠️ Низький залишок') }}</a>
         
-        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">
-            ➕ Замовити поповнення
-        </a>
+        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">{{ _('➕ Замовити поповнення') }}</a>
     </div>
 
     <!-- Таблиця товарів -->
@@ -67,12 +61,12 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Товар</th>
+                    <th>{{ _('Товар') }}</th>
                     <th>SKU</th>
-                    <th>Залишок</th>
-                    <th>Мін. залишок</th>
-                    <th>Статус</th>
-                    <th>Дії</th>
+                    <th>{{ _('Залишок') }}</th>
+                    <th>{{ _('Мін. залишок') }}</th>
+                    <th>{{ _('Статус') }}</th>
+                    <th>{{ _('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,11 +94,11 @@
                     <td>{{ product.min_stock or '—' }}</td>
                     <td>
                         {% if product.stock == 0 %}
-                        <span class="badge badge-danger">❌ Немає</span>
+                        <span class="badge badge-danger">{{ _('❌ Немає') }}</span>
                         {% elif product.min_stock > 0 and product.stock <= product.min_stock %}
-                        <span class="badge badge-warning">⚠️ Закінчується</span>
+                        <span class="badge badge-warning">{{ _('⚠️ Закінчується') }}</span>
                         {% else %}
-                        <span class="badge badge-success">✓ В наявності</span>
+                        <span class="badge badge-success">{{ _('✓ В наявності') }}</span>
                         {% endif %}
                     </td>
                     <td>
@@ -123,9 +117,7 @@
                 {% else %}
                 <tr>
                     <td colspan="6" class="text-center text-muted">
-                        <p style="padding: 2rem;">
-                            📭 Товарів не знайдено
-                        </p>
+                        <p style="padding: 2rem;">{{ _('📭 Товарів не знайдено') }}</p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -137,13 +129,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse_stock', page=page-1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">← Назад</a>
+        <a href="{{ url_for('admin_warehouse_stock', page=page-1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
         <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
         
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse_stock', page=page+1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">Далі →</a>
+        <a href="{{ url_for('admin_warehouse_stock', page=page+1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
         {% endif %}
     </div>
     {% endif %}
@@ -153,40 +145,40 @@
 <div id="adjustModal" class="modal" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>± Коригування залишку</h3>
+            <h3>{{ _('± Коригування залишку') }}</h3>
             <button type="button" class="close" onclick="closeAdjustModal()">&times;</button>
         </div>
         <form id="adjustForm" method="POST">
             <div class="modal-body">
                 <p><strong id="productName"></strong></p>
-                <p>Поточний залишок: <strong id="currentStock"></strong> шт.</p>
+                <p>{{ _('Поточний залишок:') }}<strong id="currentStock"></strong>{{ _('шт.') }}</p>
                 
                 <div class="form-group">
-                    <label>Коригування (+/-):</label>
+                    <label>{{ _('Коригування (+/-):') }}</label>
                     <input type="number" name="adjustment" id="adjustment" class="form-control" 
                            placeholder="-5 або +10" required>
-                    <small class="text-muted">Введіть від'ємне число для зменшення, додатне для збільшення</small>
+                    <small class="text-muted">{{ _('Введіть від\'ємне число для зменшення, додатне для збільшення') }}</small>
                 </div>
                 
                 <div class="form-group">
-                    <label>Причина:</label>
+                    <label>{{ _('Причина:') }}</label>
                     <select name="reason" class="form-control">
-                        <option value="inventory">Інвентаризація</option>
-                        <option value="damage">Пошкодження</option>
-                        <option value="return">Повернення</option>
-                        <option value="correction">Коригування помилки</option>
-                        <option value="other">Інше</option>
+                        <option value="inventory">{{ _('Інвентаризація') }}</option>
+                        <option value="damage">{{ _('Пошкодження') }}</option>
+                        <option value="return">{{ _('Повернення') }}</option>
+                        <option value="correction">{{ _('Коригування помилки') }}</option>
+                        <option value="other">{{ _('Інше') }}</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label>Примітка:</label>
+                    <label>{{ _('Примітка:') }}</label>
                     <textarea name="notes" class="form-control" rows="2" placeholder="Опціонально..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeAdjustModal()">Скасувати</button>
-                <button type="submit" class="btn btn-primary">Зберегти</button>
+                <button type="button" class="btn btn-outline" onclick="closeAdjustModal()">{{ _('Скасувати') }}</button>
+                <button type="submit" class="btn btn-primary">{{ _('Зберегти') }}</button>
             </div>
         </form>
     </div>

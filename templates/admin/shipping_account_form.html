@@ -3,30 +3,24 @@
 {% block content %}
 <div class="page-header">
     <h1>{{ '✏️ Редагувати' if account else '➕ Додати' }} {{ carrier_label }}</h1>
-    <p class="page-subtitle">
-        Немає реальних ключів? Вкажіть <code>test</code> в усіх полях креденшелів і увімкніть Sandbox -
-        checkout буде показувати синтетичні тарифи без звернення до мережі.
-    </p>
+    <p class="page-subtitle">{{ _('Немає реальних ключів? Вкажіть') }}<code>test</code>{{ _('в усіх полях креденшелів і увімкніть Sandbox -
+        checkout буде показувати синтетичні тарифи без звернення до мережі.') }}</p>
 </div>
 
 <div class="card">
     <form method="post" class="form-grid">
         <div class="form-group">
             <label>
-                <input type="checkbox" name="is_sandbox" {% if not account or account.is_sandbox %}checked{% endif %}>
-                Sandbox / тестовий режим
-            </label>
+                <input type="checkbox" name="is_sandbox" {% if not account or account.is_sandbox %}checked{% endif %}>{{ _('Sandbox / тестовий режим') }}</label>
         </div>
         {% if account %}
         <div class="form-group">
             <label>
-                <input type="checkbox" name="is_enabled" {% if account.is_enabled %}checked{% endif %}>
-                Увімкнено (показувати тарифи в checkout)
-            </label>
+                <input type="checkbox" name="is_enabled" {% if account.is_enabled %}checked{% endif %}>{{ _('Увімкнено (показувати тарифи в checkout)') }}</label>
         </div>
         {% endif %}
 
-        <h3 style="margin-top:1rem;">Креденшели API</h3>
+        <h3 style="margin-top:1rem;">{{ _('Креденшели API') }}</h3>
         {% if carrier == 'dhl' %}
         <div class="form-group">
             <label>API Key</label>
@@ -47,40 +41,40 @@
         </div>
         {% endif %}
         <div class="form-group">
-            <label>Номер акаунту перевізника</label>
+            <label>{{ _('Номер акаунту перевізника') }}</label>
             <input type="text" name="account_number" value="{{ account.credentials.get('account_number','') if account else '' }}">
         </div>
 
-        <h3 style="margin-top:1rem;">Адреса відправлення (звідки їдуть посилки)</h3>
+        <h3 style="margin-top:1rem;">{{ _('Адреса відправлення (звідки їдуть посилки)') }}</h3>
         <div class="form-group">
-            <label>Назва відправника / компанія</label>
+            <label>{{ _('Назва відправника / компанія') }}</label>
             <input type="text" name="origin_name" value="{{ account.origin_name or '' if account else '' }}">
         </div>
         <div class="form-group">
-            <label>Телефон</label>
+            <label>{{ _('Телефон') }}</label>
             <input type="text" name="origin_phone" value="{{ account.origin_phone or '' if account else '' }}">
         </div>
         <div class="form-group">
-            <label>Вулиця, будинок</label>
+            <label>{{ _('Вулиця, будинок') }}</label>
             <input type="text" name="origin_street" value="{{ account.origin_street or '' if account else '' }}">
         </div>
         <div class="form-group">
-            <label>Місто</label>
+            <label>{{ _('Місто') }}</label>
             <input type="text" name="origin_city" value="{{ account.origin_city or '' if account else '' }}">
         </div>
         <div class="form-group">
-            <label>Поштовий індекс</label>
+            <label>{{ _('Поштовий індекс') }}</label>
             <input type="text" name="origin_postal_code" value="{{ account.origin_postal_code or '' if account else '' }}">
         </div>
         <div class="form-group">
-            <label>Країна (ISO2)</label>
+            <label>{{ _('Країна (ISO2)') }}</label>
             <input type="text" name="origin_country_code" maxlength="2" style="text-transform:uppercase;"
                    value="{{ account.origin_country_code or '' if account else '' }}">
         </div>
 
         <div style="margin-top:1.5rem;">
-            <button type="submit" class="btn">💾 Зберегти</button>
-            <a href="{{ url_for('admin_shipping_settings') }}" class="btn btn-outline">Скасувати</a>
+            <button type="submit" class="btn">{{ _('💾 Зберегти') }}</button>
+            <a href="{{ url_for('admin_shipping_settings') }}" class="btn btn-outline">{{ _('Скасувати') }}</a>
         </div>
     </form>
 </div>

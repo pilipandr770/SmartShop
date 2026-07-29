@@ -1,32 +1,32 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Вхід - Адмін панель{% endblock %}
+{% block title %}{{ _('Вхід - Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">
             <div class="login-logo">🔐</div>
-            <h1>Вхід в адмін-панель</h1>
+            <h1>{{ _('Вхід в адмін-панель') }}</h1>
             <p>SmartShop AI</p>
         </div>
         
         <form method="post" class="login-form">
             <div class="form-group">
-                <label for="username">Логін</label>
-                <input type="text" id="username" name="username" required placeholder="Введіть логін" autofocus>
+                <label for="username">{{ _('Логін') }}</label>
+                <input type="text" id="username" name="username" required placeholder="{{ _('Введіть логін') }}" autofocus>
             </div>
             
             <div class="form-group">
-                <label for="password">Пароль</label>
-                <input type="password" id="password" name="password" required placeholder="Введіть пароль">
+                <label for="password">{{ _('Пароль') }}</label>
+                <input type="password" id="password" name="password" required placeholder="{{ _('Введіть пароль') }}">
             </div>
             
             <button type="submit" class="btn btn-primary btn-full">
-                <span>🚀</span> Увійти
+                <span>🚀</span> {{ _('Увійти') }}
             </button>
         </form>
         
         <div class="login-footer">
-            <p class="text-muted">Захищено 256-бітним шифруванням</p>
+            <p class="text-muted">{{ _('Захищено 256-бітним шифруванням') }}</p>
         </div>
     </div>
 </div>

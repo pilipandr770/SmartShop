@@ -1,29 +1,29 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Замовлення - Адмін панель{% endblock %}
+{% block title %}{{ _('Замовлення') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>🛒 Замовлення</h1>
-    <p class="page-subtitle">Управління замовленнями магазину</p>
+    <h1>🛒 {{ _('Замовлення') }}</h1>
+    <p class="page-subtitle">{{ _('Управління замовленнями магазину') }}</p>
 </div>
 
 <!-- Фільтри -->
 <div class="card filter-card" style="margin-bottom: 1.5rem;">
     <form method="get" class="filter-form">
         <div class="filter-group">
-            <label for="status">Статус:</label>
+            <label for="status">{{ _('Статус:') }}</label>
             <select name="status" id="status">
-                <option value="">Усі статуси</option>
-                <option value="created" {% if request.args.get('status') == 'created' %}selected{% endif %}>Створено</option>
-                <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Очікує оплати</option>
-                <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>Оплачено</option>
-                <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>Відправлено</option>
-                <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Доставлено</option>
-                <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Скасовано</option>
+                <option value="">{{ _('Усі статуси') }}</option>
+                <option value="created" {% if request.args.get('status') == 'created' %}selected{% endif %}>{{ _('Створено') }}</option>
+                <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>{{ _('Очікує оплати') }}</option>
+                <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>{{ _('Оплачено') }}</option>
+                <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>{{ _('Відправлено') }}</option>
+                <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>{{ _('Доставлено') }}</option>
+                <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>{{ _('Скасовано') }}</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-secondary">🔍 Фільтрувати</button>
+        <button type="submit" class="btn btn-secondary">🔍 {{ _('Фільтрувати') }}</button>
         {% if request.args.get('status') %}
-            <a href="{{ url_for('admin_orders') }}" class="btn btn-ghost">✕ Скинути</a>
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-ghost">✕ {{ _('Скинути') }}</a>
         {% endif %}
     </form>
 </div>
@@ -34,28 +34,28 @@
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📦</div>
         <div class="stat-content">
             <div class="stat-value">{{ stats.total }}</div>
-            <div class="stat-label">Усього</div>
+            <div class="stat-label">{{ _('Усього') }}</div>
         </div>
     </div>
     <div class="stat-card mini">
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #10b981, #059669);">✅</div>
         <div class="stat-content">
             <div class="stat-value">{{ stats.paid }}</div>
-            <div class="stat-label">Оплачено</div>
+            <div class="stat-label">{{ _('Оплачено') }}</div>
         </div>
     </div>
     <div class="stat-card mini">
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #f59e0b, #d97706);">⏳</div>
         <div class="stat-content">
             <div class="stat-value">{{ stats.pending }}</div>
-            <div class="stat-label">Очікує</div>
+            <div class="stat-label">{{ _('Очікує') }}</div>
         </div>
     </div>
     <div class="stat-card mini">
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">💰</div>
         <div class="stat-content">
             <div class="stat-value">{{ '%.0f'|format(stats.revenue) }} ₴</div>
-            <div class="stat-label">Дохід</div>
+            <div class="stat-label">{{ _('Дохід') }}</div>
         </div>
     </div>
 </div>
@@ -63,24 +63,24 @@
 <!-- Таблиця замовлень -->
 <div class="card">
     <div class="card-header">
-        <h3>📋 Список замовлень</h3>
+        <h3>📋 {{ _('Список замовлень') }}</h3>
         {% if request.args.get('status') %}
-            <span class="badge badge-secondary">Фільтр: {{ request.args.get('status') }}</span>
+            <span class="badge badge-secondary">{{ _('Фільтр:') }} {{ request.args.get('status') }}</span>
         {% endif %}
     </div>
-    
+
     {% if orders %}
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>№</th>
-                    <th>Дата</th>
-                    <th>Клієнт</th>
-                    <th>Товари</th>
-                    <th>Сума</th>
-                    <th>Статус</th>
-                    <th>Дії</th>
+                    <th>{{ _('№') }}</th>
+                    <th>{{ _('Дата') }}</th>
+                    <th>{{ _('Клієнт') }}</th>
+                    <th>{{ _('Товари') }}</th>
+                    <th>{{ _('Сума') }}</th>
+                    <th>{{ _('Статус') }}</th>
+                    <th>{{ _('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,12 +95,12 @@
                         {% elif order.customer_email %}
                             {{ order.customer_email }}
                         {% else %}
-                            <span class="text-muted">Гість</span>
+                            <span class="text-muted">{{ _('Гість') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if order.items %}
-                            <span class="badge badge-info">{{ order.items|length }} шт.</span>
+                            <span class="badge badge-info">{{ order.items|length }} {{ _('шт.') }}</span>
                         {% else %}
                             <span class="text-muted">—</span>
                         {% endif %}
@@ -108,24 +108,24 @@
                     <td><strong class="text-success">{{ '%.2f'|format(order.amount) }} {{ order.currency }}</strong></td>
                     <td>
                         {% if order.status == 'created' %}
-                        <span class="badge badge-secondary">Створено</span>
+                        <span class="badge badge-secondary">{{ _('Створено') }}</span>
                         {% elif order.status == 'pending' %}
-                        <span class="badge badge-warning">Очікує</span>
+                        <span class="badge badge-warning">{{ _('Очікує') }}</span>
                         {% elif order.status == 'paid' %}
-                        <span class="badge badge-success">Оплачено</span>
+                        <span class="badge badge-success">{{ _('Оплачено') }}</span>
                         {% elif order.status == 'shipped' %}
-                        <span class="badge badge-info">Відправлено</span>
+                        <span class="badge badge-info">{{ _('Відправлено') }}</span>
                         {% elif order.status == 'delivered' %}
-                        <span class="badge badge-success">Доставлено</span>
+                        <span class="badge badge-success">{{ _('Доставлено') }}</span>
                         {% elif order.status == 'cancelled' %}
-                        <span class="badge badge-danger">Скасовано</span>
+                        <span class="badge badge-danger">{{ _('Скасовано') }}</span>
                         {% else %}
                         <span class="badge badge-secondary">{{ order.status }}</span>
                         {% endif %}
                     </td>
                     <td onclick="event.stopPropagation();">
                         <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-secondary">
-                            👁️ Деталі
+                            👁️ {{ _('Деталі') }}
                         </a>
                     </td>
                 </tr>
@@ -133,33 +133,33 @@
             </tbody>
         </table>
     </div>
-    
+
     <!-- Пагінація -->
     {% if pagination.pages > 1 %}
     <div class="pagination">
         {% if pagination.has_prev %}
-            <a href="{{ url_for('admin_orders', page=pagination.prev_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">← Попередня</a>
+            <a href="{{ url_for('admin_orders', page=pagination.prev_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">← {{ _('Попередня') }}</a>
         {% endif %}
-        
+
         <span class="pagination-info">
-            Сторінка {{ pagination.page }} з {{ pagination.pages }}
+            {{ _('Сторінка') }} {{ pagination.page }} {{ _('з') }} {{ pagination.pages }}
         </span>
-        
+
         {% if pagination.has_next %}
-            <a href="{{ url_for('admin_orders', page=pagination.next_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">Наступна →</a>
+            <a href="{{ url_for('admin_orders', page=pagination.next_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">{{ _('Наступна') }} →</a>
         {% endif %}
     </div>
     {% endif %}
-    
+
     {% else %}
     <div class="empty-state">
         <div class="empty-icon">🛒</div>
-        <h3>Замовлень немає</h3>
+        <h3>{{ _('Замовлень немає') }}</h3>
         <p>
             {% if request.args.get('status') %}
-                Немає замовлень зі статусом "{{ request.args.get('status') }}"
+                {{ _('Немає замовлень зі статусом') }} "{{ request.args.get('status') }}"
             {% else %}
-                Замовлення з'являться після першої покупки
+                {{ _('Замовлення з\'являться після першої покупки') }}
             {% endif %}
         </p>
     </div>

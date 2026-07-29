@@ -5,53 +5,44 @@
 {% block content %}
 <div class="reports-dashboard">
     <div class="page-header" style="margin-bottom: 2rem;">
-        <h1>📈 Звіти складу</h1>
+        <h1>{{ _('📈 Звіти складу') }}</h1>
     </div>
 
     <!-- Вибір періоду -->
     <div class="period-selector" style="margin-bottom: 2rem; display: flex; gap: 1rem;">
         <a href="{{ url_for('admin_warehouse_reports', period='week') }}" 
-           class="btn {% if period == 'week' %}btn-primary{% else %}btn-outline{% endif %}">
-            Тиждень
-        </a>
+           class="btn {% if period == 'week' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Тиждень') }}</a>
         <a href="{{ url_for('admin_warehouse_reports', period='month') }}" 
-           class="btn {% if period == 'month' %}btn-primary{% else %}btn-outline{% endif %}">
-            Місяць
-        </a>
+           class="btn {% if period == 'month' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Місяць') }}</a>
         <a href="{{ url_for('admin_warehouse_reports', period='quarter') }}" 
-           class="btn {% if period == 'quarter' %}btn-primary{% else %}btn-outline{% endif %}">
-            Квартал
-        </a>
+           class="btn {% if period == 'quarter' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Квартал') }}</a>
         <a href="{{ url_for('admin_warehouse_reports', period='year') }}" 
-           class="btn {% if period == 'year' %}btn-primary{% else %}btn-outline{% endif %}">
-            Рік
-        </a>
+           class="btn {% if period == 'year' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Рік') }}</a>
     </div>
 
-    <p class="text-muted" style="margin-bottom: 2rem;">
-        📅 Період: з <strong>{{ start_date.strftime('%d.%m.%Y') }}</strong>
+    <p class="text-muted" style="margin-bottom: 2rem;">{{ _('📅 Період: з') }}<strong>{{ start_date.strftime('%d.%m.%Y') }}</strong>
     </p>
 
     <div class="reports-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
         <!-- Відправки -->
         <div class="card">
-            <h3>🚚 Відправки</h3>
+            <h3>{{ _('🚚 Відправки') }}</h3>
             <div class="report-stats">
                 <div class="report-row">
-                    <span class="label">Всього завдань:</span>
+                    <span class="label">{{ _('Всього завдань:') }}</span>
                     <span class="value">{{ shipments.total }}</span>
                 </div>
                 <div class="report-row">
-                    <span class="label">Відправлено:</span>
+                    <span class="label">{{ _('Відправлено:') }}</span>
                     <span class="value highlight-blue">{{ shipments.shipped }}</span>
                 </div>
                 <div class="report-row">
-                    <span class="label">Доставлено:</span>
+                    <span class="label">{{ _('Доставлено:') }}</span>
                     <span class="value highlight-green">{{ shipments.delivered }}</span>
                 </div>
                 {% if shipments.total > 0 %}
                 <div class="report-row">
-                    <span class="label">Виконання:</span>
+                    <span class="label">{{ _('Виконання:') }}</span>
                     <span class="value">
                         {{ "%.1f"|format(shipments.delivered / shipments.total * 100) }}%
                     </span>
@@ -62,18 +53,18 @@
 
         <!-- Поповнення -->
         <div class="card">
-            <h3>📥 Поповнення</h3>
+            <h3>{{ _('📥 Поповнення') }}</h3>
             <div class="report-stats">
                 <div class="report-row">
-                    <span class="label">Всього замовлень:</span>
+                    <span class="label">{{ _('Всього замовлень:') }}</span>
                     <span class="value">{{ replenishments.total }}</span>
                 </div>
                 <div class="report-row">
-                    <span class="label">Отримано:</span>
+                    <span class="label">{{ _('Отримано:') }}</span>
                     <span class="value highlight-green">{{ replenishments.received }}</span>
                 </div>
                 <div class="report-row">
-                    <span class="label">Сума закупівель:</span>
+                    <span class="label">{{ _('Сума закупівель:') }}</span>
                     <span class="value highlight-blue">{{ "%.2f"|format(replenishments.total_cost) }} UAH</span>
                 </div>
             </div>
@@ -81,10 +72,10 @@
 
         <!-- Витрати -->
         <div class="card">
-            <h3>💰 Витрати</h3>
+            <h3>{{ _('💰 Витрати') }}</h3>
             <div class="report-stats">
                 <div class="report-row total">
-                    <span class="label">Загальні витрати:</span>
+                    <span class="label">{{ _('Загальні витрати:') }}</span>
                     <span class="value highlight-red">{{ "%.2f"|format(expenses.total) }} UAH</span>
                 </div>
                 
@@ -104,7 +95,7 @@
                 </div>
                 {% else %}
                 <div class="report-row">
-                    <span class="text-muted">Немає витрат за період</span>
+                    <span class="text-muted">{{ _('Немає витрат за період') }}</span>
                 </div>
                 {% endfor %}
             </div>
@@ -112,22 +103,22 @@
 
         <!-- Зведення -->
         <div class="card summary-card">
-            <h3>📊 Зведення</h3>
+            <h3>{{ _('📊 Зведення') }}</h3>
             <div class="summary-stats">
                 <div class="summary-item">
                     <span class="icon">📤</span>
                     <span class="number">{{ shipments.shipped }}</span>
-                    <span class="label">Відправок</span>
+                    <span class="label">{{ _('Відправок') }}</span>
                 </div>
                 <div class="summary-item">
                     <span class="icon">📥</span>
                     <span class="number">{{ replenishments.received }}</span>
-                    <span class="label">Поповнень</span>
+                    <span class="label">{{ _('Поповнень') }}</span>
                 </div>
                 <div class="summary-item expense">
                     <span class="icon">💸</span>
                     <span class="number">{{ "%.0f"|format(expenses.total) }}</span>
-                    <span class="label">Витрат (UAH)</span>
+                    <span class="label">{{ _('Витрат (UAH)') }}</span>
                 </div>
             </div>
         </div>
@@ -135,10 +126,10 @@
 
     <!-- Швидкі посилання -->
     <div class="quick-links" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline">📦 Завдання</a>
-        <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline">📊 Залишки</a>
-        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">📥 Поповнення</a>
-        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">💰 Витрати</a>
+        <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline">{{ _('📦 Завдання') }}</a>
+        <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline">{{ _('📊 Залишки') }}</a>
+        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">{{ _('📥 Поповнення') }}</a>
+        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('💰 Витрати') }}</a>
     </div>
 </div>
 

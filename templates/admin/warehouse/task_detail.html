@@ -6,27 +6,25 @@
 <div class="task-detail">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
-            <a href="{{ url_for('admin_warehouse') }}" class="btn btn-sm btn-outline">← До списку</a>
-            <h1 style="margin: 0.5rem 0;">📦 Завдання {{ task.task_number or '#' ~ task.id }}</h1>
-            <a href="{{ url_for('admin_warehouse_task_print', id=task.id) }}" target="_blank" class="btn btn-sm btn-outline">
-                🖨️ Друкувати пакувальний лист
-            </a>
+            <a href="{{ url_for('admin_warehouse') }}" class="btn btn-sm btn-outline">{{ _('← До списку') }}</a>
+            <h1 style="margin: 0.5rem 0;">{{ _('📦 Завдання {{ task.task_number or \'#\' ~ task.id }}') }}</h1>
+            <a href="{{ url_for('admin_warehouse_task_print', id=task.id) }}" target="_blank" class="btn btn-sm btn-outline">{{ _('🖨️ Друкувати пакувальний лист') }}</a>
         </div>
         <div>
             {% if task.status == 'pending' %}
-            <span class="status-badge pending">⏳ Очікує обробки</span>
+            <span class="status-badge pending">{{ _('⏳ Очікує обробки') }}</span>
             {% elif task.status == 'processing' %}
-            <span class="status-badge processing">🔄 В роботі</span>
+            <span class="status-badge processing">{{ _('🔄 В роботі') }}</span>
             {% elif task.status == 'packed' %}
-            <span class="status-badge packed">📦 Запаковано</span>
+            <span class="status-badge packed">{{ _('📦 Запаковано') }}</span>
             {% elif task.status == 'ready' %}
-            <span class="status-badge ready">✅ Готово до відправки</span>
+            <span class="status-badge ready">{{ _('✅ Готово до відправки') }}</span>
             {% elif task.status == 'shipped' %}
-            <span class="status-badge shipped">🚚 Відправлено</span>
+            <span class="status-badge shipped">{{ _('🚚 Відправлено') }}</span>
             {% elif task.status == 'delivered' %}
-            <span class="status-badge delivered">✔️ Доставлено</span>
+            <span class="status-badge delivered">{{ _('✔️ Доставлено') }}</span>
             {% elif task.status == 'cancelled' %}
-            <span class="status-badge cancelled">❌ Скасовано</span>
+            <span class="status-badge cancelled">{{ _('❌ Скасовано') }}</span>
             {% endif %}
         </div>
     </div>
@@ -36,10 +34,10 @@
         <div class="main-info">
             <!-- Інформація про замовлення -->
             <div class="card">
-                <h3>📋 Замовлення</h3>
+                <h3>{{ _('📋 Замовлення') }}</h3>
                 <div class="info-grid">
                     <div class="info-row">
-                        <span class="label">ID Замовлення:</span>
+                        <span class="label">{{ _('ID Замовлення:') }}</span>
                         <span class="value">
                             {% if task.order %}
                             <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}">#{{ task.order_id }}</a>
@@ -49,7 +47,7 @@
                         </span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Тип:</span>
+                        <span class="label">{{ _('Тип:') }}</span>
                         <span class="value">
                             {% if task.is_b2b %}
                             <span class="badge badge-info">B2B</span>
@@ -59,19 +57,19 @@
                         </span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Пріоритет:</span>
+                        <span class="label">{{ _('Пріоритет:') }}</span>
                         <span class="value">
                             {% if task.priority == 1 %}
-                            <span class="badge badge-danger">🔴 Терміново</span>
+                            <span class="badge badge-danger">{{ _('🔴 Терміново') }}</span>
                             {% elif task.priority == 2 %}
-                            <span class="badge badge-warning">🟡 Високий</span>
+                            <span class="badge badge-warning">{{ _('🟡 Високий') }}</span>
                             {% else %}
-                            <span class="badge badge-secondary">⚪ Звичайний</span>
+                            <span class="badge badge-secondary">{{ _('⚪ Звичайний') }}</span>
                             {% endif %}
                         </span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Створено:</span>
+                        <span class="label">{{ _('Створено:') }}</span>
                         <span class="value">{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
                     </div>
                 </div>
@@ -79,14 +77,14 @@
 
             <!-- Інформація про клієнта -->
             <div class="card">
-                <h3>👤 Клієнт</h3>
+                <h3>{{ _('👤 Клієнт') }}</h3>
                 <div class="info-grid">
                     <div class="info-row">
-                        <span class="label">Ім'я:</span>
+                        <span class="label">{{ _('Ім\'я:') }}</span>
                         <span class="value">{{ task.customer_name or '—' }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Телефон:</span>
+                        <span class="label">{{ _('Телефон:') }}</span>
                         <span class="value">{{ task.customer_phone or '—' }}</span>
                     </div>
                     <div class="info-row">
@@ -98,11 +96,10 @@
 
             <!-- Адреса доставки -->
             <div class="card">
-                <h3>📍 Адреса доставки</h3>
+                <h3>{{ _('📍 Адреса доставки') }}</h3>
                 <p style="font-size: 1.1rem; margin: 0;">{{ task.shipping_address or '—' }}</p>
                 {% if task.shipping_method %}
-                <p style="margin-top: 0.5rem; color: #666;">
-                    Спосіб: <strong>{{ task.shipping_method }}</strong>
+                <p style="margin-top: 0.5rem; color: #666;">{{ _('Спосіб:') }}<strong>{{ task.shipping_method }}</strong>
                 </p>
                 {% endif %}
             </div>
@@ -110,13 +107,13 @@
             <!-- Товари замовлення -->
             {% if task.order and task.order.items %}
             <div class="card">
-                <h3>📦 Товари для відправки</h3>
+                <h3>{{ _('📦 Товари для відправки') }}</h3>
                 <table class="admin-table" style="margin: 0;">
                     <thead>
                         <tr>
-                            <th>Товар</th>
+                            <th>{{ _('Товар') }}</th>
                             <th>SKU</th>
-                            <th>Кількість</th>
+                            <th>{{ _('Кількість') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -124,7 +121,7 @@
                         <tr>
                             <td>{{ item.product.name if item.product else item.product_name }}</td>
                             <td><code>{{ item.product.sku if item.product else '—' }}</code></td>
-                            <td><strong>{{ item.quantity }}</strong> шт.</td>
+                            <td><strong>{{ item.quantity }}</strong>{{ _('шт.') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -135,35 +132,35 @@
             <!-- Інформація про відправку -->
             {% if task.status in ['shipped', 'delivered'] %}
             <div class="card">
-                <h3>🚚 Інформація про відправку</h3>
+                <h3>{{ _('🚚 Інформація про відправку') }}</h3>
                 <div class="info-grid">
                     <div class="info-row">
-                        <span class="label">Перевізник:</span>
+                        <span class="label">{{ _('Перевізник:') }}</span>
                         <span class="value">{{ task.carrier or '—' }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Номер відстеження:</span>
+                        <span class="label">{{ _('Номер відстеження:') }}</span>
                         <span class="value"><code>{{ task.tracking_number or '—' }}</code></span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Відправлено:</span>
+                        <span class="label">{{ _('Відправлено:') }}</span>
                         <span class="value">{{ task.shipped_at.strftime('%d.%m.%Y %H:%M') if task.shipped_at else '—' }}</span>
                     </div>
                     {% if task.delivered_at %}
                     <div class="info-row">
-                        <span class="label">Доставлено:</span>
+                        <span class="label">{{ _('Доставлено:') }}</span>
                         <span class="value">{{ task.delivered_at.strftime('%d.%m.%Y %H:%M') }}</span>
                     </div>
                     {% endif %}
                     {% if task.weight_kg %}
                     <div class="info-row">
-                        <span class="label">Вага:</span>
+                        <span class="label">{{ _('Вага:') }}</span>
                         <span class="value">{{ task.weight_kg }} кг</span>
                     </div>
                     {% endif %}
                     {% if task.dimensions %}
                     <div class="info-row">
-                        <span class="label">Розміри:</span>
+                        <span class="label">{{ _('Розміри:') }}</span>
                         <span class="value">{{ task.dimensions }}</span>
                     </div>
                     {% endif %}
@@ -173,11 +170,11 @@
 
             <!-- Нотатки -->
             <div class="card">
-                <h3>📝 Нотатки</h3>
+                <h3>{{ _('📝 Нотатки') }}</h3>
                 <form method="POST">
                     <input type="hidden" name="action" value="update_notes">
                     <textarea name="admin_notes" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">{{ task.admin_notes or '' }}</textarea>
-                    <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;">💾 Зберегти нотатки</button>
+                    <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;">{{ _('💾 Зберегти нотатки') }}</button>
                 </form>
             </div>
         </div>
@@ -185,16 +182,16 @@
         <!-- Панель дій -->
         <div class="actions-panel">
             <div class="card">
-                <h3>⚡ Дії</h3>
+                <h3>{{ _('⚡ Дії') }}</h3>
                 
                 {% if task.status == 'pending' %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="start_processing">
                     <div class="form-group">
-                        <label>Виконавець:</label>
+                        <label>{{ _('Виконавець:') }}</label>
                         <input type="text" name="assigned_to" class="form-control" placeholder="Ім'я працівника">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">🔄 Взяти в роботу</button>
+                    <button type="submit" class="btn btn-primary btn-block">{{ _('🔄 Взяти в роботу') }}</button>
                 </form>
                 {% endif %}
 
@@ -202,21 +199,21 @@
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="mark_packed">
                     <div class="form-group">
-                        <label>Вага (кг):</label>
+                        <label>{{ _('Вага (кг):') }}</label>
                         <input type="number" name="weight_kg" step="0.01" class="form-control" placeholder="0.5">
                     </div>
                     <div class="form-group">
-                        <label>Розміри:</label>
+                        <label>{{ _('Розміри:') }}</label>
                         <input type="text" name="dimensions" class="form-control" placeholder="30x20x10 см">
                     </div>
-                    <button type="submit" class="btn btn-info btn-block">📦 Запаковано</button>
+                    <button type="submit" class="btn btn-info btn-block">{{ _('📦 Запаковано') }}</button>
                 </form>
                 {% endif %}
 
                 {% if task.status == 'packed' %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="mark_ready">
-                    <button type="submit" class="btn btn-success btn-block">✅ Готово до відправки</button>
+                    <button type="submit" class="btn btn-success btn-block">{{ _('✅ Готово до відправки') }}</button>
                 </form>
                 {% endif %}
 
@@ -224,37 +221,37 @@
                 {% if task.is_pickup %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="mark_shipped">
-                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">🏬 Самовивіз — трек-номер не потрібен.</p>
-                    <button type="submit" class="btn btn-success btn-block">✅ Видано клієнту</button>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">{{ _('🏬 Самовивіз — трек-номер не потрібен.') }}</p>
+                    <button type="submit" class="btn btn-success btn-block">{{ _('✅ Видано клієнту') }}</button>
                 </form>
                 {% elif task.label_url %}
                 <div class="form-group" style="margin-bottom: 1rem;">
                     <p>📦 {{ task.carrier }} — <strong>{{ task.tracking_number }}</strong></p>
-                    <a href="{{ task.label_url }}" target="_blank" class="btn btn-outline btn-block">🏷️ Завантажити лейбл</a>
+                    <a href="{{ task.label_url }}" target="_blank" class="btn btn-outline btn-block">{{ _('🏷️ Завантажити лейбл') }}</a>
                 </div>
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="mark_shipped">
-                    <button type="submit" class="btn btn-warning btn-block">🚚 Відправлено</button>
+                    <button type="submit" class="btn btn-warning btn-block">{{ _('🚚 Відправлено') }}</button>
                 </form>
                 {% else %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="mark_shipped">
                     <div class="form-group">
-                        <label>Перевізник:</label>
+                        <label>{{ _('Перевізник:') }}</label>
                         <select name="carrier" class="form-control">
-                            <option value="Nova Poshta">Нова Пошта</option>
-                            <option value="Ukrposhta">Укрпошта</option>
+                            <option value="Nova Poshta">{{ _('Нова Пошта') }}</option>
+                            <option value="Ukrposhta">{{ _('Укрпошта') }}</option>
                             <option value="Meest">Meest</option>
                             <option value="DHL">DHL</option>
                             <option value="UPS">UPS</option>
-                            <option value="Other">Інший</option>
+                            <option value="Other">{{ _('Інший') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Номер ТТН:</label>
+                        <label>{{ _('Номер ТТН:') }}</label>
                         <input type="text" name="tracking_number" class="form-control" placeholder="20450000000001" required>
                     </div>
-                    <button type="submit" class="btn btn-warning btn-block">🚚 Відправлено</button>
+                    <button type="submit" class="btn btn-warning btn-block">{{ _('🚚 Відправлено') }}</button>
                 </form>
                 {% endif %}
                 {% endif %}
@@ -262,7 +259,7 @@
                 {% if task.status == 'shipped' %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="mark_delivered">
-                    <button type="submit" class="btn btn-success btn-block">✔️ Доставлено</button>
+                    <button type="submit" class="btn btn-success btn-block">{{ _('✔️ Доставлено') }}</button>
                 </form>
                 {% endif %}
 
@@ -271,10 +268,10 @@
                 <form method="POST" onsubmit="return confirm('Ви впевнені що хочете скасувати це завдання?');">
                     <input type="hidden" name="action" value="cancel">
                     <div class="form-group">
-                        <label>Причина скасування:</label>
+                        <label>{{ _('Причина скасування:') }}</label>
                         <textarea name="cancel_reason" class="form-control" rows="2"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-danger btn-block">❌ Скасувати</button>
+                    <button type="submit" class="btn btn-danger btn-block">{{ _('❌ Скасувати') }}</button>
                 </form>
                 {% endif %}
             </div>
@@ -282,19 +279,19 @@
             <!-- Інформація про виконавця -->
             {% if task.assigned_to %}
             <div class="card">
-                <h3>👷 Виконавець</h3>
+                <h3>{{ _('👷 Виконавець') }}</h3>
                 <p style="font-size: 1.2rem; margin: 0;">{{ task.assigned_to }}</p>
             </div>
             {% endif %}
 
             <!-- Швидкі посилання -->
             <div class="card">
-                <h3>🔗 Посилання</h3>
+                <h3>{{ _('🔗 Посилання') }}</h3>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline btn-block">📦 Всі завдання</a>
-                    <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline btn-block">📊 Залишки</a>
+                    <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline btn-block">{{ _('📦 Всі завдання') }}</a>
+                    <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline btn-block">{{ _('📊 Залишки') }}</a>
                     {% if task.order %}
-                    <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}" class="btn btn-outline btn-block">🧾 Замовлення</a>
+                    <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}" class="btn btn-outline btn-block">{{ _('🧾 Замовлення') }}</a>
                     {% endif %}
                 </div>
             </div>

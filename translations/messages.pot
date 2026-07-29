@@ -1,14 +1,17 @@
-# SmartShop AI - English translations
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: SmartShop AI 1.0\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-07-29 19:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
-"Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -216,12 +219,17 @@ msgstr ""
 
 #: app.py:3028
 #, python-format
-msgid "✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька хвилин, щоб з'явився сертифікат."
+msgid ""
+"✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька "
+"хвилин, щоб з'явився сертифікат."
 msgstr ""
 
 #: app.py:3034
 #, python-format
-msgid "Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). Перевірте DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за кілька хвилин."
+msgid ""
+"Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). "
+"Перевірте DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за "
+"кілька хвилин."
 msgstr ""
 
 #: app.py:3081
@@ -238,7 +246,9 @@ msgid "✅ Stripe підключено! Тепер ви можете прийм�
 msgstr ""
 
 #: app.py:3134
-msgid "Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та спробуйте ще раз."
+msgid ""
+"Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та "
+"спробуйте ще раз."
 msgstr ""
 
 #: app.py:3136
@@ -538,11 +548,15 @@ msgid "⚠️ VAT номер не підтверджено: %(error)s"
 msgstr ""
 
 #: routes/auth.py:262
-msgid "✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити замовлення."
+msgid ""
+"✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити "
+"замовлення."
 msgstr ""
 
 #: routes/auth.py:264
-msgid "📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після верифікації."
+msgid ""
+"📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після "
+"верифікації."
 msgstr ""
 
 #: routes/cabinet.py:47 routes/cabinet.py:144
@@ -596,7 +610,9 @@ msgid "Назва магазину обов'язкова."
 msgstr ""
 
 #: routes/signup.py:80
-msgid "Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, цифри, дефіс)."
+msgid ""
+"Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, "
+"цифри, дефіс)."
 msgstr ""
 
 #: routes/signup.py:84
@@ -613,7 +629,9 @@ msgstr ""
 
 #: routes/signup.py:138
 #, python-format
-msgid "Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте пізніше в адмінці."
+msgid ""
+"Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте "
+"пізніше в адмінці."
 msgstr ""
 
 #: services/email_service.py:118
@@ -855,7 +873,9 @@ msgid "Телефон"
 msgstr ""
 
 #: templates/checkout_address.html:56
-msgid "Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, її можна не заповнювати."
+msgid ""
+"Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, "
+"її можна не заповнювати."
 msgstr ""
 
 #: templates/admin/shipping_account_form.html:58
@@ -945,7 +965,9 @@ msgid "Email:"
 msgstr ""
 
 #: templates/checkout_success.html:31
-msgid "Ми отримали вашу оплату і незабаром зв'яжемося з вами для підтвердження доставки."
+msgid ""
+"Ми отримали вашу оплату і незабаром зв'яжемося з вами для підтвердження "
+"доставки."
 msgstr ""
 
 #: templates/checkout_success.html:36
@@ -1096,7 +1118,9 @@ msgid "Експорт CSV"
 msgstr ""
 
 #: templates/admin/accounting.html:55
-msgid "Файли враховують обраний вище період. Це не податкові документи — просто структуровані дані для передачі бухгалтеру/імпорту в його програму."
+msgid ""
+"Файли враховують обраний вище період. Це не податкові документи — просто "
+"структуровані дані для передачі бухгалтеру/імпорту в його програму."
 msgstr ""
 
 #: templates/admin/accounting.html:59
@@ -1220,7 +1244,9 @@ msgid "Не обговорюй політику та релігію"
 msgstr ""
 
 #: templates/admin/ai_settings.html:91
-msgid "Ці інструкції додаються до базового промпту. Бот буде їх враховувати при відповідях."
+msgid ""
+"Ці інструкції додаються до базового промпту. Бот буде їх враховувати при "
+"відповідях."
 msgstr ""
 
 #: templates/admin/ai_settings.html:94
@@ -1285,7 +1311,9 @@ msgid "Генерувати статті з плану автоматично (�
 msgstr ""
 
 #: templates/admin/ai_settings.html:165
-msgid "Фонове завдання перевіряє план кожні 15 хв і генерує статті, дата яких настала. Витрачає OpenAI-кредити магазину."
+msgid ""
+"Фонове завдання перевіряє план кожні 15 хв і генерує статті, дата яких "
+"настала. Витрачає OpenAI-кредити магазину."
 msgstr ""
 
 #: templates/admin/ai_settings.html:171
@@ -1305,7 +1333,9 @@ msgid "Генерувати зображення для статей"
 msgstr ""
 
 #: templates/admin/ai_settings.html:195
-msgid "Використовує DALL-E 3 для створення унікальних зображень на основі змісту статті"
+msgid ""
+"Використовує DALL-E 3 для створення унікальних зображень на основі змісту"
+" статті"
 msgstr ""
 
 #: templates/admin/ai_settings.html:198
@@ -1313,7 +1343,9 @@ msgid "Стиль зображень"
 msgstr ""
 
 #: templates/admin/ai_settings.html:202
-msgid "Опис стилю для генерації (англійською). Приклади: \"minimalist, clean design\", \"vibrant colors, modern\", \"corporate style, professional\""
+msgid ""
+"Опис стилю для генерації (англійською). Приклади: \"minimalist, clean "
+"design\", \"vibrant colors, modern\", \"corporate style, professional\""
 msgstr ""
 
 #: templates/admin/ai_settings.html:210
@@ -1469,7 +1501,9 @@ msgid "Інструкції для AI-продавця..."
 msgstr ""
 
 #: templates/admin/blocks.html:89
-msgid "Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він може/не може робити"
+msgid ""
+"Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він "
+"може/не може робити"
 msgstr ""
 
 #: templates/admin/blocks.html:98 templates/admin/category_edit.html:71
@@ -1844,7 +1878,9 @@ msgid "Створити план на 7 днів"
 msgstr ""
 
 #: templates/admin/blog_plan.html:68
-msgid "Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані статті автоматично."
+msgid ""
+"Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані "
+"статті автоматично."
 msgstr ""
 
 #: templates/admin/blog_plan.html:74
@@ -2133,7 +2169,9 @@ msgid "Заявок ще немає"
 msgstr ""
 
 #: templates/admin/contacts.html:121
-msgid "Вони з'являться, коли відвідувачі надішлють повідомлення через форму на сайті"
+msgid ""
+"Вони з'являться, коли відвідувачі надішлють повідомлення через форму на "
+"сайті"
 msgstr ""
 
 #: templates/admin/crm.html:3 templates/admin/layout.html:315
@@ -2834,7 +2872,9 @@ msgid "(IP платформи ще не налаштовано)"
 msgstr ""
 
 #: templates/admin/domain_settings.html:58
-msgid "DNS-зміни можуть діяти від кількох хвилин до кількох годин. Після налаштування натисніть «Перевірити»."
+msgid ""
+"DNS-зміни можуть діяти від кількох хвилин до кількох годин. Після "
+"налаштування натисніть «Перевірити»."
 msgstr ""
 
 #: templates/admin/layout.html:5 templates/admin/layout.html:280
@@ -3078,7 +3118,9 @@ msgid "Прийом оплат - Адмін панель"
 msgstr ""
 
 #: templates/admin/payments_settings.html:6
-msgid "Підключіть Stripe, щоб приймати оплати карткою від своїх клієнтів напряму на свій рахунок."
+msgid ""
+"Підключіть Stripe, щоб приймати оплати карткою від своїх клієнтів напряму"
+" на свій рахунок."
 msgstr ""
 
 #: templates/admin/payments_settings.html:25
@@ -3102,7 +3144,9 @@ msgid "Керувати в Stripe / оновити дані"
 msgstr ""
 
 #: templates/admin/payments_settings.html:46
-msgid "Відв'язати Stripe-акаунт від магазину? Клієнти не зможуть оформити замовлення, доки ви не підключите новий."
+msgid ""
+"Відв'язати Stripe-акаунт від магазину? Клієнти не зможуть оформити "
+"замовлення, доки ви не підключите новий."
 msgstr ""
 
 #: templates/admin/payments_settings.html:47
@@ -3114,7 +3158,9 @@ msgid "Реєстрацію в Stripe не завершено"
 msgstr ""
 
 #: templates/admin/payments_settings.html:57
-msgid "Ви вже почали підключення Stripe, але не завершили заповнення даних. Продовжіть реєстрацію."
+msgid ""
+"Ви вже почали підключення Stripe, але не завершили заповнення даних. "
+"Продовжіть реєстрацію."
 msgstr ""
 
 #: templates/admin/payments_settings.html:61
@@ -3122,7 +3168,9 @@ msgid "Продовжити реєстрацію в Stripe"
 msgstr ""
 
 #: templates/admin/payments_settings.html:65
-msgid "Без підключеного Stripe клієнти не зможуть оплатити замовлення у вашому магазині"
+msgid ""
+"Без підключеного Stripe клієнти не зможуть оплатити замовлення у вашому "
+"магазині"
 msgstr ""
 
 #: templates/admin/payments_settings.html:66
@@ -3138,7 +3186,9 @@ msgid "Підключити Stripe"
 msgstr ""
 
 #: templates/admin/payments_settings.html:80
-msgid "Вас перенаправить на сторінку Stripe для короткої реєстрації (email, банківські реквізити). Після завершення ви повернетесь сюди автоматично."
+msgid ""
+"Вас перенаправить на сторінку Stripe для короткої реєстрації (email, "
+"банківські реквізити). Після завершення ви повернетесь сюди автоматично."
 msgstr ""
 
 #: templates/admin/product_edit.html:6
@@ -3501,7 +3551,9 @@ msgid "Ваша компанія (для запитів до реєстрів)"
 msgstr ""
 
 #: templates/admin/settings.html:314
-msgid "Ці дані використовуються для верифікації контрагентів через VIES, Handelsregister та інші реєстри."
+msgid ""
+"Ці дані використовуються для верифікації контрагентів через VIES, "
+"Handelsregister та інші реєстри."
 msgstr ""
 
 #: templates/admin/settings.html:315
@@ -3633,7 +3685,10 @@ msgid "Юридичні тексти (Datenschutz / AGB)"
 msgstr ""
 
 #: templates/admin/settings.html:448
-msgid "Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не юридична консультація). Impressum окремого тексту не потребує - він збирається з даних юрособи вище."
+msgid ""
+"Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не"
+" юридична консультація). Impressum окремого тексту не потребує - він "
+"збирається з даних юрособи вище."
 msgstr ""
 
 #: templates/admin/settings.html:451
@@ -3671,7 +3726,8 @@ msgstr ""
 #: templates/admin/shipping_account_form.html:6
 msgid ""
 "в усіх полях креденшелів і увімкніть Sandbox -\n"
-"        checkout буде показувати синтетичні тарифи без звернення до мережі."
+"        checkout буде показувати синтетичні тарифи без звернення до "
+"мережі."
 msgstr ""
 
 #: templates/admin/shipping_account_form.html:14
@@ -3751,7 +3807,9 @@ msgid "Видалити цей обліковий запис?"
 msgstr ""
 
 #: templates/admin/shipping_settings.html:51
-msgid "Жодної служби доставки ще не налаштовано. Checkout працює без вибору доставки (як і раніше)."
+msgid ""
+"Жодної служби доставки ще не налаштовано. Checkout працює без вибору "
+"доставки (як і раніше)."
 msgstr ""
 
 #: templates/admin/shipping_settings.html:58
@@ -3763,7 +3821,10 @@ msgid "Самовивіз"
 msgstr ""
 
 #: templates/admin/shipping_settings.html:75
-msgid "Безкоштовна альтернатива доставці перевізником - клієнт сам забирає замовлення. Зʼявиться як окрема опція на кроці вибору доставки в checkout, навіть якщо DHL/UPS не налаштовані."
+msgid ""
+"Безкоштовна альтернатива доставці перевізником - клієнт сам забирає "
+"замовлення. Зʼявиться як окрема опція на кроці вибору доставки в "
+"checkout, навіть якщо DHL/UPS не налаштовані."
 msgstr ""
 
 #: templates/admin/shipping_settings.html:81
@@ -4789,7 +4850,9 @@ msgid "Мін. 8 символів"
 msgstr ""
 
 #: templates/auth/register_b2b.html:162
-msgid "Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії та повідомимо про результат на вказаний email."
+msgid ""
+"Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії"
+" та повідомимо про результат на вказаний email."
 msgstr ""
 
 #: templates/auth/register_b2b.html:166
@@ -4863,7 +4926,9 @@ msgid "Адреса вашого магазину"
 msgstr ""
 
 #: templates/auth/signup_success.html:18
-msgid "Піддомен магазину ще не активовано на платформі - зверніться до підтримки, щоб отримати посилання."
+msgid ""
+"Піддомен магазину ще не активовано на платформі - зверніться до "
+"підтримки, щоб отримати посилання."
 msgstr ""
 
 #: templates/auth/signup_success.html:21
@@ -5020,7 +5085,9 @@ msgid "Ваша компанія на перевірці"
 msgstr ""
 
 #: templates/cabinet/b2b/dashboard.html:73
-msgid "Ми перевіряємо надані вами дані. Це може зайняти до 24 годин. Після верифікації ви отримаєте доступ до повного функціоналу B2B кабінету."
+msgid ""
+"Ми перевіряємо надані вами дані. Це може зайняти до 24 годин. Після "
+"верифікації ви отримаєте доступ до повного функціоналу B2B кабінету."
 msgstr ""
 
 #: templates/cabinet/b2b/dashboard.html:81 templates/cabinet/b2b/orders.html:89
@@ -5167,7 +5234,9 @@ msgstr ""
 
 #: templates/cabinet/b2b/pending.html:11
 #, python-format
-msgid "Компанія «%(name)s» ще не верифікована. Ми повідомимо вас на email, щойно перевірку буде завершено."
+msgid ""
+"Компанія «%(name)s» ще не верифікована. Ми повідомимо вас на email, щойно"
+" перевірку буде завершено."
 msgstr ""
 
 #: templates/cabinet/b2c/dashboard.html:3
@@ -5307,7 +5376,9 @@ msgid "Час перевірки:"
 msgstr ""
 
 #: templates/email/b2b_verification_pending.html:20
-msgid "зазвичай 10-30 хвилин (автоматична) або до 24 годин (якщо потрібна ручна перевірка)."
+msgid ""
+"зазвичай 10-30 хвилин (автоматична) або до 24 годин (якщо потрібна ручна "
+"перевірка)."
 msgstr ""
 
 #: templates/email/b2b_verification_pending.html:22
@@ -5319,7 +5390,9 @@ msgid "Що робити далі?"
 msgstr ""
 
 #: templates/email/b2b_verification_pending.html:26
-msgid "Поки очікуєте, можете переглянути каталог товарів та ознайомитися з умовами B2B співпраці."
+msgid ""
+"Поки очікуєте, можете переглянути каталог товарів та ознайомитися з "
+"умовами B2B співпраці."
 msgstr ""
 
 #: templates/email/b2b_verification_pending.html:31
@@ -5527,7 +5600,9 @@ msgid "Вітаємо в SmartShop AI!"
 msgstr ""
 
 #: templates/email/registration_welcome.html:8
-msgid "Дякуємо, що приєдналися до SmartShop AI - інтелектуальної торгової платформи нового покоління!"
+msgid ""
+"Дякуємо, що приєдналися до SmartShop AI - інтелектуальної торгової "
+"платформи нового покоління!"
 msgstr ""
 
 #: templates/email/registration_welcome.html:10
@@ -5636,7 +5711,9 @@ msgid "ІІ-продавець"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:312
-msgid "Ваш персональний помічник, який знає весь каталог та готовий допомогти 24/7"
+msgid ""
+"Ваш персональний помічник, який знає весь каталог та готовий допомогти "
+"24/7"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:321
@@ -5816,7 +5893,10 @@ msgid "SmartShop AI — конструктор інтернет-магазині
 msgstr ""
 
 #: templates/pages/landing.html:7
-msgid "SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс."
+msgid ""
+"SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, "
+"підключіть склад, доставку, бухгалтерію, автоматичний блог та "
+"ІІ-продавця. Підписка від 19€/міс."
 msgstr ""
 
 #: templates/pages/landing.html:133
@@ -5836,7 +5916,10 @@ msgid "без розробників і без коду"
 msgstr ""
 
 #: templates/pages/landing.html:152
-msgid "Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. Блог пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець."
+msgid ""
+"Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, "
+"тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. "
+"Блог пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець."
 msgstr ""
 
 #: templates/pages/landing.html:155
@@ -5852,7 +5935,9 @@ msgid "Все для запуску магазину в одному місці"
 msgstr ""
 
 #: templates/pages/landing.html:162
-msgid "Базові функції одразу включені в підписку. Складські та фінансові модулі підключаються за потреби — окремо для кожного магазину."
+msgid ""
+"Базові функції одразу включені в підписку. Складські та фінансові модулі "
+"підключаються за потреби — окремо для кожного магазину."
 msgstr ""
 
 #: templates/pages/landing.html:166
@@ -5860,11 +5945,15 @@ msgid "Конструктор вітрини"
 msgstr ""
 
 #: templates/pages/landing.html:167
-msgid "Логотип, тексти, категорії та товари редагуються прямо з адмінки — фото, опис, ціна, наявність."
+msgid ""
+"Логотип, тексти, категорії та товари редагуються прямо з адмінки — фото, "
+"опис, ціна, наявність."
 msgstr ""
 
 #: templates/pages/landing.html:172
-msgid "Чат-бот знає ваш каталог, ціни та наявність, пам'ятає розмову, підказує статус замовлення і передає складні звернення менеджеру."
+msgid ""
+"Чат-бот знає ваш каталог, ціни та наявність, пам'ятає розмову, підказує "
+"статус замовлення і передає складні звернення менеджеру."
 msgstr ""
 
 #: templates/pages/landing.html:176
@@ -5872,7 +5961,9 @@ msgid "Автоматичний блог"
 msgstr ""
 
 #: templates/pages/landing.html:177
-msgid "ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими словами."
+msgid ""
+"ІІ пише статті за вашим планом тем з SEO-заголовками, описами та "
+"ключовими словами."
 msgstr ""
 
 #: templates/pages/landing.html:181 templates/pages/landing.html:221
@@ -5880,11 +5971,15 @@ msgid "Оплата карткою"
 msgstr ""
 
 #: templates/pages/landing.html:182
-msgid "Приймайте оплату через Stripe одразу після реєстрації — без додаткових інтеграцій."
+msgid ""
+"Приймайте оплату через Stripe одразу після реєстрації — без додаткових "
+"інтеграцій."
 msgstr ""
 
 #: templates/pages/landing.html:187
-msgid "Завдання на комплектацію, друк пакувальних листів, самовивіз або служба доставки."
+msgid ""
+"Завдання на комплектацію, друк пакувальних листів, самовивіз або служба "
+"доставки."
 msgstr ""
 
 #: templates/pages/landing.html:188 templates/pages/landing.html:194
@@ -5893,7 +5988,9 @@ msgid "Опційно"
 msgstr ""
 
 #: templates/pages/landing.html:193
-msgid "DHL/UPS з розрахунком тарифів та автоматичним створенням накладних — або безкоштовний самовивіз."
+msgid ""
+"DHL/UPS з розрахунком тарифів та автоматичним створенням накладних — або "
+"безкоштовний самовивіз."
 msgstr ""
 
 #: templates/pages/landing.html:199
@@ -5905,7 +6002,9 @@ msgid "B2B-кабінет"
 msgstr ""
 
 #: templates/pages/landing.html:205
-msgid "Окрема реєстрація партнерів з перевіркою компанії та особливими умовами замовлень."
+msgid ""
+"Окрема реєстрація партнерів з перевіркою компанії та особливими умовами "
+"замовлень."
 msgstr ""
 
 #: templates/pages/landing.html:213
@@ -5962,7 +6061,9 @@ msgid "Всі права захищені"
 msgstr ""
 
 #: templates/partials/cookie_banner.html:3
-msgid "Цей сайт використовує cookie для роботи кошика, входу в акаунт та аналітики."
+msgid ""
+"Цей сайт використовує cookie для роботи кошика, входу в акаунт та "
+"аналітики."
 msgstr ""
 
 #: templates/partials/cookie_banner.html:4
@@ -6048,623 +6149,4 @@ msgstr ""
 #: templates/platform_admin/dashboard.html:145
 msgid "Магазинів ще немає."
 msgstr ""
-
-#~ msgid "Home"
-#~ msgstr "Home"
-
-#~ msgid "Shop"
-#~ msgstr "Shop"
-
-#~ msgid "Blog"
-#~ msgstr "Blog"
-
-#~ msgid "About"
-#~ msgstr "About Us"
-
-#~ msgid "Contacts"
-#~ msgstr "Contact"
-
-#~ msgid "Cart"
-#~ msgstr "Cart"
-
-#~ msgid "Login"
-#~ msgstr "Login"
-
-#~ msgid "Logout"
-#~ msgstr "Logout"
-
-#~ msgid "Register"
-#~ msgstr "Register"
-
-#~ msgid "Admin Panel"
-#~ msgstr "Admin Panel"
-
-#~ msgid "Dashboard"
-#~ msgstr "Dashboard"
-
-#~ msgid "Search"
-#~ msgstr "Search"
-
-#~ msgid "Search products..."
-#~ msgstr "Search products..."
-
-#~ msgid "View all"
-#~ msgstr "View all"
-
-#~ msgid "Read more"
-#~ msgstr "Read more"
-
-#~ msgid "Learn more"
-#~ msgstr "Learn more"
-
-#~ msgid "Buy now"
-#~ msgstr "Buy now"
-
-#~ msgid "Add to cart"
-#~ msgstr "Add to cart"
-
-#~ msgid "Remove"
-#~ msgstr "Remove"
-
-#~ msgid "Save"
-#~ msgstr "Save"
-
-#~ msgid "Cancel"
-#~ msgstr "Cancel"
-
-#~ msgid "Delete"
-#~ msgstr "Delete"
-
-#~ msgid "Edit"
-#~ msgstr "Edit"
-
-#~ msgid "Back"
-#~ msgstr "Back"
-
-#~ msgid "Next"
-#~ msgstr "Next"
-
-#~ msgid "Previous"
-#~ msgstr "Previous"
-
-#~ msgid "Loading..."
-#~ msgstr "Loading..."
-
-#~ msgid "No results found"
-#~ msgstr "No results found"
-
-#~ msgid "Error"
-#~ msgstr "Error"
-
-#~ msgid "Success"
-#~ msgstr "Success"
-
-#~ msgid "Welcome to SmartShop AI"
-#~ msgstr "Welcome to SmartShop AI"
-
-#~ msgid "Your intelligent shopping assistant"
-#~ msgstr "Your intelligent shopping assistant"
-
-#~ msgid "Featured Products"
-#~ msgstr "Featured Products"
-
-#~ msgid "New Arrivals"
-#~ msgstr "New Arrivals"
-
-#~ msgid "Best Sellers"
-#~ msgstr "Best Sellers"
-
-#~ msgid "Categories"
-#~ msgstr "Categories"
-
-#~ msgid "All Categories"
-#~ msgstr "All Categories"
-
-#~ msgid "Latest from Blog"
-#~ msgstr "Latest from Blog"
-
-#~ msgid "All Products"
-#~ msgstr "All Products"
-
-#~ msgid "Filter"
-#~ msgstr "Filter"
-
-#~ msgid "Sort by"
-#~ msgstr "Sort by"
-
-#~ msgid "Price: Low to High"
-#~ msgstr "Price: Low to High"
-
-#~ msgid "Price: High to Low"
-#~ msgstr "Price: High to Low"
-
-#~ msgid "Newest First"
-#~ msgstr "Newest First"
-
-#~ msgid "In Stock"
-#~ msgstr "In Stock"
-
-#~ msgid "Out of Stock"
-#~ msgstr "Out of Stock"
-
-#~ msgid "Price"
-#~ msgstr "Price"
-
-#~ msgid "Quantity"
-#~ msgstr "Quantity"
-
-#~ msgid "Total"
-#~ msgstr "Total"
-
-#~ msgid "Subtotal"
-#~ msgstr "Subtotal"
-
-#~ msgid "Discount"
-#~ msgstr "Discount"
-
-#~ msgid "Shipping"
-#~ msgstr "Shipping"
-
-#~ msgid "Free Shipping"
-#~ msgstr "Free Shipping"
-
-#~ msgid "Your Cart"
-#~ msgstr "Your Cart"
-
-#~ msgid "Cart is empty"
-#~ msgstr "Your cart is empty"
-
-#~ msgid "Continue Shopping"
-#~ msgstr "Continue Shopping"
-
-#~ msgid "Checkout"
-#~ msgstr "Checkout"
-
-#~ msgid "Proceed to Checkout"
-#~ msgstr "Proceed to Checkout"
-
-#~ msgid "Order Summary"
-#~ msgstr "Order Summary"
-
-#~ msgid "Shipping Address"
-#~ msgstr "Shipping Address"
-
-#~ msgid "Payment Method"
-#~ msgstr "Payment Method"
-
-#~ msgid "Place Order"
-#~ msgstr "Place Order"
-
-#~ msgid "Contact Us"
-#~ msgstr "Contact Us"
-
-#~ msgid "Your Name"
-#~ msgstr "Your Name"
-
-#~ msgid "Your Email"
-#~ msgstr "Your Email"
-
-#~ msgid "Message"
-#~ msgstr "Message"
-
-#~ msgid "Send Message"
-#~ msgstr "Send Message"
-
-#~ msgid "Privacy Policy"
-#~ msgstr "Privacy Policy"
-
-#~ msgid "Terms of Service"
-#~ msgstr "Terms of Service"
-
-#~ msgid "All rights reserved"
-#~ msgstr "All rights reserved"
-
-#~ msgid "AI Assistant"
-#~ msgstr "AI Assistant"
-
-#~ msgid "Ask me anything..."
-#~ msgstr "Ask me anything..."
-
-#~ msgid "How can I help you?"
-#~ msgstr "How can I help you?"
-
-#~ msgid "Description"
-#~ msgstr "Description"
-
-#~ msgid "Reviews"
-#~ msgstr "Reviews"
-
-#~ msgid "Related Products"
-#~ msgstr "Related Products"
-
-#~ msgid "Category"
-#~ msgstr "Category"
-
-#~ msgid "Products"
-#~ msgstr "Products"
-
-#~ msgid "Orders"
-#~ msgstr "Orders"
-
-#~ msgid "Customers"
-#~ msgstr "Customers"
-
-#~ msgid "Settings"
-#~ msgstr "Settings"
-
-#~ msgid "Statistics"
-#~ msgstr "Statistics"
-
-#~ msgid "Add New"
-#~ msgstr "Add New"
-
-#~ msgid "Product Name"
-#~ msgstr "Product Name"
-
-#~ msgid "Status"
-#~ msgstr "Status"
-
-#~ msgid "Active"
-#~ msgstr "Active"
-
-#~ msgid "Published"
-#~ msgstr "Published"
-
-#~ msgid "Draft"
-#~ msgstr "Draft"
-
-#~ msgid "Pending"
-#~ msgstr "Pending"
-
-#~ msgid "Processing"
-#~ msgstr "Processing"
-
-#~ msgid "Shipped"
-#~ msgstr "Shipped"
-
-#~ msgid "Delivered"
-#~ msgstr "Delivered"
-
-#~ msgid "Cancelled"
-#~ msgstr "Cancelled"
-
-#~ msgid "Paid"
-#~ msgstr "Paid"
-
-#~ msgid "Today"
-#~ msgstr "Today"
-
-#~ msgid "Language"
-#~ msgstr "Language"
-
-#~ msgid "Phone"
-#~ msgstr "Phone"
-
-#~ msgid "Email"
-#~ msgstr "Email"
-
-#~ msgid "Address"
-#~ msgstr "Address"
-
-#~ msgid "Company"
-#~ msgstr "Company"
-
-#~ msgid "views"
-#~ msgstr "views"
-
-#~ msgid "Posted on"
-#~ msgstr "Posted on"
-
-#~ msgid "By"
-#~ msgstr "By"
-
-#~ msgid "Related Articles"
-#~ msgstr "Related Articles"
-
-#~ msgid "Головна"
-#~ msgstr "Home"
-
-#~ msgid "Блог"
-#~ msgstr "Blog"
-
-#~ msgid "хв читання"
-#~ msgstr "min read"
-
-#~ msgid "переглядів"
-#~ msgstr "views"
-
-#~ msgid "AI-контент"
-#~ msgstr "AI content"
-
-#~ msgid "Поділитись"
-#~ msgstr "Share"
-
-#~ msgid "Посилання скопійовано"
-#~ msgstr "Link copied"
-
-#~ msgid "Копіювати"
-#~ msgstr "Copy"
-
-#~ msgid "Схожі статті"
-#~ msgstr "Related Articles"
-
-#~ msgid "Магазин"
-#~ msgstr "Shop"
-
-#~ msgid "В кошик"
-#~ msgstr "Add to cart"
-
-#~ msgid "Характеристики"
-#~ msgstr "Specifications"
-
-#~ msgid "Опис"
-#~ msgstr "Description"
-
-#~ msgid "Відгуки"
-#~ msgstr "Reviews"
-
-#~ msgid "Схожі товари"
-#~ msgstr "Related Products"
-
-#~ msgid "Читати більше"
-#~ msgstr "Read more"
-
-#~ msgid "Показати більше"
-#~ msgstr "Show more"
-
-#~ msgid "Новинка"
-#~ msgstr "New"
-
-#~ msgid "Немає опису"
-#~ msgstr "No description"
-
-#~ msgid "Інше"
-#~ msgstr "Other"
-
-#~ msgid "Всі категорії"
-#~ msgstr "All categories"
-
-#~ msgid "Фільтрувати"
-#~ msgstr "Filter"
-
-#~ msgid "Ціна"
-#~ msgstr "Price"
-
-#~ msgid "від"
-#~ msgstr "from"
-
-#~ msgid "до"
-#~ msgstr "to"
-
-#~ msgid "Застосувати"
-#~ msgstr "Apply"
-
-#~ msgid "Скинути"
-#~ msgstr "Reset"
-
-#~ msgid "Сортування"
-#~ msgstr "Sort by"
-
-#~ msgid "За замовчуванням"
-#~ msgstr "Default"
-
-#~ msgid "За ціною (низька-висока)"
-#~ msgstr "Price (low to high)"
-
-#~ msgid "За ціною (висока-низька)"
-#~ msgstr "Price (high to low)"
-
-#~ msgid "За назвою (А-Я)"
-#~ msgstr "Name (A-Z)"
-
-#~ msgid "Товарів на сторінці"
-#~ msgstr "Products per page"
-
-#~ msgid "Показано"
-#~ msgstr "Showing"
-
-#~ msgid "з"
-#~ msgstr "of"
-
-#~ msgid "товарів"
-#~ msgstr "products"
-
-#~ msgid "Товари не знайдено"
-#~ msgstr "No products found"
-
-#~ msgid "Кількість"
-#~ msgstr "Quantity"
-
-#~ msgid "шт"
-#~ msgstr "pcs"
-
-#~ msgid "Є в наявності"
-#~ msgstr "In stock"
-
-#~ msgid "Немає в наявності"
-#~ msgstr "Out of stock"
-
-#~ msgid "Артикул"
-#~ msgstr "SKU"
-
-#~ msgid "Доставка"
-#~ msgstr "Shipping"
-
-#~ msgid "Оплата"
-#~ msgstr "Payment"
-
-#~ msgid "Гарантія"
-#~ msgstr "Warranty"
-
-#~ msgid "AI рекомендації"
-#~ msgstr "AI Recommendations"
-
-# Cart page
-#~ msgid "Кошик"
-#~ msgstr "Cart"
-
-#~ msgid "Товар"
-#~ msgstr "Product"
-
-#~ msgid "Сума"
-#~ msgstr "Total"
-
-#~ msgid "Загальна сума"
-#~ msgstr "Total"
-
-#~ msgid "Очистити кошик"
-#~ msgstr "Clear cart"
-
-#~ msgid "Продовжити покупки"
-#~ msgstr "Continue shopping"
-
-#~ msgid "Оформити замовлення"
-#~ msgstr "Checkout"
-
-#~ msgid "Ваш кошик порожній"
-#~ msgstr "Your cart is empty"
-
-#~ msgid "Перейти до магазину"
-#~ msgstr "Go to shop"
-
-# Category page
-#~ msgid "Усі"
-#~ msgstr "All"
-
-#~ msgid "Назад"
-#~ msgstr "Back"
-
-#~ msgid "Далі"
-#~ msgstr "Next"
-
-#~ msgid "У цій категорії поки немає товарів"
-#~ msgstr "No products in this category yet"
-
-#~ msgid "Переглянути всі товари"
-#~ msgstr "View all products"
-
-# About page
-#~ msgid "Про компанію"
-#~ msgstr "About Us"
-
-#~ msgid "Дізнайтеся більше про нас, нашу місію та цінності"
-#~ msgstr "Learn more about us, our mission and values"
-
-#~ msgid "Наша історія"
-#~ msgstr "Our Story"
-
-#~ msgid "Тут ви зможете розповісти про свій бренд, команду та цінності."
-#~ msgstr "Here you can tell about your brand, team and values."
-
-#~ msgid "Ми прагнемо надавати найкращий сервіс та якісні товари для наших клієнтів."
-#~ msgstr "We strive to provide the best service and quality products for our customers."
-
-#~ msgid "Наші цінності"
-#~ msgstr "Our Values"
-
-#~ msgid "Що робить нас особливими"
-#~ msgstr "What makes us special"
-
-#~ msgid "Якість"
-#~ msgstr "Quality"
-
-#~ msgid "Ми ретельно відбираємо кожен товар, щоб ви отримували тільки найкраще"
-#~ msgstr "We carefully select each product so you get only the best"
-
-#~ msgid "Швидкість"
-#~ msgstr "Speed"
-
-#~ msgid "Швидка обробка замовлень та доставка у найкоротші терміни"
-#~ msgstr "Fast order processing and delivery in the shortest time"
-
-#~ msgid "Підтримка"
-#~ msgstr "Support"
-
-#~ msgid "Наш ІІ-помічник та команда завжди готові допомогти вам 24/7"
-#~ msgstr "Our AI assistant and team are always ready to help you 24/7"
-
-#~ msgid "Маєте питання?"
-#~ msgstr "Have questions?"
-
-#~ msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ІІ-помічником"
-#~ msgstr "Contact us or chat with our AI assistant"
-
-#~ msgid "Контакти"
-#~ msgstr "Contacts"
-
-#~ msgid "Чат з ІІ"
-#~ msgstr "AI Chat"
-
-# Contacts page
-#~ msgid "Зв'яжіться з нами"
-#~ msgstr "Contact Us"
-
-#~ msgid "Ми завжди раді допомогти! Оберіть зручний спосіб зв'язку"
-#~ msgstr "We're always happy to help! Choose a convenient way to contact"
-
-#~ msgid "Напишіть нам, і ми відповімо протягом 24 годин"
-#~ msgstr "Write to us and we'll respond within 24 hours"
-
-#~ msgid "Телефон"
-#~ msgstr "Phone"
-
-#~ msgid "Пн-Пт"
-#~ msgstr "Mon-Fri"
-
-#~ msgid "Сб"
-#~ msgstr "Sat"
-
-#~ msgid "Адреса"
-#~ msgstr "Address"
-
-#~ msgid "Завітайте до нашого офісу"
-#~ msgstr "Visit our office"
-
-#~ msgid "ІІ-помічник"
-#~ msgstr "AI Assistant"
-
-#~ msgid "Напишіть нам"
-#~ msgstr "Write to Us"
-
-#~ msgid "Ваше ім'я"
-#~ msgstr "Your Name"
-
-#~ msgid "Введіть"
-#~ msgstr "Enter"
-
-#~ msgid "ваше ім'я"
-#~ msgstr "your name"
-
-#~ msgid "Тема"
-#~ msgstr "Subject"
-
-#~ msgid "Тема повідомлення"
-#~ msgstr "Message subject"
-
-#~ msgid "Повідомлення"
-#~ msgstr "Message"
-
-#~ msgid "Ваше повідомлення"
-#~ msgstr "Your message"
-
-#~ msgid "Надіслати повідомлення"
-#~ msgstr "Send message"
-
-#~ msgid "Карта"
-#~ msgstr "Map"
-
-#~ msgid "Тут буде інтерактивна карта з розташуванням офісу"
-#~ msgstr "Here will be an interactive map with office location"
-
-#~ msgid "Інтеграція з Google Maps / OpenStreetMap"
-#~ msgstr "Integration with Google Maps / OpenStreetMap"
-
-#~ msgid "Потрібна швидка відповідь?"
-#~ msgstr "Need a quick answer?"
-
-#~ msgid "Наш ІІ-помічник працює 24/7 і може відповісти миттєво"
-#~ msgstr "Our AI assistant works 24/7 and can respond instantly"
-
-#~ msgid "Поспілкуватись з ІІ"
-#~ msgstr "Chat with AI"
 

@@ -1,51 +1,51 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Замовлення #{{ order.id }} - Адмін панель{% endblock %}
+{% block title %}{{ _('Замовлення') }} #{{ order.id }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
     <div>
-        <h1>🛒 Замовлення #{{ order.id }}</h1>
-        <p class="page-subtitle">Деталі замовлення</p>
+        <h1>🛒 {{ _('Замовлення') }} #{{ order.id }}</h1>
+        <p class="page-subtitle">{{ _('Деталі замовлення') }}</p>
     </div>
-    <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">← Назад до списку</a>
+    <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">← {{ _('Назад до списку') }}</a>
 </div>
 
 <div class="order-grid">
     <!-- Інформація про замовлення -->
     <div class="card">
         <div class="card-header">
-            <h3>📋 Інформація</h3>
+            <h3>📋 {{ _('Інформація') }}</h3>
         </div>
         <div class="detail-list">
             <div class="detail-row">
-                <span class="detail-label">ID замовлення</span>
+                <span class="detail-label">{{ _('ID замовлення') }}</span>
                 <span class="detail-value"><span class="badge badge-secondary">#{{ order.id }}</span></span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Дата створення</span>
+                <span class="detail-label">{{ _('Дата створення') }}</span>
                 <span class="detail-value">{{ order.created_at.strftime('%d.%m.%Y о %H:%M') }}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Статус</span>
+                <span class="detail-label">{{ _('Статус') }}</span>
                 <span class="detail-value">
                     {% if order.status == 'created' %}
-                    <span class="badge badge-secondary">Створено</span>
+                    <span class="badge badge-secondary">{{ _('Створено') }}</span>
                     {% elif order.status == 'pending' %}
-                    <span class="badge badge-warning">Очікує оплати</span>
+                    <span class="badge badge-warning">{{ _('Очікує оплати') }}</span>
                     {% elif order.status == 'paid' %}
-                    <span class="badge badge-success">Оплачено</span>
+                    <span class="badge badge-success">{{ _('Оплачено') }}</span>
                     {% elif order.status == 'shipped' %}
-                    <span class="badge badge-info">Відправлено</span>
+                    <span class="badge badge-info">{{ _('Відправлено') }}</span>
                     {% elif order.status == 'delivered' %}
-                    <span class="badge badge-success">Доставлено</span>
+                    <span class="badge badge-success">{{ _('Доставлено') }}</span>
                     {% elif order.status == 'cancelled' %}
-                    <span class="badge badge-danger">Скасовано</span>
+                    <span class="badge badge-danger">{{ _('Скасовано') }}</span>
                     {% else %}
                     <span class="badge badge-secondary">{{ order.status }}</span>
                     {% endif %}
                 </span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Сума</span>
+                <span class="detail-label">{{ _('Сума') }}</span>
                 <span class="detail-value text-success" style="font-size: 1.2rem; font-weight: 600;">{{ '%.2f'|format(order.amount) }} {{ order.currency }}</span>
             </div>
             {% if order.stripe_payment_intent %}
@@ -60,11 +60,11 @@
     <!-- Клієнт -->
     <div class="card">
         <div class="card-header">
-            <h3>👤 Клієнт</h3>
+            <h3>👤 {{ _('Клієнт') }}</h3>
         </div>
         <div class="detail-list">
             <div class="detail-row">
-                <span class="detail-label">Ім'я</span>
+                <span class="detail-label">{{ _('Ім\'я') }}</span>
                 <span class="detail-value">{{ order.customer_name or '—' }}</span>
             </div>
             <div class="detail-row">
@@ -76,7 +76,7 @@
                 </span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Телефон</span>
+                <span class="detail-label">{{ _('Телефон') }}</span>
                 <span class="detail-value">
                     {% if order.customer_phone %}
                         <a href="tel:{{ order.customer_phone }}" class="link-accent">{{ order.customer_phone }}</a>
@@ -84,7 +84,7 @@
                 </span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Адреса</span>
+                <span class="detail-label">{{ _('Адреса') }}</span>
                 <span class="detail-value">{{ order.shipping_address or '—' }}</span>
             </div>
         </div>
@@ -94,18 +94,18 @@
 <!-- Товари -->
 <div class="card" style="margin-top: 1.5rem;">
     <div class="card-header">
-        <h3>📦 Товари в замовленні</h3>
+        <h3>📦 {{ _('Товари в замовленні') }}</h3>
     </div>
-    
+
     {% if order.items %}
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Товар</th>
-                    <th>Ціна</th>
-                    <th>Кількість</th>
-                    <th>Сума</th>
+                    <th>{{ _('Товар') }}</th>
+                    <th>{{ _('Ціна') }}</th>
+                    <th>{{ _('Кількість') }}</th>
+                    <th>{{ _('Сума') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -118,14 +118,14 @@
                         {% endif %}
                     </td>
                     <td>{{ '%.2f'|format(item.price) }} {{ item.currency }}</td>
-                    <td><span class="badge badge-info">{{ item.quantity }} шт.</span></td>
+                    <td><span class="badge badge-info">{{ item.quantity }} {{ _('шт.') }}</span></td>
                     <td><strong class="text-success">{{ '%.2f'|format(item.price * item.quantity) }} {{ item.currency }}</strong></td>
                 </tr>
             {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="3" style="text-align: right;"><strong>Разом:</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>{{ _('Разом:') }}</strong></td>
                     <td><strong class="text-success" style="font-size: 1.2rem;">{{ '%.2f'|format(order.amount) }} {{ order.currency }}</strong></td>
                 </tr>
             </tfoot>
@@ -133,7 +133,7 @@
     </div>
     {% else %}
     <div class="empty-state">
-        <p class="text-muted">Деталі товарів недоступні</p>
+        <p class="text-muted">{{ _('Деталі товарів недоступні') }}</p>
     </div>
     {% endif %}
 </div>
@@ -141,19 +141,19 @@
 <!-- Зміна статусу -->
 <div class="card" style="margin-top: 1.5rem;">
     <div class="card-header">
-        <h3>🔄 Змінити статус</h3>
+        <h3>🔄 {{ _('Змінити статус') }}</h3>
     </div>
     <div class="form-section">
         <form method="post" action="{{ url_for('admin_order_update_status', order_id=order.id) }}" class="status-form">
             <select name="status" class="status-select">
-                <option value="created" {% if order.status == 'created' %}selected{% endif %}>Створено</option>
-                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Очікує оплати</option>
-                <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Оплачено</option>
-                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Відправлено</option>
-                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Доставлено</option>
-                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Скасовано</option>
+                <option value="created" {% if order.status == 'created' %}selected{% endif %}>{{ _('Створено') }}</option>
+                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>{{ _('Очікує оплати') }}</option>
+                <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>{{ _('Оплачено') }}</option>
+                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>{{ _('Відправлено') }}</option>
+                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>{{ _('Доставлено') }}</option>
+                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>{{ _('Скасовано') }}</option>
             </select>
-            <button type="submit" class="btn btn-primary">💾 Оновити статус</button>
+            <button type="submit" class="btn btn-primary">💾 {{ _('Оновити статус') }}</button>
         </form>
     </div>
 </div>
@@ -161,13 +161,13 @@
 <!-- Нотатки -->
 <div class="card" style="margin-top: 1.5rem;">
     <div class="card-header">
-        <h3>📝 Нотатки</h3>
+        <h3>📝 {{ _('Нотатки') }}</h3>
     </div>
     <div class="form-section">
         <form method="post" action="{{ url_for('admin_order_update_notes', order_id=order.id) }}">
-            <textarea name="notes" rows="3" placeholder="Внутрішні нотатки (тільки для адміністратора)...">{{ order.notes or '' }}</textarea>
+            <textarea name="notes" rows="3" placeholder="{{ _('Внутрішні нотатки (тільки для адміністратора)...') }}">{{ order.notes or '' }}</textarea>
             <div class="form-actions" style="margin-top: 1rem;">
-                <button type="submit" class="btn btn-secondary">💾 Зберегти нотатки</button>
+                <button type="submit" class="btn btn-secondary">💾 {{ _('Зберегти нотатки') }}</button>
             </div>
         </form>
     </div>
@@ -177,13 +177,11 @@
 <div class="card actions-card" style="margin-top: 1.5rem;">
     <div class="card-content">
         {% if order.customer_email %}
-            <a href="mailto:{{ order.customer_email }}?subject=Замовлення %23{{ order.id }}" class="btn btn-primary">
-                ✉️ Написати клієнту
-            </a>
+            <a href="mailto:{{ order.customer_email }}?subject=Замовлення %23{{ order.id }}" class="btn btn-primary">✉️ {{ _('Написати клієнту') }}</a>
         {% endif %}
-        
-        <form method="post" action="{{ url_for('admin_order_delete', order_id=order.id) }}" style="margin-left: auto;" onsubmit="return confirm('Ви впевнені, що хочете видалити це замовлення?');">
-            <button type="submit" class="btn btn-danger">🗑️ Видалити замовлення</button>
+
+        <form method="post" action="{{ url_for('admin_order_delete', order_id=order.id) }}" style="margin-left: auto;" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити це замовлення?') }}');">
+            <button type="submit" class="btn btn-danger">🗑️ {{ _('Видалити замовлення') }}</button>
         </form>
     </div>
 </div>

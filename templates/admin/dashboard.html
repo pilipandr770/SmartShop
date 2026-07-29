@@ -1,45 +1,45 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Дашборд{% endblock %}
+{% block title %}{{ _('Дашборд') }}{% endblock %}
 {% block content %}
-<h2>📊 Дашборд</h2>
+<h2>📊 {{ _('Дашборд') }}</h2>
 
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-label">Товари</div>
+        <div class="stat-label">{{ _('Товари') }}</div>
         <div class="stat-value">{{ product_count }}</div>
-        <div class="stat-desc">Активні позиції в каталозі</div>
+        <div class="stat-desc">{{ _('Активні позиції в каталозі') }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-label">Категорії</div>
+        <div class="stat-label">{{ _('Категорії') }}</div>
         <div class="stat-value">{{ category_count }}</div>
-        <div class="stat-desc">Структура магазину</div>
+        <div class="stat-desc">{{ _('Структура магазину') }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-label">Замовлення</div>
+        <div class="stat-label">{{ _('Замовлення') }}</div>
         <div class="stat-value">{{ order_count }}</div>
-        <div class="stat-desc">Загалом у системі</div>
+        <div class="stat-desc">{{ _('Загалом у системі') }}</div>
     </div>
     <div class="stat-card">
-        <div class="stat-label">Дохід</div>
+        <div class="stat-label">{{ _('Дохід') }}</div>
         <div class="stat-value">{{ '%.2f'|format(total_revenue) }} €</div>
-        <div class="stat-desc">Оплачені замовлення</div>
+        <div class="stat-desc">{{ _('Оплачені замовлення') }}</div>
     </div>
 </div>
 
 <div class="card">
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-        🛒 Останні замовлення
+        🛒 {{ _('Останні замовлення') }}
     </h3>
     {% if last_orders %}
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Дата</th>
-                <th>Клієнт</th>
-                <th>Сума</th>
-                <th>Статус</th>
-                <th class="text-right">Дії</th>
+                <th>{{ _('ID') }}</th>
+                <th>{{ _('Дата') }}</th>
+                <th>{{ _('Клієнт') }}</th>
+                <th>{{ _('Сума') }}</th>
+                <th>{{ _('Статус') }}</th>
+                <th class="text-right">{{ _('Дії') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -47,51 +47,51 @@
             <tr>
                 <td><strong>#{{ o.id }}</strong></td>
                 <td>{{ o.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
-                <td>{{ o.customer_name or o.customer_email or 'Гість' }}</td>
+                <td>{{ o.customer_name or o.customer_email or _('Гість') }}</td>
                 <td><strong>{{ '%.2f'|format(o.amount) }}</strong> {{ o.currency }}</td>
                 <td>
                     <span class="badge status-{{ o.status }}">
-                        {% if o.status == 'created' %}Створено
-                        {% elif o.status == 'pending' %}Очікує
-                        {% elif o.status == 'paid' %}Оплачено
-                        {% elif o.status == 'shipped' %}Відправлено
-                        {% elif o.status == 'delivered' %}Доставлено
-                        {% elif o.status == 'cancelled' %}Скасовано
+                        {% if o.status == 'created' %}{{ _('Створено') }}
+                        {% elif o.status == 'pending' %}{{ _('Очікує') }}
+                        {% elif o.status == 'paid' %}{{ _('Оплачено') }}
+                        {% elif o.status == 'shipped' %}{{ _('Відправлено') }}
+                        {% elif o.status == 'delivered' %}{{ _('Доставлено') }}
+                        {% elif o.status == 'cancelled' %}{{ _('Скасовано') }}
                         {% else %}{{ o.status }}{% endif %}
                     </span>
                 </td>
                 <td class="text-right">
-                    <a href="{{ url_for('admin_order_detail', order_id=o.id) }}" class="btn-link">Деталі →</a>
+                    <a href="{{ url_for('admin_order_detail', order_id=o.id) }}" class="btn-link">{{ _('Деталі') }} →</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
     <div style="margin-top: 1rem;">
-        <a href="{{ url_for('admin_orders') }}" class="btn-link">Переглянути всі замовлення →</a>
+        <a href="{{ url_for('admin_orders') }}" class="btn-link">{{ _('Переглянути всі замовлення') }} →</a>
     </div>
     {% else %}
-        <p class="text-muted">Замовлень ще немає. Вони з'являться після першої покупки.</p>
+        <p class="text-muted">{{ _('Замовлень ще немає. Вони з\'являться після першої покупки.') }}</p>
     {% endif %}
 </div>
 
 <div class="grid-2">
     <div class="card">
-        <h3>🚀 Швидкі дії</h3>
+        <h3>🚀 {{ _('Швидкі дії') }}</h3>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <a href="{{ url_for('admin_products') }}" class="btn-link" style="justify-content: flex-start;">📦 Додати новий товар</a>
-            <a href="{{ url_for('admin_categories') }}" class="btn-link" style="justify-content: flex-start;">📁 Управління категоріями</a>
-            <a href="{{ url_for('admin_blocks') }}" class="btn-link" style="justify-content: flex-start;">🏠 Редагувати головну</a>
-            <a href="{{ url_for('admin_settings') }}" class="btn-link" style="justify-content: flex-start;">⚙️ Налаштування сайту</a>
+            <a href="{{ url_for('admin_products') }}" class="btn-link" style="justify-content: flex-start;">📦 {{ _('Додати новий товар') }}</a>
+            <a href="{{ url_for('admin_categories') }}" class="btn-link" style="justify-content: flex-start;">📁 {{ _('Управління категоріями') }}</a>
+            <a href="{{ url_for('admin_blocks') }}" class="btn-link" style="justify-content: flex-start;">🏠 {{ _('Редагувати головну') }}</a>
+            <a href="{{ url_for('admin_settings') }}" class="btn-link" style="justify-content: flex-start;">⚙️ {{ _('Налаштування сайту') }}</a>
         </div>
     </div>
     <div class="card">
-        <h3>💡 Поради</h3>
+        <h3>💡 {{ _('Поради') }}</h3>
         <ul style="font-size: 0.85rem; color: var(--text-secondary); padding-left: 1.2rem; margin: 0;">
-            <li style="margin-bottom: 0.5rem;">Додайте категорії перед створенням товарів</li>
-            <li style="margin-bottom: 0.5rem;">Використовуйте якісні зображення товарів</li>
-            <li style="margin-bottom: 0.5rem;">Заповніть опис кожного товару для SEO</li>
-            <li>Налаштуйте соцмережі в розділі Налаштування</li>
+            <li style="margin-bottom: 0.5rem;">{{ _('Додайте категорії перед створенням товарів') }}</li>
+            <li style="margin-bottom: 0.5rem;">{{ _('Використовуйте якісні зображення товарів') }}</li>
+            <li style="margin-bottom: 0.5rem;">{{ _('Заповніть опис кожного товару для SEO') }}</li>
+            <li>{{ _('Налаштуйте соцмережі в розділі Налаштування') }}</li>
         </ul>
     </div>
 </div>

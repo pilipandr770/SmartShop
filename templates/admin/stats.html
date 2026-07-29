@@ -1,9 +1,9 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Статистика - Адмін панель{% endblock %}
+{% block title %}{{ _('Статистика') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>📊 Статистика</h1>
-    <p class="page-subtitle">Аналітика та звіти магазину</p>
+    <h1>{{ _('📊 Статистика') }}</h1>
+    <p class="page-subtitle">{{ _('Аналітика та звіти магазину') }}</p>
 </div>
 
 <!-- Головні показники -->
@@ -14,7 +14,7 @@
         </div>
         <div class="stat-content">
             <div class="stat-value">{{ total_orders }}</div>
-            <div class="stat-label">Усього замовлень</div>
+            <div class="stat-label">{{ _('Усього замовлень') }}</div>
         </div>
     </div>
     
@@ -24,7 +24,7 @@
         </div>
         <div class="stat-content">
             <div class="stat-value">{{ paid_orders }}</div>
-            <div class="stat-label">Оплачених</div>
+            <div class="stat-label">{{ _('Оплачених') }}</div>
         </div>
     </div>
     
@@ -34,7 +34,7 @@
         </div>
         <div class="stat-content">
             <div class="stat-value">{{ '%.2f'|format(total_revenue) }} ₴</div>
-            <div class="stat-label">Загальний дохід</div>
+            <div class="stat-label">{{ _('Загальний дохід') }}</div>
         </div>
     </div>
     
@@ -44,7 +44,7 @@
         </div>
         <div class="stat-content">
             <div class="stat-value">{% if total_orders > 0 %}{{ '%.2f'|format(total_revenue / total_orders) }}{% else %}0{% endif %} ₴</div>
-            <div class="stat-label">Середній чек</div>
+            <div class="stat-label">{{ _('Середній чек') }}</div>
         </div>
     </div>
 </div>
@@ -53,8 +53,8 @@
 <div class="cards-grid" style="margin-bottom: 2rem;">
     <div class="card">
         <div class="card-header">
-            <h3>📈 Динаміка замовлень</h3>
-            <span class="badge badge-secondary">За місяць</span>
+            <h3>{{ _('📈 Динаміка замовлень') }}</h3>
+            <span class="badge badge-secondary">{{ _('За місяць') }}</span>
         </div>
         <div class="chart-placeholder">
             <div class="chart-bars">
@@ -66,13 +66,13 @@
                 <div class="bar" style="height: 90%;"></div>
                 <div class="bar active" style="height: 75%;"></div>
             </div>
-            <p class="chart-hint">Інтеграція з реальними даними в розробці</p>
+            <p class="chart-hint">{{ _('Інтеграція з реальними даними в розробці') }}</p>
         </div>
     </div>
     
     <div class="card">
         <div class="card-header">
-            <h3>🥧 Розподіл за статусами</h3>
+            <h3>{{ _('🥧 Розподіл за статусами') }}</h3>
         </div>
         <div class="status-stats">
             <div class="status-item">
@@ -80,7 +80,7 @@
                     <div class="status-fill" style="width: 60%; background: var(--success-color);"></div>
                 </div>
                 <div class="status-info">
-                    <span>Оплачено</span>
+                    <span>{{ _('Оплачено') }}</span>
                     <span class="status-percent">60%</span>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     <div class="status-fill" style="width: 25%; background: var(--warning-color);"></div>
                 </div>
                 <div class="status-info">
-                    <span>Очікує оплати</span>
+                    <span>{{ _('Очікує оплати') }}</span>
                     <span class="status-percent">25%</span>
                 </div>
             </div>
@@ -98,7 +98,7 @@
                     <div class="status-fill" style="width: 10%; background: var(--primary-color);"></div>
                 </div>
                 <div class="status-info">
-                    <span>Відправлено</span>
+                    <span>{{ _('Відправлено') }}</span>
                     <span class="status-percent">10%</span>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                     <div class="status-fill" style="width: 5%; background: var(--danger-color);"></div>
                 </div>
                 <div class="status-info">
-                    <span>Скасовано</span>
+                    <span>{{ _('Скасовано') }}</span>
                     <span class="status-percent">5%</span>
                 </div>
             </div>
@@ -118,8 +118,8 @@
 <!-- Останні замовлення -->
 <div class="card">
     <div class="card-header">
-        <h3>🕐 Останні замовлення</h3>
-        <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary btn-sm">Всі замовлення →</a>
+        <h3>{{ _('🕐 Останні замовлення') }}</h3>
+        <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary btn-sm">{{ _('Всі замовлення →') }}</a>
     </div>
     
     {% if latest_orders %}
@@ -128,10 +128,10 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Дата</th>
-                    <th>Клієнт</th>
-                    <th>Сума</th>
-                    <th>Статус</th>
+                    <th>{{ _('Дата') }}</th>
+                    <th>{{ _('Клієнт') }}</th>
+                    <th>{{ _('Сума') }}</th>
+                    <th>{{ _('Статус') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -143,13 +143,13 @@
                     <td><strong class="text-success">{{ '%.2f'|format(o.amount) }} {{ o.currency }}</strong></td>
                     <td>
                         {% if o.status == 'paid' %}
-                        <span class="badge badge-success">Оплачено</span>
+                        <span class="badge badge-success">{{ _('Оплачено') }}</span>
                         {% elif o.status == 'pending' %}
-                        <span class="badge badge-warning">Очікує</span>
+                        <span class="badge badge-warning">{{ _('Очікує') }}</span>
                         {% elif o.status == 'shipped' %}
-                        <span class="badge badge-info">Відправлено</span>
+                        <span class="badge badge-info">{{ _('Відправлено') }}</span>
                         {% elif o.status == 'cancelled' %}
-                        <span class="badge badge-danger">Скасовано</span>
+                        <span class="badge badge-danger">{{ _('Скасовано') }}</span>
                         {% else %}
                         <span class="badge badge-secondary">{{ o.status }}</span>
                         {% endif %}
@@ -162,8 +162,8 @@
     {% else %}
     <div class="empty-state">
         <div class="empty-icon">📦</div>
-        <h3>Замовлень ще немає</h3>
-        <p>Після інтеграції платіжної системи тут з'являться замовлення</p>
+        <h3>{{ _('Замовлень ще немає') }}</h3>
+        <p>{{ _('Після інтеграції платіжної системи тут з\'являться замовлення') }}</p>
     </div>
     {% endif %}
 </div>

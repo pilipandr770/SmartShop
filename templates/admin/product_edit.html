@@ -3,38 +3,38 @@
 {% block content %}
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
     <div>
-        <h1>✏️ Редагування товару</h1>
+        <h1>{{ _('✏️ Редагування товару') }}</h1>
         <p class="page-subtitle">{{ product.name }}</p>
     </div>
-    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">← Назад до списку</a>
+    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">{{ _('← Назад до списку') }}</a>
 </div>
 
 <form method="post">
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>📦 Основна інформація</h3>
+            <h3>{{ _('📦 Основна інформація') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row three-col">
                 <div class="form-group">
-                    <label for="name">Назва товару *</label>
+                    <label for="name">{{ _('Назва товару *') }}</label>
                     <input type="text" id="name" name="name" value="{{ product.name }}" required>
                 </div>
                 <div class="form-group">
-                    <label for="price">Ціна ({{ get_currency_symbol(product.currency) }}) *</label>
+                    <label for="price">{{ _('Ціна ({{ get_currency_symbol(product.currency) }}) *') }}</label>
                     <input type="number" id="price" name="price" value="{{ product.price }}" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <label for="old_price">Стара ціна ({{ get_currency_symbol(product.currency) }})</label>
+                    <label for="old_price">{{ _('Стара ціна ({{ get_currency_symbol(product.currency) }})') }}</label>
                     <input type="number" id="old_price" name="old_price" value="{{ product.old_price or '' }}" step="0.01" min="0" placeholder="Для знижки">
                 </div>
             </div>
             
             <div class="form-row three-col">
                 <div class="form-group">
-                    <label for="category_id">Категорія</label>
+                    <label for="category_id">{{ _('Категорія') }}</label>
                     <select id="category_id" name="category_id">
-                        <option value="">(без категорії)</option>
+                        <option value="">{{ _('(без категорії)') }}</option>
                         {% for c in categories %}
                             <option value="{{ c.id }}" {% if product.category_id == c.id %}selected{% endif %}>
                                 {{ c.name }}
@@ -43,15 +43,15 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="sku">SKU / Артикул</label>
+                    <label for="sku">{{ _('SKU / Артикул') }}</label>
                     <input type="text" id="sku" name="sku" value="{{ product.sku or '' }}" placeholder="ABC-123">
                 </div>
                 <div class="form-group">
-                    <label for="stock">Кількість на складі</label>
+                    <label for="stock">{{ _('Кількість на складі') }}</label>
                     <input type="number" id="stock" name="stock" value="{{ product.stock or 0 }}" min="0">
                 </div>
                 <div class="form-group">
-                    <label for="weight_kg">Вага (кг) - для розрахунку тарифів доставки</label>
+                    <label for="weight_kg">{{ _('Вага (кг) - для розрахунку тарифів доставки') }}</label>
                     <input type="number" id="weight_kg" name="weight_kg" value="{{ product.weight_kg or '' }}" step="0.01" min="0" placeholder="1.0">
                 </div>
             </div>
@@ -60,7 +60,7 @@
 
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🖼️ Зображення</h3>
+            <h3>{{ _('🖼️ Зображення') }}</h3>
         </div>
         <div class="form-section">
             <div class="image-upload-wrapper">
@@ -68,17 +68,15 @@
                     {% if product.image_url %}
                     <img src="{{ product.image_url }}" alt="{{ product.name }}">
                     {% else %}
-                    <span class="preview-placeholder">📷 Немає зображення</span>
+                    <span class="preview-placeholder">{{ _('📷 Немає зображення') }}</span>
                     {% endif %}
                 </div>
                 <div class="upload-controls">
                     <div class="upload-btn-wrapper">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageFile').click()">
-                            📤 Завантажити з комп'ютера
-                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageFile').click()">{{ _('📤 Завантажити з комп\'ютера') }}</button>
                         <input type="file" id="imageFile" accept="image/*" style="display: none;" onchange="uploadImage(this)">
                     </div>
-                    <span class="upload-or">або</span>
+                    <span class="upload-or">{{ _('або') }}</span>
                     <input type="url" id="image_url" name="image_url" value="{{ product.image_url or '' }}" placeholder="Вставте URL зображення" class="url-input">
                 </div>
                 <div id="uploadStatus" class="upload-status"></div>
@@ -88,16 +86,16 @@
 
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>📝 Описи</h3>
+            <h3>{{ _('📝 Описи') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-group">
-                <label for="short_description">Короткий опис</label>
+                <label for="short_description">{{ _('Короткий опис') }}</label>
                 <textarea id="short_description" name="short_description" rows="3" placeholder="Короткий опис для каталогу...">{{ product.short_description or '' }}</textarea>
             </div>
             
             <div class="form-group">
-                <label for="long_description">Повний опис</label>
+                <label for="long_description">{{ _('Повний опис') }}</label>
                 <textarea id="long_description" name="long_description" rows="6" placeholder="Детальний опис товару...">{{ product.long_description or '' }}</textarea>
             </div>
         </div>
@@ -105,31 +103,31 @@
 
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>⚙️ Налаштування</h3>
+            <h3>{{ _('⚙️ Налаштування') }}</h3>
         </div>
         <div class="form-section">
             <label class="checkbox-label">
                 <input type="checkbox" name="is_active" {% if product.is_active %}checked{% endif %}>
-                <span>Товар активний (показувати на сайті)</span>
+                <span>{{ _('Товар активний (показувати на сайті)') }}</span>
             </label>
         </div>
     </div>
 
     <div class="form-footer">
-        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">Скасувати</a>
-        <button type="submit" class="btn btn-primary btn-lg">💾 Зберегти зміни</button>
+        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">{{ _('Скасувати') }}</a>
+        <button type="submit" class="btn btn-primary btn-lg">{{ _('💾 Зберегти зміни') }}</button>
     </div>
 </form>
 
 <!-- Небезпечна зона -->
 <div class="card danger-zone" style="margin-top: 2rem;">
     <div class="card-header">
-        <h3>⚠️ Небезпечна зона</h3>
+        <h3>{{ _('⚠️ Небезпечна зона') }}</h3>
     </div>
     <div class="form-section">
-        <p class="text-muted">Видалення товару є незворотною дією.</p>
+        <p class="text-muted">{{ _('Видалення товару є незворотною дією.') }}</p>
         <form method="post" action="{{ url_for('admin_products_delete', product_id=product.id) }}" onsubmit="return confirm('Ви впевнені, що хочете видалити цей товар?');">
-            <button type="submit" class="btn btn-danger">🗑️ Видалити товар</button>
+            <button type="submit" class="btn btn-danger">{{ _('🗑️ Видалити товар') }}</button>
         </form>
     </div>
 </div>
@@ -341,9 +339,9 @@ document.getElementById('image_url').addEventListener('input', function() {
     const previewEl = document.getElementById('imagePreview');
     
     if (url) {
-        previewEl.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>❌ Невірний URL</span>'">`;
+        previewEl.innerHTML = `<img src="${url}" alt="Preview" onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>{{ _('❌ Невірний URL') }}</span>'">`;
     } else {
-        previewEl.innerHTML = '<span class="preview-placeholder">📷 Немає зображення</span>';
+        previewEl.innerHTML = '<span class="preview-placeholder">{{ _('📷 Немає зображення') }}</span>';
     }
 });
 </script>

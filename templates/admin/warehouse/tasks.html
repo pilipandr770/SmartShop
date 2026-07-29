@@ -5,7 +5,7 @@
 {% block content %}
 <div class="warehouse-dashboard">
     <div class="page-header">
-        <h1>📦 Склад - Завдання на відправку</h1>
+        <h1>{{ _('📦 Склад - Завдання на відправку') }}</h1>
     </div>
 
     <!-- Статистика -->
@@ -14,28 +14,28 @@
             <div class="stat-icon">⏳</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.pending }}</span>
-                <span class="stat-label">Очікують</span>
+                <span class="stat-label">{{ _('Очікують') }}</span>
             </div>
         </div>
         <div class="stat-card processing">
             <div class="stat-icon">🔄</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.processing }}</span>
-                <span class="stat-label">В роботі</span>
+                <span class="stat-label">{{ _('В роботі') }}</span>
             </div>
         </div>
         <div class="stat-card packed">
             <div class="stat-icon">📦</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.packed }}</span>
-                <span class="stat-label">Запаковано</span>
+                <span class="stat-label">{{ _('Запаковано') }}</span>
             </div>
         </div>
         <div class="stat-card shipped">
             <div class="stat-icon">🚚</div>
             <div class="stat-info">
                 <span class="stat-value">{{ stats.shipped_today }}</span>
-                <span class="stat-label">Відправлено сьогодні</span>
+                <span class="stat-label">{{ _('Відправлено сьогодні') }}</span>
             </div>
         </div>
     </div>
@@ -43,29 +43,17 @@
     <!-- Фільтри -->
     <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
         <a href="{{ url_for('admin_warehouse') }}" 
-           class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">
-            Активні
-        </a>
+           class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Активні') }}</a>
         <a href="{{ url_for('admin_warehouse', status='pending') }}" 
-           class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">
-            ⏳ Очікують
-        </a>
+           class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('⏳ Очікують') }}</a>
         <a href="{{ url_for('admin_warehouse', status='processing') }}" 
-           class="btn {% if status_filter == 'processing' %}btn-primary{% else %}btn-outline{% endif %}">
-            🔄 В роботі
-        </a>
+           class="btn {% if status_filter == 'processing' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('🔄 В роботі') }}</a>
         <a href="{{ url_for('admin_warehouse', status='packed') }}" 
-           class="btn {% if status_filter == 'packed' %}btn-primary{% else %}btn-outline{% endif %}">
-            📦 Запаковано
-        </a>
+           class="btn {% if status_filter == 'packed' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('📦 Запаковано') }}</a>
         <a href="{{ url_for('admin_warehouse', status='shipped') }}" 
-           class="btn {% if status_filter == 'shipped' %}btn-primary{% else %}btn-outline{% endif %}">
-            🚚 Відправлено
-        </a>
+           class="btn {% if status_filter == 'shipped' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('🚚 Відправлено') }}</a>
         <a href="{{ url_for('admin_warehouse', status='delivered') }}" 
-           class="btn {% if status_filter == 'delivered' %}btn-primary{% else %}btn-outline{% endif %}">
-            ✔️ Доставлено
-        </a>
+           class="btn {% if status_filter == 'delivered' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('✔️ Доставлено') }}</a>
     </div>
 
     <!-- Таблиця завдань -->
@@ -73,14 +61,14 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>№ Завдання</th>
-                    <th>Замовлення</th>
-                    <th>Клієнт</th>
-                    <th>Адреса</th>
-                    <th>Пріоритет</th>
-                    <th>Статус</th>
-                    <th>Створено</th>
-                    <th>Дії</th>
+                    <th>{{ _('№ Завдання') }}</th>
+                    <th>{{ _('Замовлення') }}</th>
+                    <th>{{ _('Клієнт') }}</th>
+                    <th>{{ _('Адреса') }}</th>
+                    <th>{{ _('Пріоритет') }}</th>
+                    <th>{{ _('Статус') }}</th>
+                    <th>{{ _('Створено') }}</th>
+                    <th>{{ _('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,37 +98,35 @@
                     </td>
                     <td>
                         {% if task.priority == 1 %}
-                        <span class="badge badge-danger">🔴 Терміново</span>
+                        <span class="badge badge-danger">{{ _('🔴 Терміново') }}</span>
                         {% elif task.priority == 2 %}
-                        <span class="badge badge-warning">🟡 Високий</span>
+                        <span class="badge badge-warning">{{ _('🟡 Високий') }}</span>
                         {% else %}
-                        <span class="badge badge-secondary">⚪ Звичайний</span>
+                        <span class="badge badge-secondary">{{ _('⚪ Звичайний') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if task.status == 'pending' %}
-                        <span class="badge badge-secondary">⏳ Очікує</span>
+                        <span class="badge badge-secondary">{{ _('⏳ Очікує') }}</span>
                         {% elif task.status == 'processing' %}
-                        <span class="badge badge-primary">🔄 В роботі</span>
+                        <span class="badge badge-primary">{{ _('🔄 В роботі') }}</span>
                         {% elif task.status == 'packed' %}
-                        <span class="badge badge-info">📦 Запаковано</span>
+                        <span class="badge badge-info">{{ _('📦 Запаковано') }}</span>
                         {% elif task.status == 'ready' %}
-                        <span class="badge badge-success">✅ Готово</span>
+                        <span class="badge badge-success">{{ _('✅ Готово') }}</span>
                         {% elif task.status == 'shipped' %}
-                        <span class="badge badge-warning">🚚 Відправлено</span>
+                        <span class="badge badge-warning">{{ _('🚚 Відправлено') }}</span>
                         {% elif task.status == 'delivered' %}
-                        <span class="badge badge-success">✔️ Доставлено</span>
+                        <span class="badge badge-success">{{ _('✔️ Доставлено') }}</span>
                         {% elif task.status == 'cancelled' %}
-                        <span class="badge badge-danger">❌ Скасовано</span>
+                        <span class="badge badge-danger">{{ _('❌ Скасовано') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         <small>{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
                     </td>
                     <td>
-                        <a href="{{ url_for('admin_warehouse_task', id=task.id) }}" class="btn btn-sm btn-primary">
-                            👁️ Деталі
-                        </a>
+                        <a href="{{ url_for('admin_warehouse_task', id=task.id) }}" class="btn btn-sm btn-primary">{{ _('👁️ Деталі') }}</a>
                     </td>
                 </tr>
                 {% else %}
@@ -161,13 +147,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">← Назад</a>
+        <a href="{{ url_for('admin_warehouse', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
         <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
         
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">Далі →</a>
+        <a href="{{ url_for('admin_warehouse', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
         {% endif %}
     </div>
     {% endif %}

@@ -5,13 +5,12 @@
 {% block content %}
 <div class="stock-history">
     <div class="page-header" style="margin-bottom: 2rem;">
-        <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-sm btn-outline">← До залишків</a>
-        <h1 style="margin: 0.5rem 0;">📜 Історія руху товару</h1>
+        <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-sm btn-outline">{{ _('← До залишків') }}</a>
+        <h1 style="margin: 0.5rem 0;">{{ _('📜 Історія руху товару') }}</h1>
         <h2 style="margin: 0; color: #666; font-weight: normal;">{{ product.name }}</h2>
         <p style="margin: 0.5rem 0;">
-            SKU: <code>{{ product.sku or '—' }}</code> | 
-            Поточний залишок: <strong>{{ product.stock }}</strong> шт.
-        </p>
+            SKU: <code>{{ product.sku or '—' }}</code>{{ _('| 
+            Поточний залишок:') }}<strong>{{ product.stock }}</strong>{{ _('шт.') }}</p>
     </div>
 
     <!-- Таблиця руху -->
@@ -19,13 +18,13 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Тип</th>
-                    <th>Кількість</th>
-                    <th>Залишок після</th>
-                    <th>Причина</th>
-                    <th>Примітка</th>
-                    <th>Виконавець</th>
+                    <th>{{ _('Дата') }}</th>
+                    <th>{{ _('Тип') }}</th>
+                    <th>{{ _('Кількість') }}</th>
+                    <th>{{ _('Залишок після') }}</th>
+                    <th>{{ _('Причина') }}</th>
+                    <th>{{ _('Примітка') }}</th>
+                    <th>{{ _('Виконавець') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,13 +33,13 @@
                     <td>{{ movement.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
                     <td>
                         {% if movement.movement_type == 'sale' %}
-                        <span class="badge badge-warning">🛒 Продаж</span>
+                        <span class="badge badge-warning">{{ _('🛒 Продаж') }}</span>
                         {% elif movement.movement_type == 'return' %}
-                        <span class="badge badge-info">↩️ Повернення</span>
+                        <span class="badge badge-info">{{ _('↩️ Повернення') }}</span>
                         {% elif movement.movement_type == 'replenishment' %}
-                        <span class="badge badge-success">📦 Поповнення</span>
+                        <span class="badge badge-success">{{ _('📦 Поповнення') }}</span>
                         {% elif movement.movement_type == 'adjustment' %}
-                        <span class="badge badge-secondary">± Коригування</span>
+                        <span class="badge badge-secondary">{{ _('± Коригування') }}</span>
                         {% else %}
                         <span class="badge">{{ movement.movement_type }}</span>
                         {% endif %}
@@ -58,9 +57,7 @@
                 {% else %}
                 <tr>
                     <td colspan="7" class="text-center text-muted">
-                        <p style="padding: 2rem;">
-                            📭 Немає записів про рух товару
-                        </p>
+                        <p style="padding: 2rem;">{{ _('📭 Немає записів про рух товару') }}</p>
                     </td>
                 </tr>
                 {% endfor %}
@@ -72,13 +69,13 @@
     {% if pagination.pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if pagination.has_prev %}
-        <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id, page=pagination.prev_num) }}" class="btn btn-sm btn-outline">← Назад</a>
+        <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id, page=pagination.prev_num) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
         <span class="btn btn-sm disabled">{{ pagination.page }} з {{ pagination.pages }}</span>
         
         {% if pagination.has_next %}
-        <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id, page=pagination.next_num) }}" class="btn btn-sm btn-outline">Далі →</a>
+        <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id, page=pagination.next_num) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
         {% endif %}
     </div>
     {% endif %}
