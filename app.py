@@ -409,8 +409,14 @@ def create_app():
     @app.before_request
     def load_current_store():
         g.store, g.is_platform_root = resolve_current_store()
-        if g.store is None and not request.path.startswith(STORE_OPTIONAL_PATH_PREFIXES):
-            abort(404, description="Магазин не знайдено. Можливо, платформа ще не налаштована — почніть з /signup.")
+        if g.store is None:
+            # Немає жодного активного Store в базі (наприклад, єдиний магазин
+            # видалено). Маркетинговий лендинг платформи ("/") і службові
+            # шляхи мають лишатись доступними — інакше платформа стає
+            # непридатною для нової реєстрації, щойно останній магазин зникає.
+            path_is_store_optional = request.path == "/" or request.path.startswith(STORE_OPTIONAL_PATH_PREFIXES)
+            if not path_is_store_optional:
+                abort(404, description="Магазин не знайдено. Можливо, платформа ще не налаштована — почніть з /signup.")
         if (
             g.store is not None
             and not g.store.is_active
