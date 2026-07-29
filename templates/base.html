@@ -30,9 +30,9 @@
     <meta name="twitter:site" content="@smartshop">
     <meta name="twitter:creator" content="@smartshop">
     
-    {# Favicon #}
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    {# Favicon - власний фавікон магазину, якщо завантажений, інакше дефолтний #}
+    <link rel="icon" href="{{ settings.favicon_url if settings and settings.favicon_url else url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ settings.favicon_url if settings and settings.favicon_url else url_for('static', filename='images/apple-touch-icon.png') }}">
     
     {# Multilingual Support #}
     <link rel="alternate" hreflang="en" href="{{ request.base_url }}?lang=en">
@@ -138,6 +138,14 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9), 0 16px 35px rgba(22, 163, 74, 0.5);
+        }
+
+        .brand-logo-img {
+            object-fit: cover;
+        }
+
+        .brand-logo-img::after {
+            content: none;
         }
 
         .brand-logo::after {
@@ -491,7 +499,11 @@
     <!-- HEADER -->
     <header class="header">
         <a href="{{ url_for('index') }}" class="brand">
-            <div class="brand-logo"></div>
+            {% if settings and settings.logo_url %}
+                <img src="{{ settings.logo_url }}" alt="{{ settings.site_name or 'Logo' }}" class="brand-logo brand-logo-img">
+            {% else %}
+                <div class="brand-logo"></div>
+            {% endif %}
             <div>
                 <div class="brand-text-main">SmartShop AI</div>
                 <div class="brand-text-sub">Конструктор магазину</div>

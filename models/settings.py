@@ -36,6 +36,8 @@ class SiteSettings(db.Model):
     site_tagline = db.Column(db.String(255), nullable=True)
     logo_url = db.Column(db.String(500), nullable=True)
     favicon_url = db.Column(db.String(500), nullable=True)
+    hero_image_url = db.Column(db.String(500), nullable=True)   # опційний банер на головній
+    about_image_url = db.Column(db.String(500), nullable=True)  # фото на сторінці "Про нас"
     
     # Контакти
     contact_email = db.Column(db.String(255), nullable=True)

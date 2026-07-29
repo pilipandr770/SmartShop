@@ -26,12 +26,91 @@
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="logo_url">URL логотипу</label>
-                    <input type="text" id="logo_url" name="logo_url" value="{{ settings.logo_url or '' }}" placeholder="https://example.com/logo.png">
+                    <label>Логотип</label>
+                    <div class="image-upload-wrapper">
+                        <div class="image-preview-box image-preview-small" id="preview_logo_url">
+                            {% if settings.logo_url %}
+                                <img src="{{ settings.logo_url }}" alt="Логотип">
+                            {% else %}
+                                <span class="preview-placeholder">📷 Немає лого</span>
+                            {% endif %}
+                        </div>
+                        <div class="upload-controls">
+                            <div class="upload-btn-wrapper">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_logo_url').click()">📤 Завантажити</button>
+                                <input type="file" id="file_logo_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'logo_url')">
+                            </div>
+                            <span class="upload-or">або</span>
+                            <input type="url" id="logo_url" name="logo_url" value="{{ settings.logo_url or '' }}" placeholder="https://example.com/logo.png" class="url-input">
+                        </div>
+                        <div id="status_logo_url" class="upload-status"></div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="favicon_url">URL фавікону</label>
-                    <input type="text" id="favicon_url" name="favicon_url" value="{{ settings.favicon_url or '' }}" placeholder="https://example.com/favicon.ico">
+                    <label>Фавікон</label>
+                    <div class="image-upload-wrapper">
+                        <div class="image-preview-box image-preview-small" id="preview_favicon_url">
+                            {% if settings.favicon_url %}
+                                <img src="{{ settings.favicon_url }}" alt="Фавікон">
+                            {% else %}
+                                <span class="preview-placeholder">📷 Немає фавікону</span>
+                            {% endif %}
+                        </div>
+                        <div class="upload-controls">
+                            <div class="upload-btn-wrapper">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_favicon_url').click()">📤 Завантажити</button>
+                                <input type="file" id="file_favicon_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'favicon_url')">
+                            </div>
+                            <span class="upload-or">або</span>
+                            <input type="url" id="favicon_url" name="favicon_url" value="{{ settings.favicon_url or '' }}" placeholder="https://example.com/favicon.ico" class="url-input">
+                        </div>
+                        <div id="status_favicon_url" class="upload-status"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Банер на головній сторінці (опційно)</label>
+                    <div class="image-upload-wrapper">
+                        <div class="image-preview-box" id="preview_hero_image_url">
+                            {% if settings.hero_image_url %}
+                                <img src="{{ settings.hero_image_url }}" alt="Банер">
+                            {% else %}
+                                <span class="preview-placeholder">📷 Без банера</span>
+                            {% endif %}
+                        </div>
+                        <div class="upload-controls">
+                            <div class="upload-btn-wrapper">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_hero_image_url').click()">📤 Завантажити з комп'ютера</button>
+                                <input type="file" id="file_hero_image_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'hero_image_url')">
+                            </div>
+                            <span class="upload-or">або</span>
+                            <input type="url" id="hero_image_url" name="hero_image_url" value="{{ settings.hero_image_url or '' }}" placeholder="https://example.com/banner.jpg" class="url-input">
+                        </div>
+                        <div id="status_hero_image_url" class="upload-status"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Фото на сторінці "Про нас"</label>
+                    <div class="image-upload-wrapper">
+                        <div class="image-preview-box" id="preview_about_image_url">
+                            {% if settings.about_image_url %}
+                                <img src="{{ settings.about_image_url }}" alt="Про нас">
+                            {% else %}
+                                <span class="preview-placeholder">📷 Стандартне фото</span>
+                            {% endif %}
+                        </div>
+                        <div class="upload-controls">
+                            <div class="upload-btn-wrapper">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_about_image_url').click()">📤 Завантажити з комп'ютера</button>
+                                <input type="file" id="file_about_image_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'about_image_url')">
+                            </div>
+                            <span class="upload-or">або</span>
+                            <input type="url" id="about_image_url" name="about_image_url" value="{{ settings.about_image_url or '' }}" placeholder="https://example.com/about.jpg" class="url-input">
+                        </div>
+                        <div id="status_about_image_url" class="upload-status"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -444,10 +523,113 @@
     .form-row {
         grid-template-columns: 1fr;
     }
-    
+
     .form-row.three-col {
         grid-template-columns: 1fr;
     }
 }
+
+/* Завантаження зображень (лого/фавікон/банер/фото "Про нас") */
+.image-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.image-preview-box {
+    width: 100%;
+    max-width: 320px;
+    height: 160px;
+    border: 2px dashed var(--border-color, rgba(148,163,184,0.45));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--bg-tertiary, rgba(15,23,42,0.6));
+}
+
+.image-preview-box.image-preview-small {
+    max-width: 140px;
+    height: 90px;
+}
+
+.image-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-placeholder {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 0 0.5rem;
+}
+
+.upload-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.upload-or {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.url-input {
+    flex: 1;
+    min-width: 220px;
+}
+
+.upload-status {
+    font-size: 0.8rem;
+    min-height: 1.1em;
+}
+
+.upload-status.success { color: #22c55e; }
+.upload-status.error { color: #ef4444; }
+.upload-status.loading { color: #3b82f6; }
 </style>
+
+<script>
+async function uploadSettingsImage(input, fieldKey) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const statusEl = document.getElementById('status_' + fieldKey);
+    const previewEl = document.getElementById('preview_' + fieldKey);
+    const urlInput = document.getElementById(fieldKey);
+
+    if (file.size > 16 * 1024 * 1024) {
+        statusEl.textContent = '❌ Файл занадто великий (макс. 16 МБ)';
+        statusEl.className = 'upload-status error';
+        return;
+    }
+
+    statusEl.textContent = '⏳ Завантаження...';
+    statusEl.className = 'upload-status loading';
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('/admin/upload', { method: 'POST', body: formData });
+        const data = await response.json();
+        if (data.success) {
+            previewEl.innerHTML = `<img src="${data.url}" alt="Preview">`;
+            urlInput.value = data.url;
+            statusEl.textContent = '✅ Завантажено!';
+            statusEl.className = 'upload-status success';
+        } else {
+            statusEl.textContent = '❌ ' + (data.error || 'Помилка завантаження');
+            statusEl.className = 'upload-status error';
+        }
+    } catch (error) {
+        statusEl.textContent = "❌ Помилка з'єднання";
+        statusEl.className = 'upload-status error';
+    }
+}
+</script>
 {% endblock %}

@@ -2356,37 +2356,46 @@ def create_app():
             ), 500
     
     def delete_old_image(old_image_url):
-        """Видаляє старе зображення з бази даних або файлової системи."""
+        """Видаляє старе зображення з бази даних або файлової системи.
+
+        old_image_url може бути як відносним шляхом ('/images/xxx.png'),
+        так і повним URL ('http://host/images/xxx.png' - саме так їх
+        повертає /admin/upload через url_for(..., _external=True)), тому
+        порівнюємо лише шлях (без хоста/схеми), а не сирий рядок цілком.
+        """
         if not old_image_url:
             return
-        
+
         from models.product import Image
-        
+        from urllib.parse import urlparse
+
+        path = urlparse(old_image_url).path
+
         try:
             # Перевіряємо, чи це зображення з бази даних
-            if old_image_url.startswith('/images/'):
-                filename = old_image_url.split('/images/')[-1]
+            if path.startswith('/images/'):
+                filename = path.split('/images/')[-1]
                 old_image = Image.query.filter_by(filename=filename).first()
-                
+
                 if old_image:
                     db.session.delete(old_image)
                     db.session.commit()
                     app.logger.info(f"🗑️ Deleted old image from database: {filename}")
                     return True
-            
+
             # Якщо це локальний файл
-            elif old_image_url.startswith('/static/uploads/'):
-                filename = old_image_url.split('/static/uploads/')[-1]
+            elif path.startswith('/static/uploads/'):
+                filename = path.split('/static/uploads/')[-1]
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                
+
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     app.logger.info(f"🗑️ Deleted old local file: {filename}")
                     return True
-            
+
         except Exception as e:
             app.logger.warning(f"⚠️ Could not delete old image {old_image_url}: {e}")
-        
+
         return False
 
     # ----- АДМІНКА: ТОВАРИ -----
@@ -2817,9 +2826,22 @@ def create_app():
             # Основні
             settings.site_name = request.form.get("site_name") or None
             settings.site_tagline = request.form.get("site_tagline") or None
-            settings.logo_url = request.form.get("logo_url") or None
-            settings.favicon_url = request.form.get("favicon_url") or None
-            
+
+            # Зображення (лого/фавікон/банер/фото "Про нас") - видаляємо старе
+            # завантажене зображення з БД, якщо власник замінив його на нове.
+            # Одна й та сама картинка теоретично може бути використана одразу
+            # в кількох полях - не видаляємо її, поки хоч одне поле все ще
+            # на неї посилається після збереження.
+            image_fields = ("logo_url", "favicon_url", "hero_image_url", "about_image_url")
+            new_image_values = {f: request.form.get(f, "").strip() or None for f in image_fields}
+            for image_field in image_fields:
+                new_url = new_image_values[image_field]
+                old_url = getattr(settings, image_field)
+                if new_url != old_url and old_url and old_url not in new_image_values.values():
+                    delete_old_image(old_url)
+                setattr(settings, image_field, new_url)
+
+
             # Контакти
             settings.contact_email = request.form.get("contact_email") or None
             settings.contact_phone = request.form.get("contact_phone") or None
