@@ -516,36 +516,42 @@
                 {% endfor %}
             </div>
             
-            <div class="socials">
-                {% if settings and settings.social_telegram %}
-                    <a href="{{ settings.social_telegram }}" target="_blank" class="social-pill">Telegram</a>
-                {% endif %}
-                {% if settings and settings.social_whatsapp %}
-                    <a href="{{ settings.social_whatsapp }}" target="_blank" class="social-pill">WhatsApp</a>
-                {% endif %}
-            </div>
-            <a href="{{ url_for('cart_page') }}" class="btn btn-outline cart-badge">
-                🛒 {{ _('Cart') }}
-                {% if cart_count > 0 %}
-                    <span class="cart-count">{{ cart_count }}</span>
-                {% endif %}
-            </a>
-            {% if current_user.is_authenticated %}
-                {% if current_user.is_b2b %}
-                    <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
-                {% else %}
-                    <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 {{ _('Dashboard') }}</a>
-                {% endif %}
+            {% if current_user.is_authenticated and current_user.is_platform_owner %}
+                <!-- Оператор платформи не є "клієнтом" жодного магазину - кошик
+                     і посилання на клієнтський кабінет тут нерелевантні і лише
+                     заважають; показуємо тільки те, що йому потрібно. -->
+                <a href="{{ url_for('platform_admin.dashboard') }}" class="btn btn-outline">🛠️ Платформа</a>
+                <a href="{{ url_for('cabinet.change_password') }}" class="social-pill" title="Змінити пароль">🔐</a>
                 <a href="{{ url_for('user_logout') }}" class="social-pill" title="{{ _('Logout') }}">🚪</a>
             {% else %}
-                <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Login') }}</a>
-                <a href="{{ url_for('user_register') }}" class="btn">{{ _('Register') }}</a>
-            {% endif %}
-            {% if current_user.is_authenticated and current_user.can_manage_store(g.store) %}
-                <a href="{{ url_for('admin_login') }}" class="social-pill" title="{{ _('Admin Panel') }}">⚙️</a>
-            {% endif %}
-            {% if current_user.is_authenticated and current_user.is_platform_owner %}
-                <a href="{{ url_for('platform_admin.dashboard') }}" class="social-pill" title="Панель платформи">🛠️</a>
+                <div class="socials">
+                    {% if settings and settings.social_telegram %}
+                        <a href="{{ settings.social_telegram }}" target="_blank" class="social-pill">Telegram</a>
+                    {% endif %}
+                    {% if settings and settings.social_whatsapp %}
+                        <a href="{{ settings.social_whatsapp }}" target="_blank" class="social-pill">WhatsApp</a>
+                    {% endif %}
+                </div>
+                <a href="{{ url_for('cart_page') }}" class="btn btn-outline cart-badge">
+                    🛒 {{ _('Cart') }}
+                    {% if cart_count > 0 %}
+                        <span class="cart-count">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_b2b %}
+                        <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
+                    {% else %}
+                        <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 {{ _('Dashboard') }}</a>
+                    {% endif %}
+                    <a href="{{ url_for('user_logout') }}" class="social-pill" title="{{ _('Logout') }}">🚪</a>
+                {% else %}
+                    <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Login') }}</a>
+                    <a href="{{ url_for('user_register') }}" class="btn">{{ _('Register') }}</a>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.can_manage_store(g.store) %}
+                    <a href="{{ url_for('admin_login') }}" class="social-pill" title="{{ _('Admin Panel') }}">⚙️</a>
+                {% endif %}
             {% endif %}
         </div>
     </header>

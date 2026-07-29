@@ -178,6 +178,8 @@ def change_password():
             current_user.set_password(new_password)
             db.session.commit()
             flash("Пароль успішно змінено.", "success")
+            if current_user.is_platform_owner:
+                return redirect(url_for("platform_admin.dashboard"))
             return redirect(url_for("cabinet.profile"))
-    
+
     return render_template("cabinet/change_password.html")
