@@ -39,6 +39,18 @@ def _get_plan_price_id(plan):
     return os.environ.get(env_var, "") if env_var else ""
 
 
+def _store_url(store):
+    """Публічне посилання на щойно створений магазин (<slug>.<BASE_DOMAIN>).
+
+    Повертає None, якщо BASE_DOMAIN ще не налаштовано на платформі (напр. під
+    час локальної розробки) - піддомени тоді ще не резолвляться і показувати
+    посилання нема сенсу."""
+    base_domain = os.environ.get("BASE_DOMAIN", "").strip().strip(".")
+    if not base_domain:
+        return None
+    return f"https://{store.slug}.{base_domain}/"
+
+
 @signup_bp.route("", methods=["GET", "POST"])
 def new_store():
     """Форма створення нового магазину (SaaS-реєстрація власника)."""
@@ -122,8 +134,7 @@ def new_store():
         # активуємо магазин без реальної оплати.
         store.subscription_status = StoreSubscriptionStatus.ACTIVE
         db.session.commit()
-        flash(f"✅ Магазин «{store.name}» створено! (Stripe не налаштовано — підписка активована без оплати для розробки.)", "success")
-        return redirect(url_for("admin_dashboard"))
+        return render_template("auth/signup_success.html", store=store, store_url=_store_url(store))
 
     return render_template("auth/signup.html", plans=PLAN_CHOICES, form={})
 
@@ -148,4 +159,8 @@ def success():
         except Exception as e:
             current_app.logger.error(f"Signup success: failed to reconcile Stripe session: {e}")
 
-    return render_template("auth/signup_success.html", store=store)
+    return render_template(
+        "auth/signup_success.html",
+        store=store,
+        store_url=_store_url(store) if store else None,
+    )

@@ -9,6 +9,14 @@
             <h1>✅ Готово!</h1>
             {% if store %}
             <p>Магазин «{{ store.name }}» активовано. Підписка: {{ store.subscription_status }}.</p>
+            {% if store_url %}
+            <div class="store-link-box">
+                <div class="store-link-label">Адреса вашого магазину</div>
+                <a href="{{ store_url }}" target="_blank" class="store-link">{{ store_url }}</a>
+            </div>
+            {% else %}
+            <p class="store-link-pending">Піддомен магазину ще не активовано на платформі - зверніться до підтримки, щоб отримати посилання.</p>
+            {% endif %}
             {% else %}
             <p>Оплату отримано. Заходьте в адмінку, щоб налаштувати магазин.</p>
             {% endif %}
@@ -24,5 +32,9 @@
 .auth-header p { color: var(--text-secondary, #94a3b8); margin-bottom: 1.5rem; }
 .btn-block { width: 100%; padding: 1rem; font-size: 1rem; display: inline-block; text-decoration: none; }
 .btn-primary { background: linear-gradient(135deg, #10b981, #14b8a6); border: none; color: #022c22; font-weight: 600; border-radius: 0.5rem; }
+.store-link-box { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 0.6rem; padding: 0.9rem 1rem; margin-bottom: 1.5rem; }
+.store-link-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary, #94a3b8); margin-bottom: 0.3rem; }
+.store-link { color: #6ee7b7; font-weight: 600; font-size: 0.95rem; word-break: break-all; }
+.store-link-pending { color: #fde68a; font-size: 0.85rem; margin-bottom: 1.5rem; }
 </style>
 {% endblock %}
