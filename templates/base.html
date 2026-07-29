@@ -497,6 +497,7 @@
 <body>
 <div class="page">
     <!-- HEADER -->
+    {% if g.store and not g.store.is_deleted and g.store.is_active %}
     <header class="header">
         <a href="{{ url_for('index') }}" class="brand">
             {% if settings and settings.logo_url %}
@@ -567,6 +568,7 @@
             {% endif %}
         </div>
     </header>
+    {% endif %}
 
     <!-- FLASH MESSAGES -->
     {% with messages = get_flashed_messages(with_categories=true) %}
