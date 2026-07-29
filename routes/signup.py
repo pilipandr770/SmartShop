@@ -6,6 +6,7 @@ import re
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask_babel import gettext as _
 from flask_login import login_user, current_user
 
 from extensions import db
@@ -58,7 +59,7 @@ def _store_url(store):
 def new_store():
     """Форма створення нового магазину (SaaS-реєстрація власника)."""
     if current_user.is_authenticated and current_user.is_store_owner:
-        flash("У вас вже є магазин. Керуйте ним з адмінки.", "info")
+        flash(_("У вас вже є магазин. Керуйте ним з адмінки."), "info")
         return redirect(url_for("admin_dashboard"))
 
     if request.method == "POST":
@@ -74,19 +75,19 @@ def new_store():
 
         errors = []
         if not store_name:
-            errors.append("Назва магазину обов'язкова.")
+            errors.append(_("Назва магазину обов'язкова."))
         if not slug or len(slug) < 3:
-            errors.append("Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, цифри, дефіс).")
+            errors.append(_("Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, цифри, дефіс)."))
         elif not Store.slug_is_available(slug):
             errors.append(f"Адреса «{slug}» вже зайнята. Оберіть іншу.")
         if not email:
-            errors.append("Email обов'язковий.")
+            errors.append(_("Email обов'язковий."))
         elif User.get_by_email(email):
-            errors.append("Користувач з таким email вже існує. Увійдіть у свій акаунт.")
+            errors.append(_("Користувач з таким email вже існує. Увійдіть у свій акаунт."))
         if not password or len(password) < 8:
-            errors.append("Пароль має бути не менше 8 символів.")
+            errors.append(_("Пароль має бути не менше 8 символів."))
         elif password != password_confirm:
-            errors.append("Паролі не співпадають.")
+            errors.append(_("Паролі не співпадають."))
 
         if errors:
             for error in errors:
@@ -134,7 +135,7 @@ def new_store():
                 )
                 return redirect(checkout_session.url)
             except stripe.error.StripeError as e:
-                flash(f"Магазин створено, але не вдалося відкрити оплату: {e}. Спробуйте пізніше в адмінці.", "warning")
+                flash(_("Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте пізніше в адмінці.") % {"error": e}, "warning")
                 return redirect(url_for("admin_dashboard"))
 
         # Stripe не налаштовано (лише для локальної розробки/демо) - одразу

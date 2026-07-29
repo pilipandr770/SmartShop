@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Вхід - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('Вхід') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1>🔐 Вхід</h1>
-            <p>Увійдіть до свого акаунту</p>
+            <h1>🔐 {{ _('Вхід') }}</h1>
+            <p>{{ _('Увійдіть до свого акаунту') }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -21,36 +21,36 @@
         <form method="POST" class="auth-form">
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" required 
+                <input type="email" id="email" name="email" required
                        placeholder="your@email.com" autocomplete="email">
             </div>
-            
+
             <div class="form-group">
-                <label for="password">Пароль</label>
-                <input type="password" id="password" name="password" required 
+                <label for="password">{{ _('Пароль') }}</label>
+                <input type="password" id="password" name="password" required
                        placeholder="••••••••" autocomplete="current-password">
             </div>
-            
+
             <div class="form-group checkbox-group">
                 <label class="checkbox-label">
                     <input type="checkbox" name="remember">
-                    <span>Запам'ятати мене</span>
+                    <span>{{ _("Запам'ятати мене") }}</span>
                 </label>
             </div>
-            
+
             <button type="submit" class="btn btn-primary btn-block">
-                Увійти
+                {{ _('Увійти') }}
             </button>
         </form>
-        
+
         <div class="auth-footer">
-            <p>Немає акаунту?</p>
+            <p>{{ _('Немає акаунту?') }}</p>
             <div class="auth-links">
                 <a href="{{ url_for('user_register') }}" class="btn btn-outline">
-                    👤 Реєстрація
+                    👤 {{ _('Реєстрація') }}
                 </a>
                 <a href="{{ url_for('user_register_b2b') }}" class="btn btn-outline btn-b2b">
-                    🏢 B2B Партнерство
+                    🏢 {{ _('B2B Партнерство') }}
                 </a>
             </div>
         </div>

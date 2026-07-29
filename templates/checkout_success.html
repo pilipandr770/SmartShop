@@ -1,26 +1,26 @@
 {% extends 'base.html' %}
-{% block title %}Замовлення оформлено — SmartShop AI{% endblock %}
+{% block title %}{{ _('Замовлення оформлено') }} — SmartShop AI{% endblock %}
 
 {% block content %}
 <div class="success-page">
     <div class="success-card card">
         <div class="success-icon">✅</div>
-        <h1>Дякуємо за замовлення!</h1>
-        
+        <h1>{{ _('Дякуємо за замовлення!') }}</h1>
+
         {% if order %}
-        <p class="order-number">Номер замовлення: <strong>#{{ order.id }}</strong></p>
+        <p class="order-number">{{ _('Номер замовлення:') }} <strong>#{{ order.id }}</strong></p>
         <div class="order-details">
             <div class="detail-row">
-                <span>Сума:</span>
+                <span>{{ _('Сума:') }}</span>
                 <span class="amount">{{ "%.2f"|format(order.amount) }} {{ order.currency }}</span>
             </div>
             <div class="detail-row">
-                <span>Статус:</span>
-                <span class="status status-paid">Оплачено</span>
+                <span>{{ _('Статус:') }}</span>
+                <span class="status status-paid">{{ _('Оплачено') }}</span>
             </div>
             {% if order.customer_email %}
             <div class="detail-row">
-                <span>Email:</span>
+                <span>{{ _('Email:') }}</span>
                 <span>{{ order.customer_email }}</span>
             </div>
             {% endif %}
@@ -28,12 +28,12 @@
         {% endif %}
 
         <p class="success-message">
-            Ми отримали вашу оплату і незабаром зв'яжемося з вами для підтвердження доставки.
+            {{ _("Ми отримали вашу оплату і незабаром зв'яжемося з вами для підтвердження доставки.") }}
         </p>
 
         <div class="success-actions">
-            <a href="{{ url_for('shop') }}" class="btn">Продовжити покупки</a>
-            <a href="{{ url_for('index') }}" class="btn btn-outline">На головну</a>
+            <a href="{{ url_for('shop') }}" class="btn">{{ _('Продовжити покупки') }}</a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline">{{ _('На головну') }}</a>
         </div>
     </div>
 </div>

@@ -1,44 +1,44 @@
 {% extends 'admin/layout.html' %}
-{% block title %}AI Налаштування - Адмін панель{% endblock %}
+{% block title %}{{ _('AI Налаштування - Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>🤖 AI Налаштування</h1>
-    <p class="page-subtitle">Керування чатботом та AI-блогером</p>
+    <h1>🤖 {{ _('AI Налаштування') }}</h1>
+    <p class="page-subtitle">{{ _('Керування чатботом та AI-блогером') }}</p>
 </div>
 
 <form method="post">
     <!-- Навігація по табах -->
     <div class="tabs">
-        <button type="button" class="tab active" onclick="showTab('chatbot')">💬 Чатбот</button>
-        <button type="button" class="tab" onclick="showTab('blogger')">📝 AI Блогер</button>
+        <button type="button" class="tab active" onclick="showTab('chatbot')">💬 {{ _('Чатбот') }}</button>
+        <button type="button" class="tab" onclick="showTab('blogger')">📝 {{ _('AI Блогер') }}</button>
     </div>
-    
+
     <!-- Tab: Чатбот -->
     <div id="tab-chatbot" class="tab-content active">
         <div class="cards-grid">
             <div class="card">
                 <div class="card-header">
-                    <h3>⚙️ Основні налаштування</h3>
+                    <h3>⚙️ {{ _('Основні налаштування') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
                         <label class="toggle-label">
                             <input type="checkbox" name="chatbot_enabled" {{ 'checked' if ai_settings.chatbot_enabled else '' }}>
                             <span class="toggle-switch"></span>
-                            Чатбот увімкнено
+                            {{ _('Чатбот увімкнено') }}
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="chatbot_name">Ім'я чатбота</label>
-                        <input type="text" id="chatbot_name" name="chatbot_name" 
+                        <label for="chatbot_name">{{ _("Ім'я чатбота") }}</label>
+                        <input type="text" id="chatbot_name" name="chatbot_name"
                                value="{{ ai_settings.chatbot_name or 'ІІ-продавець' }}" placeholder="ІІ-продавець">
                     </div>
                     <div class="form-group">
-                        <label for="chatbot_tone">Тон спілкування</label>
+                        <label for="chatbot_tone">{{ _('Тон спілкування') }}</label>
                         <select id="chatbot_tone" name="chatbot_tone">
-                            <option value="friendly" {{ 'selected' if ai_settings.chatbot_tone == 'friendly' else '' }}>😊 Дружній</option>
-                            <option value="professional" {{ 'selected' if ai_settings.chatbot_tone == 'professional' else '' }}>👔 Професійний</option>
-                            <option value="casual" {{ 'selected' if ai_settings.chatbot_tone == 'casual' else '' }}>😎 Неформальний</option>
+                            <option value="friendly" {{ 'selected' if ai_settings.chatbot_tone == 'friendly' else '' }}>😊 {{ _('Дружній') }}</option>
+                            <option value="professional" {{ 'selected' if ai_settings.chatbot_tone == 'professional' else '' }}>👔 {{ _('Професійний') }}</option>
+                            <option value="casual" {{ 'selected' if ai_settings.chatbot_tone == 'casual' else '' }}>😎 {{ _('Неформальний') }}</option>
                         </select>
                     </div>
                 </div>
@@ -46,22 +46,22 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3>🔧 Технічні параметри</h3>
+                    <h3>🔧 {{ _('Технічні параметри') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="chatbot_max_tokens">Максимум токенів відповіді</label>
-                        <input type="number" id="chatbot_max_tokens" name="chatbot_max_tokens" 
+                        <label for="chatbot_max_tokens">{{ _('Максимум токенів відповіді') }}</label>
+                        <input type="number" id="chatbot_max_tokens" name="chatbot_max_tokens"
                                value="{{ ai_settings.chatbot_max_tokens or 500 }}" min="100" max="2000">
-                        <small class="form-hint">Рекомендовано: 300-800</small>
+                        <small class="form-hint">{{ _('Рекомендовано: 300-800') }}</small>
                     </div>
                     <div class="form-group">
-                        <label for="chatbot_temperature">Креативність (0-1)</label>
-                        <input type="range" id="chatbot_temperature" name="chatbot_temperature" 
+                        <label for="chatbot_temperature">{{ _('Креативність (0-1)') }}</label>
+                        <input type="range" id="chatbot_temperature" name="chatbot_temperature"
                                value="{{ ai_settings.chatbot_temperature or 0.7 }}" min="0" max="1" step="0.1"
                                oninput="document.getElementById('temp-value').textContent = this.value">
                         <span id="temp-value">{{ ai_settings.chatbot_temperature or 0.7 }}</span>
-                        <small class="form-hint">0 = точний, 1 = креативний</small>
+                        <small class="form-hint">{{ _('0 = точний, 1 = креативний') }}</small>
                     </div>
                 </div>
             </div>
@@ -69,32 +69,32 @@
 
         <div class="card" style="margin-top: 1.5rem;">
             <div class="card-header">
-                <h3>📋 Інструкції для чатбота</h3>
+                <h3>📋 {{ _('Інструкції для чатбота') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
-                    <label for="chatbot_system_prompt">Базовий системний промпт</label>
-                    <textarea id="chatbot_system_prompt" name="chatbot_system_prompt" rows="6" 
-                              placeholder="Основні правила роботи чатбота...">{{ ai_settings.chatbot_system_prompt or '' }}</textarea>
-                    <small class="form-hint">Базові інструкції, які завжди включаються</small>
+                    <label for="chatbot_system_prompt">{{ _('Базовий системний промпт') }}</label>
+                    <textarea id="chatbot_system_prompt" name="chatbot_system_prompt" rows="6"
+                              placeholder="{{ _('Основні правила роботи чатбота...') }}">{{ ai_settings.chatbot_system_prompt or '' }}</textarea>
+                    <small class="form-hint">{{ _('Базові інструкції, які завжди включаються') }}</small>
                 </div>
                 <div class="form-group">
-                    <label for="chatbot_custom_instructions">🎯 Кастомні інструкції від адміна</label>
-                    <textarea id="chatbot_custom_instructions" name="chatbot_custom_instructions" rows="8" 
-                              placeholder="Введіть ваші додаткові інструкції для чатбота...
+                    <label for="chatbot_custom_instructions">🎯 {{ _('Кастомні інструкції від адміна') }}</label>
+                    <textarea id="chatbot_custom_instructions" name="chatbot_custom_instructions" rows="8"
+                              placeholder="{{ _('Введіть ваші додаткові інструкції для чатбота...') }}
 
-Наприклад:
-- Завжди пропонуй товари зі знижкою
-- Згадуй про безкоштовну доставку від 1000 грн
-- При запитаннях про конкурентів переводь на наші переваги
-- Не обговорюй політику та релігію">{{ ai_settings.chatbot_custom_instructions or '' }}</textarea>
-                    <small class="form-hint">💡 Ці інструкції додаються до базового промпту. Бот буде їх враховувати при відповідях.</small>
+{{ _('Наприклад:') }}
+- {{ _('Завжди пропонуй товари зі знижкою') }}
+- {{ _('Згадуй про безкоштовну доставку від 1000 грн') }}
+- {{ _('При запитаннях про конкурентів переводь на наші переваги') }}
+- {{ _('Не обговорюй політику та релігію') }}">{{ ai_settings.chatbot_custom_instructions or '' }}</textarea>
+                    <small class="form-hint">💡 {{ _('Ці інструкції додаються до базового промпту. Бот буде їх враховувати при відповідях.') }}</small>
                 </div>
                 <div class="form-group">
-                    <label for="chatbot_forbidden_topics">🚫 Заборонені теми</label>
-                    <textarea id="chatbot_forbidden_topics" name="chatbot_forbidden_topics" rows="3" 
-                              placeholder="Політика, релігія, конкуренти...">{{ ai_settings.chatbot_forbidden_topics or '' }}</textarea>
-                    <small class="form-hint">Теми, на які бот відмовиться відповідати</small>
+                    <label for="chatbot_forbidden_topics">🚫 {{ _('Заборонені теми') }}</label>
+                    <textarea id="chatbot_forbidden_topics" name="chatbot_forbidden_topics" rows="3"
+                              placeholder="{{ _('Політика, релігія, конкуренти...') }}">{{ ai_settings.chatbot_forbidden_topics or '' }}</textarea>
+                    <small class="form-hint">{{ _('Теми, на які бот відмовиться відповідати') }}</small>
                 </div>
             </div>
         </div>
@@ -105,33 +105,33 @@
         <div class="cards-grid">
             <div class="card">
                 <div class="card-header">
-                    <h3>⚙️ Налаштування блогера</h3>
+                    <h3>⚙️ {{ _('Налаштування блогера') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
                         <label class="toggle-label">
                             <input type="checkbox" name="blogger_enabled" {{ 'checked' if ai_settings.blogger_enabled else '' }}>
                             <span class="toggle-switch"></span>
-                            AI Блогер увімкнено
+                            {{ _('AI Блогер увімкнено') }}
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="blogger_name">Ім'я автора</label>
-                        <input type="text" id="blogger_name" name="blogger_name" 
+                        <label for="blogger_name">{{ _("Ім'я автора") }}</label>
+                        <input type="text" id="blogger_name" name="blogger_name"
                                value="{{ ai_settings.blogger_name or 'AI Блогер' }}" placeholder="AI Блогер">
                     </div>
                     <div class="form-group">
-                        <label for="blogger_style">Стиль написання</label>
+                        <label for="blogger_style">{{ _('Стиль написання') }}</label>
                         <select id="blogger_style" name="blogger_style">
-                            <option value="informative" {{ 'selected' if ai_settings.blogger_style == 'informative' else '' }}>📚 Інформативний</option>
-                            <option value="entertaining" {{ 'selected' if ai_settings.blogger_style == 'entertaining' else '' }}>🎭 Розважальний</option>
-                            <option value="professional" {{ 'selected' if ai_settings.blogger_style == 'professional' else '' }}>💼 Професійний</option>
+                            <option value="informative" {{ 'selected' if ai_settings.blogger_style == 'informative' else '' }}>📚 {{ _('Інформативний') }}</option>
+                            <option value="entertaining" {{ 'selected' if ai_settings.blogger_style == 'entertaining' else '' }}>🎭 {{ _('Розважальний') }}</option>
+                            <option value="professional" {{ 'selected' if ai_settings.blogger_style == 'professional' else '' }}>💼 {{ _('Професійний') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="blogger_language">Мова статей</label>
+                        <label for="blogger_language">{{ _('Мова статей') }}</label>
                         <select id="blogger_language" name="blogger_language">
-                            <option value="uk" {{ 'selected' if ai_settings.blogger_language == 'uk' else '' }}>🇺🇦 Українська</option>
+                            <option value="uk" {{ 'selected' if ai_settings.blogger_language == 'uk' else '' }}>🇺🇦 {{ _('Українська') }}</option>
                             <option value="en" {{ 'selected' if ai_settings.blogger_language == 'en' else '' }}>🇬🇧 English</option>
                             <option value="de" {{ 'selected' if ai_settings.blogger_language == 'de' else '' }}>🇩🇪 Deutsch</option>
                         </select>
@@ -141,18 +141,18 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h3>📏 Параметри статей</h3>
+                    <h3>📏 {{ _('Параметри статей') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="blogger_min_words">Мін. слів</label>
-                            <input type="number" id="blogger_min_words" name="blogger_min_words" 
+                            <label for="blogger_min_words">{{ _('Мін. слів') }}</label>
+                            <input type="number" id="blogger_min_words" name="blogger_min_words"
                                    value="{{ ai_settings.blogger_min_words or 500 }}" min="200" max="3000">
                         </div>
                         <div class="form-group">
-                            <label for="blogger_max_words">Макс. слів</label>
-                            <input type="number" id="blogger_max_words" name="blogger_max_words" 
+                            <label for="blogger_max_words">{{ _('Макс. слів') }}</label>
+                            <input type="number" id="blogger_max_words" name="blogger_max_words"
                                    value="{{ ai_settings.blogger_max_words or 1500 }}" min="300" max="5000">
                         </div>
                     </div>
@@ -160,66 +160,66 @@
                         <label class="toggle-label">
                             <input type="checkbox" name="blogger_auto_generate" {{ 'checked' if ai_settings.blogger_auto_generate else '' }}>
                             <span class="toggle-switch"></span>
-                            Генерувати статті з плану автоматично (без ручного натискання)
+                            {{ _('Генерувати статті з плану автоматично (без ручного натискання)') }}
                         </label>
-                        <small style="color: var(--text-muted);">Фонове завдання перевіряє план кожні 15 хв і генерує статті, дата яких настала. Витрачає OpenAI-кредити магазину.</small>
+                        <small style="color: var(--text-muted);">{{ _('Фонове завдання перевіряє план кожні 15 хв і генерує статті, дата яких настала. Витрачає OpenAI-кредити магазину.') }}</small>
                     </div>
                     <div class="form-group">
                         <label class="toggle-label">
                             <input type="checkbox" name="auto_publish" {{ 'checked' if ai_settings.auto_publish else '' }}>
                             <span class="toggle-switch"></span>
-                            Автоматична публікація
+                            {{ _('Автоматична публікація') }}
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="publish_time">Час публікації</label>
+                        <label for="publish_time">{{ _('Час публікації') }}</label>
                         <input type="time" id="publish_time" name="publish_time"
                                value="{{ ai_settings.publish_time or '10:00' }}">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Генерація зображень -->
         <div class="card" style="margin-top: 1.5rem;">
             <div class="card-header">
-                <h3>🖼️ Генерація зображень (DALL-E)</h3>
+                <h3>🖼️ {{ _('Генерація зображень (DALL-E)') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
                     <label class="toggle-label">
                         <input type="checkbox" name="generate_images" {{ 'checked' if ai_settings.generate_images else '' }}>
                         <span class="toggle-switch"></span>
-                        Генерувати зображення для статей
+                        {{ _('Генерувати зображення для статей') }}
                     </label>
-                    <small class="form-hint">Використовує DALL-E 3 для створення унікальних зображень на основі змісту статті</small>
+                    <small class="form-hint">{{ _('Використовує DALL-E 3 для створення унікальних зображень на основі змісту статті') }}</small>
                 </div>
                 <div class="form-group">
-                    <label for="image_style">Стиль зображень</label>
-                    <input type="text" id="image_style" name="image_style" 
-                           value="{{ ai_settings.image_style or 'professional photography, realistic, high quality' }}" 
+                    <label for="image_style">{{ _('Стиль зображень') }}</label>
+                    <input type="text" id="image_style" name="image_style"
+                           value="{{ ai_settings.image_style or 'professional photography, realistic, high quality' }}"
                            placeholder="professional photography, realistic, high quality">
-                    <small class="form-hint">Опис стилю для генерації (англійською). Приклади: "minimalist, clean design", "vibrant colors, modern", "corporate style, professional"</small>
+                    <small class="form-hint">{{ _('Опис стилю для генерації (англійською). Приклади: "minimalist, clean design", "vibrant colors, modern", "corporate style, professional"') }}</small>
                 </div>
             </div>
         </div>
-        
+
         <!-- Автоматичний переклад -->
         <div class="card" style="margin-top: 1.5rem;">
             <div class="card-header">
-                <h3>🌐 Автоматичний переклад</h3>
+                <h3>🌐 {{ _('Автоматичний переклад') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
                     <label class="toggle-label">
                         <input type="checkbox" name="auto_translate" {{ 'checked' if ai_settings.auto_translate else '' }}>
                         <span class="toggle-switch"></span>
-                        Автоперекладати статті на інші мови
+                        {{ _('Автоперекладати статті на інші мови') }}
                     </label>
-                    <small class="form-hint">При генерації статті автоматично перекладати на вибрані мови</small>
+                    <small class="form-hint">{{ _('При генерації статті автоматично перекладати на вибрані мови') }}</small>
                 </div>
                 <div class="form-group">
-                    <label>Мови для перекладу</label>
+                    <label>{{ _('Мови для перекладу') }}</label>
                     <div style="display: flex; gap: 1.5rem; margin-top: 0.5rem;">
                         <label class="toggle-label" style="flex: none;">
                             <input type="checkbox" name="translate_en" {{ 'checked' if 'en' in (ai_settings.auto_translate_languages or 'en,de') else '' }}>
@@ -238,27 +238,27 @@
 
         <div class="card" style="margin-top: 1.5rem;">
             <div class="card-header">
-                <h3>🔍 SEO налаштування</h3>
+                <h3>🔍 {{ _('SEO налаштування') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
-                    <label for="blogger_default_keywords">Базові ключові слова</label>
-                    <textarea id="blogger_default_keywords" name="blogger_default_keywords" rows="3" 
-                              placeholder="магазин, покупки онлайн, доставка...">{{ ai_settings.blogger_default_keywords or '' }}</textarea>
-                    <small class="form-hint">Ключові слова, що додаються до кожної статті</small>
+                    <label for="blogger_default_keywords">{{ _('Базові ключові слова') }}</label>
+                    <textarea id="blogger_default_keywords" name="blogger_default_keywords" rows="3"
+                              placeholder="{{ _('магазин, покупки онлайн, доставка...') }}">{{ ai_settings.blogger_default_keywords or '' }}</textarea>
+                    <small class="form-hint">{{ _('Ключові слова, що додаються до кожної статті') }}</small>
                 </div>
                 <div class="form-group">
-                    <label for="blogger_seo_instructions">SEO інструкції</label>
-                    <textarea id="blogger_seo_instructions" name="blogger_seo_instructions" rows="8" 
-                              placeholder="Інструкції щодо SEO-оптимізації статей...">{{ ai_settings.blogger_seo_instructions or '' }}</textarea>
+                    <label for="blogger_seo_instructions">{{ _('SEO інструкції') }}</label>
+                    <textarea id="blogger_seo_instructions" name="blogger_seo_instructions" rows="8"
+                              placeholder="{{ _('Інструкції щодо SEO-оптимізації статей...') }}">{{ ai_settings.blogger_seo_instructions or '' }}</textarea>
                 </div>
                 <div class="form-group">
-                    <label for="blogger_article_structure">Структура статті</label>
-                    <textarea id="blogger_article_structure" name="blogger_article_structure" rows="6" 
-                              placeholder="1. Заголовок H1
-2. Вступ
-3. Підзаголовки H2
-4. Висновок">{{ ai_settings.blogger_article_structure or '' }}</textarea>
+                    <label for="blogger_article_structure">{{ _('Структура статті') }}</label>
+                    <textarea id="blogger_article_structure" name="blogger_article_structure" rows="6"
+                              placeholder="{{ _('1. Заголовок H1') }}
+{{ _('2. Вступ') }}
+{{ _('3. Підзаголовки H2') }}
+{{ _('4. Висновок') }}">{{ ai_settings.blogger_article_structure or '' }}</textarea>
                 </div>
             </div>
         </div>
@@ -266,7 +266,7 @@
 
     <div class="form-footer">
         <button type="submit" class="btn btn-primary btn-lg">
-            <span>💾</span> Зберегти налаштування
+            <span>💾</span> {{ _('Зберегти налаштування') }}
         </button>
     </div>
 </form>

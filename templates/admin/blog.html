@@ -1,15 +1,15 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Блог - Адмін панель{% endblock %}
+{% block title %}{{ _('Блог') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div>
-            <h1>📝 Блог</h1>
-            <p class="page-subtitle">Управління публікаціями та контент-планом</p>
+            <h1>📝 {{ _('Блог') }}</h1>
+            <p class="page-subtitle">{{ _('Управління публікаціями та контент-планом') }}</p>
         </div>
         <div style="display:flex;gap:0.75rem;">
-            <a href="{{ url_for('admin_blog_plan') }}" class="btn btn-secondary">📅 План на 7 днів</a>
-            <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">➕ Нова стаття</a>
+            <a href="{{ url_for('admin_blog_plan') }}" class="btn btn-secondary">📅 {{ _('План на 7 днів') }}</a>
+            <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">➕ {{ _('Нова стаття') }}</a>
         </div>
     </div>
 </div>
@@ -18,29 +18,29 @@
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-value">{{ stats.total }}</div>
-        <div class="stat-label">Всього статей</div>
+        <div class="stat-label">{{ _('Всього статей') }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-value">{{ stats.published }}</div>
-        <div class="stat-label">Опубліковано</div>
+        <div class="stat-label">{{ _('Опубліковано') }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-value">{{ stats.scheduled }}</div>
-        <div class="stat-label">Заплановано</div>
+        <div class="stat-label">{{ _('Заплановано') }}</div>
     </div>
     <div class="stat-card">
         <div class="stat-value">{{ stats.draft }}</div>
-        <div class="stat-label">Чернетки</div>
+        <div class="stat-label">{{ _('Чернетки') }}</div>
     </div>
 </div>
 
 <!-- Фільтри -->
 <div class="filters-bar">
     <div class="filter-group">
-        <a href="{{ url_for('admin_blog') }}" class="filter-btn {{ 'active' if not status_filter else '' }}">Всі</a>
-        <a href="{{ url_for('admin_blog', status='published') }}" class="filter-btn {{ 'active' if status_filter == 'published' else '' }}">Опубліковані</a>
-        <a href="{{ url_for('admin_blog', status='scheduled') }}" class="filter-btn {{ 'active' if status_filter == 'scheduled' else '' }}">Заплановані</a>
-        <a href="{{ url_for('admin_blog', status='draft') }}" class="filter-btn {{ 'active' if status_filter == 'draft' else '' }}">Чернетки</a>
+        <a href="{{ url_for('admin_blog') }}" class="filter-btn {{ 'active' if not status_filter else '' }}">{{ _('Всі') }}</a>
+        <a href="{{ url_for('admin_blog', status='published') }}" class="filter-btn {{ 'active' if status_filter == 'published' else '' }}">{{ _('Опубліковані') }}</a>
+        <a href="{{ url_for('admin_blog', status='scheduled') }}" class="filter-btn {{ 'active' if status_filter == 'scheduled' else '' }}">{{ _('Заплановані') }}</a>
+        <a href="{{ url_for('admin_blog', status='draft') }}" class="filter-btn {{ 'active' if status_filter == 'draft' else '' }}">{{ _('Чернетки') }}</a>
     </div>
 </div>
 
@@ -49,12 +49,12 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th>Стаття</th>
-                <th>Статус</th>
-                <th>Автор</th>
-                <th>Дата</th>
-                <th>👁 Перегляди</th>
-                <th>Дії</th>
+                <th>{{ _('Стаття') }}</th>
+                <th>{{ _('Статус') }}</th>
+                <th>{{ _('Автор') }}</th>
+                <th>{{ _('Дата') }}</th>
+                <th>👁 {{ _('Перегляди') }}</th>
+                <th>{{ _('Дії') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -85,11 +85,11 @@
                     </td>
                     <td>
                         {% if post.status == 'published' %}
-                        <span class="status-badge success">✓ Опубліковано</span>
+                        <span class="status-badge success">✓ {{ _('Опубліковано') }}</span>
                         {% elif post.status == 'scheduled' %}
-                        <span class="status-badge warning">🕐 Заплановано</span>
+                        <span class="status-badge warning">🕐 {{ _('Заплановано') }}</span>
                         {% elif post.status == 'draft' %}
-                        <span class="status-badge neutral">📝 Чернетка</span>
+                        <span class="status-badge neutral">📝 {{ _('Чернетка') }}</span>
                         {% else %}
                         <span class="status-badge">{{ post.status }}</span>
                         {% endif %}
@@ -107,16 +107,16 @@
                         <div class="actions">
                             {% if post.status != 'published' %}
                             <form method="post" action="{{ url_for('admin_blog_publish', id=post.id) }}" style="display:inline;">
-                                <button type="submit" class="btn-icon success" title="Опублікувати">🚀</button>
+                                <button type="submit" class="btn-icon success" title="{{ _('Опублікувати') }}">🚀</button>
                             </form>
                             {% endif %}
-                            <button type="button" class="btn-icon translate-btn" data-id="{{ post.id }}" title="Автопереклад EN+DE" onclick="translatePost({{ post.id }}, this)">
+                            <button type="button" class="btn-icon translate-btn" data-id="{{ post.id }}" title="{{ _('Автопереклад EN+DE') }}" onclick="translatePost({{ post.id }}, this)">
                                 🌐
                             </button>
-                            <a href="{{ url_for('blog_post_page', slug=post.slug) }}" target="_blank" class="btn-icon" title="Переглянути">👁</a>
-                            <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="btn-icon" title="Редагувати">✏️</a>
+                            <a href="{{ url_for('blog_post_page', slug=post.slug) }}" target="_blank" class="btn-icon" title="{{ _('Переглянути') }}">👁</a>
+                            <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="btn-icon" title="{{ _('Редагувати') }}">✏️</a>
                             <form method="post" action="{{ url_for('admin_blog_delete', id=post.id) }}" style="display:inline;">
-                                <button type="submit" class="btn-icon danger" title="Видалити" onclick="return confirm('Видалити цю статтю?')">🗑</button>
+                                <button type="submit" class="btn-icon danger" title="{{ _('Видалити') }}" onclick="return confirm('{{ _('Видалити цю статтю?') }}')">🗑</button>
                             </form>
                         </div>
                     </td>
@@ -126,8 +126,8 @@
             <tr>
                 <td colspan="6" class="empty-state">
                     <div class="empty-icon">📝</div>
-                    <p>Ще немає жодної статті</p>
-                    <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">Створити першу статтю</a>
+                    <p>{{ _('Ще немає жодної статті') }}</p>
+                    <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">{{ _('Створити першу статтю') }}</a>
                 </td>
             </tr>
             {% endif %}
@@ -383,14 +383,14 @@ async function translatePost(postId, btn) {
             btn.classList.remove('loading');
             btn.classList.add('done');
             btn.innerHTML = '✅';
-            btn.title = 'Перекладено!';
+            btn.title = '{{ _('Перекладено!') }}';
         } else {
             btn.classList.remove('loading');
-            alert(data.error || 'Помилка перекладу');
+            alert(data.error || '{{ _('Помилка перекладу') }}');
         }
     } catch (e) {
         btn.classList.remove('loading');
-        alert('Помилка: ' + e.message);
+        alert('{{ _('Помилка') }}: ' + e.message);
     }
 }
 </script>

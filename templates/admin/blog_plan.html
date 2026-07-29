@@ -1,15 +1,15 @@
 {% extends 'admin/layout.html' %}
-{% block title %}План публікацій - Адмін панель{% endblock %}
+{% block title %}{{ _('План публікацій') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div>
-            <a href="{{ url_for('admin_blog') }}" class="back-link">← Назад до блогу</a>
-            <h1>📅 План публікацій на 7 днів</h1>
-            <p class="page-subtitle">Заплануйте теми статей і AI згенерує контент автоматично</p>
+            <a href="{{ url_for('admin_blog') }}" class="back-link">← {{ _('Назад до блогу') }}</a>
+            <h1>📅 {{ _('План публікацій на 7 днів') }}</h1>
+            <p class="page-subtitle">{{ _('Заплануйте теми статей і AI згенерує контент автоматично') }}</p>
         </div>
         <button type="button" class="btn btn-accent" onclick="generateAllPending()">
-            🤖 Згенерувати всі pending
+            🤖 {{ _('Згенерувати всі pending') }}
         </button>
     </div>
 </div>
@@ -31,25 +31,25 @@
                     {% endif %}
                     <div class="plan-status">
                         {% if day.plan.status == 'pending' %}
-                        <span class="status-dot pending"></span> Очікує генерації
+                        <span class="status-dot pending"></span> {{ _('Очікує генерації') }}
                         {% elif day.plan.status == 'generated' %}
-                        <span class="status-dot generated"></span> Згенеровано
+                        <span class="status-dot generated"></span> {{ _('Згенеровано') }}
                         {% elif day.plan.status == 'published' %}
-                        <span class="status-dot published"></span> Опубліковано
+                        <span class="status-dot published"></span> {{ _('Опубліковано') }}
                         {% endif %}
                     </div>
                     <div class="plan-actions">
                         {% if day.plan.status == 'pending' %}
-                        <button type="button" class="btn-sm btn-accent" onclick="generatePost({{ day.plan.id }})">🤖 Генерувати</button>
+                        <button type="button" class="btn-sm btn-accent" onclick="generatePost({{ day.plan.id }})">🤖 {{ _('Генерувати') }}</button>
                         {% elif day.plan.blog_post_id %}
-                        <a href="{{ url_for('admin_blog_edit', id=day.plan.blog_post_id) }}" class="btn-sm">✏️ Редагувати</a>
+                        <a href="{{ url_for('admin_blog_edit', id=day.plan.blog_post_id) }}" class="btn-sm">✏️ {{ _('Редагувати') }}</a>
                         {% endif %}
                         <button type="button" class="btn-sm btn-danger" onclick="deletePlan({{ day.plan.id }})">🗑</button>
                     </div>
                 </div>
             {% else %}
                 <div class="plan-empty">
-                    <span>Немає плану</span>
+                    <span>{{ _('Немає плану') }}</span>
                 </div>
             {% endif %}
         </div>
@@ -60,41 +60,41 @@
 <!-- Форма додавання плану -->
 <div class="card" style="margin-top: 2rem;">
     <div class="card-header">
-        <h3>➕ Створити план на 7 днів</h3>
+        <h3>➕ {{ _('Створити план на 7 днів') }}</h3>
     </div>
     <form method="post" id="planForm">
         <div class="form-section">
             <p class="form-hint" style="margin-bottom: 1rem;">
-                💡 Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані статті автоматично.
+                💡 {{ _('Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані статті автоматично.') }}
             </p>
-            
+
             <div class="plan-inputs">
                 {% for i in range(7) %}
                 <div class="plan-input-row">
-                    <div class="plan-day-label">День {{ i + 1 }}</div>
+                    <div class="plan-day-label">{{ _('День') }} {{ i + 1 }}</div>
                     <div class="plan-inputs-group">
-                        <input type="text" name="topic_{{ i }}" placeholder="Тема статті..." class="plan-topic-input">
-                        <input type="text" name="keywords_{{ i }}" placeholder="SEO ключові слова..." class="plan-keywords-input">
+                        <input type="text" name="topic_{{ i }}" placeholder="{{ _('Тема статті...') }}" class="plan-topic-input">
+                        <input type="text" name="keywords_{{ i }}" placeholder="{{ _('SEO ключові слова...') }}" class="plan-keywords-input">
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            
+
             <div class="form-group" style="margin-top: 1.5rem;">
-                <label for="target_audience">Цільова аудиторія (для всіх статей)</label>
-                <input type="text" id="target_audience" name="target_audience" 
-                       placeholder="Наприклад: покупці електроніки, молоді люди 18-35...">
+                <label for="target_audience">{{ _('Цільова аудиторія (для всіх статей)') }}</label>
+                <input type="text" id="target_audience" name="target_audience"
+                       placeholder="{{ _('Наприклад: покупці електроніки, молоді люди 18-35...') }}">
             </div>
-            
+
             <div class="form-group">
-                <label for="additional_instructions">Додаткові інструкції для AI</label>
+                <label for="additional_instructions">{{ _('Додаткові інструкції для AI') }}</label>
                 <textarea id="additional_instructions" name="additional_instructions" rows="3"
-                          placeholder="Особливі побажання щодо стилю, тону, структури статей..."></textarea>
+                          placeholder="{{ _('Особливі побажання щодо стилю, тону, структури статей...') }}"></textarea>
             </div>
-            
+
             <div class="form-footer">
                 <button type="submit" class="btn btn-primary btn-lg">
-                    📅 Створити план на 7 днів
+                    📅 {{ _('Створити план на 7 днів') }}
                 </button>
             </div>
         </div>
@@ -105,16 +105,16 @@
 {% if all_plans %}
 <div class="card" style="margin-top: 2rem;">
     <div class="card-header">
-        <h3>📋 Історія планів</h3>
+        <h3>📋 {{ _('Історія планів') }}</h3>
     </div>
     <table class="data-table">
         <thead>
             <tr>
-                <th>Дата</th>
-                <th>Тема</th>
-                <th>Ключові слова</th>
-                <th>Статус</th>
-                <th>Дії</th>
+                <th>{{ _('Дата') }}</th>
+                <th>{{ _('Тема') }}</th>
+                <th>{{ _('Ключові слова') }}</th>
+                <th>{{ _('Статус') }}</th>
+                <th>{{ _('Дії') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -125,11 +125,11 @@
                 <td>{{ plan.keywords or '—' }}</td>
                 <td>
                     {% if plan.status == 'pending' %}
-                    <span class="status-badge warning">⏳ Очікує</span>
+                    <span class="status-badge warning">⏳ {{ _('Очікує') }}</span>
                     {% elif plan.status == 'generated' %}
-                    <span class="status-badge info">✓ Згенеровано</span>
+                    <span class="status-badge info">✓ {{ _('Згенеровано') }}</span>
                     {% elif plan.status == 'published' %}
-                    <span class="status-badge success">📤 Опубліковано</span>
+                    <span class="status-badge success">📤 {{ _('Опубліковано') }}</span>
                     {% endif %}
                 </td>
                 <td>
@@ -376,61 +376,61 @@
 
 <script>
 async function generatePost(planId) {
-    if (!confirm('Згенерувати статтю для цього плану?')) return;
-    
+    if (!confirm('{{ _('Згенерувати статтю для цього плану?') }}')) return;
+
     try {
         const response = await fetch('/api/blog/generate-from-plan/' + planId, {
             method: 'POST'
         });
         const data = await response.json();
-        
+
         if (data.success) {
-            alert('✅ Статтю згенеровано!');
+            alert('✅ {{ _('Статтю згенеровано!') }}');
             location.reload();
         } else {
-            alert('❌ Помилка: ' + (data.error || 'Невідома помилка'));
+            alert('❌ {{ _('Помилка') }}: ' + (data.error || '{{ _('Невідома помилка') }}'));
         }
     } catch (e) {
-        alert('❌ Помилка підключення: ' + e.message);
+        alert('❌ {{ _('Помилка підключення') }}: ' + e.message);
     }
 }
 
 async function generateAllPending() {
-    if (!confirm('Згенерувати всі pending статті? Це може зайняти деякий час.')) return;
-    
+    if (!confirm('{{ _('Згенерувати всі pending статті? Це може зайняти деякий час.') }}')) return;
+
     try {
         const response = await fetch('/api/blog/generate-all-pending', {
             method: 'POST'
         });
         const data = await response.json();
-        
+
         if (data.success) {
-            alert(`✅ Згенеровано ${data.generated} статей!`);
+            alert(`✅ {{ _('Згенеровано') }} ${data.generated} {{ _('статей!') }}`);
             location.reload();
         } else {
-            alert('❌ Помилка: ' + (data.error || 'Невідома помилка'));
+            alert('❌ {{ _('Помилка') }}: ' + (data.error || '{{ _('Невідома помилка') }}'));
         }
     } catch (e) {
-        alert('❌ Помилка підключення: ' + e.message);
+        alert('❌ {{ _('Помилка підключення') }}: ' + e.message);
     }
 }
 
 async function deletePlan(planId) {
-    if (!confirm('Видалити цей план?')) return;
-    
+    if (!confirm('{{ _('Видалити цей план?') }}')) return;
+
     try {
         const response = await fetch('/api/blog/plan/' + planId, {
             method: 'DELETE'
         });
         const data = await response.json();
-        
+
         if (data.success) {
             location.reload();
         } else {
-            alert('❌ Помилка: ' + (data.error || 'Невідома помилка'));
+            alert('❌ {{ _('Помилка') }}: ' + (data.error || '{{ _('Невідома помилка') }}'));
         }
     } catch (e) {
-        alert('❌ Помилка підключення: ' + e.message);
+        alert('❌ {{ _('Помилка підключення') }}: ' + e.message);
     }
 }
 </script>

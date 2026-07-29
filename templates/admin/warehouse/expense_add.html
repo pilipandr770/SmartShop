@@ -1,47 +1,47 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}➕ Додати витрату{% endblock %}
+{% block title %}➕ {{ _('Додати витрату') }}{% endblock %}
 
 {% block content %}
 <div class="expense-add">
     <div class="page-header" style="margin-bottom: 2rem;">
-        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-sm btn-outline">← До витрат</a>
-        <h1 style="margin: 0.5rem 0;">➕ Додати витрату</h1>
+        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-sm btn-outline">← {{ _('До витрат') }}</a>
+        <h1 style="margin: 0.5rem 0;">➕ {{ _('Додати витрату') }}</h1>
     </div>
 
     <div class="card" style="max-width: 600px;">
         <form method="POST">
             <div class="form-group">
-                <label>Категорія *</label>
+                <label>{{ _('Категорія') }} *</label>
                 <select name="category" class="form-control" required>
                     {% for cat in expense_categories %}
                     <option value="{{ cat.value }}">
-                        {% if cat.value == 'shipping' %}🚚 Доставка
-                        {% elif cat.value == 'packaging' %}📦 Пакування
-                        {% elif cat.value == 'warehouse' %}🏭 Склад (оренда, обслуговування)
-                        {% elif cat.value == 'returns' %}↩️ Повернення
-                        {% elif cat.value == 'salary' %}👷 Зарплата
-                        {% elif cat.value == 'equipment' %}🔧 Обладнання
-                        {% elif cat.value == 'utilities' %}💡 Комунальні послуги
-                        {% else %}📋 Інше{% endif %}
+                        {% if cat.value == 'shipping' %}🚚 {{ _('Доставка') }}
+                        {% elif cat.value == 'packaging' %}📦 {{ _('Пакування') }}
+                        {% elif cat.value == 'warehouse' %}🏭 {{ _('Склад (оренда, обслуговування)') }}
+                        {% elif cat.value == 'returns' %}↩️ {{ _('Повернення') }}
+                        {% elif cat.value == 'salary' %}👷 {{ _('Зарплата') }}
+                        {% elif cat.value == 'equipment' %}🔧 {{ _('Обладнання') }}
+                        {% elif cat.value == 'utilities' %}💡 {{ _('Комунальні послуги') }}
+                        {% else %}📋 {{ _('Інше') }}{% endif %}
                     </option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Опис *</label>
-                <input type="text" name="description" class="form-control" placeholder="Наприклад: Оплата Нової Пошти за листопад" required>
+                <label>{{ _('Опис') }} *</label>
+                <input type="text" name="description" class="form-control" placeholder="{{ _('Наприклад: Оплата Нової Пошти за листопад') }}" required>
             </div>
 
             <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
                 <div class="form-group">
-                    <label>Сума *</label>
+                    <label>{{ _('Сума') }} *</label>
                     <input type="number" name="amount" step="0.01" min="0" class="form-control" placeholder="0.00" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Валюта</label>
+                    <label>{{ _('Валюта') }}</label>
                     <select name="currency" class="form-control">
                         <option value="UAH" selected>UAH</option>
                         <option value="USD">USD</option>
@@ -51,23 +51,23 @@
             </div>
 
             <div class="form-group">
-                <label>Дата витрати *</label>
+                <label>{{ _('Дата витрати') }} *</label>
                 <input type="date" name="expense_date" value="{{ today }}" class="form-control" required>
             </div>
 
             <div class="form-group">
-                <label>Номер чеку/накладної</label>
-                <input type="text" name="receipt_number" class="form-control" placeholder="Опціонально">
+                <label>{{ _('Номер чеку/накладної') }}</label>
+                <input type="text" name="receipt_number" class="form-control" placeholder="{{ _('Опціонально') }}">
             </div>
 
             <div class="form-group">
-                <label>Примітки</label>
-                <textarea name="notes" class="form-control" rows="3" placeholder="Додаткова інформація..."></textarea>
+                <label>{{ _('Примітки') }}</label>
+                <textarea name="notes" class="form-control" rows="3" placeholder="{{ _('Додаткова інформація...') }}"></textarea>
             </div>
 
             <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">Скасувати</a>
-                <button type="submit" class="btn btn-primary">💾 Зберегти</button>
+                <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('Скасувати') }}</a>
+                <button type="submit" class="btn btn-primary">💾 {{ _('Зберегти') }}</button>
             </div>
         </form>
     </div>

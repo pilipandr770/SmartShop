@@ -1,67 +1,67 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Налаштування - Адмін панель{% endblock %}
+{% block title %}{{ _('Налаштування - Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>⚙️ Налаштування сайту</h1>
-    <p class="page-subtitle">Загальні налаштування вашого магазину</p>
+    <h1>⚙️ {{ _('Налаштування сайту') }}</h1>
+    <p class="page-subtitle">{{ _('Загальні налаштування вашого магазину') }}</p>
 </div>
 
 <form method="post" class="settings-form">
     <!-- Основні налаштування -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🏪 Основні налаштування</h3>
+            <h3>🏪 {{ _('Основні налаштування') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="site_name">Назва сайту / магазину</label>
+                    <label for="site_name">{{ _('Назва сайту / магазину') }}</label>
                     <input type="text" id="site_name" name="site_name" value="{{ settings.site_name or 'SmartShop AI' }}" placeholder="SmartShop AI">
                 </div>
                 <div class="form-group">
-                    <label for="site_tagline">Слоган</label>
-                    <input type="text" id="site_tagline" name="site_tagline" value="{{ settings.site_tagline or '' }}" placeholder="Ваш надійний онлайн-магазин">
+                    <label for="site_tagline">{{ _('Слоган') }}</label>
+                    <input type="text" id="site_tagline" name="site_tagline" value="{{ settings.site_tagline or '' }}" placeholder="{{ _('Ваш надійний онлайн-магазин') }}">
                 </div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
-                    <label>Логотип</label>
+                    <label>{{ _('Логотип') }}</label>
                     <div class="image-upload-wrapper">
                         <div class="image-preview-box image-preview-small" id="preview_logo_url">
                             {% if settings.logo_url %}
-                                <img src="{{ settings.logo_url }}" alt="Логотип">
+                                <img src="{{ settings.logo_url }}" alt="{{ _('Логотип') }}">
                             {% else %}
-                                <span class="preview-placeholder">📷 Немає лого</span>
+                                <span class="preview-placeholder">📷 {{ _('Немає лого') }}</span>
                             {% endif %}
                         </div>
                         <div class="upload-controls">
                             <div class="upload-btn-wrapper">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_logo_url').click()">📤 Завантажити</button>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_logo_url').click()">📤 {{ _('Завантажити') }}</button>
                                 <input type="file" id="file_logo_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'logo_url')">
                             </div>
-                            <span class="upload-or">або</span>
+                            <span class="upload-or">{{ _('або') }}</span>
                             <input type="url" id="logo_url" name="logo_url" value="{{ settings.logo_url or '' }}" placeholder="https://example.com/logo.png" class="url-input">
                         </div>
                         <div id="status_logo_url" class="upload-status"></div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Фавікон</label>
+                    <label>{{ _('Фавікон') }}</label>
                     <div class="image-upload-wrapper">
                         <div class="image-preview-box image-preview-small" id="preview_favicon_url">
                             {% if settings.favicon_url %}
-                                <img src="{{ settings.favicon_url }}" alt="Фавікон">
+                                <img src="{{ settings.favicon_url }}" alt="{{ _('Фавікон') }}">
                             {% else %}
-                                <span class="preview-placeholder">📷 Немає фавікону</span>
+                                <span class="preview-placeholder">📷 {{ _('Немає фавікону') }}</span>
                             {% endif %}
                         </div>
                         <div class="upload-controls">
                             <div class="upload-btn-wrapper">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_favicon_url').click()">📤 Завантажити</button>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_favicon_url').click()">📤 {{ _('Завантажити') }}</button>
                                 <input type="file" id="file_favicon_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'favicon_url')">
                             </div>
-                            <span class="upload-or">або</span>
+                            <span class="upload-or">{{ _('або') }}</span>
                             <input type="url" id="favicon_url" name="favicon_url" value="{{ settings.favicon_url or '' }}" placeholder="https://example.com/favicon.ico" class="url-input">
                         </div>
                         <div id="status_favicon_url" class="upload-status"></div>
@@ -71,42 +71,42 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Банер на головній сторінці (опційно)</label>
+                    <label>{{ _('Банер на головній сторінці (опційно)') }}</label>
                     <div class="image-upload-wrapper">
                         <div class="image-preview-box" id="preview_hero_image_url">
                             {% if settings.hero_image_url %}
-                                <img src="{{ settings.hero_image_url }}" alt="Банер">
+                                <img src="{{ settings.hero_image_url }}" alt="{{ _('Банер') }}">
                             {% else %}
-                                <span class="preview-placeholder">📷 Без банера</span>
+                                <span class="preview-placeholder">📷 {{ _('Без банера') }}</span>
                             {% endif %}
                         </div>
                         <div class="upload-controls">
                             <div class="upload-btn-wrapper">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_hero_image_url').click()">📤 Завантажити з комп'ютера</button>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_hero_image_url').click()">📤 {{ _("Завантажити з комп'ютера") }}</button>
                                 <input type="file" id="file_hero_image_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'hero_image_url')">
                             </div>
-                            <span class="upload-or">або</span>
+                            <span class="upload-or">{{ _('або') }}</span>
                             <input type="url" id="hero_image_url" name="hero_image_url" value="{{ settings.hero_image_url or '' }}" placeholder="https://example.com/banner.jpg" class="url-input">
                         </div>
                         <div id="status_hero_image_url" class="upload-status"></div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Фото на сторінці "Про нас"</label>
+                    <label>{{ _('Фото на сторінці "Про нас"') }}</label>
                     <div class="image-upload-wrapper">
                         <div class="image-preview-box" id="preview_about_image_url">
                             {% if settings.about_image_url %}
-                                <img src="{{ settings.about_image_url }}" alt="Про нас">
+                                <img src="{{ settings.about_image_url }}" alt="{{ _('Про нас') }}">
                             {% else %}
-                                <span class="preview-placeholder">📷 Стандартне фото</span>
+                                <span class="preview-placeholder">📷 {{ _('Стандартне фото') }}</span>
                             {% endif %}
                         </div>
                         <div class="upload-controls">
                             <div class="upload-btn-wrapper">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_about_image_url').click()">📤 Завантажити з комп'ютера</button>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('file_about_image_url').click()">📤 {{ _("Завантажити з комп'ютера") }}</button>
                                 <input type="file" id="file_about_image_url" accept="image/*" style="display:none;" onchange="uploadSettingsImage(this, 'about_image_url')">
                             </div>
-                            <span class="upload-or">або</span>
+                            <span class="upload-or">{{ _('або') }}</span>
                             <input type="url" id="about_image_url" name="about_image_url" value="{{ settings.about_image_url or '' }}" placeholder="https://example.com/about.jpg" class="url-input">
                         </div>
                         <div id="status_about_image_url" class="upload-status"></div>
@@ -119,7 +119,7 @@
     <!-- Контактна інформація -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>📞 Контактна інформація</h3>
+            <h3>📞 {{ _('Контактна інформація') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row three-col">
@@ -128,22 +128,22 @@
                     <input type="email" id="contact_email" name="contact_email" value="{{ settings.contact_email or '' }}" placeholder="info@example.com">
                 </div>
                 <div class="form-group">
-                    <label for="contact_phone">Телефон</label>
+                    <label for="contact_phone">{{ _('Телефон') }}</label>
                     <input type="text" id="contact_phone" name="contact_phone" value="{{ settings.contact_phone or '' }}" placeholder="+38 (099) 123-45-67">
                 </div>
                 <div class="form-group">
-                    <label for="working_hours">Години роботи</label>
-                    <input type="text" id="working_hours" name="working_hours" value="{{ settings.working_hours or '' }}" placeholder="Пн-Пт: 9:00-18:00">
+                    <label for="working_hours">{{ _('Години роботи') }}</label>
+                    <input type="text" id="working_hours" name="working_hours" value="{{ settings.working_hours or '' }}" placeholder="{{ _('Пн-Пт: 9:00-18:00') }}">
                 </div>
             </div>
-            
+
             <div class="form-group">
-                <label for="contact_address">Адреса</label>
-                <input type="text" id="contact_address" name="contact_address" value="{{ settings.contact_address or '' }}" placeholder="м. Київ, вул. Хрещатик, 1">
+                <label for="contact_address">{{ _('Адреса') }}</label>
+                <input type="text" id="contact_address" name="contact_address" value="{{ settings.contact_address or '' }}" placeholder="{{ _('м. Київ, вул. Хрещатик, 1') }}">
             </div>
-            
+
             <div class="form-group">
-                <label for="google_maps_url">Посилання на Google Maps</label>
+                <label for="google_maps_url">{{ _('Посилання на Google Maps') }}</label>
                 <input type="text" id="google_maps_url" name="google_maps_url" value="{{ settings.google_maps_url or '' }}" placeholder="https://maps.google.com/...">
             </div>
         </div>
@@ -152,7 +152,7 @@
     <!-- Соцмережі -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🌐 Соціальні мережі</h3>
+            <h3>🌐 {{ _('Соціальні мережі') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row">
@@ -193,24 +193,24 @@
     <!-- SEO налаштування -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🔍 SEO налаштування</h3>
+            <h3>🔍 {{ _('SEO налаштування') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-group">
                 <label for="meta_title">Meta Title</label>
-                <input type="text" id="meta_title" name="meta_title" value="{{ settings.meta_title or '' }}" placeholder="SmartShop AI - Ваш надійний онлайн-магазин" maxlength="70">
-                <small class="form-hint">Рекомендована довжина: 50-60 символів</small>
+                <input type="text" id="meta_title" name="meta_title" value="{{ settings.meta_title or '' }}" placeholder="{{ _('SmartShop AI - Ваш надійний онлайн-магазин') }}" maxlength="70">
+                <small class="form-hint">{{ _('Рекомендована довжина: 50-60 символів') }}</small>
             </div>
-            
+
             <div class="form-group">
                 <label for="meta_description">Meta Description</label>
-                <textarea id="meta_description" name="meta_description" rows="3" maxlength="160" placeholder="Короткий опис вашого магазину для пошукових систем...">{{ settings.meta_description or '' }}</textarea>
-                <small class="form-hint">Рекомендована довжина: 150-160 символів</small>
+                <textarea id="meta_description" name="meta_description" rows="3" maxlength="160" placeholder="{{ _('Короткий опис вашого магазину для пошукових систем...') }}">{{ settings.meta_description or '' }}</textarea>
+                <small class="form-hint">{{ _('Рекомендована довжина: 150-160 символів') }}</small>
             </div>
-            
+
             <div class="form-group">
                 <label for="meta_keywords">Meta Keywords</label>
-                <input type="text" id="meta_keywords" name="meta_keywords" value="{{ settings.meta_keywords or '' }}" placeholder="онлайн магазин, купити, товари, доставка">
+                <input type="text" id="meta_keywords" name="meta_keywords" value="{{ settings.meta_keywords or '' }}" placeholder="{{ _('онлайн магазин, купити, товари, доставка') }}">
             </div>
         </div>
     </div>
@@ -218,7 +218,7 @@
     <!-- Аналітика -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>📊 Аналітика та інтеграції</h3>
+            <h3>📊 {{ _('Аналітика та інтеграції') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row">
@@ -231,11 +231,11 @@
                     <input type="text" id="facebook_pixel_id" name="facebook_pixel_id" value="{{ settings.facebook_pixel_id or '' }}" placeholder="123456789012345">
                 </div>
             </div>
-            
+
             <div class="form-group">
-                <label for="custom_head_code">Додатковий код в &lt;head&gt;</label>
-                <textarea id="custom_head_code" name="custom_head_code" rows="4" class="code-textarea" placeholder="<!-- Ваш кастомний код -->">{{ settings.custom_head_code or '' }}</textarea>
-                <small class="form-hint">HTML/JS код, який буде вставлено перед &lt;/head&gt;</small>
+                <label for="custom_head_code">{{ _('Додатковий код в') }} &lt;head&gt;</label>
+                <textarea id="custom_head_code" name="custom_head_code" rows="4" class="code-textarea" placeholder="<!-- {{ _('Ваш кастомний код') }} -->">{{ settings.custom_head_code or '' }}</textarea>
+                <small class="form-hint">{{ _('HTML/JS код, який буде вставлено перед') }} &lt;/head&gt;</small>
             </div>
         </div>
     </div>
@@ -243,12 +243,12 @@
     <!-- Магазин -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🛒 Налаштування магазину</h3>
+            <h3>🛒 {{ _('Налаштування магазину') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row three-col">
                 <div class="form-group">
-                    <label for="default_currency">Валюта</label>
+                    <label for="default_currency">{{ _('Валюта') }}</label>
                     <select id="default_currency" name="default_currency">
                         <option value="UAH" {% if settings.default_currency == 'UAH' %}selected{% endif %}>UAH (₴)</option>
                         <option value="EUR" {% if settings.default_currency == 'EUR' %}selected{% endif %}>EUR (€)</option>
@@ -258,18 +258,18 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="products_per_page">Товарів на сторінці</label>
+                    <label for="products_per_page">{{ _('Товарів на сторінці') }}</label>
                     <input type="number" id="products_per_page" name="products_per_page" value="{{ settings.products_per_page or 12 }}" min="4" max="48">
                 </div>
                 <div class="form-group">
-                    <label for="min_order_amount">Мін. сума замовлення</label>
+                    <label for="min_order_amount">{{ _('Мін. сума замовлення') }}</label>
                     <input type="text" id="min_order_amount" name="min_order_amount" value="{{ settings.min_order_amount or '0' }}" placeholder="0">
                 </div>
             </div>
-            
+
             <div class="form-group">
-                <label for="shipping_info">Інформація про доставку</label>
-                <textarea id="shipping_info" name="shipping_info" rows="3" placeholder="Безкоштовна доставка від 1000 грн...">{{ settings.shipping_info or '' }}</textarea>
+                <label for="shipping_info">{{ _('Інформація про доставку') }}</label>
+                <textarea id="shipping_info" name="shipping_info" rows="3" placeholder="{{ _('Безкоштовна доставка від 1000 грн...') }}">{{ settings.shipping_info or '' }}</textarea>
             </div>
         </div>
     </div>
@@ -277,29 +277,29 @@
     <!-- ========== АДМІНІСТРАТОР ========== -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🔐 Обліковий запис адміністратора</h3>
+            <h3>🔐 {{ _('Обліковий запис адміністратора') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="admin_username">Логін адміністратора</label>
-                    <input type="text" id="admin_username" name="admin_username" 
-                           value="{{ settings.admin_username or 'admin' }}" 
+                    <label for="admin_username">{{ _('Логін адміністратора') }}</label>
+                    <input type="text" id="admin_username" name="admin_username"
+                           value="{{ settings.admin_username or 'admin' }}"
                            placeholder="admin" autocomplete="off">
-                    <small class="form-hint">Використовується для входу в адмін-панель</small>
+                    <small class="form-hint">{{ _('Використовується для входу в адмін-панель') }}</small>
                 </div>
                 <div class="form-group">
-                    <label for="admin_password">Новий пароль</label>
-                    <input type="password" id="admin_password" name="admin_password" 
-                           placeholder="Залиште порожнім, щоб не змінювати" autocomplete="new-password">
-                    <small class="form-hint">Мінімум 6 символів. Залиште порожнім, якщо не хочете змінювати</small>
+                    <label for="admin_password">{{ _('Новий пароль') }}</label>
+                    <input type="password" id="admin_password" name="admin_password"
+                           placeholder="{{ _('Залиште порожнім, щоб не змінювати') }}" autocomplete="new-password">
+                    <small class="form-hint">{{ _('Мінімум 6 символів. Залиште порожнім, якщо не хочете змінювати') }}</small>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="admin_password_confirm">Підтвердження пароля</label>
-                    <input type="password" id="admin_password_confirm" name="admin_password_confirm" 
-                           placeholder="Повторіть новий пароль" autocomplete="new-password">
+                    <label for="admin_password_confirm">{{ _('Підтвердження пароля') }}</label>
+                    <input type="password" id="admin_password_confirm" name="admin_password_confirm"
+                           placeholder="{{ _('Повторіть новий пароль') }}" autocomplete="new-password">
                 </div>
                 <div class="form-group"></div>
             </div>
@@ -309,131 +309,131 @@
     <!-- Юридична особа адміністратора -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🏢 Ваша компанія (для запитів до реєстрів)</h3>
+            <h3>🏢 {{ _('Ваша компанія (для запитів до реєстрів)') }}</h3>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
-                Ці дані використовуються для верифікації контрагентів через VIES, Handelsregister та інші реєстри.
-                Заповніть, щоб отримувати повні відповіді від реєстрів.
+                {{ _('Ці дані використовуються для верифікації контрагентів через VIES, Handelsregister та інші реєстри.') }}
+                {{ _('Заповніть, щоб отримувати повні відповіді від реєстрів.') }}
             </p>
         </div>
         <div class="form-section">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="admin_company_name">Назва компанії</label>
-                    <input type="text" id="admin_company_name" name="admin_company_name" 
-                           value="{{ settings.admin_company_name or '' }}" 
+                    <label for="admin_company_name">{{ _('Назва компанії') }}</label>
+                    <input type="text" id="admin_company_name" name="admin_company_name"
+                           value="{{ settings.admin_company_name or '' }}"
                            placeholder="SmartShop GmbH">
                 </div>
                 <div class="form-group">
-                    <label for="admin_company_legal_name">Юридична назва</label>
-                    <input type="text" id="admin_company_legal_name" name="admin_company_legal_name" 
-                           value="{{ settings.admin_company_legal_name or '' }}" 
+                    <label for="admin_company_legal_name">{{ _('Юридична назва') }}</label>
+                    <input type="text" id="admin_company_legal_name" name="admin_company_legal_name"
+                           value="{{ settings.admin_company_legal_name or '' }}"
                            placeholder="SmartShop Handelsgesellschaft mbH">
                 </div>
             </div>
-            
+
             <div class="form-row three-col">
                 <div class="form-group">
-                    <label for="admin_vat_country">Країна VAT</label>
+                    <label for="admin_vat_country">{{ _('Країна VAT') }}</label>
                     <select id="admin_vat_country" name="admin_vat_country">
-                        <option value="">-- Оберіть --</option>
-                        <option value="DE" {% if settings.admin_vat_country == 'DE' %}selected{% endif %}>🇩🇪 Німеччина (DE)</option>
-                        <option value="AT" {% if settings.admin_vat_country == 'AT' %}selected{% endif %}>🇦🇹 Австрія (AT)</option>
-                        <option value="PL" {% if settings.admin_vat_country == 'PL' %}selected{% endif %}>🇵🇱 Польща (PL)</option>
-                        <option value="CZ" {% if settings.admin_vat_country == 'CZ' %}selected{% endif %}>🇨🇿 Чехія (CZ)</option>
-                        <option value="NL" {% if settings.admin_vat_country == 'NL' %}selected{% endif %}>🇳🇱 Нідерланди (NL)</option>
-                        <option value="BE" {% if settings.admin_vat_country == 'BE' %}selected{% endif %}>🇧🇪 Бельгія (BE)</option>
-                        <option value="FR" {% if settings.admin_vat_country == 'FR' %}selected{% endif %}>🇫🇷 Франція (FR)</option>
-                        <option value="IT" {% if settings.admin_vat_country == 'IT' %}selected{% endif %}>🇮🇹 Італія (IT)</option>
-                        <option value="ES" {% if settings.admin_vat_country == 'ES' %}selected{% endif %}>🇪🇸 Іспанія (ES)</option>
-                        <option value="UA" {% if settings.admin_vat_country == 'UA' %}selected{% endif %}>🇺🇦 Україна (UA)</option>
-                        <option value="SK" {% if settings.admin_vat_country == 'SK' %}selected{% endif %}>🇸🇰 Словаччина (SK)</option>
-                        <option value="HU" {% if settings.admin_vat_country == 'HU' %}selected{% endif %}>🇭🇺 Угорщина (HU)</option>
-                        <option value="RO" {% if settings.admin_vat_country == 'RO' %}selected{% endif %}>🇷🇴 Румунія (RO)</option>
-                        <option value="BG" {% if settings.admin_vat_country == 'BG' %}selected{% endif %}>🇧🇬 Болгарія (BG)</option>
-                        <option value="LT" {% if settings.admin_vat_country == 'LT' %}selected{% endif %}>🇱🇹 Литва (LT)</option>
-                        <option value="LV" {% if settings.admin_vat_country == 'LV' %}selected{% endif %}>🇱🇻 Латвія (LV)</option>
-                        <option value="EE" {% if settings.admin_vat_country == 'EE' %}selected{% endif %}>🇪🇪 Естонія (EE)</option>
+                        <option value="">-- {{ _('Оберіть') }} --</option>
+                        <option value="DE" {% if settings.admin_vat_country == 'DE' %}selected{% endif %}>🇩🇪 {{ _('Німеччина') }} (DE)</option>
+                        <option value="AT" {% if settings.admin_vat_country == 'AT' %}selected{% endif %}>🇦🇹 {{ _('Австрія') }} (AT)</option>
+                        <option value="PL" {% if settings.admin_vat_country == 'PL' %}selected{% endif %}>🇵🇱 {{ _('Польща') }} (PL)</option>
+                        <option value="CZ" {% if settings.admin_vat_country == 'CZ' %}selected{% endif %}>🇨🇿 {{ _('Чехія') }} (CZ)</option>
+                        <option value="NL" {% if settings.admin_vat_country == 'NL' %}selected{% endif %}>🇳🇱 {{ _('Нідерланди') }} (NL)</option>
+                        <option value="BE" {% if settings.admin_vat_country == 'BE' %}selected{% endif %}>🇧🇪 {{ _('Бельгія') }} (BE)</option>
+                        <option value="FR" {% if settings.admin_vat_country == 'FR' %}selected{% endif %}>🇫🇷 {{ _('Франція') }} (FR)</option>
+                        <option value="IT" {% if settings.admin_vat_country == 'IT' %}selected{% endif %}>🇮🇹 {{ _('Італія') }} (IT)</option>
+                        <option value="ES" {% if settings.admin_vat_country == 'ES' %}selected{% endif %}>🇪🇸 {{ _('Іспанія') }} (ES)</option>
+                        <option value="UA" {% if settings.admin_vat_country == 'UA' %}selected{% endif %}>🇺🇦 {{ _('Україна') }} (UA)</option>
+                        <option value="SK" {% if settings.admin_vat_country == 'SK' %}selected{% endif %}>🇸🇰 {{ _('Словаччина') }} (SK)</option>
+                        <option value="HU" {% if settings.admin_vat_country == 'HU' %}selected{% endif %}>🇭🇺 {{ _('Угорщина') }} (HU)</option>
+                        <option value="RO" {% if settings.admin_vat_country == 'RO' %}selected{% endif %}>🇷🇴 {{ _('Румунія') }} (RO)</option>
+                        <option value="BG" {% if settings.admin_vat_country == 'BG' %}selected{% endif %}>🇧🇬 {{ _('Болгарія') }} (BG)</option>
+                        <option value="LT" {% if settings.admin_vat_country == 'LT' %}selected{% endif %}>🇱🇹 {{ _('Литва') }} (LT)</option>
+                        <option value="LV" {% if settings.admin_vat_country == 'LV' %}selected{% endif %}>🇱🇻 {{ _('Латвія') }} (LV)</option>
+                        <option value="EE" {% if settings.admin_vat_country == 'EE' %}selected{% endif %}>🇪🇪 {{ _('Естонія') }} (EE)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="admin_vat_number">VAT номер</label>
-                    <input type="text" id="admin_vat_number" name="admin_vat_number" 
-                           value="{{ settings.admin_vat_number or '' }}" 
+                    <label for="admin_vat_number">{{ _('VAT номер') }}</label>
+                    <input type="text" id="admin_vat_number" name="admin_vat_number"
+                           value="{{ settings.admin_vat_number or '' }}"
                            placeholder="123456789">
-                    <small class="form-hint">Без коду країни (DE, AT...)</small>
+                    <small class="form-hint">{{ _('Без коду країни (DE, AT...)') }}</small>
                 </div>
                 <div class="form-group">
                     <label for="admin_handelsregister_id">Handelsregister ID</label>
-                    <input type="text" id="admin_handelsregister_id" name="admin_handelsregister_id" 
-                           value="{{ settings.admin_handelsregister_id or '' }}" 
+                    <input type="text" id="admin_handelsregister_id" name="admin_handelsregister_id"
+                           value="{{ settings.admin_handelsregister_id or '' }}"
                            placeholder="HRB 123456">
-                    <small class="form-hint">Тільки для Німеччини</small>
+                    <small class="form-hint">{{ _('Тільки для Німеччини') }}</small>
                 </div>
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="admin_company_address">Адреса</label>
-                    <input type="text" id="admin_company_address" name="admin_company_address" 
-                           value="{{ settings.admin_company_address or '' }}" 
+                    <label for="admin_company_address">{{ _('Адреса') }}</label>
+                    <input type="text" id="admin_company_address" name="admin_company_address"
+                           value="{{ settings.admin_company_address or '' }}"
                            placeholder="Musterstraße 123">
                 </div>
                 <div class="form-group">
-                    <label for="admin_company_city">Місто</label>
-                    <input type="text" id="admin_company_city" name="admin_company_city" 
-                           value="{{ settings.admin_company_city or '' }}" 
+                    <label for="admin_company_city">{{ _('Місто') }}</label>
+                    <input type="text" id="admin_company_city" name="admin_company_city"
+                           value="{{ settings.admin_company_city or '' }}"
                            placeholder="Berlin">
                 </div>
             </div>
-            
+
             <div class="form-row three-col">
                 <div class="form-group">
-                    <label for="admin_company_postal_code">Поштовий індекс</label>
-                    <input type="text" id="admin_company_postal_code" name="admin_company_postal_code" 
-                           value="{{ settings.admin_company_postal_code or '' }}" 
+                    <label for="admin_company_postal_code">{{ _('Поштовий індекс') }}</label>
+                    <input type="text" id="admin_company_postal_code" name="admin_company_postal_code"
+                           value="{{ settings.admin_company_postal_code or '' }}"
                            placeholder="10115">
                 </div>
                 <div class="form-group">
-                    <label for="admin_company_country">Країна</label>
-                    <input type="text" id="admin_company_country" name="admin_company_country" 
-                           value="{{ settings.admin_company_country or '' }}" 
+                    <label for="admin_company_country">{{ _('Країна') }}</label>
+                    <input type="text" id="admin_company_country" name="admin_company_country"
+                           value="{{ settings.admin_company_country or '' }}"
                            placeholder="Germany">
                 </div>
                 <div class="form-group">
-                    <label for="admin_company_country_code">Код країни</label>
-                    <input type="text" id="admin_company_country_code" name="admin_company_country_code" 
-                           value="{{ settings.admin_company_country_code or '' }}" 
+                    <label for="admin_company_country_code">{{ _('Код країни') }}</label>
+                    <input type="text" id="admin_company_country_code" name="admin_company_country_code"
+                           value="{{ settings.admin_company_country_code or '' }}"
                            placeholder="DE" maxlength="2" style="text-transform: uppercase;">
                 </div>
             </div>
-            
+
             <div class="form-row three-col">
                 <div class="form-group">
-                    <label for="admin_company_email">Email компанії</label>
-                    <input type="email" id="admin_company_email" name="admin_company_email" 
-                           value="{{ settings.admin_company_email or '' }}" 
+                    <label for="admin_company_email">{{ _('Email компанії') }}</label>
+                    <input type="email" id="admin_company_email" name="admin_company_email"
+                           value="{{ settings.admin_company_email or '' }}"
                            placeholder="info@company.de">
                 </div>
                 <div class="form-group">
-                    <label for="admin_company_phone">Телефон</label>
-                    <input type="text" id="admin_company_phone" name="admin_company_phone" 
-                           value="{{ settings.admin_company_phone or '' }}" 
+                    <label for="admin_company_phone">{{ _('Телефон') }}</label>
+                    <input type="text" id="admin_company_phone" name="admin_company_phone"
+                           value="{{ settings.admin_company_phone or '' }}"
                            placeholder="+49 30 12345678">
                 </div>
                 <div class="form-group">
-                    <label for="admin_company_website">Веб-сайт</label>
-                    <input type="text" id="admin_company_website" name="admin_company_website" 
-                           value="{{ settings.admin_company_website or '' }}" 
+                    <label for="admin_company_website">{{ _('Веб-сайт') }}</label>
+                    <input type="text" id="admin_company_website" name="admin_company_website"
+                           value="{{ settings.admin_company_website or '' }}"
                            placeholder="https://company.de">
                 </div>
             </div>
-            
+
             <div class="admin-company-status" style="margin-top: 1rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px;">
-                <strong>📊 Статус даних:</strong>
+                <strong>📊 {{ _('Статус даних:') }}</strong>
                 {% if settings.admin_vat_number and settings.admin_vat_country %}
-                    <span style="color: #22c55e;">✅ VAT заповнено ({{ settings.admin_vat_country }}{{ settings.admin_vat_number }})</span>
+                    <span style="color: #22c55e;">✅ {{ _('VAT заповнено') }} ({{ settings.admin_vat_country }}{{ settings.admin_vat_number }})</span>
                 {% else %}
-                    <span style="color: #f59e0b;">⚠️ VAT не заповнено - запити до реєстрів можуть бути обмежені</span>
+                    <span style="color: #f59e0b;">⚠️ {{ _('VAT не заповнено - запити до реєстрів можуть бути обмежені') }}</span>
                 {% endif %}
             </div>
         </div>
@@ -441,29 +441,28 @@
 
     <div class="card" style="margin: 1.5rem 0;">
         <div class="card-header">
-            <h3>📄 Юридичні тексти (Datenschutz / AGB)</h3>
+            <h3>📄 {{ _('Юридичні тексти (Datenschutz / AGB)') }}</h3>
         </div>
         <div class="form-section">
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0;">
-                Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не юридична
-                консультація). Impressum окремого тексту не потребує - він збирається з даних юрособи вище.
+                {{ _('Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не юридична консультація). Impressum окремого тексту не потребує - він збирається з даних юрособи вище.') }}
             </p>
             <div class="form-group">
-                <label for="privacy_policy_text">Політика конфіденційності (Datenschutz)</label>
+                <label for="privacy_policy_text">{{ _('Політика конфіденційності (Datenschutz)') }}</label>
                 <textarea id="privacy_policy_text" name="privacy_policy_text" rows="8"
-                          placeholder="Залиште порожнім, щоб використовувати шаблонний текст">{{ settings.privacy_policy_text or '' }}</textarea>
+                          placeholder="{{ _('Залиште порожнім, щоб використовувати шаблонний текст') }}">{{ settings.privacy_policy_text or '' }}</textarea>
             </div>
             <div class="form-group">
-                <label for="terms_text">Умови використання (AGB)</label>
+                <label for="terms_text">{{ _('Умови використання (AGB)') }}</label>
                 <textarea id="terms_text" name="terms_text" rows="8"
-                          placeholder="Залиште порожнім, щоб використовувати шаблонний текст">{{ settings.terms_text or '' }}</textarea>
+                          placeholder="{{ _('Залиште порожнім, щоб використовувати шаблонний текст') }}">{{ settings.terms_text or '' }}</textarea>
             </div>
         </div>
     </div>
 
     <div class="form-footer">
         <button type="submit" class="btn btn-primary btn-lg">
-            <span>💾</span> Зберегти налаштування
+            <span>💾</span> {{ _('Зберегти налаштування') }}
         </button>
     </div>
 </form>
@@ -603,12 +602,12 @@ async function uploadSettingsImage(input, fieldKey) {
     const urlInput = document.getElementById(fieldKey);
 
     if (file.size > 16 * 1024 * 1024) {
-        statusEl.textContent = '❌ Файл занадто великий (макс. 16 МБ)';
+        statusEl.textContent = '❌ {{ _('Файл занадто великий (макс. 16 МБ)') }}';
         statusEl.className = 'upload-status error';
         return;
     }
 
-    statusEl.textContent = '⏳ Завантаження...';
+    statusEl.textContent = '⏳ {{ _('Завантаження...') }}';
     statusEl.className = 'upload-status loading';
 
     const formData = new FormData();
@@ -620,14 +619,14 @@ async function uploadSettingsImage(input, fieldKey) {
         if (data.success) {
             previewEl.innerHTML = `<img src="${data.url}" alt="Preview">`;
             urlInput.value = data.url;
-            statusEl.textContent = '✅ Завантажено!';
+            statusEl.textContent = '✅ {{ _('Завантажено!') }}';
             statusEl.className = 'upload-status success';
         } else {
-            statusEl.textContent = '❌ ' + (data.error || 'Помилка завантаження');
+            statusEl.textContent = '❌ ' + (data.error || '{{ _('Помилка завантаження') }}');
             statusEl.className = 'upload-status error';
         }
     } catch (error) {
-        statusEl.textContent = "❌ Помилка з'єднання";
+        statusEl.textContent = "❌ {{ _("Помилка з'єднання") }}";
         statusEl.className = 'upload-status error';
     }
 }

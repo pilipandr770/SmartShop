@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Профіль компанії - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('Профіль компанії') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="cabinet-container">
@@ -9,36 +9,36 @@
             <div class="user-avatar b2b">🏢</div>
             <div class="user-details">
                 <h3>{{ current_user.company.name if current_user.company else current_user.full_name }}</h3>
-                <span class="badge badge-b2b">B2B Партнер</span>
+                <span class="badge badge-b2b">{{ _('B2B Партнер') }}</span>
             </div>
         </div>
-        
+
         <nav class="cabinet-nav">
             <a href="{{ url_for('b2b_dashboard') }}" class="nav-item">
                 📊 Dashboard
             </a>
             <a href="{{ url_for('b2b_orders') }}" class="nav-item">
-                📦 Замовлення
+                📦 {{ _('Замовлення') }}
             </a>
             <a href="{{ url_for('b2b_company') }}" class="nav-item active">
-                🏢 Компанія
+                🏢 {{ _('Компанія') }}
             </a>
             <a href="#" class="nav-item">
-                💰 Прайс-листи
+                💰 {{ _('Прайс-листи') }}
             </a>
             <a href="#" class="nav-item">
-                📄 Документи
+                📄 {{ _('Документи') }}
             </a>
             <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
-                🚪 Вийти
+                🚪 {{ _('Вийти') }}
             </a>
         </nav>
     </div>
-    
+
     <div class="cabinet-content">
         <div class="page-header">
-            <h1>🏢 Профіль компанії</h1>
-            <p>Управління даними вашої компанії</p>
+            <h1>🏢 {{ _('Профіль компанії') }}</h1>
+            <p>{{ _('Управління даними вашої компанії') }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -53,20 +53,20 @@
         <div class="verification-section">
             <div class="verification-card {% if company.verification_status == 'verified' %}verified{% elif company.verification_status == 'pending' %}pending{% else %}rejected{% endif %}">
                 <div class="verification-header">
-                    <h3>Статус верифікації</h3>
+                    <h3>{{ _('Статус верифікації') }}</h3>
                     {% if company.verification_status == 'verified' %}
-                    <span class="status-badge status-success">✅ Верифіковано</span>
+                    <span class="status-badge status-success">✅ {{ _('Верифіковано') }}</span>
                     {% elif company.verification_status == 'pending' %}
-                    <span class="status-badge status-warning">⏳ На перевірці</span>
+                    <span class="status-badge status-warning">⏳ {{ _('На перевірці') }}</span>
                     {% else %}
-                    <span class="status-badge status-danger">❌ Відхилено</span>
+                    <span class="status-badge status-danger">❌ {{ _('Відхилено') }}</span>
                     {% endif %}
                 </div>
-                
+
                 <div class="verification-checks">
                     <div class="check-item {% if company.is_vat_verified %}passed{% else %}pending{% endif %}">
                         <span class="check-icon">{% if company.is_vat_verified %}✅{% else %}⏳{% endif %}</span>
-                        <span class="check-label">VAT перевірка (VIES)</span>
+                        <span class="check-label">{{ _('VAT перевірка (VIES)') }}</span>
                     </div>
                     <div class="check-item {% if company.is_register_verified %}passed{% else %}pending{% endif %}">
                         <span class="check-icon">{% if company.is_register_verified %}✅{% else %}⏳{% endif %}</span>
@@ -74,12 +74,12 @@
                     </div>
                     <div class="check-item {% if company.is_whois_verified %}passed{% else %}pending{% endif %}">
                         <span class="check-icon">{% if company.is_whois_verified %}✅{% else %}⏳{% endif %}</span>
-                        <span class="check-label">WHOIS домену</span>
+                        <span class="check-label">{{ _('WHOIS домену') }}</span>
                     </div>
                 </div>
-                
+
                 {% if company.last_verification_at %}
-                <p class="verification-date">Остання перевірка: {{ company.last_verification_at.strftime('%d.%m.%Y %H:%M') }}</p>
+                <p class="verification-date">{{ _('Остання перевірка') }}: {{ company.last_verification_at.strftime('%d.%m.%Y %H:%M') }}</p>
                 {% endif %}
             </div>
         </div>
@@ -88,35 +88,35 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
             
             <div class="form-section">
-                <h3>📋 Основна інформація</h3>
-                
+                <h3>📋 {{ _('Основна інформація') }}</h3>
+
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="name">Назва компанії *</label>
+                        <label for="name">{{ _('Назва компанії') }} *</label>
                         <input type="text" id="name" name="name" value="{{ company.name }}" required>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="legal_form">Правова форма</label>
+                        <label for="legal_form">{{ _('Правова форма') }}</label>
                         <select id="legal_form" name="legal_form">
-                            <option value="">Оберіть...</option>
+                            <option value="">{{ _('Оберіть...') }}</option>
                             <option value="gmbh" {% if company.legal_form == 'gmbh' %}selected{% endif %}>GmbH</option>
                             <option value="ag" {% if company.legal_form == 'ag' %}selected{% endif %}>AG</option>
                             <option value="ug" {% if company.legal_form == 'ug' %}selected{% endif %}>UG</option>
                             <option value="ohg" {% if company.legal_form == 'ohg' %}selected{% endif %}>OHG</option>
                             <option value="kg" {% if company.legal_form == 'kg' %}selected{% endif %}>KG</option>
                             <option value="einzelunternehmen" {% if company.legal_form == 'einzelunternehmen' %}selected{% endif %}>Einzelunternehmen</option>
-                            <option value="tov" {% if company.legal_form == 'tov' %}selected{% endif %}>ТОВ</option>
-                            <option value="pp" {% if company.legal_form == 'pp' %}selected{% endif %}>ПП</option>
-                            <option value="fop" {% if company.legal_form == 'fop' %}selected{% endif %}>ФОП</option>
-                            <option value="other" {% if company.legal_form == 'other' %}selected{% endif %}>Інше</option>
+                            <option value="tov" {% if company.legal_form == 'tov' %}selected{% endif %}>{{ _('ТОВ') }}</option>
+                            <option value="pp" {% if company.legal_form == 'pp' %}selected{% endif %}>{{ _('ПП') }}</option>
+                            <option value="fop" {% if company.legal_form == 'fop' %}selected{% endif %}>{{ _('ФОП') }}</option>
+                            <option value="other" {% if company.legal_form == 'other' %}selected{% endif %}>{{ _('Інше') }}</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="vat_number">VAT номер *</label>
+                        <label for="vat_number">{{ _('VAT номер') }} *</label>
                         <div class="input-with-status">
-                            <input type="text" id="vat_number" name="vat_number" 
+                            <input type="text" id="vat_number" name="vat_number"
                                    value="{{ company.vat_number }}" required
                                    {% if company.is_vat_verified %}class="verified-input"{% endif %}>
                             {% if company.is_vat_verified %}
@@ -124,131 +124,131 @@
                             {% endif %}
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="country">Країна *</label>
+                        <label for="country">{{ _('Країна') }} *</label>
                         <select id="country" name="country" required>
-                            <option value="">Оберіть країну...</option>
-                            <option value="DE" {% if company.country == 'DE' %}selected{% endif %}>🇩🇪 Німеччина</option>
-                            <option value="AT" {% if company.country == 'AT' %}selected{% endif %}>🇦🇹 Австрія</option>
-                            <option value="PL" {% if company.country == 'PL' %}selected{% endif %}>🇵🇱 Польща</option>
-                            <option value="CZ" {% if company.country == 'CZ' %}selected{% endif %}>🇨🇿 Чехія</option>
-                            <option value="FR" {% if company.country == 'FR' %}selected{% endif %}>🇫🇷 Франція</option>
-                            <option value="IT" {% if company.country == 'IT' %}selected{% endif %}>🇮🇹 Італія</option>
-                            <option value="ES" {% if company.country == 'ES' %}selected{% endif %}>🇪🇸 Іспанія</option>
-                            <option value="NL" {% if company.country == 'NL' %}selected{% endif %}>🇳🇱 Нідерланди</option>
-                            <option value="BE" {% if company.country == 'BE' %}selected{% endif %}>🇧🇪 Бельгія</option>
-                            <option value="UA" {% if company.country == 'UA' %}selected{% endif %}>🇺🇦 Україна</option>
+                            <option value="">{{ _('Оберіть країну...') }}</option>
+                            <option value="DE" {% if company.country == 'DE' %}selected{% endif %}>🇩🇪 {{ _('Німеччина') }}</option>
+                            <option value="AT" {% if company.country == 'AT' %}selected{% endif %}>🇦🇹 {{ _('Австрія') }}</option>
+                            <option value="PL" {% if company.country == 'PL' %}selected{% endif %}>🇵🇱 {{ _('Польща') }}</option>
+                            <option value="CZ" {% if company.country == 'CZ' %}selected{% endif %}>🇨🇿 {{ _('Чехія') }}</option>
+                            <option value="FR" {% if company.country == 'FR' %}selected{% endif %}>🇫🇷 {{ _('Франція') }}</option>
+                            <option value="IT" {% if company.country == 'IT' %}selected{% endif %}>🇮🇹 {{ _('Італія') }}</option>
+                            <option value="ES" {% if company.country == 'ES' %}selected{% endif %}>🇪🇸 {{ _('Іспанія') }}</option>
+                            <option value="NL" {% if company.country == 'NL' %}selected{% endif %}>🇳🇱 {{ _('Нідерланди') }}</option>
+                            <option value="BE" {% if company.country == 'BE' %}selected{% endif %}>🇧🇪 {{ _('Бельгія') }}</option>
+                            <option value="UA" {% if company.country == 'UA' %}selected{% endif %}>🇺🇦 {{ _('Україна') }}</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="handelsregister_id">Handelsregister ID</label>
-                        <input type="text" id="handelsregister_id" name="handelsregister_id" 
+                        <input type="text" id="handelsregister_id" name="handelsregister_id"
                                value="{{ company.handelsregister_id or '' }}"
                                placeholder="HRB 12345">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="website">Веб-сайт</label>
-                        <input type="url" id="website" name="website" 
+                        <label for="website">{{ _('Веб-сайт') }}</label>
+                        <input type="url" id="website" name="website"
                                value="{{ company.website or '' }}"
                                placeholder="https://example.com">
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-section">
-                <h3>📍 Адреса</h3>
-                
+                <h3>📍 {{ _('Адреса') }}</h3>
+
                 <div class="form-grid">
                     <div class="form-group full-width">
-                        <label for="address">Адреса</label>
-                        <input type="text" id="address" name="address" 
+                        <label for="address">{{ _('Адреса') }}</label>
+                        <input type="text" id="address" name="address"
                                value="{{ company.address or '' }}"
-                               placeholder="Вулиця, будинок">
+                               placeholder="{{ _('Вулиця, будинок') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="city">Місто</label>
-                        <input type="text" id="city" name="city" 
+                        <label for="city">{{ _('Місто') }}</label>
+                        <input type="text" id="city" name="city"
                                value="{{ company.city or '' }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="postal_code">Поштовий індекс</label>
-                        <input type="text" id="postal_code" name="postal_code" 
+                        <label for="postal_code">{{ _('Поштовий індекс') }}</label>
+                        <input type="text" id="postal_code" name="postal_code"
                                value="{{ company.postal_code or '' }}">
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-section">
-                <h3>📞 Контакти</h3>
-                
+                <h3>📞 {{ _('Контакти') }}</h3>
+
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="email">Email компанії *</label>
-                        <input type="email" id="email" name="email" 
+                        <label for="email">{{ _('Email компанії') }} *</label>
+                        <input type="email" id="email" name="email"
                                value="{{ company.email }}" required>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="phone">Телефон</label>
-                        <input type="tel" id="phone" name="phone" 
+                        <label for="phone">{{ _('Телефон') }}</label>
+                        <input type="tel" id="phone" name="phone"
                                value="{{ company.phone or '' }}"
                                placeholder="+49 123 456789">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="contact_person">Контактна особа</label>
-                        <input type="text" id="contact_person" name="contact_person" 
+                        <label for="contact_person">{{ _('Контактна особа') }}</label>
+                        <input type="text" id="contact_person" name="contact_person"
                                value="{{ company.contact_person or '' }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="contact_position">Посада</label>
-                        <input type="text" id="contact_position" name="contact_position" 
+                        <label for="contact_position">{{ _('Посада') }}</label>
+                        <input type="text" id="contact_position" name="contact_position"
                                value="{{ company.contact_position or '' }}"
-                               placeholder="Менеджер з закупівель">
+                               placeholder="{{ _('Менеджер з закупівель') }}">
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-section">
-                <h3>🏦 Банківські реквізити</h3>
-                
+                <h3>🏦 {{ _('Банківські реквізити') }}</h3>
+
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="bank_name">Назва банку</label>
-                        <input type="text" id="bank_name" name="bank_name" 
+                        <label for="bank_name">{{ _('Назва банку') }}</label>
+                        <input type="text" id="bank_name" name="bank_name"
                                value="{{ company.bank_name or '' }}">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="iban">IBAN</label>
-                        <input type="text" id="iban" name="iban" 
+                        <input type="text" id="iban" name="iban"
                                value="{{ company.iban or '' }}"
                                placeholder="DE89 3704 0044 0532 0130 00">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="bic">BIC/SWIFT</label>
-                        <input type="text" id="bic" name="bic" 
+                        <input type="text" id="bic" name="bic"
                                value="{{ company.bic or '' }}"
                                placeholder="COBADEFFXXX">
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">💾 Зберегти зміни</button>
-                <button type="button" class="btn btn-secondary" id="verify-btn">🔄 Повторна верифікація</button>
+                <button type="submit" class="btn btn-primary">💾 {{ _('Зберегти зміни') }}</button>
+                <button type="button" class="btn btn-secondary" id="verify-btn">🔄 {{ _('Повторна верифікація') }}</button>
             </div>
         </form>
         {% else %}
         <div class="empty-state">
-            <p>Компанія не знайдена</p>
+            <p>{{ _('Компанія не знайдена') }}</p>
         </div>
         {% endif %}
     </div>
@@ -579,7 +579,7 @@ document.getElementById('verify-btn')?.addEventListener('click', async function(
     const btn = this;
     btn.disabled = true;
     btn.textContent = '⏳ Перевірка...';
-    
+
     try {
         const response = await fetch('/api/company/reverify', {
             method: 'POST',
@@ -587,17 +587,17 @@ document.getElementById('verify-btn')?.addEventListener('click', async function(
                 'Content-Type': 'application/json'
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
-            alert('✅ Верифікацію запущено! Результати будуть оновлені найближчим часом.');
+            alert('✅ {{ _('Верифікацію запущено! Результати будуть оновлені найближчим часом.') }}');
             location.reload();
         } else {
-            alert('❌ ' + (data.error || 'Помилка при запуску верифікації'));
+            alert('❌ ' + (data.error || '{{ _('Помилка при запуску верифікації') }}'));
         }
     } catch (error) {
-        alert('❌ Помилка з\'єднання');
+        alert("❌ {{ _('Помилка з\'єднання') }}");
     } finally {
         btn.disabled = false;
         btn.textContent = '🔄 Повторна верифікація';

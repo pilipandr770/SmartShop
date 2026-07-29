@@ -1,9 +1,9 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Контакти - Адмін панель{% endblock %}
+{% block title %}{{ _('Контакти') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>✉️ Заявки з контактної форми</h1>
-    <p class="page-subtitle">Повідомлення від відвідувачів сайту</p>
+    <h1>✉️ {{ _('Заявки з контактної форми') }}</h1>
+    <p class="page-subtitle">{{ _('Повідомлення від відвідувачів сайту') }}</p>
 </div>
 
 <!-- Статистика -->
@@ -12,21 +12,21 @@
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">📨</div>
         <div class="stat-content">
             <div class="stat-value">{{ stats.total }}</div>
-            <div class="stat-label">Усього заявок</div>
+            <div class="stat-label">{{ _('Усього заявок') }}</div>
         </div>
     </div>
     <div class="stat-card mini">
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #10b981, #059669);">🆕</div>
         <div class="stat-content">
             <div class="stat-value">{{ stats.unread }}</div>
-            <div class="stat-label">Нові</div>
+            <div class="stat-label">{{ _('Нові') }}</div>
         </div>
     </div>
     <div class="stat-card mini">
         <div class="stat-icon-mini" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📅</div>
         <div class="stat-content">
             <div class="stat-value">{{ stats.today }}</div>
-            <div class="stat-label">За сьогодні</div>
+            <div class="stat-label">{{ _('За сьогодні') }}</div>
         </div>
     </div>
 </div>
@@ -35,12 +35,12 @@
 {% if contacts %}
 <div class="card mass-actions" style="margin-bottom: 1.5rem;">
     <div class="card-content">
-        <span class="actions-label">Масові дії:</span>
+        <span class="actions-label">{{ _('Масові дії:') }}</span>
         <form method="post" action="{{ url_for('admin_contacts_mark_all_read') }}" style="display: inline;">
-            <button type="submit" class="btn btn-secondary btn-sm">✓ Позначити всі прочитаними</button>
+            <button type="submit" class="btn btn-secondary btn-sm">✓ {{ _('Позначити всі прочитаними') }}</button>
         </form>
-        <form method="post" action="{{ url_for('admin_contacts_delete_read') }}" style="display: inline;" onsubmit="return confirm('Видалити всі прочитані заявки?');">
-            <button type="submit" class="btn btn-danger btn-sm">🗑️ Видалити прочитані</button>
+        <form method="post" action="{{ url_for('admin_contacts_delete_read') }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити всі прочитані заявки?') }}');">
+            <button type="submit" class="btn btn-danger btn-sm">🗑️ {{ _('Видалити прочитані') }}</button>
         </form>
     </div>
 </div>
@@ -55,9 +55,9 @@
             <div class="contact-info">
                 <strong class="contact-name">{{ contact.name }}</strong>
                 {% if not contact.is_read %}
-                    <span class="badge badge-success">🆕 Нове</span>
+                    <span class="badge badge-success">🆕 {{ _('Нове') }}</span>
                 {% else %}
-                    <span class="badge badge-secondary">Прочитано</span>
+                    <span class="badge badge-secondary">{{ _('Прочитано') }}</span>
                 {% endif %}
             </div>
             <span class="contact-date">{{ contact.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
@@ -78,18 +78,18 @@
         </div>
         
         <div class="contact-actions">
-            <a href="mailto:{{ contact.email }}?subject=Re: {{ contact.subject or 'Ваш запит' }}" class="btn btn-primary btn-sm">
-                ✉️ Відповісти
+            <a href="mailto:{{ contact.email }}?subject=Re: {{ contact.subject or _('Ваш запит') }}" class="btn btn-primary btn-sm">
+                ✉️ {{ _('Відповісти') }}
             </a>
-            
+
             {% if not contact.is_read %}
             <form method="post" action="{{ url_for('admin_contact_mark_read', contact_id=contact.id) }}" style="display: inline;">
-                <button type="submit" class="btn btn-secondary btn-sm">✓ Прочитано</button>
+                <button type="submit" class="btn btn-secondary btn-sm">✓ {{ _('Прочитано') }}</button>
             </form>
             {% endif %}
-            
-            <form method="post" action="{{ url_for('admin_contact_delete', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('Видалити цю заявку?');">
-                <button type="submit" class="btn btn-danger btn-sm">🗑️ Видалити</button>
+
+            <form method="post" action="{{ url_for('admin_contact_delete', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити цю заявку?') }}');">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️ {{ _('Видалити') }}</button>
             </form>
         </div>
     </div>
@@ -100,15 +100,15 @@
 {% if pagination.pages > 1 %}
 <div class="pagination">
     {% if pagination.has_prev %}
-        <a href="{{ url_for('admin_contacts', page=pagination.prev_num) }}" class="btn btn-secondary btn-sm">← Попередня</a>
+        <a href="{{ url_for('admin_contacts', page=pagination.prev_num) }}" class="btn btn-secondary btn-sm">← {{ _('Попередня') }}</a>
     {% endif %}
-    
+
     <span class="pagination-info">
-        Сторінка {{ pagination.page }} з {{ pagination.pages }}
+        {{ _('Сторінка %(page)s з %(total)s') % {'page': pagination.page, 'total': pagination.pages} }}
     </span>
-    
+
     {% if pagination.has_next %}
-        <a href="{{ url_for('admin_contacts', page=pagination.next_num) }}" class="btn btn-secondary btn-sm">Наступна →</a>
+        <a href="{{ url_for('admin_contacts', page=pagination.next_num) }}" class="btn btn-secondary btn-sm">{{ _('Наступна') }} →</a>
     {% endif %}
 </div>
 {% endif %}
@@ -117,8 +117,8 @@
 <div class="card">
     <div class="empty-state">
         <div class="empty-icon">✉️</div>
-        <h3>Заявок ще немає</h3>
-        <p>Вони з'являться, коли відвідувачі надішлють повідомлення через форму на сайті</p>
+        <h3>{{ _('Заявок ще немає') }}</h3>
+        <p>{{ _("Вони з'являться, коли відвідувачі надішлють повідомлення через форму на сайті") }}</p>
     </div>
 </div>
 {% endif %}

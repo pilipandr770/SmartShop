@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Магазин створено - SmartShop AI{% endblock %}
+{% block title %}{{ _('Магазин створено') }} - SmartShop AI{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-card" style="text-align:center;">
         <div class="auth-header">
-            <h1>✅ Готово!</h1>
+            <h1>✅ {{ _('Готово!') }}</h1>
             {% if store %}
-            <p>Магазин «{{ store.name }}» активовано. Підписка: {{ store.subscription_status }}.</p>
+            <p>{{ _('Магазин «%(name)s» активовано. Підписка: %(status)s.') % {'name': store.name, 'status': store.subscription_status} }}</p>
             {% if store_url %}
             <div class="store-link-box">
-                <div class="store-link-label">Адреса вашого магазину</div>
+                <div class="store-link-label">{{ _('Адреса вашого магазину') }}</div>
                 <a href="{{ store_url }}" target="_blank" class="store-link">{{ store_url }}</a>
             </div>
             {% else %}
-            <p class="store-link-pending">Піддомен магазину ще не активовано на платформі - зверніться до підтримки, щоб отримати посилання.</p>
+            <p class="store-link-pending">{{ _('Піддомен магазину ще не активовано на платформі - зверніться до підтримки, щоб отримати посилання.') }}</p>
             {% endif %}
             {% else %}
-            <p>Оплату отримано. Заходьте в адмінку, щоб налаштувати магазин.</p>
+            <p>{{ _('Оплату отримано. Заходьте в адмінку, щоб налаштувати магазин.') }}</p>
             {% endif %}
         </div>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-block">Перейти в адмінку</a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-block">{{ _('Перейти в адмінку') }}</a>
     </div>
 </div>
 

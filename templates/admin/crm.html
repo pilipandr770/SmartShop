@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}CRM - Партнери{% endblock %}
+{% block title %}CRM - {{ _('Партнери') }}{% endblock %}
 
 {% block content %}
 <div class="crm-page">
@@ -9,125 +9,125 @@
     <div class="alerts-banner critical">
         <div class="alert-icon">⚠️</div>
         <div class="alert-content">
-            <strong>{{ critical_alerts|length }} критичних алертів!</strong>
-            <a href="{{ url_for('admin_crm_alerts') }}">Переглянути</a>
+            <strong>{{ _('%(count)s критичних алертів!') % {'count': critical_alerts|length} }}</strong>
+            <a href="{{ url_for('admin_crm_alerts') }}">{{ _('Переглянути') }}</a>
         </div>
     </div>
     {% endif %}
-    
+
     <div class="page-header">
-        <h1>🏢 CRM - Управління партнерами</h1>
+        <h1>🏢 CRM - {{ _('Управління партнерами') }}</h1>
         <div class="header-actions">
             <a href="{{ url_for('admin_crm_alerts') }}" class="btn btn-warning">
-                🔔 Алерти {% if unread_alerts_count %}<span class="badge">{{ unread_alerts_count }}</span>{% endif %}
+                🔔 {{ _('Алерти') }} {% if unread_alerts_count %}<span class="badge">{{ unread_alerts_count }}</span>{% endif %}
             </a>
             <button class="btn btn-primary" onclick="runDailyCheck()">
-                🔄 Запустити перевірку
+                🔄 {{ _('Запустити перевірку') }}
             </button>
         </div>
     </div>
-    
+
     <!-- Stats Cards -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon">👥</div>
             <div class="stat-value">{{ stats.total }}</div>
-            <div class="stat-label">Всього партнерів</div>
+            <div class="stat-label">{{ _('Всього партнерів') }}</div>
         </div>
         <div class="stat-card success">
             <div class="stat-icon">✅</div>
             <div class="stat-value">{{ stats.verified }}</div>
-            <div class="stat-label">Верифіковані</div>
+            <div class="stat-label">{{ _('Верифіковані') }}</div>
         </div>
         <div class="stat-card warning">
             <div class="stat-icon">⏳</div>
             <div class="stat-value">{{ stats.pending }}</div>
-            <div class="stat-label">Очікують перевірки</div>
+            <div class="stat-label">{{ _('Очікують перевірки') }}</div>
         </div>
         <div class="stat-card danger">
             <div class="stat-icon">❌</div>
             <div class="stat-value">{{ stats.rejected }}</div>
-            <div class="stat-label">Відхилені</div>
+            <div class="stat-label">{{ _('Відхилені') }}</div>
         </div>
     </div>
-    
+
     <!-- Reliability Distribution -->
     <div class="reliability-chart">
-        <h3>Надійність партнерів</h3>
+        <h3>{{ _('Надійність партнерів') }}</h3>
         <div class="reliability-bars">
             <div class="bar-item high">
                 <div class="bar" style="width: {{ stats.high_reliability_pct }}%"></div>
-                <span class="label">Висока ({{ stats.high_reliability }})</span>
+                <span class="label">{{ _('Висока') }} ({{ stats.high_reliability }})</span>
             </div>
             <div class="bar-item medium">
                 <div class="bar" style="width: {{ stats.medium_reliability_pct }}%"></div>
-                <span class="label">Середня ({{ stats.medium_reliability }})</span>
+                <span class="label">{{ _('Середня') }} ({{ stats.medium_reliability }})</span>
             </div>
             <div class="bar-item low">
                 <div class="bar" style="width: {{ stats.low_reliability_pct }}%"></div>
-                <span class="label">Низька ({{ stats.low_reliability }})</span>
+                <span class="label">{{ _('Низька') }} ({{ stats.low_reliability }})</span>
             </div>
             <div class="bar-item critical">
                 <div class="bar" style="width: {{ stats.critical_reliability_pct }}%"></div>
-                <span class="label">Критична ({{ stats.critical_reliability }})</span>
+                <span class="label">{{ _('Критична') }} ({{ stats.critical_reliability }})</span>
             </div>
         </div>
     </div>
-    
+
     <!-- Filters -->
     <div class="filters-panel">
         <form method="get" class="filters-form">
             <div class="filter-group">
-                <label>Статус</label>
+                <label>{{ _('Статус') }}</label>
                 <select name="status">
-                    <option value="">Всі</option>
-                    <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>Очікує</option>
-                    <option value="verified" {% if filter_status == 'verified' %}selected{% endif %}>Верифікований</option>
-                    <option value="rejected" {% if filter_status == 'rejected' %}selected{% endif %}>Відхилений</option>
-                    <option value="suspended" {% if filter_status == 'suspended' %}selected{% endif %}>Призупинений</option>
+                    <option value="">{{ _('Всі') }}</option>
+                    <option value="pending" {% if filter_status == 'pending' %}selected{% endif %}>{{ _('Очікує') }}</option>
+                    <option value="verified" {% if filter_status == 'verified' %}selected{% endif %}>{{ _('Верифікований') }}</option>
+                    <option value="rejected" {% if filter_status == 'rejected' %}selected{% endif %}>{{ _('Відхилений') }}</option>
+                    <option value="suspended" {% if filter_status == 'suspended' %}selected{% endif %}>{{ _('Призупинений') }}</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Надійність</label>
+                <label>{{ _('Надійність') }}</label>
                 <select name="reliability">
-                    <option value="">Всі</option>
-                    <option value="high" {% if filter_reliability == 'high' %}selected{% endif %}>Висока (80-100)</option>
-                    <option value="medium" {% if filter_reliability == 'medium' %}selected{% endif %}>Середня (50-79)</option>
-                    <option value="low" {% if filter_reliability == 'low' %}selected{% endif %}>Низька (20-49)</option>
-                    <option value="critical" {% if filter_reliability == 'critical' %}selected{% endif %}>Критична (0-19)</option>
+                    <option value="">{{ _('Всі') }}</option>
+                    <option value="high" {% if filter_reliability == 'high' %}selected{% endif %}>{{ _('Висока (80-100)') }}</option>
+                    <option value="medium" {% if filter_reliability == 'medium' %}selected{% endif %}>{{ _('Середня (50-79)') }}</option>
+                    <option value="low" {% if filter_reliability == 'low' %}selected{% endif %}>{{ _('Низька (20-49)') }}</option>
+                    <option value="critical" {% if filter_reliability == 'critical' %}selected{% endif %}>{{ _('Критична (0-19)') }}</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Країна</label>
+                <label>{{ _('Країна') }}</label>
                 <select name="country">
-                    <option value="">Всі</option>
+                    <option value="">{{ _('Всі') }}</option>
                     {% for code, name in countries %}
                     <option value="{{ code }}" {% if filter_country == code %}selected{% endif %}>{{ name }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="filter-group">
-                <label>Пошук</label>
-                <input type="text" name="search" value="{{ search }}" placeholder="Назва, VAT, домен...">
+                <label>{{ _('Пошук') }}</label>
+                <input type="text" name="search" value="{{ search }}" placeholder="{{ _('Назва, VAT, домен...') }}">
             </div>
-            <button type="submit" class="btn">Фільтрувати</button>
-            <a href="{{ url_for('admin_crm') }}" class="btn btn-secondary">Скинути</a>
+            <button type="submit" class="btn">{{ _('Фільтрувати') }}</button>
+            <a href="{{ url_for('admin_crm') }}" class="btn btn-secondary">{{ _('Скинути') }}</a>
         </form>
     </div>
-    
+
     <!-- Partners Table -->
     <div class="partners-table">
         <table>
             <thead>
                 <tr>
-                    <th>Компанія</th>
+                    <th>{{ _('Компанія') }}</th>
                     <th>VAT</th>
-                    <th>Країна</th>
-                    <th>Верифікація</th>
-                    <th>Надійність</th>
-                    <th>Статус</th>
-                    <th>Остання перевірка</th>
-                    <th>Дії</th>
+                    <th>{{ _('Країна') }}</th>
+                    <th>{{ _('Верифікація') }}</th>
+                    <th>{{ _('Надійність') }}</th>
+                    <th>{{ _('Статус') }}</th>
+                    <th>{{ _('Остання перевірка') }}</th>
+                    <th>{{ _('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -184,10 +184,10 @@
                     </td>
                     <td>
                         <span class="status-badge {{ company.status }}">
-                            {% if company.status == 'verified' %}✅ Верифікований
-                            {% elif company.status == 'pending' %}⏳ Очікує
-                            {% elif company.status == 'rejected' %}❌ Відхилено
-                            {% elif company.status == 'suspended' %}🚫 Призупинено
+                            {% if company.status == 'verified' %}✅ {{ _('Верифікований') }}
+                            {% elif company.status == 'pending' %}⏳ {{ _('Очікує') }}
+                            {% elif company.status == 'rejected' %}❌ {{ _('Відхилено') }}
+                            {% elif company.status == 'suspended' %}🚫 {{ _('Призупинено') }}
                             {% endif %}
                         </span>
                     </td>
@@ -197,22 +197,22 @@
                             {{ company.last_verification_at.strftime('%d.%m.%Y') }}
                         </span>
                         {% else %}
-                        <span class="na">Ніколи</span>
+                        <span class="na">{{ _('Ніколи') }}</span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="actions">
-                            <a href="{{ url_for('admin_crm_partner', id=company.id) }}" class="btn btn-sm" title="Деталі">
+                            <a href="{{ url_for('admin_crm_partner', id=company.id) }}" class="btn btn-sm" title="{{ _('Деталі') }}">
                                 👁️
                             </a>
-                            <button class="btn btn-sm btn-primary" onclick="verifyPartner({{ company.id }})" title="Перевірити">
+                            <button class="btn btn-sm btn-primary" onclick="verifyPartner({{ company.id }})" title="{{ _('Перевірити') }}">
                                 🔍
                             </button>
                             {% if company.status == 'pending' %}
-                            <button class="btn btn-sm btn-success" onclick="approvePartner({{ company.id }})" title="Підтвердити">
+                            <button class="btn btn-sm btn-success" onclick="approvePartner({{ company.id }})" title="{{ _('Підтвердити') }}">
                                 ✅
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="rejectPartner({{ company.id }})" title="Відхилити">
+                            <button class="btn btn-sm btn-danger" onclick="rejectPartner({{ company.id }})" title="{{ _('Відхилити') }}">
                                 ❌
                             </button>
                             {% endif %}
@@ -223,23 +223,23 @@
                 {% if not companies %}
                 <tr>
                     <td colspan="8" class="empty-state">
-                        Партнерів не знайдено
+                        {{ _('Партнерів не знайдено') }}
                     </td>
                 </tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
-    
+
     <!-- Pagination -->
     {% if total_pages > 1 %}
     <div class="pagination">
         {% if page > 1 %}
-        <a href="?page={{ page - 1 }}&status={{ filter_status }}&reliability={{ filter_reliability }}&country={{ filter_country }}&search={{ search }}" class="btn">← Назад</a>
+        <a href="?page={{ page - 1 }}&status={{ filter_status }}&reliability={{ filter_reliability }}&country={{ filter_country }}&search={{ search }}" class="btn">← {{ _('Назад') }}</a>
         {% endif %}
-        <span class="page-info">Сторінка {{ page }} з {{ total_pages }}</span>
+        <span class="page-info">{{ _('Сторінка %(page)s з %(total)s') % {'page': page, 'total': total_pages} }}</span>
         {% if page < total_pages %}
-        <a href="?page={{ page + 1 }}&status={{ filter_status }}&reliability={{ filter_reliability }}&country={{ filter_country }}&search={{ search }}" class="btn">Вперед →</a>
+        <a href="?page={{ page + 1 }}&status={{ filter_status }}&reliability={{ filter_reliability }}&country={{ filter_country }}&search={{ search }}" class="btn">{{ _('Вперед') }} →</a>
         {% endif %}
     </div>
     {% endif %}
@@ -472,39 +472,39 @@
 
 <script>
 function verifyPartner(id) {
-    if (!confirm('Запустити перевірку партнера?')) return;
-    
+    if (!confirm('{{ _('Запустити перевірку партнера?') }}')) return;
+
     fetch(`/admin/crm/partner/${id}/verify`, { method: 'POST' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('Перевірка завершена: ' + data.summary);
+                alert('{{ _('Перевірка завершена') }}: ' + data.summary);
                 location.reload();
             } else {
-                alert('Помилка: ' + data.error);
+                alert('{{ _('Помилка') }}: ' + data.error);
             }
         });
 }
 
 function approvePartner(id) {
-    if (!confirm('Підтвердити партнера?')) return;
-    
+    if (!confirm('{{ _('Підтвердити партнера?') }}')) return;
+
     fetch(`/admin/crm/partner/${id}/approve`, { method: 'POST' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('Партнер підтверджений!');
+                alert('{{ _('Партнер підтверджений!') }}');
                 location.reload();
             } else {
-                alert('Помилка: ' + data.error);
+                alert('{{ _('Помилка') }}: ' + data.error);
             }
         });
 }
 
 function rejectPartner(id) {
-    const reason = prompt('Причина відмови:');
+    const reason = prompt('{{ _('Причина відмови:') }}');
     if (reason === null) return;
-    
+
     fetch(`/admin/crm/partner/${id}/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -513,25 +513,25 @@ function rejectPartner(id) {
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert('Партнер відхилений');
+                alert('{{ _('Партнер відхилений') }}');
                 location.reload();
             } else {
-                alert('Помилка: ' + data.error);
+                alert('{{ _('Помилка') }}: ' + data.error);
             }
         });
 }
 
 function runDailyCheck() {
-    if (!confirm('Запустити перевірку всіх партнерів? Це може зайняти деякий час.')) return;
-    
+    if (!confirm('{{ _('Запустити перевірку всіх партнерів? Це може зайняти деякий час.') }}')) return;
+
     fetch('/admin/crm/run-daily-check', { method: 'POST' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert(`Перевірено: ${data.checked} партнерів. Алертів: ${data.alerts}`);
+                alert(`{{ _('Перевірено') }}: ${data.checked} {{ _('партнерів.') }} {{ _('Алертів:') }} ${data.alerts}`);
                 location.reload();
             } else {
-                alert('Помилка: ' + data.error);
+                alert('{{ _('Помилка') }}: ' + data.error);
             }
         });
 }

@@ -1,9 +1,9 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Доставка - Адмін панель{% endblock %}
+{% block title %}{{ _('Доставка - Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>🚚 Служби доставки</h1>
-    <p class="page-subtitle">DHL/UPS - тарифи в checkout і автоматичні лейбли</p>
+    <h1>🚚 {{ _('Служби доставки') }}</h1>
+    <p class="page-subtitle">{{ _('DHL/UPS - тарифи в checkout і автоматичні лейбли') }}</p>
 </div>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -16,16 +16,16 @@
 
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h3>Налаштовані акаунти</h3>
+        <h3>{{ _('Налаштовані акаунти') }}</h3>
     </div>
     {% if accounts %}
     <table class="admin-table">
         <thead>
             <tr>
-                <th>Служба</th>
-                <th>Режим</th>
-                <th>Статус</th>
-                <th>Місто відправлення</th>
+                <th>{{ _('Служба') }}</th>
+                <th>{{ _('Режим') }}</th>
+                <th>{{ _('Статус') }}</th>
+                <th>{{ _('Місто відправлення') }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -33,13 +33,13 @@
             {% for account in accounts %}
             <tr>
                 <td>{{ account.carrier_label }}</td>
-                <td>{% if account.is_sandbox %}🧪 Sandbox{% if account.is_test_mode %} (тестовий провайдер, без мережі){% endif %}{% else %}🟢 Production{% endif %}</td>
-                <td>{% if account.is_enabled %}✅ Увімкнено{% else %}⏸️ Вимкнено{% endif %}</td>
+                <td>{% if account.is_sandbox %}🧪 Sandbox{% if account.is_test_mode %} ({{ _('тестовий провайдер, без мережі') }}){% endif %}{% else %}🟢 Production{% endif %}</td>
+                <td>{% if account.is_enabled %}✅ {{ _('Увімкнено') }}{% else %}⏸️ {{ _('Вимкнено') }}{% endif %}</td>
                 <td>{{ account.origin_city or '—' }}</td>
                 <td>
-                    <a href="{{ url_for('admin_shipping_account_edit', id=account.id) }}" class="btn btn-outline">✏️ Редагувати</a>
+                    <a href="{{ url_for('admin_shipping_account_edit', id=account.id) }}" class="btn btn-outline">✏️ {{ _('Редагувати') }}</a>
                     <form method="POST" action="{{ url_for('admin_shipping_account_delete', id=account.id) }}" style="display:inline;"
-                          onsubmit="return confirm('Видалити цей обліковий запис?');">
+                          onsubmit="return confirm('{{ _('Видалити цей обліковий запис?') }}');">
                         <button type="submit" class="btn btn-outline" style="color:#ef4444;border-color:#ef4444;">🗑️</button>
                     </form>
                 </td>
@@ -48,14 +48,14 @@
         </tbody>
     </table>
     {% else %}
-    <p style="padding: 1rem; color: var(--text-muted);">Жодної служби доставки ще не налаштовано. Checkout працює без вибору доставки (як і раніше).</p>
+    <p style="padding: 1rem; color: var(--text-muted);">{{ _('Жодної служби доставки ще не налаштовано. Checkout працює без вибору доставки (як і раніше).') }}</p>
     {% endif %}
 </div>
 
 {% if available_carriers %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h3>➕ Додати службу доставки</h3>
+        <h3>➕ {{ _('Додати службу доставки') }}</h3>
     </div>
     <div style="padding: 1rem; display:flex; gap: 1rem;">
         {% for carrier in available_carriers %}
@@ -69,28 +69,27 @@
 
 <div class="card">
     <div class="card-header">
-        <h3>🏬 Самовивіз</h3>
+        <h3>🏬 {{ _('Самовивіз') }}</h3>
     </div>
     <p style="padding: 0 1rem; color: var(--text-muted); font-size: 0.9rem;">
-        Безкоштовна альтернатива доставці перевізником - клієнт сам забирає замовлення.
-        Зʼявиться як окрема опція на кроці вибору доставки в checkout, навіть якщо DHL/UPS не налаштовані.
+        {{ _('Безкоштовна альтернатива доставці перевізником - клієнт сам забирає замовлення. Зʼявиться як окрема опція на кроці вибору доставки в checkout, навіть якщо DHL/UPS не налаштовані.') }}
     </p>
     <form method="POST" class="form-grid" style="padding: 1rem;">
         <div class="form-group">
             <label>
                 <input type="checkbox" name="pickup_enabled" {% if settings.pickup_enabled %}checked{% endif %}>
-                Увімкнути самовивіз
+                {{ _('Увімкнути самовивіз') }}
             </label>
         </div>
         <div class="form-group">
-            <label>Адреса пункту видачі</label>
-            <input type="text" name="pickup_address" value="{{ settings.pickup_address or '' }}" placeholder="вул. Складська 1, Київ">
+            <label>{{ _('Адреса пункту видачі') }}</label>
+            <input type="text" name="pickup_address" value="{{ settings.pickup_address or '' }}" placeholder="{{ _('вул. Складська 1, Київ') }}">
         </div>
         <div class="form-group">
-            <label>Інструкції для клієнта (графік роботи тощо)</label>
+            <label>{{ _('Інструкції для клієнта (графік роботи тощо)') }}</label>
             <textarea name="pickup_instructions" rows="3">{{ settings.pickup_instructions or '' }}</textarea>
         </div>
-        <button type="submit" class="btn">💾 Зберегти</button>
+        <button type="submit" class="btn">💾 {{ _('Зберегти') }}</button>
     </form>
 </div>
 {% endblock %}

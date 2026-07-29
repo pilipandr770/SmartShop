@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Реєстрація - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('Реєстрація') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1>👤 Реєстрація</h1>
-            <p>Створіть акаунт покупця</p>
+            <h1>👤 {{ _('Реєстрація') }}</h1>
+            <p>{{ _('Створіть акаунт покупця') }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -21,56 +21,56 @@
         <form method="POST" class="auth-form">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="first_name">Ім'я</label>
-                    <input type="text" id="first_name" name="first_name" 
-                           placeholder="Іван" value="{{ request.form.get('first_name', '') }}">
+                    <label for="first_name">{{ _("Ім'я") }}</label>
+                    <input type="text" id="first_name" name="first_name"
+                           placeholder="{{ _('Іван') }}" value="{{ request.form.get('first_name', '') }}">
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="last_name">Прізвище</label>
-                    <input type="text" id="last_name" name="last_name" 
-                           placeholder="Петренко" value="{{ request.form.get('last_name', '') }}">
+                    <label for="last_name">{{ _('Прізвище') }}</label>
+                    <input type="text" id="last_name" name="last_name"
+                           placeholder="{{ _('Петренко') }}" value="{{ request.form.get('last_name', '') }}">
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="email">Email *</label>
-                <input type="email" id="email" name="email" required 
+                <input type="email" id="email" name="email" required
                        placeholder="your@email.com" value="{{ request.form.get('email', '') }}">
             </div>
-            
+
             <div class="form-group">
-                <label for="phone">Телефон</label>
-                <input type="tel" id="phone" name="phone" 
+                <label for="phone">{{ _('Телефон') }}</label>
+                <input type="tel" id="phone" name="phone"
                        placeholder="+380 XX XXX XX XX" value="{{ request.form.get('phone', '') }}">
             </div>
-            
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="password">Пароль *</label>
-                    <input type="password" id="password" name="password" required 
-                           placeholder="Мін. 6 символів">
+                    <label for="password">{{ _('Пароль') }} *</label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="{{ _('Мін. 6 символів') }}">
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="password_confirm">Підтвердження *</label>
-                    <input type="password" id="password_confirm" name="password_confirm" required 
-                           placeholder="Повторіть пароль">
+                    <label for="password_confirm">{{ _('Підтвердження') }} *</label>
+                    <input type="password" id="password_confirm" name="password_confirm" required
+                           placeholder="{{ _('Повторіть пароль') }}">
                 </div>
             </div>
-            
+
             <button type="submit" class="btn btn-primary btn-block">
-                Зареєструватися
+                {{ _('Зареєструватися') }}
             </button>
         </form>
-        
+
         <div class="auth-footer">
-            <p>Вже є акаунт? <a href="{{ url_for('user_login') }}">Увійти</a></p>
+            <p>{{ _('Вже є акаунт?') }} <a href="{{ url_for('user_login') }}">{{ _('Увійти') }}</a></p>
             <div class="auth-divider">
-                <span>або</span>
+                <span>{{ _('або') }}</span>
             </div>
             <a href="{{ url_for('user_register_b2b') }}" class="btn btn-outline btn-b2b btn-block">
-                🏢 Реєстрація B2B партнера
+                🏢 {{ _('Реєстрація B2B партнера') }}
             </a>
         </div>
     </div>

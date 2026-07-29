@@ -163,7 +163,7 @@
         <!-- Header -->
         <div class="email-header">
             <h1>🛍️ SmartShop AI</h1>
-            <p>Інтелектуальна торгова платформа</p>
+            <p>{{ _('Інтелектуальна торгова платформа') }}</p>
         </div>
         
         <!-- Body -->
@@ -175,7 +175,7 @@
         <div class="email-footer">
             <p>
                 <strong>SmartShop AI</strong><br>
-                Інтелектуальна торгова платформа з AI-асистентом
+                {{ _('Інтелектуальна торгова платформа з AI-асистентом') }}
             </p>
             
             <div class="social-links">
@@ -185,13 +185,13 @@
             </div>
             
             <p style="font-size: 12px; color: #adb5bd; margin-top: 20px;">
-                Цей email надіслано автоматично. Будь ласка, не відповідайте на нього.<br>
-                Якщо ви отримали цей лист помилково, просто проігноруйте його.
+                {{ _('Цей email надіслано автоматично. Будь ласка, не відповідайте на нього.') }}<br>
+                {{ _('Якщо ви отримали цей лист помилково, просто проігноруйте його.') }}
             </p>
-            
+
             <p style="font-size: 12px; margin-top: 10px;">
-                <a href="{{ url_for('index', _external=True) }}">Відвідати сайт</a> |
-                <a href="{{ url_for('contacts_page', _external=True) }}">Підтримка</a>
+                <a href="{{ url_for('index', _external=True) }}">{{ _('Відвідати сайт') }}</a> |
+                <a href="{{ url_for('contacts_page', _external=True) }}">{{ _('Підтримка') }}</a>
             </p>
         </div>
     </div>

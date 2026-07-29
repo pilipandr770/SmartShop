@@ -1,44 +1,44 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}➕ Нове замовлення на поповнення{% endblock %}
+{% block title %}➕ {{ _('Нове замовлення на поповнення') }}{% endblock %}
 
 {% block content %}
 <div class="replenishment-new">
     <div class="page-header" style="margin-bottom: 2rem;">
-        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← До списку</a>
-        <h1 style="margin: 0.5rem 0;">➕ Нове замовлення на поповнення</h1>
+        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← {{ _('До списку') }}</a>
+        <h1 style="margin: 0.5rem 0;">➕ {{ _('Нове замовлення на поповнення') }}</h1>
     </div>
 
     <form method="POST" id="replenishmentForm">
         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <!-- Ліва колонка - постачальник -->
             <div class="card">
-                <h3>📦 Постачальник</h3>
-                
+                <h3>📦 {{ _('Постачальник') }}</h3>
+
                 <div class="form-group">
-                    <label>Назва постачальника *</label>
-                    <input type="text" name="supplier_name" class="form-control" placeholder="ТОВ 'Постачальник'" required>
+                    <label>{{ _('Назва постачальника') }} *</label>
+                    <input type="text" name="supplier_name" class="form-control" placeholder="{{ _("ТОВ 'Постачальник'") }}" required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Контактна інформація</label>
-                    <textarea name="supplier_contact" class="form-control" rows="3" placeholder="Телефон, email, контактна особа..."></textarea>
+                    <label>{{ _('Контактна інформація') }}</label>
+                    <textarea name="supplier_contact" class="form-control" rows="3" placeholder="{{ _('Телефон, email, контактна особа...') }}"></textarea>
                 </div>
-                
+
                 <div class="form-group">
-                    <label>Примітки до замовлення</label>
-                    <textarea name="notes" class="form-control" rows="3" placeholder="Додаткові побажання..."></textarea>
+                    <label>{{ _('Примітки до замовлення') }}</label>
+                    <textarea name="notes" class="form-control" rows="3" placeholder="{{ _('Додаткові побажання...') }}"></textarea>
                 </div>
             </div>
 
             <!-- Права колонка - швидкий вибір -->
             {% if low_stock_products %}
             <div class="card">
-                <h3>⚠️ Товари з низьким залишком</h3>
-                <p class="text-muted">Натисніть щоб швидко додати до замовлення:</p>
+                <h3>⚠️ {{ _('Товари з низьким залишком') }}</h3>
+                <p class="text-muted">{{ _('Натисніть щоб швидко додати до замовлення:') }}</p>
                 <div class="quick-add-list" style="max-height: 300px; overflow-y: auto;">
                     {% for product in low_stock_products %}
-                    <div class="quick-add-item" onclick="addProduct({{ product.id }}, '{{ product.name|e }}', '{{ product.sku or '' }}')" 
+                    <div class="quick-add-item" onclick="addProduct({{ product.id }}, '{{ product.name|e }}', '{{ product.sku or '' }}')"
                          style="padding: 0.5rem; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
@@ -59,19 +59,19 @@
         <!-- Товари замовлення -->
         <div class="card" style="margin-top: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h3 style="margin: 0;">📋 Товари замовлення</h3>
+                <h3 style="margin: 0;">📋 {{ _('Товари замовлення') }}</h3>
                 <button type="button" class="btn btn-sm btn-success" onclick="addEmptyRow()">
-                    ➕ Додати товар
+                    ➕ {{ _('Додати товар') }}
                 </button>
             </div>
 
             <table class="admin-table" id="itemsTable">
                 <thead>
                     <tr>
-                        <th style="width: 40%;">Товар</th>
-                        <th style="width: 15%;">Кількість</th>
-                        <th style="width: 20%;">Ціна за од.</th>
-                        <th style="width: 15%;">Сума</th>
+                        <th style="width: 40%;">{{ _('Товар') }}</th>
+                        <th style="width: 15%;">{{ _('Кількість') }}</th>
+                        <th style="width: 20%;">{{ _('Ціна за од.') }}</th>
+                        <th style="width: 15%;">{{ _('Сума') }}</th>
                         <th style="width: 10%;"></th>
                     </tr>
                 </thead>
@@ -80,7 +80,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" style="text-align: right;"><strong>Загальна сума:</strong></td>
+                        <td colspan="3" style="text-align: right;"><strong>{{ _('Загальна сума:') }}</strong></td>
                         <td><strong id="totalSum">0.00</strong> UAH</td>
                         <td></td>
                     </tr>
@@ -90,8 +90,8 @@
 
         <!-- Кнопки -->
         <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
-            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">Скасувати</a>
-            <button type="submit" class="btn btn-primary">💾 Створити замовлення</button>
+            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">{{ _('Скасувати') }}</a>
+            <button type="submit" class="btn btn-primary">💾 {{ _('Створити замовлення') }}</button>
         </div>
     </form>
 </div>
@@ -134,7 +134,7 @@ function addRow(productId, productName, productSku, qty, price) {
         <td>
             <input type="hidden" name="product_ids" value="${productId}">
             <select class="form-control product-select" onchange="onProductSelect(this)">
-                <option value="">-- Оберіть товар --</option>
+                <option value="">-- {{ _('Оберіть товар') }} --</option>
                 ${allProducts.map(p => `<option value="${p.id}" ${p.id == productId ? 'selected' : ''}>${p.name} ${p.sku ? '(' + p.sku + ')' : ''}</option>`).join('')}
             </select>
         </td>

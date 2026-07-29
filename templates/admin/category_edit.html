@@ -1,35 +1,35 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Редагувати категорію - Адмін панель{% endblock %}
+{% block title %}{{ _('Редагувати категорію') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
     <div>
-        <h1>✏️ Редагування категорії</h1>
+        <h1>✏️ {{ _('Редагування категорії') }}</h1>
         <p class="page-subtitle">{{ category.name }}</p>
     </div>
-    <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">← Назад до списку</a>
+    <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">← {{ _('Назад до списку') }}</a>
 </div>
 
 <form method="post">
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>📁 Інформація про категорію</h3>
+            <h3>📁 {{ _('Інформація про категорію') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="name">Назва категорії *</label>
-                    <input type="text" id="name" name="name" value="{{ category.name }}" required placeholder="Наприклад: Електроніка">
+                    <label for="name">{{ _('Назва категорії') }} *</label>
+                    <input type="text" id="name" name="name" value="{{ category.name }}" required placeholder="{{ _('Наприклад: Електроніка') }}">
                 </div>
                 <div class="form-group">
                     <label for="slug">Slug (URL) *</label>
                     <input type="text" id="slug" name="slug" value="{{ category.slug }}" required placeholder="elektronika">
-                    <small class="form-hint">Використовуйте латиницю та дефіси</small>
+                    <small class="form-hint">{{ _('Використовуйте латиницю та дефіси') }}</small>
                 </div>
             </div>
-            
+
             <div class="form-group">
-                <label for="description">Опис категорії</label>
-                <textarea id="description" name="description" rows="4" placeholder="Короткий опис категорії...">{{ category.description or '' }}</textarea>
+                <label for="description">{{ _('Опис категорії') }}</label>
+                <textarea id="description" name="description" rows="4" placeholder="{{ _('Короткий опис категорії...') }}">{{ category.description or '' }}</textarea>
             </div>
         </div>
     </div>
@@ -37,8 +37,8 @@
     {% if category.products %}
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>📦 Товари в категорії</h3>
-            <span class="badge badge-primary">{{ category.products|length }} шт.</span>
+            <h3>📦 {{ _('Товари в категорії') }}</h3>
+            <span class="badge badge-primary">{{ category.products|length }} {{ _('шт.') }}</span>
         </div>
         <div class="products-list">
             {% for product in category.products[:10] %}
@@ -59,7 +59,7 @@
             {% endfor %}
             {% if category.products|length > 10 %}
             <div class="more-products">
-                <span class="text-muted">...та ще {{ category.products|length - 10 }} товарів</span>
+                <span class="text-muted">{{ _('...та ще %(count)s товарів') % {'count': category.products|length - 10} }}</span>
             </div>
             {% endif %}
         </div>
@@ -67,20 +67,20 @@
     {% endif %}
 
     <div class="form-footer">
-        <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">Скасувати</a>
-        <button type="submit" class="btn btn-primary btn-lg">💾 Зберегти зміни</button>
+        <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">{{ _('Скасувати') }}</a>
+        <button type="submit" class="btn btn-primary btn-lg">💾 {{ _('Зберегти зміни') }}</button>
     </div>
 </form>
 
 <!-- Небезпечна зона -->
 <div class="card danger-zone" style="margin-top: 2rem;">
     <div class="card-header">
-        <h3>⚠️ Небезпечна зона</h3>
+        <h3>⚠️ {{ _('Небезпечна зона') }}</h3>
     </div>
     <div class="form-section">
-        <p class="text-muted">При видаленні категорії товари залишаться, але будуть без категорії.</p>
-        <form method="post" action="{{ url_for('admin_categories_delete', category_id=category.id) }}" onsubmit="return confirm('Ви впевнені, що хочете видалити цю категорію?');">
-            <button type="submit" class="btn btn-danger">🗑️ Видалити категорію</button>
+        <p class="text-muted">{{ _('При видаленні категорії товари залишаться, але будуть без категорії.') }}</p>
+        <form method="post" action="{{ url_for('admin_categories_delete', category_id=category.id) }}" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити цю категорію?') }}');">
+            <button type="submit" class="btn btn-danger">🗑️ {{ _('Видалити категорію') }}</button>
         </form>
     </div>
 </div>

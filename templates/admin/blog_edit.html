@@ -1,14 +1,14 @@
 {% extends 'admin/layout.html' %}
-{% block title %}{{ 'Редагування' if post else 'Нова стаття' }} - Адмін панель{% endblock %}
+{% block title %}{{ _('Редагування') if post else _('Нова стаття') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
     <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-            <a href="{{ url_for('admin_blog') }}" class="back-link">← Назад до блогу</a>
-            <h1>{{ 'Редагування статті' if post else 'Нова стаття' }}</h1>
+            <a href="{{ url_for('admin_blog') }}" class="back-link">← {{ _('Назад до блогу') }}</a>
+            <h1>{{ _('Редагування статті') if post else _('Нова стаття') }}</h1>
         </div>
         {% if post and post.status == 'draft' %}
-        <button type="button" class="btn btn-accent" onclick="generateWithAI()">🤖 Згенерувати AI</button>
+        <button type="button" class="btn btn-accent" onclick="generateWithAI()">🤖 {{ _('Згенерувати AI') }}</button>
         {% endif %}
     </div>
 </div>
@@ -31,32 +31,32 @@
                         <div class="slug-input">
                             <span class="slug-prefix">/blog/</span>
                             <input type="text" id="slug" name="slug" required
-                                   value="{{ post.slug if post else '' }}" 
+                                   value="{{ post.slug if post else '' }}"
                                    placeholder="url-statyi">
                         </div>
                     </div>
-                    
+
                     <!-- Ukrainian content -->
                     <div class="lang-content" data-lang="uk">
                         <div class="form-group">
-                            <label for="title">Заголовок статті (UK)</label>
+                            <label for="title">{{ _('Заголовок статті') }} (UK)</label>
                             <input type="text" id="title" name="title" required
-                                   value="{{ post.title if post else '' }}" 
-                                   placeholder="Введіть заголовок статті..."
+                                   value="{{ post.title if post else '' }}"
+                                   placeholder="{{ _('Введіть заголовок статті...') }}"
                                    oninput="generateSlug()">
                         </div>
-                        
+
                         <div class="form-group">
-                            <label for="excerpt">Короткий опис (UK)</label>
-                            <textarea id="excerpt" name="excerpt" rows="3" 
-                                      placeholder="Короткий опис для картки (до 200 символів)...">{{ post.excerpt if post else '' }}</textarea>
+                            <label for="excerpt">{{ _('Короткий опис') }} (UK)</label>
+                            <textarea id="excerpt" name="excerpt" rows="3"
+                                      placeholder="{{ _('Короткий опис для картки (до 200 символів)...') }}">{{ post.excerpt if post else '' }}</textarea>
                         </div>
-                        
+
                         <div class="form-group">
-                            <label for="content">Повний текст статті (UK)</label>
-                            <textarea id="content" name="content" rows="15" 
-                                      placeholder="Напишіть статтю тут... Підтримується HTML форматування.">{{ post.content if post else '' }}</textarea>
-                            <small class="form-hint">💡 Використовуйте &lt;h2&gt;, &lt;h3&gt; для підзаголовків</small>
+                            <label for="content">{{ _('Повний текст статті') }} (UK)</label>
+                            <textarea id="content" name="content" rows="15"
+                                      placeholder="{{ _('Напишіть статтю тут... Підтримується HTML форматування.') }}">{{ post.content if post else '' }}</textarea>
+                            <small class="form-hint">💡 {{ _('Використовуйте &lt;h2&gt;, &lt;h3&gt; для підзаголовків') }}</small>
                         </div>
                     </div>
                     
@@ -109,77 +109,77 @@
             <!-- SEO блок -->
             <div class="card" style="margin-top: 1rem;">
                 <div class="card-header">
-                    <h3>🔍 SEO налаштування</h3>
+                    <h3>🔍 {{ _('SEO налаштування') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
                         <label for="meta_title">Meta Title</label>
                         <input type="text" id="meta_title" name="meta_title" maxlength="100"
-                               value="{{ post.meta_title if post else '' }}" 
-                               placeholder="SEO заголовок (до 60 символів)">
+                               value="{{ post.meta_title if post else '' }}"
+                               placeholder="{{ _('SEO заголовок (до 60 символів)') }}">
                         <div class="char-counter"><span id="meta-title-count">0</span>/60</div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="meta_description">Meta Description</label>
                         <textarea id="meta_description" name="meta_description" rows="2" maxlength="200"
-                                  placeholder="SEO опис (до 160 символів)">{{ post.meta_description if post else '' }}</textarea>
+                                  placeholder="{{ _('SEO опис (до 160 символів)') }}">{{ post.meta_description if post else '' }}</textarea>
                         <div class="char-counter"><span id="meta-desc-count">0</span>/160</div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="meta_keywords">Ключові слова</label>
+                        <label for="meta_keywords">{{ _('Ключові слова') }}</label>
                         <input type="text" id="meta_keywords" name="meta_keywords"
-                               value="{{ post.meta_keywords if post else '' }}" 
-                               placeholder="ключ1, ключ2, ключ3...">
+                               value="{{ post.meta_keywords if post else '' }}"
+                               placeholder="{{ _('ключ1, ключ2, ключ3...') }}">
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Sidebar -->
         <div class="editor-sidebar">
             <!-- Публікація -->
             <div class="card">
                 <div class="card-header">
-                    <h3>📤 Публікація</h3>
+                    <h3>📤 {{ _('Публікація') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="status">Статус</label>
+                        <label for="status">{{ _('Статус') }}</label>
                         <select id="status" name="status">
-                            <option value="draft" {{ 'selected' if (post and post.status == 'draft') or not post else '' }}>📝 Чернетка</option>
-                            <option value="scheduled" {{ 'selected' if post and post.status == 'scheduled' else '' }}>🕐 Запланована</option>
-                            <option value="published" {{ 'selected' if post and post.status == 'published' else '' }}>✓ Опублікована</option>
+                            <option value="draft" {{ 'selected' if (post and post.status == 'draft') or not post else '' }}>📝 {{ _('Чернетка') }}</option>
+                            <option value="scheduled" {{ 'selected' if post and post.status == 'scheduled' else '' }}>🕐 {{ _('Запланована') }}</option>
+                            <option value="published" {{ 'selected' if post and post.status == 'published' else '' }}>✓ {{ _('Опублікована') }}</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="publish_date">Дата публікації</label>
+                        <label for="publish_date">{{ _('Дата публікації') }}</label>
                         <input type="datetime-local" id="publish_date" name="publish_date"
                                value="{{ post.publish_date.strftime('%Y-%m-%dT%H:%M') if post and post.publish_date else '' }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="author">Автор</label>
+                        <label for="author">{{ _('Автор') }}</label>
                         <input type="text" id="author" name="author"
                                value="{{ post.author if post else 'AI' }}" placeholder="AI">
                     </div>
-                    
+
                     <div class="form-actions">
-                        <button type="submit" name="action" value="save" class="btn btn-secondary">💾 Зберегти</button>
-                        <button type="submit" name="action" value="publish" class="btn btn-primary">📤 Опублікувати</button>
+                        <button type="submit" name="action" value="save" class="btn btn-secondary">💾 {{ _('Зберегти') }}</button>
+                        <button type="submit" name="action" value="publish" class="btn btn-primary">📤 {{ _('Опублікувати') }}</button>
                     </div>
-                    
+
                     {% if post and post.id %}
                     <!-- Автопереклад -->
                     <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(148, 163, 184, 0.3);">
                         <button type="button" class="btn btn-accent btn-full" onclick="translatePost()">
-                            🌐 Автопереклад (EN + DE)
+                            🌐 {{ _('Автопереклад (EN + DE)') }}
                         </button>
                         <div id="translateProgress" class="ai-progress" style="display:none;">
                             <div class="spinner"></div>
-                            <span>Переклад...</span>
+                            <span>{{ _('Переклад...') }}</span>
                         </div>
                         <div id="translateResult" style="display:none; margin-top: 0.5rem; padding: 0.75rem; background: rgba(34, 197, 94, 0.1); border-radius: 0.5rem; font-size: 0.85rem;">
                         </div>
@@ -191,67 +191,67 @@
             <!-- Медіа -->
             <div class="card">
                 <div class="card-header">
-                    <h3>🖼 Зображення</h3>
+                    <h3>🖼 {{ _('Зображення') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="featured_image">URL зображення</label>
+                        <label for="featured_image">URL {{ _('зображення') }}</label>
                         <input type="text" id="featured_image" name="featured_image"
-                               value="{{ post.featured_image if post else '' }}" 
+                               value="{{ post.featured_image if post else '' }}"
                                placeholder="https://...">
                     </div>
                     <div class="image-preview" id="imagePreview">
                         {% if post and post.featured_image %}
                         <img src="{{ post.featured_image }}" alt="Preview">
                         {% else %}
-                        <div class="preview-placeholder">🖼 Попередній перегляд</div>
+                        <div class="preview-placeholder">🖼 {{ _('Попередній перегляд') }}</div>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            
+
             <!-- Категорія та теги -->
             <div class="card">
                 <div class="card-header">
-                    <h3>🏷 Категорія та теги</h3>
+                    <h3>🏷 {{ _('Категорія та теги') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="category">Категорія</label>
+                        <label for="category">{{ _('Категорія') }}</label>
                         <input type="text" id="category" name="category"
-                               value="{{ post.category if post else '' }}" 
-                               placeholder="Огляди, Поради, Новини...">
+                               value="{{ post.category if post else '' }}"
+                               placeholder="{{ _('Огляди, Поради, Новини...') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="tags">Теги</label>
+                        <label for="tags">{{ _('Теги') }}</label>
                         <input type="text" id="tags" name="tags"
-                               value="{{ post.tags if post else '' }}" 
-                               placeholder="тег1, тег2, тег3...">
-                        <small class="form-hint">Через кому</small>
+                               value="{{ post.tags if post else '' }}"
+                               placeholder="{{ _('тег1, тег2, тег3...') }}">
+                        <small class="form-hint">{{ _('Через кому') }}</small>
                     </div>
                 </div>
             </div>
-            
+
             <!-- AI генерація -->
             {% if not post or post.status == 'draft' %}
             <div class="card ai-card">
                 <div class="card-header">
-                    <h3>🤖 AI генерація</h3>
+                    <h3>🤖 {{ _('AI генерація') }}</h3>
                 </div>
                 <div class="form-section">
                     <div class="form-group">
-                        <label for="ai_topic">Тема для AI</label>
+                        <label for="ai_topic">{{ _('Тема для AI') }}</label>
                         <input type="text" id="ai_topic" name="ai_topic"
-                               value="{{ post.ai_topic if post else '' }}" 
-                               placeholder="Опишіть тему статті...">
+                               value="{{ post.ai_topic if post else '' }}"
+                               placeholder="{{ _('Опишіть тему статті...') }}">
                     </div>
                     <button type="button" class="btn btn-accent btn-full" onclick="generateWithAI()">
-                        🤖 Згенерувати статтю
+                        🤖 {{ _('Згенерувати статтю') }}
                     </button>
                     <div id="aiProgress" class="ai-progress" style="display:none;">
                         <div class="spinner"></div>
-                        <span>Генерація...</span>
+                        <span>{{ _('Генерація...') }}</span>
                     </div>
                 </div>
             </div>
@@ -468,9 +468,9 @@ document.getElementById('featured_image').addEventListener('input', function() {
     const url = this.value;
     const preview = document.getElementById('imagePreview');
     if (url) {
-        preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'preview-placeholder\\'>❌ Помилка завантаження</div>';">`;
+        preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'preview-placeholder\\'>❌ {{ _('Помилка завантаження') }}</div>';">`;
     } else {
-        preview.innerHTML = '<div class="preview-placeholder">🖼 Попередній перегляд</div>';
+        preview.innerHTML = '<div class="preview-placeholder">🖼 {{ _('Попередній перегляд') }}</div>';
     }
 });
 
@@ -487,7 +487,7 @@ document.getElementById('meta_description').addEventListener('input', function()
 async function generateWithAI() {
     const topic = document.getElementById('ai_topic').value || document.getElementById('title').value;
     if (!topic) {
-        alert('Введіть тему або заголовок для генерації');
+        alert('{{ _('Введіть тему або заголовок для генерації') }}');
         return;
     }
     
@@ -515,10 +515,10 @@ async function generateWithAI() {
             if (data.tags) document.getElementById('tags').value = data.tags;
             generateSlug();
         } else {
-            alert(data.error || 'Помилка генерації');
+            alert(data.error || '{{ _('Помилка генерації') }}');
         }
     } catch (e) {
-        alert('Помилка підключення: ' + e.message);
+        alert('{{ _('Помилка підключення') }}: ' + e.message);
     } finally {
         progress.style.display = 'none';
     }
@@ -529,7 +529,7 @@ async function translatePost() {
     {% if post and post.id %}
     const postId = {{ post.id }};
     {% else %}
-    alert('Спочатку збережіть статтю');
+    alert('{{ _('Спочатку збережіть статтю') }}');
     return;
     {% endif %}
     
@@ -567,10 +567,10 @@ async function translatePost() {
             
             setTimeout(() => location.reload(), 1500);
         } else {
-            alert(data.error || 'Помилка перекладу');
+            alert(data.error || '{{ _('Помилка перекладу') }}');
         }
     } catch (e) {
-        alert('Помилка підключення: ' + e.message);
+        alert('{{ _('Помилка підключення') }}: ' + e.message);
     } finally {
         progress.style.display = 'none';
     }

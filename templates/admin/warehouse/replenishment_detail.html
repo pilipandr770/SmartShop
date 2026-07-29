@@ -1,33 +1,33 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}📥 Замовлення {{ order.order_number or '#' ~ order.id }}{% endblock %}
+{% block title %}📥 {{ _('Замовлення') }} {{ order.order_number or '#' ~ order.id }}{% endblock %}
 
 {% block content %}
 <div class="replenishment-detail">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
-            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← До списку</a>
-            <h1 style="margin: 0.5rem 0;">📥 Замовлення {{ order.order_number or '#' ~ order.id }}</h1>
+            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← {{ _('До списку') }}</a>
+            <h1 style="margin: 0.5rem 0;">📥 {{ _('Замовлення') }} {{ order.order_number or '#' ~ order.id }}</h1>
         </div>
         <div>
             {% if order.status == 'draft' %}
-            <span class="status-badge draft">📝 Чернетка</span>
+            <span class="status-badge draft">📝 {{ _('Чернетка') }}</span>
             {% elif order.status == 'pending' %}
-            <span class="status-badge pending">⏳ Очікує підтвердження</span>
+            <span class="status-badge pending">⏳ {{ _('Очікує підтвердження') }}</span>
             {% elif order.status == 'approved' %}
-            <span class="status-badge approved">✅ Затверджено</span>
+            <span class="status-badge approved">✅ {{ _('Затверджено') }}</span>
             {% elif order.status == 'ordered' %}
-            <span class="status-badge ordered">📤 Замовлено</span>
+            <span class="status-badge ordered">📤 {{ _('Замовлено') }}</span>
             {% elif order.status == 'shipped' %}
-            <span class="status-badge shipped">🚚 В дорозі</span>
+            <span class="status-badge shipped">🚚 {{ _('В дорозі') }}</span>
             {% elif order.status == 'received' %}
-            <span class="status-badge received">✔️ Отримано</span>
+            <span class="status-badge received">✔️ {{ _('Отримано') }}</span>
             {% elif order.status == 'cancelled' %}
-            <span class="status-badge cancelled">❌ Скасовано</span>
+            <span class="status-badge cancelled">❌ {{ _('Скасовано') }}</span>
             {% endif %}
-            
+
             {% if order.is_paid %}
-            <span class="status-badge paid">💰 Оплачено</span>
+            <span class="status-badge paid">💰 {{ _('Оплачено') }}</span>
             {% endif %}
         </div>
     </div>
@@ -37,14 +37,14 @@
         <div class="main-info">
             <!-- Постачальник -->
             <div class="card">
-                <h3>📦 Постачальник</h3>
+                <h3>📦 {{ _('Постачальник') }}</h3>
                 <div class="info-grid">
                     <div class="info-row">
-                        <span class="label">Назва:</span>
+                        <span class="label">{{ _('Назва:') }}</span>
                         <span class="value">{{ order.supplier_name or '—' }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Контакти:</span>
+                        <span class="label">{{ _('Контакти:') }}</span>
                         <span class="value">{{ order.supplier_contact or '—' }}</span>
                     </div>
                 </div>
@@ -52,15 +52,15 @@
 
             <!-- Товари -->
             <div class="card">
-                <h3>📋 Товари</h3>
+                <h3>📋 {{ _('Товари') }}</h3>
                 <table class="admin-table" style="margin: 0;">
                     <thead>
                         <tr>
-                            <th>Товар</th>
+                            <th>{{ _('Товар') }}</th>
                             <th>SKU</th>
-                            <th>Кількість</th>
-                            <th>Ціна</th>
-                            <th>Сума</th>
+                            <th>{{ _('Кількість') }}</th>
+                            <th>{{ _('Ціна') }}</th>
+                            <th>{{ _('Сума') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,13 +74,13 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="5" class="text-center text-muted">Немає товарів</td>
+                            <td colspan="5" class="text-center text-muted">{{ _('Немає товарів') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4" style="text-align: right;"><strong>Загальна сума:</strong></td>
+                            <td colspan="4" style="text-align: right;"><strong>{{ _('Загальна сума:') }}</strong></td>
                             <td><strong>{{ "%.2f"|format(order.total) if order.total else '0.00' }}</strong> {{ order.currency or 'UAH' }}</td>
                         </tr>
                     </tfoot>
@@ -90,17 +90,17 @@
             <!-- Інформація про доставку/отримання -->
             {% if order.status in ['shipped', 'received'] %}
             <div class="card">
-                <h3>🚚 Доставка</h3>
+                <h3>🚚 {{ _('Доставка') }}</h3>
                 <div class="info-grid">
                     {% if order.expected_at %}
                     <div class="info-row">
-                        <span class="label">Очікувана дата:</span>
+                        <span class="label">{{ _('Очікувана дата:') }}</span>
                         <span class="value">{{ order.expected_at.strftime('%d.%m.%Y') }}</span>
                     </div>
                     {% endif %}
                     {% if order.received_at %}
                     <div class="info-row">
-                        <span class="label">Отримано:</span>
+                        <span class="label">{{ _('Отримано:') }}</span>
                         <span class="value">{{ order.received_at.strftime('%d.%m.%Y %H:%M') }}</span>
                     </div>
                     {% endif %}
@@ -111,7 +111,7 @@
             <!-- Примітки -->
             {% if order.notes %}
             <div class="card">
-                <h3>📝 Примітки</h3>
+                <h3>📝 {{ _('Примітки') }}</h3>
                 <p style="margin: 0; white-space: pre-wrap;">{{ order.notes }}</p>
             </div>
             {% endif %}
@@ -119,14 +119,14 @@
             <!-- Інформація про оплату -->
             {% if order.is_paid %}
             <div class="card">
-                <h3>💰 Оплата</h3>
+                <h3>💰 {{ _('Оплата') }}</h3>
                 <div class="info-grid">
                     <div class="info-row">
-                        <span class="label">Спосіб оплати:</span>
+                        <span class="label">{{ _('Спосіб оплати:') }}</span>
                         <span class="value">{{ order.payment_method or '—' }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Дата оплати:</span>
+                        <span class="label">{{ _('Дата оплати:') }}</span>
                         <span class="value">{{ order.paid_at.strftime('%d.%m.%Y %H:%M') if order.paid_at else '—' }}</span>
                     </div>
                 </div>
@@ -137,76 +137,76 @@
         <!-- Панель дій -->
         <div class="actions-panel">
             <div class="card">
-                <h3>⚡ Дії</h3>
-                
+                <h3>⚡ {{ _('Дії') }}</h3>
+
                 {% if order.status == 'draft' %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="approve">
-                    <button type="submit" class="btn btn-info btn-block">✅ Підтвердити</button>
+                    <button type="submit" class="btn btn-info btn-block">✅ {{ _('Підтвердити') }}</button>
                 </form>
                 {% endif %}
 
                 {% if order.status in ['pending', 'approved'] %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="order">
-                    <button type="submit" class="btn btn-primary btn-block">📤 Замовити у постачальника</button>
+                    <button type="submit" class="btn btn-primary btn-block">📤 {{ _('Замовити у постачальника') }}</button>
                 </form>
                 {% endif %}
 
                 {% if order.status == 'ordered' %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="shipped">
-                    <button type="submit" class="btn btn-info btn-block">🚚 Відправлено</button>
+                    <button type="submit" class="btn btn-info btn-block">🚚 {{ _('Відправлено') }}</button>
                 </form>
                 {% endif %}
 
                 {% if order.status == 'shipped' %}
                 <form method="POST" style="margin-bottom: 1rem;">
                     <input type="hidden" name="action" value="receive">
-                    <button type="submit" class="btn btn-success btn-block">✔️ Отримано (оновити залишки)</button>
+                    <button type="submit" class="btn btn-success btn-block">✔️ {{ _('Отримано (оновити залишки)') }}</button>
                 </form>
                 {% endif %}
 
                 {% if order.status not in ['received', 'cancelled'] %}
                 <hr style="margin: 1.5rem 0;">
-                <form method="POST" onsubmit="return confirm('Ви впевнені що хочете скасувати це замовлення?');">
+                <form method="POST" onsubmit="return confirm('{{ _('Ви впевнені що хочете скасувати це замовлення?') }}');">
                     <input type="hidden" name="action" value="cancel">
-                    <button type="submit" class="btn btn-danger btn-block">❌ Скасувати</button>
+                    <button type="submit" class="btn btn-danger btn-block">❌ {{ _('Скасувати') }}</button>
                 </form>
                 {% endif %}
-                
+
                 {% if not order.is_paid and order.status != 'cancelled' %}
                 <hr style="margin: 1.5rem 0;">
                 <form method="POST">
                     <input type="hidden" name="action" value="mark_paid">
                     <div class="form-group">
-                        <label>Спосіб оплати:</label>
+                        <label>{{ _('Спосіб оплати:') }}</label>
                         <select name="payment_method" class="form-control">
-                            <option value="bank_transfer">Банківський переказ</option>
-                            <option value="cash">Готівка</option>
-                            <option value="card">Карта</option>
+                            <option value="bank_transfer">{{ _('Банківський переказ') }}</option>
+                            <option value="cash">{{ _('Готівка') }}</option>
+                            <option value="card">{{ _('Карта') }}</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-success btn-block">💰 Зафіксувати оплату</button>
+                    <button type="submit" class="btn btn-success btn-block">💰 {{ _('Зафіксувати оплату') }}</button>
                 </form>
                 {% endif %}
             </div>
 
             <!-- Інформація -->
             <div class="card">
-                <h3>📊 Інформація</h3>
+                <h3>📊 {{ _('Інформація') }}</h3>
                 <div class="info-grid">
                     <div class="info-row">
-                        <span class="label">Створено:</span>
+                        <span class="label">{{ _('Створено:') }}</span>
                         <span class="value">{{ order.created_at.strftime('%d.%m.%Y') }}</span>
                     </div>
                     <div class="info-row">
-                        <span class="label">Автор:</span>
+                        <span class="label">{{ _('Автор:') }}</span>
                         <span class="value">{{ order.created_by or '—' }}</span>
                     </div>
                     {% if order.ordered_at %}
                     <div class="info-row">
-                        <span class="label">Замовлено:</span>
+                        <span class="label">{{ _('Замовлено:') }}</span>
                         <span class="value">{{ order.ordered_at.strftime('%d.%m.%Y') }}</span>
                     </div>
                     {% endif %}

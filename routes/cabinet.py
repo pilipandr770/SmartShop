@@ -2,6 +2,7 @@
 Маршрути особистого кабінету (B2C та B2B)
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
+from flask_babel import gettext as _
 from flask_login import login_required, current_user
 from extensions import db
 from models.order import Order, OrderStatus
@@ -43,7 +44,7 @@ def b2c_dashboard():
 def b2b_dashboard():
     """Dashboard для B2B партнера."""
     if not current_user.is_b2b:
-        flash("Доступ лише для B2B партнерів.", "warning")
+        flash(_("Доступ лише для B2B партнерів."), "warning")
         return redirect(url_for("cabinet.b2c_dashboard"))
 
     company = current_user.company
@@ -51,7 +52,7 @@ def b2b_dashboard():
     # Компанія зареєстрована як B2B-партнер конкретного магазину - на іншому
     # піддомені кабінет не показуємо (немає доступу до чужого store).
     if company.store_id and company.store_id != g.store.id:
-        flash("Цей кабінет недоступний на цьому магазині.", "warning")
+        flash(_("Цей кабінет недоступний на цьому магазині."), "warning")
         return redirect(url_for("index"))
 
     # Перевірка статусу компанії
@@ -128,7 +129,7 @@ def profile():
         current_user.phone = request.form.get("phone", "").strip() or None
         
         db.session.commit()
-        flash("Профіль оновлено.", "success")
+        flash(_("Профіль оновлено."), "success")
         return redirect(url_for("cabinet.profile"))
     
     template = "cabinet/b2b/profile.html" if current_user.is_b2b else "cabinet/b2c/profile.html"
@@ -140,7 +141,7 @@ def profile():
 def company():
     """Налаштування компанії (тільки для B2B)."""
     if not current_user.is_b2b:
-        flash("Доступ лише для B2B партнерів.", "warning")
+        flash(_("Доступ лише для B2B партнерів."), "warning")
         return redirect(url_for("cabinet.dashboard"))
     
     company = current_user.company
@@ -153,7 +154,7 @@ def company():
         company.postal_code = request.form.get("postal_code", "").strip() or None
         
         db.session.commit()
-        flash("Дані компанії оновлено.", "success")
+        flash(_("Дані компанії оновлено."), "success")
         return redirect(url_for("cabinet.company"))
     
     return render_template("cabinet/b2b/company.html", company=company)
@@ -169,15 +170,15 @@ def change_password():
         confirm_password = request.form.get("confirm_password", "")
         
         if not current_user.check_password(current_password):
-            flash("Невірний поточний пароль.", "danger")
+            flash(_("Невірний поточний пароль."), "danger")
         elif len(new_password) < 6:
-            flash("Новий пароль має бути не менше 6 символів.", "danger")
+            flash(_("Новий пароль має бути не менше 6 символів."), "danger")
         elif new_password != confirm_password:
-            flash("Паролі не співпадають.", "danger")
+            flash(_("Паролі не співпадають."), "danger")
         else:
             current_user.set_password(new_password)
             db.session.commit()
-            flash("Пароль успішно змінено.", "success")
+            flash(_("Пароль успішно змінено."), "success")
             if current_user.is_platform_owner:
                 return redirect(url_for("platform_admin.dashboard"))
             return redirect(url_for("cabinet.profile"))

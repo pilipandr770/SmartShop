@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}B2B Кабінет партнера - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('B2B Кабінет партнера') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="cabinet-container">
@@ -9,54 +9,54 @@
             <div class="user-avatar b2b">🏢</div>
             <div class="user-details">
                 <h3>{{ current_user.company.name if current_user.company else current_user.full_name }}</h3>
-                <span class="badge badge-b2b">B2B Партнер</span>
+                <span class="badge badge-b2b">{{ _('B2B Партнер') }}</span>
             </div>
         </div>
-        
+
         {% if current_user.company %}
         <div class="verification-status">
             {% if current_user.company.verification_status == 'verified' %}
-            <span class="status-verified">✅ Верифікована компанія</span>
+            <span class="status-verified">✅ {{ _('Верифікована компанія') }}</span>
             {% elif current_user.company.verification_status == 'pending' %}
-            <span class="status-pending">⏳ На перевірці</span>
+            <span class="status-pending">⏳ {{ _('На перевірці') }}</span>
             {% elif current_user.company.verification_status == 'rejected' %}
-            <span class="status-rejected">❌ Відхилено</span>
+            <span class="status-rejected">❌ {{ _('Відхилено') }}</span>
             {% endif %}
         </div>
         {% endif %}
-        
+
         <nav class="cabinet-nav">
             <a href="{{ url_for('b2b_dashboard') }}" class="nav-item active">
                 📊 Dashboard
             </a>
             <a href="{{ url_for('b2b_orders') }}" class="nav-item">
-                📦 Замовлення
+                📦 {{ _('Замовлення') }}
             </a>
             <a href="{{ url_for('b2b_company') }}" class="nav-item">
-                🏢 Компанія
+                🏢 {{ _('Компанія') }}
             </a>
             <a href="#" class="nav-item">
-                💰 Прайс-листи
+                💰 {{ _('Прайс-листи') }}
             </a>
             <a href="#" class="nav-item">
-                📄 Документи
+                📄 {{ _('Документи') }}
             </a>
             <a href="#" class="nav-item">
-                📈 Аналітика
+                📈 {{ _('Аналітика') }}
             </a>
             <a href="#" class="nav-item">
-                👤 Профіль
+                👤 {{ _('Профіль') }}
             </a>
             <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
-                🚪 Вийти
+                🚪 {{ _('Вийти') }}
             </a>
         </nav>
     </div>
-    
+
     <div class="cabinet-content">
         <div class="page-header">
-            <h1>🏢 B2B Кабінет партнера</h1>
-            <p>Ласкаво просимо, {{ current_user.full_name }}!</p>
+            <h1>🏢 {{ _('B2B Кабінет партнера') }}</h1>
+            <p>{{ _('Ласкаво просимо, %(name)s!') % {'name': current_user.full_name} }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -69,41 +69,41 @@
         
         {% if current_user.company and current_user.company.verification_status == 'pending' %}
         <div class="alert alert-info">
-            <strong>⏳ Ваша компанія на перевірці</strong>
-            <p>Ми перевіряємо надані вами дані. Це може зайняти до 24 годин. Після верифікації ви отримаєте доступ до повного функціоналу B2B кабінету.</p>
+            <strong>⏳ {{ _('Ваша компанія на перевірці') }}</strong>
+            <p>{{ _('Ми перевіряємо надані вами дані. Це може зайняти до 24 годин. Після верифікації ви отримаєте доступ до повного функціоналу B2B кабінету.') }}</p>
         </div>
         {% endif %}
-        
+
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📦</div>
                 <div class="stat-value">{{ total_orders }}</div>
-                <div class="stat-label">Всього замовлень</div>
+                <div class="stat-label">{{ _('Всього замовлень') }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">⏳</div>
                 <div class="stat-value">{{ pending_orders }}</div>
-                <div class="stat-label">В обробці</div>
+                <div class="stat-label">{{ _('В обробці') }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">💰</div>
                 <div class="stat-value">{{ "%.0f"|format(total_spent) }}</div>
-                <div class="stat-label">Загальна сума (EUR)</div>
+                <div class="stat-label">{{ _('Загальна сума (EUR)') }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📊</div>
                 <div class="stat-value">{{ discount }}%</div>
-                <div class="stat-label">Ваша знижка</div>
+                <div class="stat-label">{{ _('Ваша знижка') }}</div>
             </div>
         </div>
-        
+
         <div class="grid-2">
             <div class="section">
                 <div class="section-header">
-                    <h2>📦 Останні замовлення</h2>
-                    <a href="{{ url_for('b2b_orders') }}" class="btn btn-sm">Всі →</a>
+                    <h2>📦 {{ _('Останні замовлення') }}</h2>
+                    <a href="{{ url_for('b2b_orders') }}" class="btn btn-sm">{{ _('Всі') }} →</a>
                 </div>
-                
+
                 {% if recent_orders %}
                 <div class="orders-list">
                     {% for order in recent_orders %}
@@ -121,17 +121,17 @@
                 </div>
                 {% else %}
                 <div class="empty-state-small">
-                    <p>Замовлень поки немає</p>
+                    <p>{{ _('Замовлень поки немає') }}</p>
                 </div>
                 {% endif %}
             </div>
-            
+
             <div class="section">
                 <div class="section-header">
-                    <h2>📄 Останні документи</h2>
-                    <a href="#" class="btn btn-sm">Всі →</a>
+                    <h2>📄 {{ _('Останні документи') }}</h2>
+                    <a href="#" class="btn btn-sm">{{ _('Всі') }} →</a>
                 </div>
-                
+
                 {% if recent_documents %}
                 <div class="documents-list">
                     {% for doc in recent_documents %}
@@ -149,34 +149,34 @@
                 </div>
                 {% else %}
                 <div class="empty-state-small">
-                    <p>Документів поки немає</p>
+                    <p>{{ _('Документів поки немає') }}</p>
                 </div>
                 {% endif %}
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-header">
-                <h2>📈 Динаміка замовлень (останні 6 місяців)</h2>
+                <h2>📈 {{ _('Динаміка замовлень (останні 6 місяців)') }}</h2>
             </div>
             <div class="chart-container">
                 <canvas id="ordersChart"></canvas>
             </div>
         </div>
-        
+
         {% if current_user.company %}
         <div class="section company-info-section">
             <div class="section-header">
-                <h2>🏢 Інформація про компанію</h2>
-                <a href="{{ url_for('b2b_company') }}" class="btn btn-sm">Редагувати</a>
+                <h2>🏢 {{ _('Інформація про компанію') }}</h2>
+                <a href="{{ url_for('b2b_company') }}" class="btn btn-sm">{{ _('Редагувати') }}</a>
             </div>
             <div class="company-grid">
                 <div class="info-item">
-                    <label>Назва компанії</label>
+                    <label>{{ _('Назва компанії') }}</label>
                     <span>{{ current_user.company.name }}</span>
                 </div>
                 <div class="info-item">
-                    <label>VAT номер</label>
+                    <label>{{ _('VAT номер') }}</label>
                     <span>
                         {{ current_user.company.vat_number }}
                         {% if current_user.company.is_vat_verified %}
@@ -185,7 +185,7 @@
                     </span>
                 </div>
                 <div class="info-item">
-                    <label>Країна</label>
+                    <label>{{ _('Країна') }}</label>
                     <span>{{ current_user.company.country }}</span>
                 </div>
                 <div class="info-item">
@@ -558,9 +558,9 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: {{ chart_labels|tojson if chart_labels else ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер']|tojson }},
+                labels: {{ chart_labels|tojson if chart_labels else [_('Січ'), _('Лют'), _('Бер'), _('Кві'), _('Тра'), _('Чер')]|tojson }},
                 datasets: [{
-                    label: 'Замовлень',
+                    label: '{{ _('Замовлень') }}',
                     data: {{ chart_data|tojson if chart_data else [0, 0, 0, 0, 0, 0]|tojson }},
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',

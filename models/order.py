@@ -77,6 +77,11 @@ class Order(db.Model):
     notes = db.Column(db.Text, nullable=True)  # Коментар клієнта
     admin_notes = db.Column(db.Text, nullable=True)  # Нотатки адміна
     
+    # Мова інтерфейсу, яку клієнт обрав на сайті в момент оформлення
+    # замовлення (uk/en/de) - використовується, щоб надіслати email
+    # підтвердження тією ж мовою, а не завжди українською.
+    locale = db.Column(db.String(5), nullable=True, default="uk")
+
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

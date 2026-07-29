@@ -1,21 +1,21 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Контент - Адмін панель{% endblock %}
+{% block title %}{{ _('Контент') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>🎨 Контент сайту</h1>
-    <p class="page-subtitle">Налаштування текстів та блоків головної сторінки</p>
+    <h1>🎨 {{ _('Контент сайту') }}</h1>
+    <p class="page-subtitle">{{ _('Налаштування текстів та блоків головної сторінки') }}</p>
 </div>
 
 <form method="post">
     <!-- Hero блок -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
-            <h3>🚀 Hero-блок</h3>
+            <h3>🚀 {{ _('Hero-блок') }}</h3>
         </div>
         <div class="form-section">
             <div class="form-group">
-                <label for="hero_subtitle">Підзаголовок під логотипом</label>
-                <input type="text" id="hero_subtitle" name="hero_subtitle" value="{{ settings.hero_subtitle or '' }}" placeholder="Ваш слоган або короткий опис">
+                <label for="hero_subtitle">{{ _('Підзаголовок під логотипом') }}</label>
+                <input type="text" id="hero_subtitle" name="hero_subtitle" value="{{ settings.hero_subtitle or '' }}" placeholder="{{ _('Ваш слоган або короткий опис') }}">
             </div>
         </div>
     </div>
@@ -24,32 +24,32 @@
     <div class="cards-grid" style="margin-bottom: 2rem;">
         <div class="card">
             <div class="card-header">
-                <h3>ℹ️ Про компанію</h3>
+                <h3>ℹ️ {{ _('Про компанію') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
-                    <label for="about_title">Заголовок</label>
-                    <input type="text" id="about_title" name="about_title" value="{{ settings.about_title or '' }}" placeholder="Про нас">
+                    <label for="about_title">{{ _('Заголовок') }}</label>
+                    <input type="text" id="about_title" name="about_title" value="{{ settings.about_title or '' }}" placeholder="{{ _('Про нас') }}">
                 </div>
                 <div class="form-group">
-                    <label for="about_text">Текст</label>
-                    <textarea id="about_text" name="about_text" rows="5" placeholder="Розкажіть про вашу компанію...">{{ settings.about_text or '' }}</textarea>
+                    <label for="about_text">{{ _('Текст') }}</label>
+                    <textarea id="about_text" name="about_text" rows="5" placeholder="{{ _('Розкажіть про вашу компанію...') }}">{{ settings.about_text or '' }}</textarea>
                 </div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <h3>📰 Блог / Новини</h3>
+                <h3>📰 {{ _('Блог / Новини') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
-                    <label for="blog_title">Заголовок</label>
-                    <input type="text" id="blog_title" name="blog_title" value="{{ settings.blog_title or '' }}" placeholder="Останні новини">
+                    <label for="blog_title">{{ _('Заголовок') }}</label>
+                    <input type="text" id="blog_title" name="blog_title" value="{{ settings.blog_title or '' }}" placeholder="{{ _('Останні новини') }}">
                 </div>
                 <div class="form-group">
-                    <label for="blog_excerpt">Короткий опис</label>
-                    <textarea id="blog_excerpt" name="blog_excerpt" rows="5" placeholder="Анонс останньої статті...">{{ settings.blog_excerpt or '' }}</textarea>
+                    <label for="blog_excerpt">{{ _('Короткий опис') }}</label>
+                    <textarea id="blog_excerpt" name="blog_excerpt" rows="5" placeholder="{{ _('Анонс останньої статті...') }}">{{ settings.blog_excerpt or '' }}</textarea>
                 </div>
             </div>
         </div>
@@ -59,7 +59,7 @@
     <div class="cards-grid" style="margin-bottom: 2rem;">
         <div class="card">
             <div class="card-header">
-                <h3>💬 Месенджери</h3>
+                <h3>💬 {{ _('Месенджери') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
@@ -79,14 +79,14 @@
 
         <div class="card">
             <div class="card-header">
-                <h3>🤖 AI-продавець</h3>
+                <h3>🤖 {{ _('AI-продавець') }}</h3>
             </div>
             <div class="form-section">
                 <div class="form-group">
-                    <label for="ai_instructions">System prompt / правила</label>
-                    <textarea id="ai_instructions" name="ai_instructions" rows="5" placeholder="Інструкції для AI-продавця...">{{ settings.ai_instructions or '' }}</textarea>
+                    <label for="ai_instructions">System prompt / {{ _('правила') }}</label>
+                    <textarea id="ai_instructions" name="ai_instructions" rows="5" placeholder="{{ _('Інструкції для AI-продавця...') }}">{{ settings.ai_instructions or '' }}</textarea>
                     <small class="form-hint">
-                        💡 Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він може/не може робити
+                        💡 {{ _('Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він може/не може робити') }}
                     </small>
                 </div>
             </div>
@@ -95,7 +95,7 @@
 
     <div class="form-footer">
         <button type="submit" class="btn btn-primary btn-lg">
-            <span>💾</span> Зберегти зміни
+            <span>💾</span> {{ _('Зберегти зміни') }}
         </button>
     </div>
 </form>

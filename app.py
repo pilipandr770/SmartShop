@@ -1085,7 +1085,7 @@ def create_app():
             if DEMO_MODE:
                 return fn(*args, **kwargs)  # В демо-режимі пропускаємо перевірку
             if not current_user.is_authenticated:
-                flash("Потрібен вхід в адмін-панель.", "warning")
+                flash(_("Потрібен вхід в адмін-панель."), "warning")
                 return redirect(url_for("user_login", next=request.path))
             if not current_user.can_manage_store(g.get("store")):
                 abort(403)
@@ -1371,7 +1371,7 @@ def create_app():
             cart[product_id_str] = quantity
 
         save_cart(cart)
-        flash(f"«{product.name}» додано в кошик.", "success")
+        flash(_("«%(name)s» додано в кошик.") % {"name": product.name}, "success")
 
         # Повернутись на попередню сторінку або на сторінку товару
         next_url = request.form.get("next") or url_for("product_page", product_id=product_id)
@@ -1402,7 +1402,7 @@ def create_app():
         if product_id_str in cart:
             del cart[product_id_str]
             save_cart(cart)
-            flash("Товар видалено з кошика.", "info")
+            flash(_("Товар видалено з кошика."), "info")
 
         return redirect(url_for("cart_page"))
 
@@ -1410,7 +1410,7 @@ def create_app():
     def cart_clear():
         """Очистити весь кошик."""
         save_cart({})
-        flash("Кошик очищено.", "info")
+        flash(_("Кошик очищено."), "info")
         return redirect(url_for("cart_page"))
 
     # ----- ДОСТАВКА: АДРЕСА ТА ВИБІР ТАРИФУ -----
@@ -1434,7 +1434,7 @@ def create_app():
         settings = SiteSettings.get_or_create(g.store.id)
         cart = get_cart()
         if not cart:
-            flash("Ваш кошик порожній.", "warning")
+            flash(_("Ваш кошик порожній."), "warning")
             return redirect(url_for("cart_page"))
 
         if request.method == "POST":
@@ -1451,7 +1451,7 @@ def create_app():
             # обов'язкові тільки контактні дані, тому тут вимагаємо мінімум.
             missing = [k for k in ("name", "phone") if not address[k]]
             if missing:
-                flash("Вкажіть ім'я та телефон.", "danger")
+                flash(_("Вкажіть ім'я та телефон."), "danger")
                 return render_template("checkout_address.html", settings=settings, form=address)
 
             session["checkout_address"] = address
@@ -1536,16 +1536,16 @@ def create_app():
     def checkout():
         """Створити Stripe Checkout сесію."""
         if not STRIPE_AVAILABLE or not app.config["STRIPE_SECRET_KEY"]:
-            flash("Stripe не налаштовано. Зверніться до адміністратора.", "danger")
+            flash(_("Stripe не налаштовано. Зверніться до адміністратора."), "danger")
             return redirect(url_for("cart_page"))
 
         if not g.store.can_accept_payments:
-            flash("Цей магазин ще не підключив прийом оплат. Зверніться до продавця.", "danger")
+            flash(_("Цей магазин ще не підключив прийом оплат. Зверніться до продавця."), "danger")
             return redirect(url_for("cart_page"))
 
         cart = get_cart()
         if not cart:
-            flash("Ваш кошик порожній.", "warning")
+            flash(_("Ваш кошик порожній."), "warning")
             return redirect(url_for("cart_page"))
 
         line_items = []
@@ -1577,7 +1577,7 @@ def create_app():
                 total += product.price * qty
 
         if not line_items:
-            flash("Не вдалося знайти товари в кошику.", "danger")
+            flash(_("Не вдалося знайти товари в кошику."), "danger")
             return redirect(url_for("cart_page"))
 
         # Адреса й тариф доставки (опційно - якщо магазин не налаштував
@@ -1614,6 +1614,7 @@ def create_app():
                 shipping_country=checkout_address["country_code"] if checkout_address else None,
                 customer_name=checkout_address["name"] if checkout_address else None,
                 customer_phone=checkout_address["phone"] if checkout_address else None,
+                locale=session.get("lang", app.config["BABEL_DEFAULT_LOCALE"]),
             )
             db.session.add(order)
             db.session.flush()  # Отримуємо ID
@@ -1660,7 +1661,7 @@ def create_app():
 
         except stripe.error.StripeError as e:
             db.session.rollback()
-            flash(f"Помилка Stripe: {str(e)}", "danger")
+            flash(_("Помилка Stripe: %(error)s") % {"error": str(e)}, "danger")
             return redirect(url_for("cart_page"))
 
     def _auto_create_shipment(order, task, carrier_code, service_code):
@@ -1768,14 +1769,14 @@ def create_app():
     def checkout_cancel():
         """Сторінка скасованої оплати."""
         settings = SiteSettings.get_or_create(g.store.id)
-        flash("Оплату скасовано. Ви можете спробувати ще раз.", "info")
+        flash(_("Оплату скасовано. Ви можете спробувати ще раз."), "info")
         return redirect(url_for("cart_page"))
 
     @app.route("/webhook/stripe", methods=["POST"])
     def stripe_webhook():
         """Webhook для Stripe."""
         if not STRIPE_AVAILABLE:
-            return jsonify({"error": "Stripe not available"}), 400
+            return jsonify({"error": _("Stripe not available")}), 400
 
         payload = request.get_data()
         sig_header = request.headers.get("Stripe-Signature")
@@ -1789,9 +1790,9 @@ def create_app():
                     request.get_json(), stripe.api_key
                 )
         except ValueError:
-            return jsonify({"error": "Invalid payload"}), 400
+            return jsonify({"error": _("Invalid payload")}), 400
         except stripe.error.SignatureVerificationError:
-            return jsonify({"error": "Invalid signature"}), 400
+            return jsonify({"error": _("Invalid signature")}), 400
 
         # Обробка події
         if event["type"] == "checkout.session.completed":
@@ -1908,7 +1909,7 @@ def create_app():
 
         openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
-            error_msg = "AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше."
+            error_msg = _("AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше.")
             print(f"❌ Chat API error: OpenAI not available (OPENAI_AVAILABLE={OPENAI_AVAILABLE}, client={openai_client})")
             return jsonify({"error": error_msg}), 503
 
@@ -1916,17 +1917,17 @@ def create_app():
         user_message = data.get("message", "").strip()
 
         if not user_message:
-            return jsonify({"error": "Повідомлення порожнє"}), 400
+            return jsonify({"error": _("Повідомлення порожнє")}), 400
 
         # Отримуємо налаштування AI
         try:
             ai_settings = AISettings.get_or_create(g.store.id)
 
             if not ai_settings.chatbot_enabled:
-                return jsonify({"error": "Чатбот тимчасово недоступний"}), 503
+                return jsonify({"error": _("Чатбот тимчасово недоступний")}), 503
         except Exception as e:
             print(f"❌ Error getting AI settings: {e}")
-            return jsonify({"error": "Помилка налаштувань чатбота"}), 500
+            return jsonify({"error": _("Помилка налаштувань чатбота")}), 500
 
         # Отримуємо налаштування сайту та каталог (лише поточного магазину!)
         settings = SiteSettings.get_or_create(g.store.id)
@@ -2072,11 +2073,11 @@ def create_app():
 
         except AttributeError as e:
             # OpenAI client not properly initialized
-            error_msg = "Помилка ініціалізації AI клієнта"
+            error_msg = _("Помилка ініціалізації AI клієнта")
             print(f"❌ Chat API error (AttributeError): {e}")
             return jsonify({"error": error_msg}), 500
         except Exception as e:
-            error_msg = "Помилка обробки запиту"
+            error_msg = _("Помилка обробки запиту")
             print(f"❌ Chat API error (Exception): {type(e).__name__}: {e}")
             return jsonify({"error": error_msg}), 500
 
@@ -2176,7 +2177,7 @@ def create_app():
             settings.ai_instructions = request.form.get("ai_instructions") or ""
 
             db.session.commit()
-            flash("Налаштування головної сторінки збережені.", "success")
+            flash(_("Налаштування головної сторінки збережені."), "success")
             return redirect(url_for("admin_blocks"))
 
         return render_template("admin/blocks.html", settings=settings)
@@ -2198,11 +2199,11 @@ def create_app():
             description_de = request.form.get("description_de", "").strip()
 
             if not name or not slug:
-                flash("Назва і slug категорії обовʼязкові.", "danger")
+                flash(_("Назва і slug категорії обовʼязкові."), "danger")
             else:
                 exists = Category.query.filter_by(slug=slug, store_id=g.store.id).first()
                 if exists:
-                    flash("Категорія з таким slug уже існує.", "warning")
+                    flash(_("Категорія з таким slug уже існує."), "warning")
                 else:
                     category = Category(
                         store_id=g.store.id,
@@ -2216,7 +2217,7 @@ def create_app():
                     )
                     db.session.add(category)
                     db.session.commit()
-                    flash("Категорія створена.", "success")
+                    flash(_("Категорія створена."), "success")
             return redirect(url_for("admin_categories"))
 
         categories = Category.query.filter_by(store_id=g.store.id).order_by(Category.name.asc()).all()
@@ -2229,11 +2230,11 @@ def create_app():
     def admin_upload():
         """Завантаження зображення в базу даних PostgreSQL."""
         if 'file' not in request.files:
-            return jsonify({"error": "Файл не обрано"}), 400
+            return jsonify({"error": _("Файл не обрано")}), 400
         
         file = request.files['file']
         if file.filename == '':
-            return jsonify({"error": "Файл не обрано"}), 400
+            return jsonify({"error": _("Файл не обрано")}), 400
         
         # Get MIME type from request
         content_type = file.content_type
@@ -2327,7 +2328,7 @@ def create_app():
                 print(f"Database save error: {e}")
                 return jsonify({"error": f"Помилка збереження: {str(e)}"}), 500
         
-        return jsonify({"error": "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"}), 400
+        return jsonify({"error": _("Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp")}), 400
     
     # ----- СЕРВІС ЗОБРАЖЕНЬ З БД -----
     
@@ -2486,7 +2487,7 @@ def create_app():
         )
         db.session.add(product)
         db.session.commit()
-        flash("Товар створено.", "success")
+        flash(_("Товар створено."), "success")
         return redirect(url_for("admin_products"))
 
     @app.route("/admin/products/<int:product_id>/toggle", methods=["POST"])
@@ -2495,7 +2496,7 @@ def create_app():
         product = Product.query.filter_by(id=product_id, store_id=g.store.id).first_or_404()
         product.is_active = not product.is_active
         db.session.commit()
-        flash("Статус товару оновлено.", "info")
+        flash(_("Статус товару оновлено."), "info")
         return redirect(url_for("admin_products"))
 
     @app.route("/admin/products/<int:product_id>/delete", methods=["POST"])
@@ -2509,7 +2510,7 @@ def create_app():
         
         db.session.delete(product)
         db.session.commit()
-        flash("Товар видалено.", "info")
+        flash(_("Товар видалено."), "info")
         return redirect(url_for("admin_products"))
 
     @app.route("/admin/products/<int:product_id>/edit", methods=["GET", "POST"])
@@ -2566,7 +2567,7 @@ def create_app():
                 product.weight_kg = None
 
             db.session.commit()
-            flash("Товар оновлено.", "success")
+            flash(_("Товар оновлено."), "success")
             return redirect(url_for("admin_products"))
 
         return render_template(
@@ -2590,7 +2591,7 @@ def create_app():
             description = request.form.get("description", "").strip()
 
             if not name or not slug:
-                flash("Назва і slug категорії обовʼязкові.", "danger")
+                flash(_("Назва і slug категорії обовʼязкові."), "danger")
             else:
                 # Перевіряємо, чи slug не зайнятий іншою категорією цього ж магазину
                 exists = Category.query.filter(
@@ -2599,13 +2600,13 @@ def create_app():
                     Category.id != category_id
                 ).first()
                 if exists:
-                    flash("Категорія з таким slug уже існує.", "warning")
+                    flash(_("Категорія з таким slug уже існує."), "warning")
                 else:
                     category.name = name
                     category.slug = slug
                     category.description = description or None
                     db.session.commit()
-                    flash("Категорія оновлена.", "success")
+                    flash(_("Категорія оновлена."), "success")
                     return redirect(url_for("admin_categories"))
 
         return render_template("admin/category_edit.html", category=category)
@@ -2624,7 +2625,7 @@ def create_app():
         Product.query.filter_by(category_id=category_id, store_id=g.store.id).update({"category_id": None})
         db.session.delete(category)
         db.session.commit()
-        flash("Категорія видалена. Товари залишились без категорії.", "info")
+        flash(_("Категорія видалена. Товари залишились без категорії."), "info")
         return redirect(url_for("admin_categories"))
 
     # ----- АДМІНКА: СТАТИСТИКА -----
@@ -2725,13 +2726,13 @@ def create_app():
                             priority=2 if getattr(order, 'is_b2b', False) else 3,
                             notes=getattr(order, 'notes', '') or '',
                         )
-                        flash(f"📦 Завдання для складу #{task.task_number} створено!", "info")
+                        flash(_("📦 Завдання для складу #%(task_number)s створено!") % {"task_number": task.task_number}, "info")
                 except Exception as e:
                     print(f"Error creating warehouse task: {e}")
             
-            flash(f"Статус змінено на «{new_status}».", "success")
+            flash(_("Статус змінено на «%(status)s».") % {"status": new_status}, "success")
         else:
-            flash("Невірний статус.", "danger")
+            flash(_("Невірний статус."), "danger")
         
         return redirect(url_for("admin_order_detail", order_id=order_id))
 
@@ -2742,7 +2743,7 @@ def create_app():
         order = Order.query.filter_by(id=order_id, store_id=g.store.id).first_or_404()
         order.notes = request.form.get("notes", "").strip() or None
         db.session.commit()
-        flash("Нотатки збережено.", "success")
+        flash(_("Нотатки збережено."), "success")
         return redirect(url_for("admin_order_detail", order_id=order_id))
 
     @app.route("/admin/orders/<int:order_id>/delete", methods=["POST"])
@@ -2754,7 +2755,7 @@ def create_app():
         OrderItem.query.filter_by(order_id=order_id, store_id=g.store.id).delete()
         db.session.delete(order)
         db.session.commit()
-        flash("Замовлення видалено.", "info")
+        flash(_("Замовлення видалено."), "info")
         return redirect(url_for("admin_orders"))
 
     # ----- АДМІНКА: КОНТАКТИ -----
@@ -2798,7 +2799,7 @@ def create_app():
         contact = ContactMessage.query.filter_by(id=contact_id, store_id=g.store.id).first_or_404()
         contact.is_read = True
         db.session.commit()
-        flash("Заявку позначено як прочитану.", "success")
+        flash(_("Заявку позначено як прочитану."), "success")
         return redirect(url_for("admin_contacts"))
 
     @app.route("/admin/contacts/<int:contact_id>/delete", methods=["POST"])
@@ -2808,7 +2809,7 @@ def create_app():
         contact = ContactMessage.query.filter_by(id=contact_id, store_id=g.store.id).first_or_404()
         db.session.delete(contact)
         db.session.commit()
-        flash("Заявку видалено.", "info")
+        flash(_("Заявку видалено."), "info")
         return redirect(url_for("admin_contacts"))
 
     @app.route("/admin/contacts/mark-all-read", methods=["POST"])
@@ -2817,7 +2818,7 @@ def create_app():
         """Позначити всі заявки як прочитані."""
         ContactMessage.query.filter_by(is_read=False, store_id=g.store.id).update({"is_read": True})
         db.session.commit()
-        flash("Усі заявки позначено як прочитані.", "success")
+        flash(_("Усі заявки позначено як прочитані."), "success")
         return redirect(url_for("admin_contacts"))
 
     @app.route("/admin/contacts/delete-read", methods=["POST"])
@@ -2826,7 +2827,7 @@ def create_app():
         """Видалити всі прочитані заявки."""
         ContactMessage.query.filter_by(is_read=True, store_id=g.store.id).delete()
         db.session.commit()
-        flash("Прочитані заявки видалено.", "info")
+        flash(_("Прочитані заявки видалено."), "info")
         return redirect(url_for("admin_contacts"))
 
     # ----- АДМІНКА: НАЛАШТУВАННЯ САЙТУ -----
@@ -2905,12 +2906,12 @@ def create_app():
             confirm_password = request.form.get("admin_password_confirm", "")
             if new_password:
                 if len(new_password) < 6:
-                    flash("Пароль має бути мінімум 6 символів.", "warning")
+                    flash(_("Пароль має бути мінімум 6 символів."), "warning")
                 elif new_password != confirm_password:
-                    flash("Паролі не співпадають.", "warning")
+                    flash(_("Паролі не співпадають."), "warning")
                 else:
                     settings.admin_password_hash = generate_password_hash(new_password)
-                    flash("Пароль адміністратора змінено.", "success")
+                    flash(_("Пароль адміністратора змінено."), "success")
             
             # Дані юрособи адміністратора
             settings.admin_company_name = request.form.get("admin_company_name") or None
@@ -2933,7 +2934,7 @@ def create_app():
             settings.terms_text = request.form.get("terms_text") or None
 
             db.session.commit()
-            flash("Налаштування сайту збережено.", "success")
+            flash(_("Налаштування сайту збережено."), "success")
             return redirect(url_for("admin_settings"))
 
         return render_template("admin/settings.html", settings=settings)
@@ -2998,18 +2999,18 @@ def create_app():
                     store.custom_domain_verified_at = None
                     db.session.commit()
                     if new_domain:
-                        flash("Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити».", "info")
+                        flash(_("Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити»."), "info")
                     else:
-                        flash("Власний домен видалено.", "info")
+                        flash(_("Власний домен видалено."), "info")
                 return redirect(url_for("admin_domain_settings"))
 
             elif action == "verify":
                 if not store.custom_domain:
-                    flash("Спочатку вкажіть домен.", "danger")
+                    flash(_("Спочатку вкажіть домен."), "danger")
                     return redirect(url_for("admin_domain_settings"))
 
                 if not platform_ip:
-                    flash("Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки.", "danger")
+                    flash(_("Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."), "danger")
                     return redirect(url_for("admin_domain_settings"))
 
                 import socket
@@ -3024,14 +3025,15 @@ def create_app():
                     store.custom_domain_verified_at = datetime.utcnow()
                     db.session.commit()
                     _write_custom_domain_router(store)
-                    flash(f"✅ Домен {store.custom_domain} підтверджено і активовано! Може знадобитись кілька хвилин, щоб з'явився сертифікат.", "success")
+                    flash(_("✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька хвилин, щоб з'явився сертифікат.") % {"domain": store.custom_domain}, "success")
                 else:
                     store.custom_domain_verified = False
                     db.session.commit()
                     resolved_display = ", ".join(resolved_ips) if resolved_ips else "не резолвиться взагалі"
                     flash(
-                        f"Домен ще не вказує на платформу (зараз резолвиться: {resolved_display}). "
-                        f"Перевірте DNS-налаштування (A-запис на {platform_ip}) і спробуйте ще раз за кілька хвилин.",
+                        _("Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). "
+                          "Перевірте DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за кілька хвилин.")
+                        % {"resolved": resolved_display, "ip": platform_ip},
                         "warning",
                     )
                 return redirect(url_for("admin_domain_settings"))
@@ -3076,7 +3078,7 @@ def create_app():
     def admin_payments_connect():
         store = g.store
         if not STRIPE_AVAILABLE or not app.config["STRIPE_SECRET_KEY"]:
-            flash("Stripe не налаштовано на платформі.", "danger")
+            flash(_("Stripe не налаштовано на платформі."), "danger")
             return redirect(url_for("admin_payments_settings"))
 
         country = (request.form.get("country") or "DE").strip().upper()
@@ -3096,7 +3098,7 @@ def create_app():
             account_link = _create_connect_account_link(store)
             return redirect(account_link.url)
         except stripe.error.StripeError as e:
-            flash(f"Помилка Stripe Connect: {e}", "danger")
+            flash(_("Помилка Stripe Connect: %(error)s") % {"error": e}, "danger")
             return redirect(url_for("admin_payments_settings"))
 
     @app.route("/admin/settings/payments/refresh")
@@ -3110,7 +3112,7 @@ def create_app():
             account_link = _create_connect_account_link(store)
             return redirect(account_link.url)
         except stripe.error.StripeError as e:
-            flash(f"Помилка Stripe Connect: {e}", "danger")
+            flash(_("Помилка Stripe Connect: %(error)s") % {"error": e}, "danger")
             return redirect(url_for("admin_payments_settings"))
 
     @app.route("/admin/settings/payments/return")
@@ -3127,11 +3129,11 @@ def create_app():
                     store.stripe_connect_onboarded_at = datetime.utcnow()
                 db.session.commit()
                 if transfers_active:
-                    flash("✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів.", "success")
+                    flash(_("✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів."), "success")
                 else:
-                    flash("Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та спробуйте ще раз.", "warning")
+                    flash(_("Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та спробуйте ще раз."), "warning")
             except stripe.error.StripeError as e:
-                flash(f"Не вдалося перевірити статус Stripe: {e}", "danger")
+                flash(_("Не вдалося перевірити статус Stripe: %(error)s") % {"error": e}, "danger")
         return redirect(url_for("admin_payments_settings"))
 
     @app.route("/admin/settings/payments/reset", methods=["POST"])
@@ -3143,7 +3145,7 @@ def create_app():
         store.stripe_connect_charges_enabled = False
         store.stripe_connect_onboarded_at = None
         db.session.commit()
-        flash("Stripe-акаунт відв'язано від магазину.", "info")
+        flash(_("Stripe-акаунт відв'язано від магазину."), "info")
         return redirect(url_for("admin_payments_settings"))
 
     # ----- АДМІНКА: ВИДАЛЕННЯ АКАУНТУ (GDPR "право на забуття") -----
@@ -3234,17 +3236,17 @@ def create_app():
             password = request.form.get("password", "")
             confirm = request.form.get("confirm") == "on"
             if not confirm:
-                flash("Підтвердіть, що розумієте наслідки видалення.", "danger")
+                flash(_("Підтвердіть, що розумієте наслідки видалення."), "danger")
                 return redirect(url_for("admin_delete_account"))
             if not current_user.check_password(password):
-                flash("Невірний пароль.", "danger")
+                flash(_("Невірний пароль."), "danger")
                 return redirect(url_for("admin_delete_account"))
 
             _delete_store_account(store)
 
             from flask_login import logout_user as flask_logout_user
             flask_logout_user()
-            flash("Ваш акаунт і магазин видалено. Дякуємо, що були з нами.", "info")
+            flash(_("Ваш акаунт і магазин видалено. Дякуємо, що були з нами."), "info")
             return redirect(url_for("index"))
 
         return render_template("admin/delete_account.html", store=store)
@@ -3263,7 +3265,7 @@ def create_app():
             settings.pickup_address = request.form.get("pickup_address", "").strip() or None
             settings.pickup_instructions = request.form.get("pickup_instructions", "").strip() or None
             db.session.commit()
-            flash("Налаштування самовивозу збережено.", "success")
+            flash(_("Налаштування самовивозу збережено."), "success")
             return redirect(url_for("admin_shipping_settings"))
 
         accounts = CarrierAccount.query.filter_by(store_id=g.store.id).all()
@@ -3285,11 +3287,11 @@ def create_app():
 
         carrier = request.args.get("carrier") or request.form.get("carrier", "")
         if carrier not in Carrier.CHOICES:
-            flash("Невідома служба доставки.", "danger")
+            flash(_("Невідома служба доставки."), "danger")
             return redirect(url_for("admin_shipping_settings"))
 
         if CarrierAccount.query.filter_by(store_id=g.store.id, carrier=carrier).first():
-            flash(f"{Carrier.LABELS.get(carrier, carrier)} вже налаштовано для цього магазину.", "warning")
+            flash(_("%(carrier)s вже налаштовано для цього магазину.") % {"carrier": Carrier.LABELS.get(carrier, carrier)}, "warning")
             return redirect(url_for("admin_shipping_settings"))
 
         if request.method == "POST":
@@ -3322,7 +3324,7 @@ def create_app():
             )
             db.session.add(account)
             db.session.commit()
-            flash(f"{account.carrier_label} налаштовано.", "success")
+            flash(_("%(carrier)s налаштовано.") % {"carrier": account.carrier_label}, "success")
             return redirect(url_for("admin_shipping_settings"))
 
         return render_template("admin/shipping_account_form.html", carrier=carrier, carrier_label=Carrier.LABELS.get(carrier, carrier), account=None)
@@ -3356,7 +3358,7 @@ def create_app():
             account.origin_postal_code = request.form.get("origin_postal_code", "").strip() or None
             account.origin_country_code = request.form.get("origin_country_code", "").strip() or None
             db.session.commit()
-            flash(f"{account.carrier_label} оновлено.", "success")
+            flash(_("%(carrier)s оновлено.") % {"carrier": account.carrier_label}, "success")
             return redirect(url_for("admin_shipping_settings"))
 
         return render_template("admin/shipping_account_form.html", carrier=account.carrier, carrier_label=account.carrier_label, account=account)
@@ -3369,7 +3371,7 @@ def create_app():
         account = CarrierAccount.query.filter_by(id=id, store_id=g.store.id).first_or_404()
         db.session.delete(account)
         db.session.commit()
-        flash("Обліковий запис видалено.", "info")
+        flash(_("Обліковий запис видалено."), "info")
         return redirect(url_for("admin_shipping_settings"))
 
     # ----- ПУБЛІЧНИЙ: ФОРМА КОНТАКТІВ -----
@@ -3387,8 +3389,8 @@ def create_app():
         
         if not name or not email or not message:
             if request.is_json:
-                return jsonify({"error": "Заповніть обов'язкові поля"}), 400
-            flash("Заповніть обов'язкові поля: ім'я, email, повідомлення.", "danger")
+                return jsonify({"error": _("Заповніть обов'язкові поля")}), 400
+            flash(_("Заповніть обов'язкові поля: ім'я, email, повідомлення."), "danger")
             return redirect(url_for("contacts_page"))
         
         contact = ContactMessage(
@@ -3405,7 +3407,7 @@ def create_app():
         if request.is_json:
             return jsonify({"success": True, "message": "Дякуємо за ваше повідомлення!"})
         
-        flash("Дякуємо! Ваше повідомлення надіслано.", "success")
+        flash(_("Дякуємо! Ваше повідомлення надіслано."), "success")
         return redirect(url_for("contacts_page"))
 
     # ----- AUTH: ВХІД/РЕЄСТРАЦІЯ B2C/B2B -----
@@ -3429,14 +3431,14 @@ def create_app():
             
             if user and user.check_password(password):
                 if not user.is_active:
-                    flash("Ваш акаунт деактивовано. Зверніться до підтримки.", "danger")
+                    flash(_("Ваш акаунт деактивовано. Зверніться до підтримки."), "danger")
                     return render_template("auth/login.html")
                 
                 from flask_login import login_user as flask_login_user
                 flask_login_user(user, remember=remember)
                 user.update_last_login()
                 
-                flash(f"Вітаємо, {user.full_name}!", "success")
+                flash(_("Вітаємо, %(name)s!") % {"name": user.full_name}, "success")
                 
                 next_page = request.args.get("next")
                 if next_page:
@@ -3451,7 +3453,7 @@ def create_app():
 
                 return redirect(url_for("user_cabinet"))
             
-            flash("Невірний email або пароль.", "danger")
+            flash(_("Невірний email або пароль."), "danger")
         
         settings = SiteSettings.get_or_create(g.store.id)
         return render_template("auth/login.html", settings=settings)
@@ -3462,7 +3464,7 @@ def create_app():
         """Вихід з системи."""
         from flask_login import logout_user as flask_logout_user
         flask_logout_user()
-        flash("Ви успішно вийшли з системи.", "info")
+        flash(_("Ви успішно вийшли з системи."), "info")
         return redirect(url_for("user_login"))
 
     @app.route("/register", methods=["GET", "POST"])
@@ -3482,16 +3484,16 @@ def create_app():
             errors = []
             
             if not email:
-                errors.append("Email обов'язковий")
+                errors.append(_("Email обов'язковий"))
             elif User.get_by_email(email):
-                errors.append("Користувач з таким email вже існує")
+                errors.append(_("Користувач з таким email вже існує"))
             
             if not password:
-                errors.append("Пароль обов'язковий")
+                errors.append(_("Пароль обов'язковий"))
             elif len(password) < 6:
-                errors.append("Пароль має бути не менше 6 символів")
+                errors.append(_("Пароль має бути не менше 6 символів"))
             elif password != password_confirm:
-                errors.append("Паролі не співпадають")
+                errors.append(_("Паролі не співпадають"))
             
             if errors:
                 for error in errors:
@@ -3513,14 +3515,14 @@ def create_app():
             try:
                 from services.email_service import send_registration_email
                 user_name = f"{first_name} {last_name}".strip() or "Клієнт"
-                send_registration_email(email, user_name)
+                send_registration_email(email, user_name, locale=str(get_locale()))
                 app.logger.info(f'Registration email sent to {email}')
             except Exception as e:
                 app.logger.error(f'Failed to send registration email: {str(e)}')
             
             from flask_login import login_user as flask_login_user
             flask_login_user(user)
-            flash("Реєстрація успішна! Ласкаво просимо!", "success")
+            flash(_("Реєстрація успішна! Ласкаво просимо!"), "success")
             return redirect(url_for("user_cabinet"))
         
         settings = SiteSettings.get_or_create(g.store.id)
@@ -3534,7 +3536,7 @@ def create_app():
         
         settings = SiteSettings.get_or_create(g.store.id)
         if not getattr(settings, 'b2b_registration_open', True):
-            flash("B2B реєстрація тимчасово закрита.", "warning")
+            flash(_("B2B реєстрація тимчасово закрита."), "warning")
             return redirect(url_for("user_login"))
         
         if request.method == "POST":
@@ -3558,22 +3560,22 @@ def create_app():
             errors = []
             
             if not email:
-                errors.append("Email обов'язковий")
+                errors.append(_("Email обов'язковий"))
             elif User.get_by_email(email):
-                errors.append("Користувач з таким email вже існує")
+                errors.append(_("Користувач з таким email вже існує"))
             
             if not password:
-                errors.append("Пароль обов'язковий")
+                errors.append(_("Пароль обов'язковий"))
             elif len(password) < 8:
-                errors.append("Пароль має бути не менше 8 символів")
+                errors.append(_("Пароль має бути не менше 8 символів"))
             elif password != password_confirm:
-                errors.append("Паролі не співпадають")
+                errors.append(_("Паролі не співпадають"))
             
             if not company_name:
-                errors.append("Назва компанії обов'язкова")
+                errors.append(_("Назва компанії обов'язкова"))
             
             if not first_name or not last_name:
-                errors.append("Ім'я та прізвище контактної особи обов'язкові")
+                errors.append(_("Ім'я та прізвище контактної особи обов'язкові"))
             
             if errors:
                 for error in errors:
@@ -3591,11 +3593,11 @@ def create_app():
                     vat_verified = vat_result.get("valid", False)
                     vat_data = vat_result
                     if vat_verified:
-                        flash(f"✅ VAT номер підтверджено!", "success")
+                        flash(_("✅ VAT номер підтверджено!"), "success")
                     else:
-                        flash(f"⚠️ VAT не підтверджено: {vat_result.get('error', '')}", "warning")
+                        flash(_("⚠️ VAT не підтверджено: %(error)s") % {"error": vat_result.get('error', '')}, "warning")
                 except Exception as e:
-                    flash(f"⚠️ Помилка перевірки VAT: {str(e)}", "warning")
+                    flash(_("⚠️ Помилка перевірки VAT: %(error)s") % {"error": str(e)}, "warning")
             
             # Створення компанії
             company = Company(
@@ -3636,11 +3638,12 @@ def create_app():
             # Відправити email залежно від статусу
             try:
                 from services.email_service import send_b2b_verification_pending, send_b2b_verification_approved
+                reg_locale = str(get_locale())
                 if company.is_verified:
-                    send_b2b_verification_approved(email, company_name, company.discount_percent or 0)
+                    send_b2b_verification_approved(email, company_name, company.discount_percent or 0, locale=reg_locale)
                     app.logger.info(f'B2B approval email sent to {email}')
                 else:
-                    send_b2b_verification_pending(email, company_name)
+                    send_b2b_verification_pending(email, company_name, locale=reg_locale)
                     app.logger.info(f'B2B pending email sent to {email}')
             except Exception as e:
                 app.logger.error(f'Failed to send B2B email: {str(e)}')
@@ -3649,9 +3652,9 @@ def create_app():
             flask_login_user(user)
             
             if company.is_verified:
-                flash("✅ Реєстрація успішна! Ваша компанія верифікована.", "success")
+                flash(_("✅ Реєстрація успішна! Ваша компанія верифікована."), "success")
             else:
-                flash("📋 Реєстрація успішна! Ваша заявка на розгляді.", "info")
+                flash(_("📋 Реєстрація успішна! Ваша заявка на розгляді."), "info")
             
             return redirect(url_for("b2b_dashboard"))
         
@@ -3666,7 +3669,7 @@ def create_app():
         vat_number = data.get("vat_number", "").strip()
         
         if not vat_number:
-            return jsonify({"error": "VAT номер обов'язковий"}), 400
+            return jsonify({"error": _("VAT номер обов'язковий")}), 400
         
         try:
             from services.vat_checker import VATChecker
@@ -3804,7 +3807,7 @@ def create_app():
             company.contact_phone = request.form.get("phone", company.contact_phone)
             
             db.session.commit()
-            flash("Дані компанії оновлено!", "success")
+            flash(_("Дані компанії оновлено!"), "success")
             return redirect(url_for("b2b_company"))
         
         return render_template(
@@ -4081,7 +4084,7 @@ def create_app():
         company.discount_percent = float(request.form.get("discount_percent", 0))
         db.session.commit()
         
-        flash("Налаштування оновлено!", "success")
+        flash(_("Налаштування оновлено!"), "success")
         return redirect(url_for("admin_crm_partner", id=id))
     
     @app.route("/admin/crm/alerts")
@@ -4333,41 +4336,41 @@ def create_app():
                 task.status = ShipmentStatus.PROCESSING.value
                 task.assigned_to = request.form.get("assigned_to", "")
                 db.session.commit()
-                flash("✅ Завдання взято в роботу", "success")
+                flash(_("✅ Завдання взято в роботу"), "success")
                 
             elif action == "mark_packed":
                 task.mark_packed(
                     weight_kg=request.form.get("weight_kg", type=float),
                     dimensions=request.form.get("dimensions", "")
                 )
-                flash("📦 Замовлення запаковано", "success")
+                flash(_("📦 Замовлення запаковано"), "success")
                 
             elif action == "mark_ready":
                 task.status = ShipmentStatus.READY.value
                 db.session.commit()
-                flash("✅ Готово до відправки", "success")
+                flash(_("✅ Готово до відправки"), "success")
                 
             elif action == "mark_shipped":
                 task.mark_shipped(
                     tracking_number=request.form.get("tracking_number", ""),
                     carrier=request.form.get("carrier", "")
                 )
-                flash("🚚 Відправлено!", "success")
+                flash(_("🚚 Відправлено!"), "success")
                 
             elif action == "mark_delivered":
                 task.mark_delivered()
-                flash("✔️ Доставлено!", "success")
+                flash(_("✔️ Доставлено!"), "success")
                 
             elif action == "cancel":
                 task.status = ShipmentStatus.CANCELLED.value
                 task.admin_notes = request.form.get("cancel_reason", "")
                 db.session.commit()
-                flash("❌ Завдання скасовано", "warning")
+                flash(_("❌ Завдання скасовано"), "warning")
             
             elif action == "update_notes":
                 task.admin_notes = request.form.get("admin_notes", "")
                 db.session.commit()
-                flash("💾 Нотатки збережено", "success")
+                flash(_("💾 Нотатки збережено"), "success")
             
             return redirect(url_for("admin_warehouse_task", id=id))
 
@@ -4487,7 +4490,7 @@ def create_app():
         notes = request.form.get("notes", "")
 
         if adjustment == 0:
-            flash("Введіть кількість для коригування", "warning")
+            flash(_("Введіть кількість для коригування"), "warning")
             return redirect(url_for("admin_warehouse_stock"))
 
         try:
@@ -4500,9 +4503,9 @@ def create_app():
                 performed_by="admin",
                 store_id=g.store.id,
             )
-            flash(f"✅ Залишок '{product.name}' скориговано на {adjustment:+d}", "success")
+            flash(_("✅ Залишок '%(name)s' скориговано на %(adjustment)+d") % {"name": product.name, "adjustment": adjustment}, "success")
         except ValueError as e:
-            flash(f"❌ Помилка: {str(e)}", "danger")
+            flash(_("❌ Помилка: %(error)s") % {"error": str(e)}, "danger")
         
         return redirect(url_for("admin_warehouse_stock"))
     
@@ -4610,7 +4613,7 @@ def create_app():
             order.calculate_totals()
             db.session.commit()
 
-            flash(f"✅ Замовлення {order.order_number} створено", "success")
+            flash(_("✅ Замовлення %(order_number)s створено") % {"order_number": order.order_number}, "success")
             return redirect(url_for("admin_warehouse_replenishment_detail", id=order.id))
 
         # Товари з низьким залишком для пропозиції
@@ -4641,35 +4644,35 @@ def create_app():
             if action == "approve":
                 order.status = ReplenishmentStatus.APPROVED.value
                 db.session.commit()
-                flash("✅ Замовлення підтверджено", "success")
+                flash(_("✅ Замовлення підтверджено"), "success")
                 
             elif action == "order":
                 order.status = ReplenishmentStatus.ORDERED.value
                 order.ordered_at = datetime.utcnow()
                 db.session.commit()
-                flash("📤 Замовлено у постачальника", "success")
+                flash(_("📤 Замовлено у постачальника"), "success")
                 
             elif action == "shipped":
                 order.status = ReplenishmentStatus.SHIPPED.value
                 order.expected_at = datetime.utcnow()  # TODO: real expected date
                 db.session.commit()
-                flash("🚚 Позначено як відправлено", "success")
+                flash(_("🚚 Позначено як відправлено"), "success")
                 
             elif action == "receive":
                 order.mark_received()
-                flash("✔️ Товар отримано, залишки оновлено!", "success")
+                flash(_("✔️ Товар отримано, залишки оновлено!"), "success")
                 
             elif action == "cancel":
                 order.status = ReplenishmentStatus.CANCELLED.value
                 db.session.commit()
-                flash("❌ Замовлення скасовано", "warning")
+                flash(_("❌ Замовлення скасовано"), "warning")
             
             elif action == "mark_paid":
                 order.is_paid = True
                 order.paid_at = datetime.utcnow()
                 order.payment_method = request.form.get("payment_method", "")
                 db.session.commit()
-                flash("💰 Оплату зафіксовано", "success")
+                flash(_("💰 Оплату зафіксовано"), "success")
             
             return redirect(url_for("admin_warehouse_replenishment_detail", id=id))
         
@@ -4755,7 +4758,7 @@ def create_app():
             db.session.add(expense)
             db.session.commit()
             
-            flash("✅ Витрату додано", "success")
+            flash(_("✅ Витрату додано"), "success")
             return redirect(url_for("admin_warehouse_expenses"))
         
         return render_template(
@@ -5024,11 +5027,11 @@ def create_app():
         order_id = data.get("order_id")
         
         if not order_id:
-            return jsonify({"error": "order_id required"}), 400
+            return jsonify({"error": _("order_id required")}), 400
         
         order = Order.query.get(order_id)
         if not order:
-            return jsonify({"error": "order not found"}), 404
+            return jsonify({"error": _("order not found")}), 404
         
         # Перевіряємо чи не існує вже завдання
         existing_task = WarehouseTask.query.filter_by(order_id=order_id).first()
@@ -5110,7 +5113,7 @@ def create_app():
             ai_settings.auto_translate_languages = ",".join(translate_langs) if translate_langs else "en,de"
             
             db.session.commit()
-            flash("✅ AI налаштування збережено!", "success")
+            flash(_("✅ AI налаштування збережено!"), "success")
             return redirect(url_for("admin_ai_settings"))
         
         return render_template("admin/ai_settings.html", ai_settings=ai_settings)
@@ -5209,7 +5212,7 @@ def create_app():
             db.session.add(post)
             db.session.commit()
             
-            flash("✅ Статтю створено!", "success")
+            flash(_("✅ Статтю створено!"), "success")
             return redirect(url_for("admin_blog_edit", id=post.id))
         
         return render_template("admin/blog_edit.html", post=None)
@@ -5274,7 +5277,7 @@ def create_app():
                         pass
             
             db.session.commit()
-            flash("✅ Статтю оновлено!", "success")
+            flash(_("✅ Статтю оновлено!"), "success")
             return redirect(url_for("admin_blog_edit", id=id))
         
         return render_template("admin/blog_edit.html", post=post)
@@ -5291,7 +5294,7 @@ def create_app():
         
         db.session.delete(post)
         db.session.commit()
-        flash("Статтю видалено.", "info")
+        flash(_("Статтю видалено."), "info")
         return redirect(url_for("admin_blog"))
     
     @app.route("/admin/blog/<int:id>/publish", methods=["POST"])
@@ -5304,7 +5307,7 @@ def create_app():
         if not post.publish_date or post.publish_date > datetime.utcnow():
             post.publish_date = datetime.utcnow()
         db.session.commit()
-        flash(f"✅ Статтю '{post.title}' опубліковано!", "success")
+        flash(_("✅ Статтю '%(title)s' опубліковано!") % {"title": post.title}, "success")
         return redirect(url_for("admin_blog"))
     
     @app.route("/admin/blog/plan", methods=["GET", "POST"])
@@ -5331,9 +5334,9 @@ def create_app():
             
             if topics_list:
                 BlogPlan.create_weekly_plan(topics_list, store_id=g.store.id)
-                flash(f"✅ Створено план на {len(topics_list)} днів!", "success")
+                flash(_("✅ Створено план на %(count)s днів!") % {"count": len(topics_list)}, "success")
             else:
-                flash("Введіть хоча б одну тему.", "warning")
+                flash(_("Введіть хоча б одну тему."), "warning")
             
             return redirect(url_for("admin_blog_plan"))
         
@@ -5373,14 +5376,14 @@ def create_app():
         """API генерації статті через AI."""
         openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
-            return jsonify({"error": "AI не налаштовано"}), 400
+            return jsonify({"error": _("AI не налаштовано")}), 400
         
         data = request.get_json()
         topic = data.get("topic", "").strip()
         keywords = data.get("keywords", "").strip()
         
         if not topic:
-            return jsonify({"error": "Тема обов'язкова"}), 400
+            return jsonify({"error": _("Тема обов'язкова")}), 400
         
         ai_settings = AISettings.get_or_create(g.store.id)
         
@@ -5708,7 +5711,7 @@ def create_app():
         """Генерація статті з плану (ручний запуск адміном)."""
         plan = BlogPlan.query.filter_by(id=plan_id, store_id=g.store.id).first_or_404()
         if plan.status != "pending":
-            return jsonify({"error": "План вже оброблено"}), 400
+            return jsonify({"error": _("План вже оброблено")}), 400
         try:
             post = _generate_post_from_plan(plan)
             return jsonify({"success": True, "post_id": post.id})
@@ -5782,14 +5785,14 @@ def create_app():
         """Автоматичний переклад статті на інші мови."""
         openai_client = get_openai_client()
         if not OPENAI_AVAILABLE or not openai_client:
-            return jsonify({"error": "AI не налаштовано. Додайте OPENAI_API_KEY"}), 400
+            return jsonify({"error": _("AI не налаштовано. Додайте OPENAI_API_KEY")}), 400
         
         post = BlogPost.query.filter_by(id=post_id, store_id=g.store.id).first_or_404()
         data = request.get_json() or {}
         languages = data.get("languages", ["en", "de"])
         
         if not post.title or not post.content:
-            return jsonify({"error": "Стаття не має контенту для перекладу"}), 400
+            return jsonify({"error": _("Стаття не має контенту для перекладу")}), 400
         
         translated = {}
         

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}B2B Замовлення - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('B2B Замовлення') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="cabinet-container">
@@ -9,36 +9,36 @@
             <div class="user-avatar b2b">🏢</div>
             <div class="user-details">
                 <h3>{{ current_user.company.name if current_user.company else current_user.full_name }}</h3>
-                <span class="badge badge-b2b">B2B Партнер</span>
+                <span class="badge badge-b2b">{{ _('B2B Партнер') }}</span>
             </div>
         </div>
-        
+
         <nav class="cabinet-nav">
             <a href="{{ url_for('b2b_dashboard') }}" class="nav-item">
                 📊 Dashboard
             </a>
             <a href="{{ url_for('b2b_orders') }}" class="nav-item active">
-                📦 Замовлення
+                📦 {{ _('Замовлення') }}
             </a>
             <a href="{{ url_for('b2b_company') }}" class="nav-item">
-                🏢 Компанія
+                🏢 {{ _('Компанія') }}
             </a>
             <a href="#" class="nav-item">
-                💰 Прайс-листи
+                💰 {{ _('Прайс-листи') }}
             </a>
             <a href="#" class="nav-item">
-                📄 Документи
+                📄 {{ _('Документи') }}
             </a>
             <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
-                🚪 Вийти
+                🚪 {{ _('Вийти') }}
             </a>
         </nav>
     </div>
-    
+
     <div class="cabinet-content">
         <div class="page-header">
-            <h1>📦 Мої замовлення</h1>
-            <p>Історія та статус ваших замовлень</p>
+            <h1>📦 {{ _('Мої замовлення') }}</h1>
+            <p>{{ _('Історія та статус ваших замовлень') }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -51,50 +51,50 @@
         
         <div class="filters-bar">
             <div class="filter-group">
-                <label>Статус:</label>
+                <label>{{ _('Статус:') }}</label>
                 <select id="status-filter">
-                    <option value="">Всі</option>
-                    <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Очікує</option>
-                    <option value="processing" {% if request.args.get('status') == 'processing' %}selected{% endif %}>В обробці</option>
-                    <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>Оплачено</option>
-                    <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>Відправлено</option>
-                    <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Доставлено</option>
-                    <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Скасовано</option>
+                    <option value="">{{ _('Всі') }}</option>
+                    <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>{{ _('Очікує') }}</option>
+                    <option value="processing" {% if request.args.get('status') == 'processing' %}selected{% endif %}>{{ _('В обробці') }}</option>
+                    <option value="paid" {% if request.args.get('status') == 'paid' %}selected{% endif %}>{{ _('Оплачено') }}</option>
+                    <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>{{ _('Відправлено') }}</option>
+                    <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>{{ _('Доставлено') }}</option>
+                    <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>{{ _('Скасовано') }}</option>
                 </select>
             </div>
-            
+
             <div class="filter-group">
-                <label>Період:</label>
+                <label>{{ _('Період:') }}</label>
                 <select id="period-filter">
-                    <option value="">Весь час</option>
-                    <option value="week">Останній тиждень</option>
-                    <option value="month">Останній місяць</option>
-                    <option value="quarter">Останній квартал</option>
-                    <option value="year">Останній рік</option>
+                    <option value="">{{ _('Весь час') }}</option>
+                    <option value="week">{{ _('Останній тиждень') }}</option>
+                    <option value="month">{{ _('Останній місяць') }}</option>
+                    <option value="quarter">{{ _('Останній квартал') }}</option>
+                    <option value="year">{{ _('Останній рік') }}</option>
                 </select>
             </div>
-            
+
             <div class="filter-group search-group">
-                <input type="text" id="search-input" placeholder="🔍 Пошук за номером...">
+                <input type="text" id="search-input" placeholder="🔍 {{ _('Пошук за номером...') }}">
             </div>
-            
+
             <button class="btn btn-export" onclick="exportOrders()">
-                📥 Експорт CSV
+                📥 {{ _('Експорт CSV') }}
             </button>
         </div>
-        
+
         <div class="stats-summary">
             <div class="stat-item">
                 <span class="stat-value">{{ orders|length }}</span>
-                <span class="stat-label">Всього замовлень</span>
+                <span class="stat-label">{{ _('Всього замовлень') }}</span>
             </div>
             <div class="stat-item">
                 <span class="stat-value">{{ orders|selectattr('status', 'equalto', 'pending')|list|length + orders|selectattr('status', 'equalto', 'processing')|list|length }}</span>
-                <span class="stat-label">В обробці</span>
+                <span class="stat-label">{{ _('В обробці') }}</span>
             </div>
             <div class="stat-item">
                 <span class="stat-value">{{ "%.2f"|format(orders|sum(attribute='amount')) }} €</span>
-                <span class="stat-label">Загальна сума</span>
+                <span class="stat-label">{{ _('Загальна сума') }}</span>
             </div>
         </div>
         
@@ -103,12 +103,12 @@
             <table class="orders-table">
                 <thead>
                     <tr>
-                        <th>Номер</th>
-                        <th>Дата</th>
-                        <th>Товари</th>
-                        <th>Сума</th>
-                        <th>Статус</th>
-                        <th>Дії</th>
+                        <th>{{ _('Номер') }}</th>
+                        <th>{{ _('Дата') }}</th>
+                        <th>{{ _('Товари') }}</th>
+                        <th>{{ _('Сума') }}</th>
+                        <th>{{ _('Статус') }}</th>
+                        <th>{{ _('Дії') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,7 +122,7 @@
                             <span class="order-time">{{ order.created_at.strftime('%H:%M') }}</span>
                         </td>
                         <td>
-                            <span class="items-count">{{ order.items|length if order.items else 0 }} товарів</span>
+                            <span class="items-count">{{ order.items|length if order.items else 0 }} {{ _('товарів') }}</span>
                         </td>
                         <td>
                             <span class="order-amount">{{ "%.2f"|format(order.amount) }} €</span>
@@ -138,7 +138,7 @@
                         <td>
                             <div class="actions">
                                 <a href="#" class="btn btn-sm btn-view">
-                                    👁️ Деталі
+                                    👁️ {{ _('Деталі') }}
                                 </a>
                                 {% if order.status in ['pending', 'processing'] %}
                                 <button class="btn btn-sm btn-cancel" onclick="cancelOrder({{ order.id }})">
@@ -157,27 +157,27 @@
                 </tbody>
             </table>
         </div>
-        
+
         {% if pagination %}
         <div class="pagination">
             {% if pagination.has_prev %}
-            <a href="?page={{ pagination.prev_num }}" class="page-btn">← Попередня</a>
+            <a href="?page={{ pagination.prev_num }}" class="page-btn">← {{ _('Попередня') }}</a>
             {% endif %}
-            
-            <span class="page-info">Сторінка {{ pagination.page }} з {{ pagination.pages }}</span>
-            
+
+            <span class="page-info">{{ _('Сторінка %(page)s з %(pages)s') % {'page': pagination.page, 'pages': pagination.pages} }}</span>
+
             {% if pagination.has_next %}
-            <a href="?page={{ pagination.next_num }}" class="page-btn">Наступна →</a>
+            <a href="?page={{ pagination.next_num }}" class="page-btn">{{ _('Наступна') }} →</a>
             {% endif %}
         </div>
         {% endif %}
-        
+
         {% else %}
         <div class="empty-state">
             <div class="empty-icon">📦</div>
-            <h3>Замовлень поки немає</h3>
-            <p>Створіть своє перше оптове замовлення</p>
-            <a href="{{ url_for('index') }}" class="btn btn-primary">Перейти до каталогу</a>
+            <h3>{{ _('Замовлень поки немає') }}</h3>
+            <p>{{ _('Створіть своє перше оптове замовлення') }}</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">{{ _('Перейти до каталогу') }}</a>
         </div>
         {% endif %}
     </div>
@@ -574,8 +574,8 @@ function filterBySearch() {
 }
 
 function cancelOrder(orderId) {
-    if (!confirm('Ви впевнені, що хочете скасувати це замовлення?')) return;
-    
+    if (!confirm('{{ _('Ви впевнені, що хочете скасувати це замовлення?') }}')) return;
+
     fetch(`/api/orders/${orderId}/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -585,7 +585,7 @@ function cancelOrder(orderId) {
         if (data.success) {
             location.reload();
         } else {
-            alert(data.error || 'Помилка при скасуванні');
+            alert(data.error || '{{ _('Помилка при скасуванні') }}');
         }
     });
 }

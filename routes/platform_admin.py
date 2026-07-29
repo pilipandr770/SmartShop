@@ -6,6 +6,7 @@
 from functools import wraps
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_babel import gettext as _
 from flask_login import login_required, current_user
 
 from extensions import db
@@ -25,7 +26,7 @@ def platform_owner_required(fn):
     @login_required
     def wrapper(*args, **kwargs):
         if not current_user.is_platform_owner:
-            flash("Доступ лише для оператора платформи.", "danger")
+            flash(_("Доступ лише для оператора платформи."), "danger")
             return redirect(url_for("index"))
         return fn(*args, **kwargs)
     return wrapper
@@ -68,7 +69,8 @@ def toggle_store_active(store_id):
     store.is_active = not store.is_active
     db.session.commit()
     flash(
-        f"Магазин «{store.name}» {'активовано' if store.is_active else 'заблоковано'}.",
+        (_("Магазин «%(name)s» активовано.") if store.is_active
+         else _("Магазин «%(name)s» заблоковано.")) % {"name": store.name},
         "success",
     )
     return redirect(url_for("platform_admin.dashboard"))

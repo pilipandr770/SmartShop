@@ -3,6 +3,7 @@
 """
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, g
+from flask_babel import gettext as _
 from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db
 from models.user import User, UserRole
@@ -27,13 +28,13 @@ def login():
         
         if user and user.check_password(password):
             if not user.is_active:
-                flash("Ваш акаунт деактивовано. Зверніться до підтримки.", "danger")
+                flash(_("Ваш акаунт деактивовано. Зверніться до підтримки."), "danger")
                 return render_template("auth/login.html")
             
             login_user(user, remember=remember)
             user.update_last_login()
             
-            flash(f"Вітаємо, {user.full_name}!", "success")
+            flash(_("Вітаємо, %(name)s!") % {"name": user.full_name}, "success")
             
             # Редірект залежно від ролі
             next_page = request.args.get("next")
@@ -45,7 +46,7 @@ def login():
             
             return redirect(url_for("cabinet.dashboard"))
         
-        flash("Невірний email або пароль.", "danger")
+        flash(_("Невірний email або пароль."), "danger")
     
     return render_template("auth/login.html")
 
@@ -55,7 +56,7 @@ def login():
 def logout():
     """Вихід з системи."""
     logout_user()
-    flash("Ви успішно вийшли з системи.", "info")
+    flash(_("Ви успішно вийшли з системи."), "info")
     return redirect(url_for("auth.login"))
 
 
@@ -77,16 +78,16 @@ def register():
         errors = []
         
         if not email:
-            errors.append("Email обов'язковий")
+            errors.append(_("Email обов'язковий"))
         elif User.get_by_email(email):
-            errors.append("Користувач з таким email вже існує")
+            errors.append(_("Користувач з таким email вже існує"))
         
         if not password:
-            errors.append("Пароль обов'язковий")
+            errors.append(_("Пароль обов'язковий"))
         elif len(password) < 6:
-            errors.append("Пароль має бути не менше 6 символів")
+            errors.append(_("Пароль має бути не менше 6 символів"))
         elif password != password_confirm:
-            errors.append("Паролі не співпадають")
+            errors.append(_("Паролі не співпадають"))
         
         if errors:
             for error in errors:
@@ -105,7 +106,7 @@ def register():
         )
         
         login_user(user)
-        flash("Реєстрація успішна! Ласкаво просимо!", "success")
+        flash(_("Реєстрація успішна! Ласкаво просимо!"), "success")
         return redirect(url_for("cabinet.dashboard"))
     
     return render_template("auth/register.html")
@@ -121,7 +122,7 @@ def register_b2b():
     from models.settings import SiteSettings
     settings = SiteSettings.get_or_create(g.store.id)
     if not settings.b2b_registration_open:
-        flash("B2B реєстрація тимчасово закрита.", "warning")
+        flash(_("B2B реєстрація тимчасово закрита."), "warning")
         return redirect(url_for("auth.login"))
     
     vat_result = None
@@ -152,22 +153,22 @@ def register_b2b():
         errors = []
         
         if not email:
-            errors.append("Email обов'язковий")
+            errors.append(_("Email обов'язковий"))
         elif User.get_by_email(email):
-            errors.append("Користувач з таким email вже існує")
+            errors.append(_("Користувач з таким email вже існує"))
         
         if not password:
-            errors.append("Пароль обов'язковий")
+            errors.append(_("Пароль обов'язковий"))
         elif len(password) < 8:
-            errors.append("Пароль має бути не менше 8 символів")
+            errors.append(_("Пароль має бути не менше 8 символів"))
         elif password != password_confirm:
-            errors.append("Паролі не співпадають")
+            errors.append(_("Паролі не співпадають"))
         
         if not company_name:
-            errors.append("Назва компанії обов'язкова")
+            errors.append(_("Назва компанії обов'язкова"))
         
         if not first_name or not last_name:
-            errors.append("Ім'я та прізвище контактної особи обов'язкові")
+            errors.append(_("Ім'я та прізвище контактної особи обов'язкові"))
         
         # Перевірка VAT якщо вказано
         vat_verified = False
@@ -175,21 +176,21 @@ def register_b2b():
             if not vat_country:
                 # Спробуємо визначити з номера
                 from services.vat_checker import VATChecker
-                vat_country, _ = VATChecker.parse_vat_number(vat_number)
+                vat_country, _country_hint = VATChecker.parse_vat_number(vat_number)
             
             if vat_country:
                 vat_result = check_vat_number(vat_number, vat_country)
                 vat_verified = vat_result.get("valid", False)
                 
                 if vat_verified:
-                    flash(f"✅ VAT номер підтверджено: {vat_result.get('name', company_name)}", "success")
+                    flash(_("✅ VAT номер підтверджено: %(name)s") % {"name": vat_result.get('name', company_name)}, "success")
                     # Оновлюємо дані з VIES якщо є
                     if vat_result.get("name") and not legal_name:
                         legal_name = vat_result.get("name")
                     if vat_result.get("address") and not address:
                         address = vat_result.get("address")
                 else:
-                    flash(f"⚠️ VAT номер не підтверджено: {vat_result.get('error', 'невідома помилка')}", "warning")
+                    flash(_("⚠️ VAT номер не підтверджено: %(error)s") % {"error": vat_result.get('error', 'невідома помилка')}, "warning")
         
         if errors:
             for error in errors:
@@ -258,9 +259,9 @@ def register_b2b():
         login_user(user)
         
         if company.is_verified:
-            flash("✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити замовлення.", "success")
+            flash(_("✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити замовлення."), "success")
         else:
-            flash("📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після верифікації.", "info")
+            flash(_("📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після верифікації."), "info")
         
         return redirect(url_for("cabinet.dashboard"))
     

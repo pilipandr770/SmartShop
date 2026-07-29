@@ -1,42 +1,42 @@
 {% extends "email/layout.html" %}
 
-{% block title %}Верифікація успішна! - SmartShop AI{% endblock %}
+{% block title %}{{ _('Верифікація успішна!') }} - SmartShop AI{% endblock %}
 
 {% block content %}
-<h2>✅ Вітаємо! Вашу компанію верифіковано</h2>
+<h2>✅ {{ _('Вітаємо! Вашу компанію верифіковано') }}</h2>
 
-<p>Компанія <strong>{{ company_name }}</strong> успішно пройшла верифікацію!</p>
+<p>{{ _('Компанія') }} <strong>{{ company_name }}</strong> {{ _('успішно пройшла верифікацію!') }}</p>
 
 <div class="success-box">
-    <p style="margin: 0;"><strong>🎉 Ваші B2B привілеї:</strong></p>
+    <p style="margin: 0;"><strong>🎉 {{ _('Ваші B2B привілеї:') }}</strong></p>
     <ul style="margin: 10px 0 0; padding-left: 20px;">
-        <li><strong>Знижка {{ discount_percent }}%</strong> на всі товари</li>
-        <li>Оплата за рахунком-фактурою (Net 30)</li>
-        <li>Персональний менеджер</li>
-        <li>Пріоритетна доставка</li>
-        <li>Оптові ціни при замовленні від 10 одиниць</li>
-        <li>Доступ до B2B кабінету з аналітикою</li>
+        <li><strong>{{ _('Знижка %(percent)s%%') % {'percent': discount_percent} }}</strong> {{ _('на всі товари') }}</li>
+        <li>{{ _('Оплата за рахунком-фактурою (Net 30)') }}</li>
+        <li>{{ _('Персональний менеджер') }}</li>
+        <li>{{ _('Пріоритетна доставка') }}</li>
+        <li>{{ _('Оптові ціни при замовленні від 10 одиниць') }}</li>
+        <li>{{ _('Доступ до B2B кабінету з аналітикою') }}</li>
     </ul>
 </div>
 
 <p style="text-align: center;">
     <a href="{{ url_for('cabinet_b2b', _external=True) }}" class="button">
-        🏢 Відкрити B2B кабінет
+        🏢 {{ _('Відкрити B2B кабінет') }}
     </a>
 </p>
 
-<p><strong>📊 Статус верифікації:</strong></p>
+<p><strong>📊 {{ _('Статус верифікації:') }}</strong></p>
 <div class="info-box" style="font-size: 14px;">
-    <p style="margin: 0;">✅ VAT номер підтверджено</p>
-    <p style="margin: 5px 0 0;">✅ Домен верифіковано</p>
-    <p style="margin: 5px 0 0;">✅ Компанія перевірена в реєстрах</p>
-    <p style="margin: 5px 0 0;">🟢 <strong>Рівень надійності: Високий</strong></p>
+    <p style="margin: 0;">✅ {{ _('VAT номер підтверджено') }}</p>
+    <p style="margin: 5px 0 0;">✅ {{ _('Домен верифіковано') }}</p>
+    <p style="margin: 5px 0 0;">✅ {{ _('Компанія перевірена в реєстрах') }}</p>
+    <p style="margin: 5px 0 0;">🟢 <strong>{{ _('Рівень надійності: Високий') }}</strong></p>
 </div>
 
-<p>Тепер ви можете оформлювати замовлення з B2B знижками!</p>
+<p>{{ _('Тепер ви можете оформлювати замовлення з B2B знижками!') }}</p>
 
 <p style="margin-top: 30px; color: #6c757d;">
-    Дякуємо за довіру,<br>
-    <strong>Команда SmartShop AI</strong>
+    {{ _('Дякуємо за довіру,') }}<br>
+    <strong>{{ _('Команда SmartShop AI') }}</strong>
 </p>
 {% endblock %}

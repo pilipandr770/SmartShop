@@ -1,12 +1,12 @@
 <div id="cookie-banner" class="cookie-banner" style="display:none;">
     <div class="cookie-banner-text">
-        Цей сайт використовує cookie для роботи кошика, входу в акаунт та аналітики.
-        Продовжуючи користуватися сайтом, ви погоджуєтесь з
-        <a href="{{ url_for('datenschutz_page') }}">політикою конфіденційності</a>.
+        {{ _('Цей сайт використовує cookie для роботи кошика, входу в акаунт та аналітики.') }}
+        {{ _('Продовжуючи користуватися сайтом, ви погоджуєтесь з') }}
+        <a href="{{ url_for('datenschutz_page') }}">{{ _('політикою конфіденційності') }}</a>.
     </div>
     <div class="cookie-banner-actions">
-        <button type="button" class="cookie-btn cookie-btn-decline" onclick="smartshopCookieConsent(false)">Відхилити необов'язкові</button>
-        <button type="button" class="cookie-btn cookie-btn-accept" onclick="smartshopCookieConsent(true)">Прийняти</button>
+        <button type="button" class="cookie-btn cookie-btn-decline" onclick="smartshopCookieConsent(false)">{{ _("Відхилити необов'язкові") }}</button>
+        <button type="button" class="cookie-btn cookie-btn-accept" onclick="smartshopCookieConsent(true)">{{ _('Прийняти') }}</button>
     </div>
 </div>
 

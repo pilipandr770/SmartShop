@@ -1,40 +1,40 @@
 {% extends 'admin/layout.html' %}
-{% block title %}Категорії - Адмін панель{% endblock %}
+{% block title %}{{ _('Категорії') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>📁 Категорії</h1>
-    <p class="page-subtitle">Управління категоріями товарів</p>
+    <h1>📁 {{ _('Категорії') }}</h1>
+    <p class="page-subtitle">{{ _('Управління категоріями товарів') }}</p>
 </div>
 
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h3>➕ Нова категорія</h3>
+        <h3>➕ {{ _('Нова категорія') }}</h3>
     </div>
-    
+
     <!-- Language Tabs -->
     <div class="lang-tabs">
         <button type="button" class="lang-tab active" data-lang="uk">🇺🇦 Українська</button>
         <button type="button" class="lang-tab" data-lang="en">🇬🇧 English</button>
         <button type="button" class="lang-tab" data-lang="de">🇩🇪 Deutsch</button>
     </div>
-    
+
     <form method="post" class="form-grid">
         <div class="form-group">
             <label for="slug">Slug (URL) *</label>
             <input type="text" id="slug" name="slug" required placeholder="elektronika">
-            <small class="form-hint">Використовуйте латиницю та дефіси</small>
+            <small class="form-hint">{{ _('Використовуйте латиницю та дефіси') }}</small>
         </div>
-        
+
         <!-- Ukrainian fields -->
         <div class="lang-content" data-lang="uk">
             <div class="form-group">
-                <label for="name">Назва категорії (UK) *</label>
-                <input type="text" id="name" name="name" required placeholder="Наприклад: Електроніка">
+                <label for="name">{{ _('Назва категорії') }} (UK) *</label>
+                <input type="text" id="name" name="name" required placeholder="{{ _('Наприклад: Електроніка') }}">
             </div>
-            
+
             <div class="form-group">
-                <label for="description">Опис категорії (UK)</label>
-                <textarea id="description" name="description" rows="3" placeholder="Короткий опис категорії..."></textarea>
+                <label for="description">{{ _('Опис категорії') }} (UK)</label>
+                <textarea id="description" name="description" rows="3" placeholder="{{ _('Короткий опис категорії...') }}"></textarea>
             </div>
         </div>
         
@@ -66,7 +66,7 @@
         
         <div class="form-actions full-width">
             <button type="submit" class="btn btn-primary">
-                <span>💾</span> Створити категорію
+                <span>💾</span> {{ _('Створити категорію') }}
             </button>
         </div>
     </form>
@@ -74,21 +74,21 @@
 
 <div class="card">
     <div class="card-header">
-        <h3>📋 Список категорій</h3>
-        <span class="badge badge-primary">{{ categories|length }} шт.</span>
+        <h3>📋 {{ _('Список категорій') }}</h3>
+        <span class="badge badge-primary">{{ categories|length }} {{ _('шт.') }}</span>
     </div>
-    
+
     {% if categories %}
     <div class="table-container">
         <table class="data-table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Назва</th>
+                    <th>{{ _('Назва') }}</th>
                     <th>Slug</th>
-                    <th>Опис</th>
-                    <th>Товарів</th>
-                    <th>Дії</th>
+                    <th>{{ _('Опис') }}</th>
+                    <th>{{ _('Товарів') }}</th>
+                    <th>{{ _('Дії') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,18 +100,18 @@
                     <td>{{ c.description or '—' }}</td>
                     <td>
                         {% if c.products %}
-                        <span class="badge badge-info">{{ c.products|length }} товарів</span>
+                        <span class="badge badge-info">{{ c.products|length }} {{ _('товарів') }}</span>
                         {% else %}
                         <span class="badge badge-secondary">0</span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="actions-cell">
-                            <a href="{{ url_for('admin_categories_edit', category_id=c.id) }}" class="btn btn-sm btn-secondary" title="Редагувати">
+                            <a href="{{ url_for('admin_categories_edit', category_id=c.id) }}" class="btn btn-sm btn-secondary" title="{{ _('Редагувати') }}">
                                 ✏️
                             </a>
-                            <form method="post" action="{{ url_for('admin_categories_delete', category_id=c.id) }}" style="display: inline;" onsubmit="return confirm('Видалити категорію? Товари залишаться без категорії.');">
-                                <button type="submit" class="btn btn-sm btn-danger" title="Видалити">
+                            <form method="post" action="{{ url_for('admin_categories_delete', category_id=c.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити категорію? Товари залишаться без категорії.') }}');">
+                                <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Видалити') }}">
                                     🗑️
                                 </button>
                             </form>
@@ -125,8 +125,8 @@
     {% else %}
     <div class="empty-state">
         <div class="empty-icon">📁</div>
-        <h3>Категорій поки немає</h3>
-        <p>Створіть першу категорію за допомогою форми вище</p>
+        <h3>{{ _('Категорій поки немає') }}</h3>
+        <p>{{ _('Створіть першу категорію за допомогою форми вище') }}</p>
     </div>
     {% endif %}
 </div>

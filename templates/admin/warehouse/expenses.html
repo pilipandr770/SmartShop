@@ -1,19 +1,19 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}💰 Витрати складу{% endblock %}
+{% block title %}💰 {{ _('Витрати складу') }}{% endblock %}
 
 {% block content %}
 <div class="expenses-dashboard">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-        <h1>💰 Витрати складу</h1>
+        <h1>💰 {{ _('Витрати складу') }}</h1>
         <a href="{{ url_for('admin_warehouse_expenses_add') }}" class="btn btn-success">
-            ➕ Додати витрату
+            ➕ {{ _('Додати витрату') }}
         </a>
     </div>
 
     <!-- Статистика за місяць -->
     <div class="card" style="margin-bottom: 2rem;">
-        <h3>📊 Витрати за поточний місяць</h3>
+        <h3>📊 {{ _('Витрати за поточний місяць') }}</h3>
         <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
             {% for category, amount in stats_by_category.items() %}
             <div class="expense-stat">
@@ -31,11 +31,11 @@
                 <span class="label">{{ category }}</span>
             </div>
             {% else %}
-            <p class="text-muted">Немає витрат за цей місяць</p>
+            <p class="text-muted">{{ _('Немає витрат за цей місяць') }}</p>
             {% endfor %}
         </div>
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #eee; text-align: right;">
-            <strong style="font-size: 1.5rem;">Всього: {{ "%.2f"|format(total_monthly) }} UAH</strong>
+            <strong style="font-size: 1.5rem;">{{ _('Всього:') }} {{ "%.2f"|format(total_monthly) }} UAH</strong>
         </div>
     </div>
 
@@ -43,9 +43,9 @@
     <div class="card" style="margin-bottom: 1.5rem;">
         <form method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
             <div class="form-group" style="margin: 0;">
-                <label>Категорія:</label>
+                <label>{{ _('Категорія:') }}</label>
                 <select name="category" class="form-control">
-                    <option value="">Всі</option>
+                    <option value="">{{ _('Всі') }}</option>
                     {% for cat in expense_categories %}
                     <option value="{{ cat.value }}" {% if category_filter == cat.value %}selected{% endif %}>
                         {{ cat.value }}
@@ -53,19 +53,19 @@
                     {% endfor %}
                 </select>
             </div>
-            
+
             <div class="form-group" style="margin: 0;">
-                <label>Від:</label>
+                <label>{{ _('Від:') }}</label>
                 <input type="date" name="date_from" value="{{ date_from }}" class="form-control">
             </div>
-            
+
             <div class="form-group" style="margin: 0;">
-                <label>До:</label>
+                <label>{{ _('До:') }}</label>
                 <input type="date" name="date_to" value="{{ date_to }}" class="form-control">
             </div>
-            
-            <button type="submit" class="btn btn-primary">🔍 Фільтрувати</button>
-            <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">Скинути</a>
+
+            <button type="submit" class="btn btn-primary">🔍 {{ _('Фільтрувати') }}</button>
+            <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('Скинути') }}</a>
         </form>
     </div>
 
@@ -74,12 +74,12 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Категорія</th>
-                    <th>Опис</th>
-                    <th>Сума</th>
-                    <th>№ Чеку</th>
-                    <th>Примітки</th>
+                    <th>{{ _('Дата') }}</th>
+                    <th>{{ _('Категорія') }}</th>
+                    <th>{{ _('Опис') }}</th>
+                    <th>{{ _('Сума') }}</th>
+                    <th>{{ _('№ Чеку') }}</th>
+                    <th>{{ _('Примітки') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,14 +88,14 @@
                     <td>{{ expense.expense_date.strftime('%d.%m.%Y') }}</td>
                     <td>
                         <span class="category-badge category-{{ expense.category }}">
-                            {% if expense.category == 'shipping' %}🚚 Доставка
-                            {% elif expense.category == 'packaging' %}📦 Пакування
-                            {% elif expense.category == 'warehouse' %}🏭 Склад
-                            {% elif expense.category == 'returns' %}↩️ Повернення
-                            {% elif expense.category == 'salary' %}👷 Зарплата
-                            {% elif expense.category == 'equipment' %}🔧 Обладнання
-                            {% elif expense.category == 'utilities' %}💡 Комунальні
-                            {% else %}📋 Інше{% endif %}
+                            {% if expense.category == 'shipping' %}🚚 {{ _('Доставка') }}
+                            {% elif expense.category == 'packaging' %}📦 {{ _('Пакування') }}
+                            {% elif expense.category == 'warehouse' %}🏭 {{ _('Склад') }}
+                            {% elif expense.category == 'returns' %}↩️ {{ _('Повернення') }}
+                            {% elif expense.category == 'salary' %}👷 {{ _('Зарплата') }}
+                            {% elif expense.category == 'equipment' %}🔧 {{ _('Обладнання') }}
+                            {% elif expense.category == 'utilities' %}💡 {{ _('Комунальні') }}
+                            {% else %}📋 {{ _('Інше') }}{% endif %}
                         </span>
                     </td>
                     <td>{{ expense.description }}</td>
@@ -107,10 +107,10 @@
                 <tr>
                     <td colspan="6" class="text-center text-muted">
                         <p style="padding: 2rem;">
-                            📭 Немає витрат за обраний період
+                            📭 {{ _('Немає витрат за обраний період') }}
                         </p>
                         <a href="{{ url_for('admin_warehouse_expenses_add') }}" class="btn btn-success">
-                            ➕ Додати першу витрату
+                            ➕ {{ _('Додати першу витрату') }}
                         </a>
                     </td>
                 </tr>
@@ -123,13 +123,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse_expenses', page=page-1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">← Назад</a>
+        <a href="{{ url_for('admin_warehouse_expenses', page=page-1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">← {{ _('Назад') }}</a>
         {% endif %}
-        
-        <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
-        
+
+        <span class="btn btn-sm disabled">{{ page }} {{ _('з') }} {{ total_pages }}</span>
+
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse_expenses', page=page+1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">Далі →</a>
+        <a href="{{ url_for('admin_warehouse_expenses', page=page+1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">{{ _('Далі') }} →</a>
         {% endif %}
     </div>
     {% endif %}

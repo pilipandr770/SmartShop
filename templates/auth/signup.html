@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Створити магазин - SmartShop AI{% endblock %}
+{% block title %}{{ _('Створити магазин') }} - SmartShop AI{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h1>🚀 Створіть свій магазин</h1>
-            <p>Каталог, ІІ-продавець і SEO-блог за кілька хвилин</p>
+            <h1>🚀 {{ _('Створіть свій магазин') }}</h1>
+            <p>{{ _('Каталог, ІІ-продавець і SEO-блог за кілька хвилин') }}</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -20,21 +20,21 @@
 
         <form method="POST" class="auth-form">
             <div class="form-group">
-                <label for="store_name">Назва магазину *</label>
+                <label for="store_name">{{ _('Назва магазину') }} *</label>
                 <input type="text" id="store_name" name="store_name" required
-                       placeholder="Мій магазин" value="{{ form.get('store_name', '') }}">
+                       placeholder="{{ _('Мій магазин') }}" value="{{ form.get('store_name', '') }}">
             </div>
 
             <div class="form-group">
-                <label for="slug">Адреса магазину (subdomain) *</label>
+                <label for="slug">{{ _('Адреса магазину (subdomain)') }} *</label>
                 <input type="text" id="slug" name="slug"
                        placeholder="my-shop (my-shop.smartshop.example)" value="{{ form.get('slug', '') }}">
             </div>
 
             <div class="form-group">
-                <label for="owner_name">Ваше ім'я</label>
+                <label for="owner_name">{{ _("Ваше ім'я") }}</label>
                 <input type="text" id="owner_name" name="owner_name"
-                       placeholder="Іван Петренко" value="{{ form.get('owner_name', '') }}">
+                       placeholder="{{ _('Іван Петренко') }}" value="{{ form.get('owner_name', '') }}">
             </div>
 
             <div class="form-group">
@@ -45,20 +45,20 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="password">Пароль *</label>
+                    <label for="password">{{ _('Пароль') }} *</label>
                     <input type="password" id="password" name="password" required
-                           placeholder="Мін. 8 символів">
+                           placeholder="{{ _('Мін. 8 символів') }}">
                 </div>
 
                 <div class="form-group">
-                    <label for="password_confirm">Підтвердження *</label>
+                    <label for="password_confirm">{{ _('Підтвердження') }} *</label>
                     <input type="password" id="password_confirm" name="password_confirm" required
-                           placeholder="Повторіть пароль">
+                           placeholder="{{ _('Повторіть пароль') }}">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Тарифний план *</label>
+                <label>{{ _('Тарифний план') }} *</label>
                 <div class="plan-choices">
                     {% for plan in plans %}
                     <label class="plan-choice">
@@ -70,12 +70,12 @@
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">
-                Створити магазин
+                {{ _('Створити магазин') }}
             </button>
         </form>
 
         <div class="auth-footer">
-            <p>Вже є магазин? <a href="{{ url_for('user_login') }}">Увійти</a></p>
+            <p>{{ _('Вже є магазин?') }} <a href="{{ url_for('user_login') }}">{{ _('Увійти') }}</a></p>
         </div>
     </div>
 </div>

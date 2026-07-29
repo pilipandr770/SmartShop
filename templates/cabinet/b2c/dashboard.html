@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Особистий кабінет - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('Особистий кабінет') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="cabinet-container">
@@ -18,24 +18,24 @@
                 📊 Dashboard
             </a>
             <a href="#" class="nav-item">
-                📦 Мої замовлення
+                📦 {{ _('Мої замовлення') }}
             </a>
             <a href="#" class="nav-item">
-                👤 Профіль
+                👤 {{ _('Профіль') }}
             </a>
             <a href="#" class="nav-item">
-                🔐 Змінити пароль
+                🔐 {{ _('Змінити пароль') }}
             </a>
             <a href="{{ url_for('user_logout') }}" class="nav-item nav-logout">
-                🚪 Вийти
+                🚪 {{ _('Вийти') }}
             </a>
         </nav>
     </div>
-    
+
     <div class="cabinet-content">
         <div class="page-header">
-            <h1>👋 Вітаємо, {{ current_user.first_name or current_user.full_name }}!</h1>
-            <p>Ваш особистий кабінет</p>
+            <h1>👋 {{ _('Вітаємо, %(name)s!') % {'name': current_user.first_name or current_user.full_name} }}</h1>
+            <p>{{ _('Ваш особистий кабінет') }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -50,16 +50,16 @@
             <div class="stat-card">
                 <div class="stat-icon">📦</div>
                 <div class="stat-value">{{ total_orders }}</div>
-                <div class="stat-label">Замовлень</div>
+                <div class="stat-label">{{ _('Замовлень') }}</div>
             </div>
         </div>
-        
+
         <div class="section">
             <div class="section-header">
-                <h2>📦 Останні замовлення</h2>
-                <a href="#" class="btn btn-sm">Всі замовлення →</a>
+                <h2>📦 {{ _('Останні замовлення') }}</h2>
+                <a href="#" class="btn btn-sm">{{ _('Всі замовлення') }} →</a>
             </div>
-            
+
             {% if recent_orders %}
             <div class="orders-list">
                 {% for order in recent_orders %}
@@ -75,15 +75,15 @@
                         {{ "%.2f"|format(order.amount) }} {{ order.currency }}
                     </div>
                     <a href="#" class="btn btn-sm btn-outline">
-                        Деталі
+                        {{ _('Деталі') }}
                     </a>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
             <div class="empty-state">
-                <p>У вас ще немає замовлень</p>
-                <a href="{{ url_for('index') }}" class="btn btn-primary">Перейти до каталогу</a>
+                <p>{{ _('У вас ще немає замовлень') }}</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">{{ _('Перейти до каталогу') }}</a>
             </div>
             {% endif %}
         </div>

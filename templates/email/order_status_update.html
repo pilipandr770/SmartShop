@@ -1,37 +1,37 @@
 {% extends "email/layout.html" %}
 
-{% block title %}Статус замовлення змінено - SmartShop AI{% endblock %}
+{% block title %}{{ _('Статус замовлення змінено') }} - SmartShop AI{% endblock %}
 
 {% block content %}
-<h2>📦 Оновлення статусу замовлення #{{ order.id }}</h2>
+<h2>📦 {{ _('Оновлення статусу замовлення') }} #{{ order.id }}</h2>
 
-<p>Статус вашого замовлення змінено:</p>
+<p>{{ _('Статус вашого замовлення змінено:') }}</p>
 
 <div class="info-box">
-    <p style="margin: 0; font-size: 14px;">Попередній статус: <span style="text-decoration: line-through;">{{ old_status }}</span></p>
-    <p style="margin: 5px 0 0; font-size: 18px;"><strong>Новий статус: {{ new_status }}</strong></p>
+    <p style="margin: 0; font-size: 14px;">{{ _('Попередній статус:') }} <span style="text-decoration: line-through;">{{ old_status }}</span></p>
+    <p style="margin: 5px 0 0; font-size: 18px;"><strong>{{ _('Новий статус:') }} {{ new_status }}</strong></p>
 </div>
 
 {% if new_status == 'shipped' %}
 <div class="success-box">
-    <p style="margin: 0;"><strong>📬 Замовлення відправлено!</strong></p>
-    <p style="margin: 5px 0 0;">Очікуйте доставку протягом 2-3 робочих днів.</p>
+    <p style="margin: 0;"><strong>📬 {{ _('Замовлення відправлено!') }}</strong></p>
+    <p style="margin: 5px 0 0;">{{ _('Очікуйте доставку протягом 2-3 робочих днів.') }}</p>
 </div>
 {% elif new_status == 'delivered' %}
 <div class="success-box">
-    <p style="margin: 0;"><strong>🎉 Замовлення доставлено!</strong></p>
-    <p style="margin: 5px 0 0;">Дякуємо, що обрали SmartShop AI!</p>
+    <p style="margin: 0;"><strong>🎉 {{ _('Замовлення доставлено!') }}</strong></p>
+    <p style="margin: 5px 0 0;">{{ _('Дякуємо, що обрали SmartShop AI!') }}</p>
 </div>
 {% elif new_status == 'cancelled' %}
 <div class="error-box">
-    <p style="margin: 0;"><strong>❌ Замовлення скасовано</strong></p>
-    <p style="margin: 5px 0 0;">Якщо це помилка, зв'яжіться з підтримкою.</p>
+    <p style="margin: 0;"><strong>❌ {{ _('Замовлення скасовано') }}</strong></p>
+    <p style="margin: 5px 0 0;">{{ _("Якщо це помилка, зв'яжіться з підтримкою.") }}</p>
 </div>
 {% endif %}
 
 <p style="text-align: center;">
     <a href="{{ url_for('cabinet', _external=True) }}" class="button">
-        📋 Переглянути деталі
+        📋 {{ _('Переглянути деталі') }}
     </a>
 </p>
 {% endblock %}

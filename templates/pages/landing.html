@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем</title>
-    <meta name="description" content="SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс.">
+    <title>{{ _('SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем') }}</title>
+    <meta name="description" content="{{ _('SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс.') }}">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
     <style>
@@ -101,6 +101,25 @@
         @media (max-width: 720px) {
             nav.top-nav { display: none; }
         }
+        .lang-switcher {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.2rem;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 999px;
+            border: 1px solid var(--border-soft, rgba(148, 163, 184, 0.3));
+        }
+        .lang-btn {
+            padding: 0.25rem 0.45rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .lang-btn:hover { color: #fff; }
+        .lang-btn.active { background: var(--accent); color: #022c22; }
     </style>
 </head>
 <body>
@@ -111,114 +130,119 @@
             SmartShop AI
         </a>
         <nav class="top-nav">
-            <a href="#features">Можливості</a>
-            <a href="#pricing">Тарифи</a>
+            <a href="#features">{{ _('Можливості') }}</a>
+            <a href="#pricing">{{ _('Тарифи') }}</a>
         </nav>
         <div class="header-actions">
-            <a href="{{ url_for('user_login') }}" class="btn btn-outline">Увійти</a>
-            <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">Створити магазин</a>
+            <div class="lang-switcher">
+                {% for code, name in languages.items() %}
+                    <a href="{{ url_for('set_language', lang=code) }}" class="lang-btn {% if get_locale()|string == code %}active{% endif %}" title="{{ name }}">
+                        {{ code|upper }}
+                    </a>
+                {% endfor %}
+            </div>
+            <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Увійти') }}</a>
+            <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">{{ _('Створити магазин') }}</a>
         </div>
     </header>
 
     <section class="hero">
-        <h1>Свій інтернет-магазин з ІІ-продавцем —<br>без розробників і без коду</h1>
+        <h1>{{ _("Свій інтернет-магазин з ІІ-продавцем —") }}<br>{{ _("без розробників і без коду") }}</h1>
         <p class="lead">
-            Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, тексти, товари.
-            За потреби підключаєте склад, доставку та бухгалтерію. Блог пише і публікує ІІ,
-            а на сайті клієнтів консультує ІІ-продавець.
+            {{ _("Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. Блог пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець.") }}
         </p>
         <div class="hero-ctas">
-            <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary btn-lg">Почати безкоштовно</a>
-            <a href="#features" class="btn btn-outline btn-lg">Що входить</a>
+            <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary btn-lg">{{ _('Почати безкоштовно') }}</a>
+            <a href="#features" class="btn btn-outline btn-lg">{{ _('Що входить') }}</a>
         </div>
     </section>
 
     <section id="features">
-        <h2>Все для запуску магазину в одному місці</h2>
-        <p class="section-lead">Базові функції одразу включені в підписку. Складські та фінансові модулі підключаються за потреби — окремо для кожного магазину.</p>
+        <h2>{{ _('Все для запуску магазину в одному місці') }}</h2>
+        <p class="section-lead">{{ _('Базові функції одразу включені в підписку. Складські та фінансові модулі підключаються за потреби — окремо для кожного магазину.') }}</p>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="icon">🎨</div>
-                <h3>Конструктор вітрини</h3>
-                <p>Логотип, тексти, категорії та товари редагуються прямо з адмінки — фото, опис, ціна, наявність.</p>
+                <h3>{{ _('Конструктор вітрини') }}</h3>
+                <p>{{ _('Логотип, тексти, категорії та товари редагуються прямо з адмінки — фото, опис, ціна, наявність.') }}</p>
             </div>
             <div class="feature-card">
                 <div class="icon">🤖</div>
-                <h3>ІІ-продавець</h3>
-                <p>Чат-бот знає ваш каталог, ціни та наявність, пам'ятає розмову, підказує статус замовлення і передає складні звернення менеджеру.</p>
+                <h3>{{ _('ІІ-продавець') }}</h3>
+                <p>{{ _("Чат-бот знає ваш каталог, ціни та наявність, пам'ятає розмову, підказує статус замовлення і передає складні звернення менеджеру.") }}</p>
             </div>
             <div class="feature-card">
                 <div class="icon">📝</div>
-                <h3>Автоматичний блог</h3>
-                <p>ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими словами.</p>
+                <h3>{{ _('Автоматичний блог') }}</h3>
+                <p>{{ _('ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими словами.') }}</p>
             </div>
             <div class="feature-card">
                 <div class="icon">💳</div>
-                <h3>Оплата карткою</h3>
-                <p>Приймайте оплату через Stripe одразу після реєстрації — без додаткових інтеграцій.</p>
+                <h3>{{ _('Оплата карткою') }}</h3>
+                <p>{{ _('Приймайте оплату через Stripe одразу після реєстрації — без додаткових інтеграцій.') }}</p>
             </div>
             <div class="feature-card">
                 <div class="icon">📦</div>
-                <h3>Склад</h3>
-                <p>Завдання на комплектацію, друк пакувальних листів, самовивіз або служба доставки.</p>
-                <span class="badge-optional">Опційно</span>
+                <h3>{{ _('Склад') }}</h3>
+                <p>{{ _('Завдання на комплектацію, друк пакувальних листів, самовивіз або служба доставки.') }}</p>
+                <span class="badge-optional">{{ _('Опційно') }}</span>
             </div>
             <div class="feature-card">
                 <div class="icon">🚚</div>
-                <h3>Доставка</h3>
-                <p>DHL/UPS з розрахунком тарифів та автоматичним створенням накладних — або безкоштовний самовивіз.</p>
-                <span class="badge-optional">Опційно</span>
+                <h3>{{ _('Доставка') }}</h3>
+                <p>{{ _('DHL/UPS з розрахунком тарифів та автоматичним створенням накладних — або безкоштовний самовивіз.') }}</p>
+                <span class="badge-optional">{{ _('Опційно') }}</span>
             </div>
             <div class="feature-card">
                 <div class="icon">📊</div>
-                <h3>Бухгалтерія</h3>
-                <p>Звіти по замовленнях, витратах і доходах по країнах з експортом у CSV.</p>
-                <span class="badge-optional">Опційно</span>
+                <h3>{{ _('Бухгалтерія') }}</h3>
+                <p>{{ _('Звіти по замовленнях, витратах і доходах по країнах з експортом у CSV.') }}</p>
+                <span class="badge-optional">{{ _('Опційно') }}</span>
             </div>
             <div class="feature-card">
                 <div class="icon">🏢</div>
-                <h3>B2B-кабінет</h3>
-                <p>Окрема реєстрація партнерів з перевіркою компанії та особливими умовами замовлень.</p>
-                <span class="badge-optional">Опційно</span>
+                <h3>{{ _('B2B-кабінет') }}</h3>
+                <p>{{ _('Окрема реєстрація партнерів з перевіркою компанії та особливими умовами замовлень.') }}</p>
+                <span class="badge-optional">{{ _('Опційно') }}</span>
             </div>
         </div>
     </section>
 
     <section id="pricing">
-        <h2>Тарифи</h2>
-        <p class="section-lead">Щомісячна підписка, скасувати можна в будь-який момент з адмінки.</p>
+        <h2>{{ _('Тарифи') }}</h2>
+        <p class="section-lead">{{ _('Щомісячна підписка, скасувати можна в будь-який момент з адмінки.') }}</p>
         <div class="pricing-grid">
             <div class="price-card">
                 <h3>Starter</h3>
-                <div class="price">19€<span>/міс</span></div>
+                <div class="price">19€<span>/{{ _('міс') }}</span></div>
                 <ul>
-                    <li>Вітрина та каталог товарів</li>
-                    <li>ІІ-продавець</li>
-                    <li>Оплата карткою</li>
-                    <li>Самовивіз</li>
+                    <li>{{ _('Вітрина та каталог товарів') }}</li>
+                    <li>{{ _('ІІ-продавець') }}</li>
+                    <li>{{ _('Оплата карткою') }}</li>
+                    <li>{{ _('Самовивіз') }}</li>
                 </ul>
-                <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">Обрати Starter</a>
+                <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">{{ _('Обрати Starter') }}</a>
             </div>
             <div class="price-card featured">
                 <h3>Pro</h3>
-                <div class="price">49€<span>/міс</span></div>
+                <div class="price">49€<span>/{{ _('міс') }}</span></div>
                 <ul>
-                    <li>Все з Starter</li>
-                    <li>Автоматичний блог з SEO</li>
-                    <li>Склад і служби доставки</li>
-                    <li>B2B-кабінет</li>
+                    <li>{{ _('Все з Starter') }}</li>
+                    <li>{{ _('Автоматичний блог з SEO') }}</li>
+                    <li>{{ _('Склад і служби доставки') }}</li>
+                    <li>{{ _('B2B-кабінет') }}</li>
                 </ul>
-                <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">Обрати Pro</a>
+                <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">{{ _('Обрати Pro') }}</a>
             </div>
             <div class="price-card">
                 <h3>Business</h3>
-                <div class="price">99€<span>/міс</span></div>
+                <div class="price">99€<span>/{{ _('міс') }}</span></div>
                 <ul>
-                    <li>Все з Pro</li>
-                    <li>Бухгалтерські звіти й експорт</li>
-                    <li>Пріоритетна підтримка</li>
+                    <li>{{ _('Все з Pro') }}</li>
+                    <li>{{ _('Бухгалтерські звіти й експорт') }}</li>
+                    <li>{{ _('Пріоритетна підтримка') }}</li>
                 </ul>
-                <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">Обрати Business</a>
+                <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">{{ _('Обрати Business') }}</a>
             </div>
         </div>
     </section>
@@ -228,9 +252,9 @@
             <a href="{{ url_for('datenschutz_page') }}">Datenschutz</a>
             <a href="{{ url_for('agb_page') }}">AGB</a>
             <a href="{{ url_for('impressum_page') }}">Impressum</a>
-            <a href="{{ url_for('contacts_page') }}">Контакти</a>
+            <a href="{{ url_for('contacts_page') }}">{{ _('Контакти') }}</a>
         </div>
-        <div>© <span id="year"></span> SmartShop AI. Всі права захищені</div>
+        <div>© <span id="year"></span> SmartShop AI. {{ _('Всі права захищені') }}</div>
     </footer>
 </div>
 

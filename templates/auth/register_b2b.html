@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}B2B Реєстрація - {{ settings.site_name or 'SmartShop' }}{% endblock %}
+{% block title %}{{ _('B2B Реєстрація') }} - {{ settings.site_name or 'SmartShop' }}{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-card auth-card-wide">
         <div class="auth-header">
-            <h1>🏢 B2B Партнерство</h1>
-            <p>Реєстрація для бізнес-клієнтів</p>
+            <h1>🏢 {{ _('B2B Партнерство') }}</h1>
+            <p>{{ _('Реєстрація для бізнес-клієнтів') }}</p>
         </div>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -21,155 +21,155 @@
         <form method="POST" class="auth-form" id="b2bForm">
             <!-- Секція: Дані компанії -->
             <div class="form-section">
-                <h3>📋 Дані компанії</h3>
-                
+                <h3>📋 {{ _('Дані компанії') }}</h3>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="company_name">Назва компанії *</label>
-                        <input type="text" id="company_name" name="company_name" required 
-                               placeholder="ТОВ «Ваша Компанія»" value="{{ request.form.get('company_name', '') }}">
+                        <label for="company_name">{{ _('Назва компанії') }} *</label>
+                        <input type="text" id="company_name" name="company_name" required
+                               placeholder="{{ _('ТОВ «Ваша Компанія»') }}" value="{{ request.form.get('company_name', '') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="legal_name">Юридична назва</label>
-                        <input type="text" id="legal_name" name="legal_name" 
-                               placeholder="Повна юридична назва" value="{{ request.form.get('legal_name', '') }}">
+                        <label for="legal_name">{{ _('Юридична назва') }}</label>
+                        <input type="text" id="legal_name" name="legal_name"
+                               placeholder="{{ _('Повна юридична назва') }}" value="{{ request.form.get('legal_name', '') }}">
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="vat_country">Країна VAT</label>
+                        <label for="vat_country">{{ _('Країна VAT') }}</label>
                         <select id="vat_country" name="vat_country">
-                            <option value="">Оберіть країну</option>
-                            <option value="DE" {% if request.form.get('vat_country') == 'DE' %}selected{% endif %}>🇩🇪 Німеччина (DE)</option>
-                            <option value="AT" {% if request.form.get('vat_country') == 'AT' %}selected{% endif %}>🇦🇹 Австрія (AT)</option>
-                            <option value="PL" {% if request.form.get('vat_country') == 'PL' %}selected{% endif %}>🇵🇱 Польща (PL)</option>
-                            <option value="CZ" {% if request.form.get('vat_country') == 'CZ' %}selected{% endif %}>🇨🇿 Чехія (CZ)</option>
-                            <option value="FR" {% if request.form.get('vat_country') == 'FR' %}selected{% endif %}>🇫🇷 Франція (FR)</option>
-                            <option value="IT" {% if request.form.get('vat_country') == 'IT' %}selected{% endif %}>🇮🇹 Італія (IT)</option>
-                            <option value="ES" {% if request.form.get('vat_country') == 'ES' %}selected{% endif %}>🇪🇸 Іспанія (ES)</option>
-                            <option value="NL" {% if request.form.get('vat_country') == 'NL' %}selected{% endif %}>🇳🇱 Нідерланди (NL)</option>
-                            <option value="BE" {% if request.form.get('vat_country') == 'BE' %}selected{% endif %}>🇧🇪 Бельгія (BE)</option>
-                            <option value="SE" {% if request.form.get('vat_country') == 'SE' %}selected{% endif %}>🇸🇪 Швеція (SE)</option>
+                            <option value="">{{ _('Оберіть країну') }}</option>
+                            <option value="DE" {% if request.form.get('vat_country') == 'DE' %}selected{% endif %}>🇩🇪 {{ _('Німеччина') }} (DE)</option>
+                            <option value="AT" {% if request.form.get('vat_country') == 'AT' %}selected{% endif %}>🇦🇹 {{ _('Австрія') }} (AT)</option>
+                            <option value="PL" {% if request.form.get('vat_country') == 'PL' %}selected{% endif %}>🇵🇱 {{ _('Польща') }} (PL)</option>
+                            <option value="CZ" {% if request.form.get('vat_country') == 'CZ' %}selected{% endif %}>🇨🇿 {{ _('Чехія') }} (CZ)</option>
+                            <option value="FR" {% if request.form.get('vat_country') == 'FR' %}selected{% endif %}>🇫🇷 {{ _('Франція') }} (FR)</option>
+                            <option value="IT" {% if request.form.get('vat_country') == 'IT' %}selected{% endif %}>🇮🇹 {{ _('Італія') }} (IT)</option>
+                            <option value="ES" {% if request.form.get('vat_country') == 'ES' %}selected{% endif %}>🇪🇸 {{ _('Іспанія') }} (ES)</option>
+                            <option value="NL" {% if request.form.get('vat_country') == 'NL' %}selected{% endif %}>🇳🇱 {{ _('Нідерланди') }} (NL)</option>
+                            <option value="BE" {% if request.form.get('vat_country') == 'BE' %}selected{% endif %}>🇧🇪 {{ _('Бельгія') }} (BE)</option>
+                            <option value="SE" {% if request.form.get('vat_country') == 'SE' %}selected{% endif %}>🇸🇪 {{ _('Швеція') }} (SE)</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="vat_number">VAT номер (ПДВ)</label>
+                        <label for="vat_number">{{ _('VAT номер (ПДВ)') }}</label>
                         <div class="input-with-btn">
-                            <input type="text" id="vat_number" name="vat_number" 
+                            <input type="text" id="vat_number" name="vat_number"
                                    placeholder="123456789" value="{{ request.form.get('vat_number', '') }}">
                             <button type="button" class="btn btn-sm btn-check" onclick="checkVAT()">
-                                Перевірити
+                                {{ _('Перевірити') }}
                             </button>
                         </div>
                         <div id="vatStatus" class="vat-status"></div>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="website">Веб-сайт</label>
-                    <input type="url" id="website" name="website" 
+                    <label for="website">{{ _('Веб-сайт') }}</label>
+                    <input type="url" id="website" name="website"
                            placeholder="https://your-company.com" value="{{ request.form.get('website', '') }}">
                 </div>
             </div>
-            
+
             <!-- Секція: Адреса -->
             <div class="form-section">
-                <h3>📍 Адреса</h3>
-                
+                <h3>📍 {{ _('Адреса') }}</h3>
+
                 <div class="form-group">
-                    <label for="address">Адреса</label>
-                    <input type="text" id="address" name="address" 
-                           placeholder="вул. Головна, 1" value="{{ request.form.get('address', '') }}">
+                    <label for="address">{{ _('Адреса') }}</label>
+                    <input type="text" id="address" name="address"
+                           placeholder="{{ _('вул. Головна, 1') }}" value="{{ request.form.get('address', '') }}">
                 </div>
-                
+
                 <div class="form-row three-col">
                     <div class="form-group">
-                        <label for="city">Місто</label>
-                        <input type="text" id="city" name="city" 
-                               placeholder="Київ" value="{{ request.form.get('city', '') }}">
+                        <label for="city">{{ _('Місто') }}</label>
+                        <input type="text" id="city" name="city"
+                               placeholder="{{ _('Київ') }}" value="{{ request.form.get('city', '') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="postal_code">Поштовий індекс</label>
-                        <input type="text" id="postal_code" name="postal_code" 
+                        <label for="postal_code">{{ _('Поштовий індекс') }}</label>
+                        <input type="text" id="postal_code" name="postal_code"
                                placeholder="01001" value="{{ request.form.get('postal_code', '') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="country">Країна</label>
-                        <input type="text" id="country" name="country" 
-                               placeholder="Україна" value="{{ request.form.get('country', '') }}">
+                        <label for="country">{{ _('Країна') }}</label>
+                        <input type="text" id="country" name="country"
+                               placeholder="{{ _('Україна') }}" value="{{ request.form.get('country', '') }}">
                     </div>
                 </div>
             </div>
-            
+
             <!-- Секція: Контактна особа -->
             <div class="form-section">
-                <h3>👤 Контактна особа</h3>
-                
+                <h3>👤 {{ _('Контактна особа') }}</h3>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="first_name">Ім'я *</label>
-                        <input type="text" id="first_name" name="first_name" required 
-                               placeholder="Іван" value="{{ request.form.get('first_name', '') }}">
+                        <label for="first_name">{{ _("Ім'я") }} *</label>
+                        <input type="text" id="first_name" name="first_name" required
+                               placeholder="{{ _('Іван') }}" value="{{ request.form.get('first_name', '') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="last_name">Прізвище *</label>
-                        <input type="text" id="last_name" name="last_name" required 
-                               placeholder="Петренко" value="{{ request.form.get('last_name', '') }}">
+                        <label for="last_name">{{ _('Прізвище') }} *</label>
+                        <input type="text" id="last_name" name="last_name" required
+                               placeholder="{{ _('Петренко') }}" value="{{ request.form.get('last_name', '') }}">
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required 
+                        <input type="email" id="email" name="email" required
                                placeholder="business@company.com" value="{{ request.form.get('email', '') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="phone">Телефон</label>
-                        <input type="tel" id="phone" name="phone" 
+                        <label for="phone">{{ _('Телефон') }}</label>
+                        <input type="tel" id="phone" name="phone"
                                placeholder="+380 XX XXX XX XX" value="{{ request.form.get('phone', '') }}">
                     </div>
                 </div>
             </div>
-            
+
             <!-- Секція: Пароль -->
             <div class="form-section">
-                <h3>🔐 Безпека</h3>
-                
+                <h3>🔐 {{ _('Безпека') }}</h3>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="password">Пароль *</label>
-                        <input type="password" id="password" name="password" required 
-                               placeholder="Мін. 8 символів">
+                        <label for="password">{{ _('Пароль') }} *</label>
+                        <input type="password" id="password" name="password" required
+                               placeholder="{{ _('Мін. 8 символів') }}">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="password_confirm">Підтвердження *</label>
-                        <input type="password" id="password_confirm" name="password_confirm" required 
-                               placeholder="Повторіть пароль">
+                        <label for="password_confirm">{{ _('Підтвердження') }} *</label>
+                        <input type="password" id="password_confirm" name="password_confirm" required
+                               placeholder="{{ _('Повторіть пароль') }}">
                     </div>
                 </div>
             </div>
-            
+
             <div class="form-info">
-                <p>ℹ️ Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії та повідомимо про результат на вказаний email.</p>
+                <p>ℹ️ {{ _('Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії та повідомимо про результат на вказаний email.') }}</p>
             </div>
-            
+
             <button type="submit" class="btn btn-primary btn-block btn-lg">
-                🚀 Подати заявку на партнерство
+                🚀 {{ _('Подати заявку на партнерство') }}
             </button>
         </form>
-        
+
         <div class="auth-footer">
-            <p>Вже є акаунт? <a href="{{ url_for('user_login') }}">Увійти</a></p>
-            <p>Приватний покупець? <a href="{{ url_for('user_register') }}">Звичайна реєстрація</a></p>
+            <p>{{ _('Вже є акаунт?') }} <a href="{{ url_for('user_login') }}">{{ _('Увійти') }}</a></p>
+            <p>{{ _('Приватний покупець?') }} <a href="{{ url_for('user_register') }}">{{ _('Звичайна реєстрація') }}</a></p>
         </div>
     </div>
 </div>

@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}CRM - Алерти{% endblock %}
+{% block title %}CRM - {{ _('Алерти') }}{% endblock %}
 
 {% block content %}
 <div class="alerts-page">
@@ -8,48 +8,48 @@
         <div class="breadcrumb">
             <a href="{{ url_for('admin_crm') }}">← CRM</a>
         </div>
-        <h1>🔔 Алерти верифікації</h1>
+        <h1>🔔 {{ _('Алерти верифікації') }}</h1>
         <div class="header-actions">
-            <button class="btn" onclick="markAllRead()">✓ Позначити прочитаними</button>
+            <button class="btn" onclick="markAllRead()">✓ {{ _('Позначити прочитаними') }}</button>
         </div>
     </div>
-    
+
     <!-- Stats -->
     <div class="alert-stats">
         <div class="stat critical">
             <span class="count">{{ stats.critical }}</span>
-            <span class="label">Критичні</span>
+            <span class="label">{{ _('Критичні') }}</span>
         </div>
         <div class="stat warning">
             <span class="count">{{ stats.warning }}</span>
-            <span class="label">Попередження</span>
+            <span class="label">{{ _('Попередження') }}</span>
         </div>
         <div class="stat info">
             <span class="count">{{ stats.info }}</span>
-            <span class="label">Інформаційні</span>
+            <span class="label">{{ _('Інформаційні') }}</span>
         </div>
         <div class="stat unread">
             <span class="count">{{ stats.unread }}</span>
-            <span class="label">Непрочитані</span>
+            <span class="label">{{ _('Непрочитані') }}</span>
         </div>
     </div>
-    
+
     <!-- Filters -->
     <div class="filters">
         <form method="get" class="filters-form">
             <select name="severity">
-                <option value="">Всі рівні</option>
-                <option value="critical" {% if filter_severity == 'critical' %}selected{% endif %}>Критичні</option>
-                <option value="warning" {% if filter_severity == 'warning' %}selected{% endif %}>Попередження</option>
-                <option value="info" {% if filter_severity == 'info' %}selected{% endif %}>Інформаційні</option>
+                <option value="">{{ _('Всі рівні') }}</option>
+                <option value="critical" {% if filter_severity == 'critical' %}selected{% endif %}>{{ _('Критичні') }}</option>
+                <option value="warning" {% if filter_severity == 'warning' %}selected{% endif %}>{{ _('Попередження') }}</option>
+                <option value="info" {% if filter_severity == 'info' %}selected{% endif %}>{{ _('Інформаційні') }}</option>
             </select>
             <select name="status">
-                <option value="">Всі статуси</option>
-                <option value="unread" {% if filter_status == 'unread' %}selected{% endif %}>Непрочитані</option>
-                <option value="unresolved" {% if filter_status == 'unresolved' %}selected{% endif %}>Невирішені</option>
-                <option value="resolved" {% if filter_status == 'resolved' %}selected{% endif %}>Вирішені</option>
+                <option value="">{{ _('Всі статуси') }}</option>
+                <option value="unread" {% if filter_status == 'unread' %}selected{% endif %}>{{ _('Непрочитані') }}</option>
+                <option value="unresolved" {% if filter_status == 'unresolved' %}selected{% endif %}>{{ _('Невирішені') }}</option>
+                <option value="resolved" {% if filter_status == 'resolved' %}selected{% endif %}>{{ _('Вирішені') }}</option>
             </select>
-            <button type="submit" class="btn">Фільтрувати</button>
+            <button type="submit" class="btn">{{ _('Фільтрувати') }}</button>
         </form>
     </div>
     
@@ -77,9 +77,9 @@
                 {% if alert.is_resolved %}
                 <div class="resolution-info">
                     <small>
-                        ✅ Вирішено {{ alert.resolved_at.strftime('%d.%m.%Y %H:%M') }}
+                        ✅ {{ _('Вирішено') }} {{ alert.resolved_at.strftime('%d.%m.%Y %H:%M') }}
                         {% if alert.resolution_note %}
-                        <br>Коментар: {{ alert.resolution_note }}
+                        <br>{{ _('Коментар:') }} {{ alert.resolution_note }}
                         {% endif %}
                     </small>
                 </div>
@@ -87,10 +87,10 @@
             </div>
             <div class="alert-actions">
                 {% if not alert.is_read %}
-                <button class="btn btn-sm" onclick="markRead({{ alert.id }})" title="Прочитано">👁️</button>
+                <button class="btn btn-sm" onclick="markRead({{ alert.id }})" title="{{ _('Прочитано') }}">👁️</button>
                 {% endif %}
                 {% if not alert.is_resolved %}
-                <button class="btn btn-sm btn-success" onclick="resolveAlert({{ alert.id }})" title="Вирішено">✓</button>
+                <button class="btn btn-sm btn-success" onclick="resolveAlert({{ alert.id }})" title="{{ _('Вирішено') }}">✓</button>
                 {% endif %}
             </div>
         </div>
@@ -98,21 +98,21 @@
         {% if not alerts %}
         <div class="empty-state">
             <span class="icon">🎉</span>
-            <h3>Немає алертів</h3>
-            <p>Все працює добре!</p>
+            <h3>{{ _('Немає алертів') }}</h3>
+            <p>{{ _('Все працює добре!') }}</p>
         </div>
         {% endif %}
     </div>
-    
+
     <!-- Pagination -->
     {% if total_pages > 1 %}
     <div class="pagination">
         {% if page > 1 %}
-        <a href="?page={{ page - 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">← Назад</a>
+        <a href="?page={{ page - 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">← {{ _('Назад') }}</a>
         {% endif %}
-        <span class="page-info">Сторінка {{ page }} з {{ total_pages }}</span>
+        <span class="page-info">{{ _('Сторінка %(page)s з %(total)s') % {'page': page, 'total': total_pages} }}</span>
         {% if page < total_pages %}
-        <a href="?page={{ page + 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">Вперед →</a>
+        <a href="?page={{ page + 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">{{ _('Вперед') }} →</a>
         {% endif %}
     </div>
     {% endif %}
