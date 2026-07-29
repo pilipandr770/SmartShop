@@ -16,203 +16,203 @@ msgstr ""
 
 #: app.py:1088
 msgid "Потрібен вхід в адмін-панель."
-msgstr "Admin panel login required."
+msgstr ""
 
 #: app.py:1374
 #, python-format
 msgid "«%(name)s» додано в кошик."
-msgstr ""%(name)s" added to cart."
+msgstr ""
 
 #: app.py:1405
 msgid "Товар видалено з кошика."
-msgstr "Product removed from cart."
+msgstr ""
 
 #: app.py:1413
 msgid "Кошик очищено."
-msgstr "Cart cleared."
+msgstr ""
 
 #: app.py:1437 app.py:1548
 msgid "Ваш кошик порожній."
-msgstr "Your cart is empty."
+msgstr ""
 
 #: app.py:1454
 msgid "Вкажіть ім'я та телефон."
-msgstr "Please provide name and phone number."
+msgstr ""
 
 #: app.py:1539
 msgid "Stripe не налаштовано. Зверніться до адміністратора."
-msgstr "Stripe is not configured. Please contact the administrator."
+msgstr ""
 
 #: app.py:1543
 msgid "Цей магазин ще не підключив прийом оплат. Зверніться до продавця."
-msgstr "This shop has not yet enabled payment processing. Please contact the seller."
+msgstr ""
 
 #: app.py:1580
 msgid "Не вдалося знайти товари в кошику."
-msgstr "Could not find items in cart."
+msgstr ""
 
 #: app.py:1664
 #, python-format
 msgid "Помилка Stripe: %(error)s"
-msgstr "Stripe error: %(error)s"
+msgstr ""
 
 #: app.py:1772
 msgid "Оплату скасовано. Ви можете спробувати ще раз."
-msgstr "Payment cancelled. You can try again later."
+msgstr ""
 
 #: app.py:1779
 msgid "Stripe not available"
-msgstr "Stripe not available"
+msgstr ""
 
 #: app.py:1793
 msgid "Invalid payload"
-msgstr "Invalid payload"
+msgstr ""
 
 #: app.py:1795
 msgid "Invalid signature"
-msgstr "Invalid signature"
+msgstr ""
 
 #: app.py:1912
 msgid "AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше."
-msgstr "AI chatbot is temporarily unavailable. Please try again later."
+msgstr ""
 
 #: app.py:1920
 msgid "Повідомлення порожнє"
-msgstr "Message is empty"
+msgstr ""
 
 #: app.py:1927
 msgid "Чатбот тимчасово недоступний"
-msgstr "Chatbot is temporarily unavailable"
+msgstr ""
 
 #: app.py:1930
 msgid "Помилка налаштувань чатбота"
-msgstr "Chatbot configuration error"
+msgstr ""
 
 #: app.py:2076
 msgid "Помилка ініціалізації AI клієнта"
-msgstr "AI client initialization error"
+msgstr ""
 
 #: app.py:2080
 msgid "Помилка обробки запиту"
-msgstr "Request processing error"
+msgstr ""
 
 #: app.py:2180
 msgid "Налаштування головної сторінки збережені."
-msgstr "Home page settings saved."
+msgstr ""
 
 #: app.py:2202 app.py:2594
 msgid "Назва і slug категорії обовʼязкові."
-msgstr "Category name and slug are required."
+msgstr ""
 
 #: app.py:2206 app.py:2603
 msgid "Категорія з таким slug уже існує."
-msgstr "A category with this slug already exists."
+msgstr ""
 
 #: app.py:2220
 msgid "Категорія створена."
-msgstr "Category created."
+msgstr ""
 
 #: app.py:2233 app.py:2237
 msgid "Файл не обрано"
-msgstr "No file selected"
+msgstr ""
 
 #: app.py:2331
 msgid "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"
-msgstr "File type not allowed. Allowed: png, jpg, jpeg, gif, webp"
+msgstr ""
 
 #: app.py:2490
 msgid "Товар створено."
-msgstr "Product created."
+msgstr ""
 
 #: app.py:2499
 msgid "Статус товару оновлено."
-msgstr "Product status updated."
+msgstr ""
 
 #: app.py:2513
 msgid "Товар видалено."
-msgstr "Product deleted."
+msgstr ""
 
 #: app.py:2570
 msgid "Товар оновлено."
-msgstr "Product updated."
+msgstr ""
 
 #: app.py:2609
 msgid "Категорія оновлена."
-msgstr "Category updated."
+msgstr ""
 
 #: app.py:2628
 msgid "Категорія видалена. Товари залишились без категорії."
-msgstr "Category deleted. Products are now without a category."
+msgstr ""
 
 #: app.py:2729
 #, python-format
 msgid "📦 Завдання для складу #%(task_number)s створено!"
-msgstr "📦 Warehouse task #%(task_number)s created!"
+msgstr ""
 
 #: app.py:2733
 #, python-format
 msgid "Статус змінено на «%(status)s»."
-msgstr "Status changed to "%(status)s"."
+msgstr ""
 
 #: app.py:2735
 msgid "Невірний статус."
-msgstr "Invalid status."
+msgstr ""
 
 #: app.py:2746
 msgid "Нотатки збережено."
-msgstr "Notes saved."
+msgstr ""
 
 #: app.py:2758
 msgid "Замовлення видалено."
-msgstr "Order deleted."
+msgstr ""
 
 #: app.py:2802
 msgid "Заявку позначено як прочитану."
-msgstr "Request marked as read."
+msgstr ""
 
 #: app.py:2812
 msgid "Заявку видалено."
-msgstr "Request deleted."
+msgstr ""
 
 #: app.py:2821
 msgid "Усі заявки позначено як прочитані."
-msgstr "All requests marked as read."
+msgstr ""
 
 #: app.py:2830
 msgid "Прочитані заявки видалено."
-msgstr "Read requests deleted."
+msgstr ""
 
 #: app.py:2909
 msgid "Пароль має бути мінімум 6 символів."
-msgstr "Password must be at least 6 characters."
+msgstr ""
 
 #: app.py:2911 routes/cabinet.py:177 routes/signup.py:90
 msgid "Паролі не співпадають."
-msgstr "Passwords do not match."
+msgstr ""
 
 #: app.py:2914
 msgid "Пароль адміністратора змінено."
-msgstr "Administrator password changed."
+msgstr ""
 
 #: app.py:2937
 msgid "Налаштування сайту збережено."
-msgstr "Website settings saved."
+msgstr ""
 
 #: app.py:3002
 msgid "Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити»."
-msgstr "Domain saved. Now configure DNS and click "Verify"."
+msgstr ""
 
 #: app.py:3004
 msgid "Власний домен видалено."
-msgstr "Custom domain removed."
+msgstr ""
 
 #: app.py:3009
 msgid "Спочатку вкажіть домен."
-msgstr "Please specify a domain first."
+msgstr ""
 
 #: app.py:3013
 msgid "Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."
-msgstr "Platform has not yet configured domain verification. Please contact support."
+msgstr ""
 
 #: app.py:3028
 #, python-format
@@ -222,16 +222,16 @@ msgstr ""
 #: app.py:3034
 #, python-format
 msgid "Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). Перевірте DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за кілька хвилин."
-msgstr "Domain does not yet point to the platform (currently resolves to: %(resolved)s). Check DNS settings (A record to %(ip)s) and try again in a few minutes."
+msgstr ""
 
 #: app.py:3081
 msgid "Stripe не налаштовано на платформі."
-msgstr "Stripe is not configured on the platform."
+msgstr ""
 
 #: app.py:3101 app.py:3115
 #, python-format
 msgid "Помилка Stripe Connect: %(error)s"
-msgstr "Stripe Connect error: %(error)s"
+msgstr ""
 
 #: app.py:3132
 msgid "✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів."
@@ -239,125 +239,125 @@ msgstr ""
 
 #: app.py:3134
 msgid "Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та спробуйте ще раз."
-msgstr "Stripe registration is not yet complete. Fill in all required data and try again."
+msgstr ""
 
 #: app.py:3136
 #, python-format
 msgid "Не вдалося перевірити статус Stripe: %(error)s"
-msgstr "Failed to verify Stripe status: %(error)s"
+msgstr ""
 
 #: app.py:3148
 msgid "Stripe-акаунт відв'язано від магазину."
-msgstr "Stripe account has been disconnected from the shop."
+msgstr ""
 
 #: app.py:3239
 msgid "Підтвердіть, що розумієте наслідки видалення."
-msgstr "Confirm that you understand the consequences of deletion."
+msgstr ""
 
 #: app.py:3242
 msgid "Невірний пароль."
-msgstr "Incorrect password."
+msgstr ""
 
 #: app.py:3249
 msgid "Ваш акаунт і магазин видалено. Дякуємо, що були з нами."
-msgstr "Your account and shop have been deleted. Thank you for being with us."
+msgstr ""
 
 #: app.py:3268
 msgid "Налаштування самовивозу збережено."
-msgstr "Pickup settings saved."
+msgstr ""
 
 #: app.py:3290
 msgid "Невідома служба доставки."
-msgstr "Unknown shipping service."
+msgstr ""
 
 #: app.py:3294
 #, python-format
 msgid "%(carrier)s вже налаштовано для цього магазину."
-msgstr "%(carrier)s is already configured for this shop."
+msgstr ""
 
 #: app.py:3327
 #, python-format
 msgid "%(carrier)s налаштовано."
-msgstr "%(carrier)s is configured."
+msgstr ""
 
 #: app.py:3361
 #, python-format
 msgid "%(carrier)s оновлено."
-msgstr "%(carrier)s has been updated."
+msgstr ""
 
 #: app.py:3374
 msgid "Обліковий запис видалено."
-msgstr "Account deleted."
+msgstr ""
 
 #: app.py:3392
 msgid "Заповніть обов'язкові поля"
-msgstr "Fill in required fields"
+msgstr ""
 
 #: app.py:3393
 msgid "Заповніть обов'язкові поля: ім'я, email, повідомлення."
-msgstr "Fill in required fields: name, email, message."
+msgstr ""
 
 #: app.py:3410
 msgid "Дякуємо! Ваше повідомлення надіслано."
-msgstr "Thank you! Your message has been sent."
+msgstr ""
 
 #: app.py:3434 routes/auth.py:31
 msgid "Ваш акаунт деактивовано. Зверніться до підтримки."
-msgstr "Your account has been deactivated. Please contact support."
+msgstr ""
 
 #: app.py:3441 routes/auth.py:37 templates/cabinet/b2c/dashboard.html:37
 #: templates/email/registration_welcome.html:6
 #, python-format
 msgid "Вітаємо, %(name)s!"
-msgstr "Welcome, %(name)s!"
+msgstr ""
 
 #: app.py:3456 routes/auth.py:49
 msgid "Невірний email або пароль."
-msgstr "Invalid email or password."
+msgstr ""
 
 #: app.py:3467 routes/auth.py:59
 msgid "Ви успішно вийшли з системи."
-msgstr "You have successfully logged out."
+msgstr ""
 
 #: app.py:3487 app.py:3563 routes/auth.py:81 routes/auth.py:156
 msgid "Email обов'язковий"
-msgstr "Email is required"
+msgstr ""
 
 #: app.py:3489 app.py:3565 routes/auth.py:83 routes/auth.py:158
 msgid "Користувач з таким email вже існує"
-msgstr "A user with this email already exists"
+msgstr ""
 
 #: app.py:3492 app.py:3568 routes/auth.py:86 routes/auth.py:161
 msgid "Пароль обов'язковий"
-msgstr "Password is required"
+msgstr ""
 
 #: app.py:3494 routes/auth.py:88
 msgid "Пароль має бути не менше 6 символів"
-msgstr "Password must be at least 6 characters"
+msgstr ""
 
 #: app.py:3496 app.py:3572 routes/auth.py:90 routes/auth.py:165
 msgid "Паролі не співпадають"
-msgstr "Passwords do not match"
+msgstr ""
 
 #: app.py:3525 routes/auth.py:109
 msgid "Реєстрація успішна! Ласкаво просимо!"
-msgstr "Registration successful! Welcome!"
+msgstr ""
 
 #: app.py:3539 routes/auth.py:125
 msgid "B2B реєстрація тимчасово закрита."
-msgstr "B2B registration is temporarily closed."
+msgstr ""
 
 #: app.py:3570 routes/auth.py:163
 msgid "Пароль має бути не менше 8 символів"
-msgstr "Password must be at least 8 characters"
+msgstr ""
 
 #: app.py:3575 routes/auth.py:168
 msgid "Назва компанії обов'язкова"
-msgstr "Company name is required"
+msgstr ""
 
 #: app.py:3578 routes/auth.py:171
 msgid "Ім'я та прізвище контактної особи обов'язкові"
-msgstr "Contact person's first and last name are required"
+msgstr ""
 
 #: app.py:3596
 msgid "✅ VAT номер підтверджено!"
@@ -383,7 +383,7 @@ msgstr ""
 
 #: app.py:3672
 msgid "VAT номер обов'язковий"
-msgstr "VAT number is required"
+msgstr ""
 
 #: app.py:3810
 msgid "Дані компанії оновлено!"
@@ -391,7 +391,7 @@ msgstr ""
 
 #: app.py:4087
 msgid "Налаштування оновлено!"
-msgstr "Settings updated!"
+msgstr ""
 
 #: app.py:4339
 msgid "✅ Завдання взято в роботу"
@@ -720,7 +720,7 @@ msgstr ""
 
 #: templates/cart.html:2 templates/cart.html:127
 msgid "Кошик"
-msgstr "Cart"
+msgstr ""
 
 #: templates/admin/order_detail.html:105
 #: templates/admin/warehouse/print_label.html:117
@@ -735,7 +735,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_detail.html:62
 #: templates/cart.html:135
 msgid "Ціна"
-msgstr "Price"
+msgstr ""
 
 #: templates/admin/order_detail.html:107
 #: templates/admin/warehouse/replenishment_detail.html:61
@@ -743,7 +743,7 @@ msgstr "Price"
 #: templates/admin/warehouse/stock_history.html:23
 #: templates/admin/warehouse/task_detail.html:116 templates/cart.html:136
 msgid "Кількість"
-msgstr "Quantity"
+msgstr ""
 
 #: templates/admin/dashboard.html:40 templates/admin/order_detail.html:48
 #: templates/admin/order_detail.html:108 templates/admin/orders.html:81
@@ -754,7 +754,7 @@ msgstr "Quantity"
 #: templates/admin/warehouse/replenishment_new.html:74
 #: templates/cabinet/b2b/orders.html:109 templates/cart.html:137
 msgid "Сума"
-msgstr "Amount"
+msgstr ""
 
 #: templates/cabinet/b2b/orders.html:97 templates/cart.html:179
 msgid "Загальна сума"
@@ -785,11 +785,11 @@ msgstr ""
 #: templates/pages/blog_post.html:298 templates/pages/contacts.html:207
 #: templates/pages/datenschutz.html:22 templates/pages/impressum.html:22
 msgid "Головна"
-msgstr "Home"
+msgstr ""
 
 #: templates/category.html:10 templates/platform_admin/dashboard.html:111
 msgid "Магазин"
-msgstr "Shop"
+msgstr ""
 
 #: templates/category.html:26
 msgid "Усі"
@@ -799,7 +799,7 @@ msgstr ""
 #: templates/admin/warehouse/expenses.html:126
 #: templates/admin/warehouse/replenishment.html:146 templates/category.html:57
 msgid "Назад"
-msgstr "Back"
+msgstr ""
 
 #: templates/admin/warehouse/expenses.html:132
 #: templates/admin/warehouse/replenishment.html:152 templates/category.html:73
@@ -825,7 +825,7 @@ msgstr ""
 #: templates/cabinet/b2b/company.html:166 templates/checkout_address.html:24
 #: templates/checkout_shipping.html:24 templates/pages/contacts.html:234
 msgid "Адреса"
-msgstr "Address"
+msgstr ""
 
 #: templates/admin/accounting.html:37 templates/admin/layout.html:340
 #: templates/admin/warehouse/expense_add.html:19
@@ -852,7 +852,7 @@ msgstr ""
 #: templates/cabinet/b2b/company.html:197 templates/checkout_address.html:45
 #: templates/pages/contacts.html:227
 msgid "Телефон"
-msgstr "Phone"
+msgstr ""
 
 #: templates/checkout_address.html:56
 msgid "Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, її можна не заповнювати."
@@ -868,14 +868,14 @@ msgstr ""
 #: templates/auth/register_b2b.html:90 templates/cabinet/b2b/company.html:173
 #: templates/checkout_address.html:66
 msgid "Місто"
-msgstr "City"
+msgstr ""
 
 #: templates/admin/settings.html:391
 #: templates/admin/shipping_account_form.html:66
 #: templates/auth/register_b2b.html:96 templates/cabinet/b2b/company.html:179
 #: templates/checkout_address.html:70
 msgid "Поштовий індекс"
-msgstr "Postal Code"
+msgstr ""
 
 #: templates/checkout_address.html:76
 msgid "Країна (код ISO2, напр. DE, UA, PL)"
@@ -1425,7 +1425,7 @@ msgstr ""
 
 #: templates/admin/blocks.html:32 templates/admin/settings.html:99
 msgid "Про нас"
-msgstr "About Us"
+msgstr ""
 
 #: templates/admin/blocks.html:35
 msgid "Текст"
@@ -1480,7 +1480,7 @@ msgstr ""
 #: templates/admin/blog.html:2 templates/admin/blog.html:7
 #: templates/admin/layout.html:359 templates/pages/blog_post.html:300
 msgid "Блог"
-msgstr "Blog"
+msgstr ""
 
 #: templates/admin/blog.html:8
 msgid "Управління публікаціями та контент-планом"
@@ -1548,7 +1548,7 @@ msgstr ""
 #: templates/cabinet/b2b/orders.html:110
 #: templates/platform_admin/dashboard.html:116
 msgid "Статус"
-msgstr "Status"
+msgstr ""
 
 #: templates/admin/blog.html:54 templates/admin/blog_edit.html:164
 msgid "Автор"
@@ -1561,7 +1561,7 @@ msgstr ""
 #: templates/admin/warehouse/stock_history.html:21
 #: templates/cabinet/b2b/orders.html:107
 msgid "Дата"
-msgstr "Date"
+msgstr ""
 
 #: templates/admin/blog.html:56
 msgid "Перегляди"
@@ -1602,12 +1602,12 @@ msgstr ""
 #: templates/admin/shipping_settings.html:40
 #: templates/cabinet/b2b/dashboard.html:171
 msgid "Редагувати"
-msgstr "Edit"
+msgstr ""
 
 #: templates/admin/blog.html:119 templates/admin/categories.html:114
 #: templates/admin/contacts.html:92
 msgid "Видалити"
-msgstr "Delete"
+msgstr ""
 
 #: templates/admin/blog.html:119
 msgid "Видалити цю статтю?"
@@ -1635,7 +1635,7 @@ msgstr ""
 #: templates/admin/crm.html:519 templates/admin/crm.html:534
 #: templates/admin/crm_partner.html:244
 msgid "Помилка"
-msgstr "Error"
+msgstr ""
 
 #: templates/admin/blog_edit.html:2
 msgid "Редагування"
@@ -1715,7 +1715,7 @@ msgstr ""
 #: templates/admin/warehouse/expense_add.html:70
 #: templates/admin/warehouse/stock.html:181
 msgid "Зберегти"
-msgstr "Save"
+msgstr ""
 
 #: templates/admin/blog_edit.html:178
 msgid "Автопереклад (EN + DE)"
@@ -2031,7 +2031,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_new.html:93
 #: templates/admin/warehouse/stock.html:180
 msgid "Скасувати"
-msgstr "Cancel"
+msgstr ""
 
 #: templates/admin/category_edit.html:78 templates/admin/delete_account.html:19
 msgid "Небезпечна зона"
@@ -2053,7 +2053,7 @@ msgstr ""
 #: templates/pages/about.html:165 templates/pages/contacts.html:2
 #: templates/pages/contacts.html:209 templates/pages/landing.html:255
 msgid "Контакти"
-msgstr "Contacts"
+msgstr ""
 
 #: templates/admin/contacts.html:5
 msgid "Заявки з контактної форми"
@@ -2231,11 +2231,11 @@ msgstr ""
 #: templates/auth/register_b2b.html:102 templates/cabinet/b2b/company.html:129
 #: templates/cabinet/b2b/dashboard.html:188
 msgid "Країна"
-msgstr "Country"
+msgstr ""
 
 #: templates/admin/crm.html:110
 msgid "Пошук"
-msgstr "Search"
+msgstr ""
 
 #: templates/admin/crm.html:111
 msgid "Назва, VAT, домен..."
@@ -2294,7 +2294,7 @@ msgstr ""
 #: templates/admin/crm.html:212
 #: templates/admin/warehouse/replenishment_detail.html:145
 msgid "Підтвердити"
-msgstr "Confirm"
+msgstr ""
 
 #: templates/admin/crm.html:215 templates/admin/crm_partner.html:276
 msgid "Відхилити"
@@ -2306,7 +2306,7 @@ msgstr ""
 
 #: templates/admin/crm.html:242 templates/admin/crm_alerts.html:115
 msgid "Вперед"
-msgstr "Next"
+msgstr ""
 
 #: templates/admin/crm.html:475
 msgid "Запустити перевірку партнера?"
@@ -2363,7 +2363,7 @@ msgstr ""
 #: templates/admin/crm_alerts.html:25 templates/admin/crm_alerts.html:43
 #: templates/email/crm_alert.html:17
 msgid "Попередження"
-msgstr "Warning"
+msgstr ""
 
 #: templates/admin/crm_alerts.html:29 templates/admin/crm_alerts.html:44
 msgid "Інформаційні"
@@ -2582,7 +2582,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_detail.html:55
 #: templates/cabinet/b2b/orders.html:108
 msgid "Товари"
-msgstr "Products"
+msgstr ""
 
 #: templates/admin/dashboard.html:10
 msgid "Активні позиції в каталозі"
@@ -2601,7 +2601,7 @@ msgstr ""
 #: templates/cabinet/b2b/company.html:21
 #: templates/cabinet/b2b/dashboard.html:33 templates/cabinet/b2b/orders.html:21
 msgid "Замовлення"
-msgstr "Orders"
+msgstr ""
 
 #: templates/admin/dashboard.html:20
 msgid "Загалом у системі"
@@ -2816,7 +2816,7 @@ msgstr ""
 #: templates/admin/domain_settings.html:54 templates/admin/order_detail.html:67
 #: templates/auth/register.html:24 templates/auth/register_b2b.html:115
 msgid "Ім'я"
-msgstr "Name"
+msgstr ""
 
 #: templates/admin/domain_settings.html:54 templates/admin/product_edit.html:79
 #: templates/admin/products.html:92 templates/admin/settings.html:43
@@ -2904,7 +2904,7 @@ msgstr ""
 
 #: templates/admin/layout.html:377
 msgid "Налаштування"
-msgstr "Settings"
+msgstr ""
 
 #: templates/admin/layout.html:383 templates/admin/payments_settings.html:5
 msgid "Прийом оплат"
@@ -2969,7 +2969,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_detail.html:197
 #: templates/email/crm_alert.html:22
 msgid "Інформація"
-msgstr "Information"
+msgstr ""
 
 #: templates/admin/order_detail.html:20
 msgid "ID замовлення"
@@ -3349,7 +3349,7 @@ msgstr ""
 
 #: templates/admin/settings.html:40 templates/admin/settings.html:61
 msgid "Завантажити"
-msgstr "Download"
+msgstr ""
 
 #: templates/admin/settings.html:50 templates/admin/settings.html:54
 msgid "Фавікон"
@@ -4675,7 +4675,7 @@ msgstr ""
 
 #: templates/auth/login.html:3 templates/auth/login.html:9
 msgid "Вхід"
-msgstr "Login"
+msgstr ""
 
 #: templates/auth/login.html:10
 msgid "Увійдіть до свого акаунту"
@@ -4692,7 +4692,7 @@ msgstr ""
 #: templates/auth/login.html:50 templates/auth/register.html:3
 #: templates/auth/register.html:9
 msgid "Реєстрація"
-msgstr "Register"
+msgstr ""
 
 #: templates/auth/login.html:53 templates/auth/register_b2b.html:9
 msgid "B2B Партнерство"
@@ -5008,7 +5008,7 @@ msgstr ""
 #: templates/cabinet/b2b/dashboard.html:48
 #: templates/cabinet/b2c/dashboard.html:24
 msgid "Профіль"
-msgstr "Profile"
+msgstr ""
 
 #: templates/cabinet/b2b/dashboard.html:59
 #, python-format
