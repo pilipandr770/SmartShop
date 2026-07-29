@@ -1,0 +1,47 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Видалення акаунту - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>⚠️ Видалення акаунту</h1>
+    <p class="page-subtitle">Остаточне видалення вашого магазину «{{ store.name }}» разом з підпискою.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card" style="margin-bottom: 2rem; border: 1px solid rgba(239,68,68,0.4);">
+    <div class="card-header">
+        <h3>Небезпечна зона</h3>
+    </div>
+    <div class="form-section" style="padding: 1.5rem;">
+        <p style="color: var(--text-muted);">Після підтвердження:</p>
+        <ul style="color: var(--text-muted); line-height: 1.8;">
+            <li>Ваша Stripe-підписка на платформу буде негайно скасована.</li>
+            <li>Магазин перестане бути доступним за поточною адресою та власним доменом.</li>
+            <li>Персональні дані (ваші, клієнтів, партнерів) будуть знеособлені.</li>
+            <li>Замовлення та рахунки зберігаються знеособленими для податкового обліку.</li>
+            <li>Дію неможливо скасувати.</li>
+        </ul>
+
+        <form method="POST" style="margin-top: 1.5rem;">
+            <div class="form-group">
+                <label for="password">Підтвердіть паролем</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;">
+                <input type="checkbox" id="confirm" name="confirm" style="width:auto;">
+                <label for="confirm" style="margin:0;">Я розумію, що це незворотньо, і хочу видалити акаунт та магазин.</label>
+            </div>
+            <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('Остаточно видалити магазин «{{ store.name }}»? Це незворотньо.');">
+                🗑️ Видалити акаунт назавжди
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

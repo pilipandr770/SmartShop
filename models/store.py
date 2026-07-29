@@ -63,6 +63,14 @@ class Store(db.Model):
     stripe_connect_charges_enabled = db.Column(db.Boolean, default=False)
     stripe_connect_onboarded_at = db.Column(db.DateTime, nullable=True)
 
+    # Видалення акаунту власником (GDPR "право на забуття"). Магазин НЕ
+    # видаляється фізично з БД - фінансові записи (Order) мають зберігатися
+    # знеособленими для податкової звітності. slug при видаленні
+    # рандомізується, щоб оригінальна адреса одразу звільнилася для нової
+    # реєстрації - тому is_deleted не потрібен у slug_is_available.
+    is_deleted = db.Column(db.Boolean, default=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -89,7 +97,7 @@ class Store(db.Model):
     def get_by_slug(slug):
         if not slug:
             return None
-        return Store.query.filter_by(slug=slug.lower().strip()).first()
+        return Store.query.filter_by(slug=slug.lower().strip(), is_deleted=False).first()
 
     @staticmethod
     def slug_is_available(slug):
@@ -103,4 +111,5 @@ class Store(db.Model):
         return Store.query.filter_by(
             custom_domain=domain.lower().strip(),
             custom_domain_verified=True,
+            is_deleted=False,
         ).first()

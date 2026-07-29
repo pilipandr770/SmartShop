@@ -402,7 +402,7 @@ def create_app():
         if store is None:
             # Немає piддомену (або магазин не знайдено) - дефолтний магазин
             # (Store #1, тобто той, що існував до впровадження multi-tenancy).
-            store = Store.query.order_by(Store.id.asc()).first()
+            store = Store.query.filter_by(is_deleted=False).order_by(Store.id.asc()).first()
 
         return store, is_platform_root
 
@@ -3145,6 +3145,109 @@ def create_app():
         db.session.commit()
         flash("Stripe-акаунт відв'язано від магазину.", "info")
         return redirect(url_for("admin_payments_settings"))
+
+    # ----- АДМІНКА: ВИДАЛЕННЯ АКАУНТУ (GDPR "право на забуття") -----
+    # Магазин фізично НЕ видаляється з БД - фінансові записи (замовлення)
+    # мають зберігатись знеособленими для податкової звітності (GDPR ст.17.3
+    # прямо дозволяє цей виняток). Знеособлюємо персональні дані клієнтів і
+    # власника, скасовуємо підписку, звільняємо slug/домен, ховаємо магазин
+    # від резолюції (is_deleted) - фактично це остаточне й незворотне
+    # відключення магазину від платформи.
+
+    def _delete_store_account(store):
+        from models.shipping import CarrierAccount
+        from models.order import Order
+        from models.company import Company
+        from models.user import User
+        from models.store import StoreSubscriptionStatus
+
+        if store.stripe_subscription_id and STRIPE_AVAILABLE and app.config["STRIPE_SECRET_KEY"]:
+            try:
+                stripe.Subscription.delete(store.stripe_subscription_id)
+            except stripe.error.StripeError as e:
+                app.logger.warning(f"Не вдалося скасувати Stripe-підписку магазину #{store.id}: {e}")
+
+        if store.custom_domain:
+            _remove_custom_domain_router(store.id)
+
+        # Знеособлюємо замовлення - суми/статуси/номери лишаються (податковий облік).
+        Order.query.filter_by(store_id=store.id).update({
+            Order.customer_name: None,
+            Order.customer_email: None,
+            Order.customer_phone: None,
+            Order.shipping_address: None,
+            Order.shipping_city: None,
+            Order.shipping_postal_code: None,
+        }, synchronize_session=False)
+
+        # Знеособлюємо контактну особу B2B-партнерів - юрдані (VAT, назва) лишаються.
+        Company.query.filter_by(store_id=store.id).update({
+            Company.contact_person: None,
+            Company.contact_email: None,
+            Company.contact_phone: None,
+            Company.address: None,
+            Company.website: None,
+            Company.domain: None,
+            Company.whois_data: None,
+        }, synchronize_session=False)
+
+        # Облікові дані перевізників (API-ключі) - видаляємо повністю, це секрети.
+        CarrierAccount.query.filter_by(store_id=store.id).delete(synchronize_session=False)
+
+        # Знеособлюємо усіх користувачів магазину (власник + клієнти/менеджери).
+        user_ids = {store.owner_user_id}
+        user_ids.update(
+            uid for (uid,) in db.session.query(User.id).filter_by(store_id=store.id).all()
+        )
+        for user in User.query.filter(User.id.in_(user_ids)).all():
+            user.email = f"deleted-user-{user.id}@deleted.local"
+            user.set_password(uuid.uuid4().hex)
+            user.first_name = None
+            user.last_name = None
+            user.phone = None
+
+        store.is_deleted = True
+        store.deleted_at = datetime.utcnow()
+        store.is_active = False
+        store.name = f"Видалений магазин #{store.id}"
+        store.slug = f"deleted-{store.id}-{uuid.uuid4().hex[:8]}"
+        store.custom_domain = None
+        store.custom_domain_verified = False
+        store.custom_domain_verified_at = None
+        store.stripe_customer_id = None
+        store.stripe_subscription_id = None
+        store.stripe_connect_account_id = None
+        store.stripe_connect_charges_enabled = False
+        store.subscription_status = StoreSubscriptionStatus.CANCELED
+
+        db.session.commit()
+
+    @app.route("/admin/settings/account", methods=["GET", "POST"])
+    @admin_required
+    def admin_delete_account():
+        """Самостійне видалення акаунту-магазину власником (GDPR)."""
+        store = g.store
+        if current_user.id != store.owner_user_id:
+            abort(403)
+
+        if request.method == "POST":
+            password = request.form.get("password", "")
+            confirm = request.form.get("confirm") == "on"
+            if not confirm:
+                flash("Підтвердіть, що розумієте наслідки видалення.", "danger")
+                return redirect(url_for("admin_delete_account"))
+            if not current_user.check_password(password):
+                flash("Невірний пароль.", "danger")
+                return redirect(url_for("admin_delete_account"))
+
+            _delete_store_account(store)
+
+            from flask_login import logout_user as flask_logout_user
+            flask_logout_user()
+            flash("Ваш акаунт і магазин видалено. Дякуємо, що були з нами.", "info")
+            return redirect(url_for("index"))
+
+        return render_template("admin/delete_account.html", store=store)
 
     # ----- АДМІНКА: НАЛАШТУВАННЯ ДОСТАВКИ (DHL/UPS) -----
 
