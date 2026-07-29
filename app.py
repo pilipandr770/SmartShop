@@ -1539,6 +1539,10 @@ def create_app():
             flash("Stripe не налаштовано. Зверніться до адміністратора.", "danger")
             return redirect(url_for("cart_page"))
 
+        if not g.store.can_accept_payments:
+            flash("Цей магазин ще не підключив прийом оплат. Зверніться до продавця.", "danger")
+            return redirect(url_for("cart_page"))
+
         cart = get_cart()
         if not cart:
             flash("Ваш кошик порожній.", "warning")
@@ -1628,13 +1632,19 @@ def create_app():
                 )
                 db.session.add(order_item)
 
-            # Створюємо Stripe Checkout сесію
+            # Створюємо Stripe Checkout сесію. Гроші клієнта йдуть напряму
+            # власнику магазину через destination charge (transfer_data) -
+            # платформа лишається лише посередником Checkout-сесії й не
+            # утримує кошти на своєму рахунку та не бере комісії.
             checkout_session = stripe.checkout.Session.create(
                 payment_method_types=["card"],
                 line_items=line_items,
                 mode="payment",
                 success_url=url_for("checkout_success", _external=True) + "?session_id={CHECKOUT_SESSION_ID}",
                 cancel_url=url_for("checkout_cancel", _external=True),
+                payment_intent_data={
+                    "transfer_data": {"destination": g.store.stripe_connect_account_id},
+                },
                 metadata={
                     "order_id": str(order.id),
                     "store_id": str(g.store.id),
@@ -3027,6 +3037,114 @@ def create_app():
                 return redirect(url_for("admin_domain_settings"))
 
         return render_template("admin/domain_settings.html", store=store, platform_ip=platform_ip)
+
+    # ----- АДМІНКА: STRIPE CONNECT (ПРИЙОМ ОПЛАТ ВІД КЛІЄНТІВ МАГАЗИНУ) -----
+    # На відміну від stripe_customer_id/stripe_subscription_id (це підписка
+    # МАГАЗИНУ на платформу), тут йдеться про власний Stripe Express-акаунт
+    # магазину, підключений через Connect. Оплати клієнтів магазину проводяться
+    # destination charge (checkout() нижче передає transfer_data.destination) -
+    # кошти йдуть напряму власнику магазину, платформа їх не утримує і не бере
+    # комісії.
+
+    STRIPE_CONNECT_COUNTRIES = [
+        ("DE", "Німеччина"), ("AT", "Австрія"), ("FR", "Франція"),
+        ("NL", "Нідерланди"), ("ES", "Іспанія"), ("IT", "Італія"),
+        ("PL", "Польща"), ("GB", "Велика Британія"), ("US", "США"),
+    ]
+
+    def _create_connect_account_link(store):
+        return stripe.AccountLink.create(
+            account=store.stripe_connect_account_id,
+            refresh_url=url_for("admin_payments_refresh", _external=True),
+            return_url=url_for("admin_payments_return", _external=True),
+            type="account_onboarding",
+        )
+
+    @app.route("/admin/settings/payments", methods=["GET"])
+    @admin_required
+    def admin_payments_settings():
+        """Підключення Stripe Connect для прийому оплат від клієнтів магазину."""
+        return render_template(
+            "admin/payments_settings.html",
+            store=g.store,
+            countries=STRIPE_CONNECT_COUNTRIES,
+            stripe_configured=STRIPE_AVAILABLE and bool(app.config["STRIPE_SECRET_KEY"]),
+        )
+
+    @app.route("/admin/settings/payments/connect", methods=["POST"])
+    @admin_required
+    def admin_payments_connect():
+        store = g.store
+        if not STRIPE_AVAILABLE or not app.config["STRIPE_SECRET_KEY"]:
+            flash("Stripe не налаштовано на платформі.", "danger")
+            return redirect(url_for("admin_payments_settings"))
+
+        country = (request.form.get("country") or "DE").strip().upper()
+
+        try:
+            if not store.stripe_connect_account_id:
+                account = stripe.Account.create(
+                    type="express",
+                    country=country,
+                    email=current_user.email,
+                    capabilities={"transfers": {"requested": True}},
+                    business_profile={"name": store.name} if store.name else None,
+                )
+                store.stripe_connect_account_id = account.id
+                db.session.commit()
+
+            account_link = _create_connect_account_link(store)
+            return redirect(account_link.url)
+        except stripe.error.StripeError as e:
+            flash(f"Помилка Stripe Connect: {e}", "danger")
+            return redirect(url_for("admin_payments_settings"))
+
+    @app.route("/admin/settings/payments/refresh")
+    @admin_required
+    def admin_payments_refresh():
+        """Stripe перенаправляє сюди, якщо посилання на онбординг застаріло."""
+        store = g.store
+        if not store.stripe_connect_account_id:
+            return redirect(url_for("admin_payments_settings"))
+        try:
+            account_link = _create_connect_account_link(store)
+            return redirect(account_link.url)
+        except stripe.error.StripeError as e:
+            flash(f"Помилка Stripe Connect: {e}", "danger")
+            return redirect(url_for("admin_payments_settings"))
+
+    @app.route("/admin/settings/payments/return")
+    @admin_required
+    def admin_payments_return():
+        """Stripe перенаправляє сюди після (спроби) завершення онбордингу."""
+        store = g.store
+        if store.stripe_connect_account_id and STRIPE_AVAILABLE and app.config["STRIPE_SECRET_KEY"]:
+            try:
+                account = stripe.Account.retrieve(store.stripe_connect_account_id)
+                transfers_active = (account.get("capabilities") or {}).get("transfers") == "active"
+                store.stripe_connect_charges_enabled = bool(transfers_active)
+                if transfers_active and not store.stripe_connect_onboarded_at:
+                    store.stripe_connect_onboarded_at = datetime.utcnow()
+                db.session.commit()
+                if transfers_active:
+                    flash("✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів.", "success")
+                else:
+                    flash("Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та спробуйте ще раз.", "warning")
+            except stripe.error.StripeError as e:
+                flash(f"Не вдалося перевірити статус Stripe: {e}", "danger")
+        return redirect(url_for("admin_payments_settings"))
+
+    @app.route("/admin/settings/payments/reset", methods=["POST"])
+    @admin_required
+    def admin_payments_reset():
+        """Відв'язати поточний Connect-акаунт від магазину (сам акаунт у Stripe не видаляється)."""
+        store = g.store
+        store.stripe_connect_account_id = None
+        store.stripe_connect_charges_enabled = False
+        store.stripe_connect_onboarded_at = None
+        db.session.commit()
+        flash("Stripe-акаунт відв'язано від магазину.", "info")
+        return redirect(url_for("admin_payments_settings"))
 
     # ----- АДМІНКА: НАЛАШТУВАННЯ ДОСТАВКИ (DHL/UPS) -----
 

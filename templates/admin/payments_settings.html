@@ -1,0 +1,87 @@
+{% extends 'admin/layout.html' %}
+{% block title %}Прийом оплат - Адмін панель{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>💳 Прийом оплат</h1>
+    <p class="page-subtitle">Підключіть Stripe, щоб приймати оплати карткою від своїх клієнтів напряму на свій рахунок.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>Stripe Connect</h3>
+    </div>
+    <div class="form-section" style="padding: 1.5rem;">
+
+        {% if not stripe_configured %}
+            <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 0.6rem; padding: 1rem;">
+                Stripe ще не налаштовано на платформі. Зверніться до підтримки.
+            </div>
+
+        {% elif store.can_accept_payments %}
+            <p>
+                Статус:
+                <span style="color:#22c55e; font-weight:600;">✅ Підключено та активно</span>
+                <span style="color: var(--text-muted); font-size: 0.85rem;">
+                    ({{ store.stripe_connect_onboarded_at.strftime("%Y-%m-%d %H:%M") if store.stripe_connect_onboarded_at else '' }})
+                </span>
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Оплати від ваших клієнтів надходять напряму на ваш Stripe-рахунок
+                (<code>{{ store.stripe_connect_account_id }}</code>). Платформа не бере жодної комісії з продажів.
+            </p>
+
+            <form method="POST" action="{{ url_for('admin_payments_connect') }}" style="display:inline;">
+                <input type="hidden" name="country" value="DE">
+                <button type="submit" class="btn">🔄 Керувати в Stripe / оновити дані</button>
+            </form>
+            <form method="POST" action="{{ url_for('admin_payments_reset') }}" style="display:inline;"
+                  onsubmit="return confirm('Відв\'язати Stripe-акаунт від магазину? Клієнти не зможуть оформити замовлення, доки ви не підключите новий.');">
+                <button type="submit" class="btn btn-danger">Відв'язати акаунт</button>
+            </form>
+
+        {% else %}
+            {% if store.stripe_connect_account_id %}
+                <p>
+                    Статус:
+                    <span style="color:#f59e0b; font-weight:600;">⏳ Реєстрацію в Stripe не завершено</span>
+                </p>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    Ви вже почали підключення Stripe, але не завершили заповнення даних. Продовжіть реєстрацію.
+                </p>
+                <form method="POST" action="{{ url_for('admin_payments_connect') }}">
+                    <input type="hidden" name="country" value="DE">
+                    <button type="submit" class="btn btn-primary">Продовжити реєстрацію в Stripe</button>
+                </form>
+            {% else %}
+                <p style="color: var(--text-muted);">
+                    Без підключеного Stripe клієнти не зможуть оплатити замовлення у вашому магазині
+                    (кнопка «Оформити замовлення» буде показувати помилку).
+                </p>
+                <form method="POST" action="{{ url_for('admin_payments_connect') }}">
+                    <div class="form-group">
+                        <label for="country">Країна вашого бізнесу</label>
+                        <select id="country" name="country">
+                            {% for code, label in countries %}
+                            <option value="{{ code }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">🔗 Підключити Stripe</button>
+                </form>
+                <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">
+                    Вас перенаправить на сторінку Stripe для короткої реєстрації (email, банківські реквізити).
+                    Після завершення ви повернетесь сюди автоматично.
+                </p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

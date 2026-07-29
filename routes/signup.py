@@ -3,6 +3,7 @@ SaaS-реєстрація: створення нового Store (магазин
 """
 import os
 import re
+from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, current_user
@@ -10,6 +11,8 @@ from flask_login import login_user, current_user
 from extensions import db
 from models.user import User, UserRole
 from models.store import Store, StoreSubscriptionStatus, PLAN_CHOICES, DEFAULT_PLAN
+
+TRIAL_PERIOD_DAYS = 7
 
 try:
     import stripe
@@ -106,6 +109,7 @@ def new_store():
             owner_user_id=owner.id,
             plan=plan,
             subscription_status=StoreSubscriptionStatus.TRIALING,
+            trial_ends_at=datetime.utcnow() + timedelta(days=TRIAL_PERIOD_DAYS),
         )
         db.session.add(store)
         db.session.commit()
@@ -123,7 +127,10 @@ def new_store():
                     success_url=url_for("signup.success", _external=True) + "?session_id={CHECKOUT_SESSION_ID}",
                     cancel_url=url_for("signup.new_store", _external=True),
                     metadata={"store_id": str(store.id)},
-                    subscription_data={"metadata": {"store_id": str(store.id)}},
+                    subscription_data={
+                        "trial_period_days": TRIAL_PERIOD_DAYS,
+                        "metadata": {"store_id": str(store.id)},
+                    },
                 )
                 return redirect(checkout_session.url)
             except stripe.error.StripeError as e:
@@ -151,10 +158,18 @@ def success():
             store_id = (checkout_session.get("metadata") or {}).get("store_id")
             if store_id:
                 store = Store.query.get(int(store_id))
-                if store and checkout_session.get("subscription"):
+                subscription_id = checkout_session.get("subscription")
+                if store and subscription_id:
+                    subscription = stripe.Subscription.retrieve(subscription_id)
                     store.stripe_customer_id = checkout_session.get("customer")
-                    store.stripe_subscription_id = checkout_session.get("subscription")
-                    store.subscription_status = StoreSubscriptionStatus.ACTIVE
+                    store.stripe_subscription_id = subscription_id
+                    store.subscription_status = (
+                        StoreSubscriptionStatus.TRIALING
+                        if subscription.get("status") == "trialing"
+                        else StoreSubscriptionStatus.ACTIVE
+                    )
+                    if subscription.get("trial_end"):
+                        store.trial_ends_at = datetime.utcfromtimestamp(subscription["trial_end"])
                     db.session.commit()
         except Exception as e:
             current_app.logger.error(f"Signup success: failed to reconcile Stripe session: {e}")
