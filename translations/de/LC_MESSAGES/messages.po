@@ -729,7 +729,7 @@ msgstr "Warenkorb"
 #: templates/admin/warehouse/stock.html:64
 #: templates/admin/warehouse/task_detail.html:114 templates/cart.html:134
 msgid "Товар"
-msgstr ""
+msgstr "Produkt"
 
 #: templates/admin/order_detail.html:106 templates/admin/products.html:133
 #: templates/admin/warehouse/replenishment_detail.html:62
@@ -762,7 +762,7 @@ msgstr ""
 
 #: templates/cart.html:184
 msgid "Очистити кошик"
-msgstr ""
+msgstr "Warenkorb leeren"
 
 #: templates/cart.html:186 templates/checkout_success.html:35
 msgid "Продовжити покупки"
@@ -816,7 +816,7 @@ msgstr ""
 
 #: templates/checkout_address.html:2 templates/checkout_address.html:28
 msgid "Адреса доставки"
-msgstr ""
+msgstr "Lieferadresse"
 
 #: templates/admin/crm_partner.html:83 templates/admin/order_detail.html:87
 #: templates/admin/settings.html:141 templates/admin/settings.html:376
@@ -825,7 +825,7 @@ msgstr ""
 #: templates/cabinet/b2b/company.html:166 templates/checkout_address.html:24
 #: templates/checkout_shipping.html:24 templates/pages/contacts.html:234
 msgid "Адреса"
-msgstr ""
+msgstr "Adresse"
 
 #: templates/admin/accounting.html:37 templates/admin/layout.html:340
 #: templates/admin/warehouse/expense_add.html:19
@@ -834,16 +834,16 @@ msgstr ""
 #: templates/checkout_address.html:24 templates/checkout_shipping.html:24
 #: templates/pages/landing.html:192
 msgid "Доставка"
-msgstr ""
+msgstr "Versand"
 
 #: templates/admin/warehouse/replenishment_detail.html:122
 #: templates/checkout_address.html:24 templates/checkout_shipping.html:24
 msgid "Оплата"
-msgstr ""
+msgstr "Zahlung"
 
 #: templates/checkout_address.html:41
 msgid "Ім'я отримувача"
-msgstr ""
+msgstr "Name des Empfängers"
 
 #: templates/admin/crm_partner.html:158 templates/admin/order_detail.html:79
 #: templates/admin/settings.html:131 templates/admin/settings.html:418
@@ -852,7 +852,7 @@ msgstr ""
 #: templates/cabinet/b2b/company.html:197 templates/checkout_address.html:45
 #: templates/pages/contacts.html:227
 msgid "Телефон"
-msgstr ""
+msgstr "Telefon"
 
 #: templates/checkout_address.html:56
 msgid "Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, її можна не заповнювати."
@@ -868,14 +868,14 @@ msgstr ""
 #: templates/auth/register_b2b.html:90 templates/cabinet/b2b/company.html:173
 #: templates/checkout_address.html:66
 msgid "Місто"
-msgstr ""
+msgstr "Stadt"
 
 #: templates/admin/settings.html:391
 #: templates/admin/shipping_account_form.html:66
 #: templates/auth/register_b2b.html:96 templates/cabinet/b2b/company.html:179
 #: templates/checkout_address.html:70
 msgid "Поштовий індекс"
-msgstr ""
+msgstr "Postleitzahl"
 
 #: templates/checkout_address.html:76
 msgid "Країна (код ISO2, напр. DE, UA, PL)"
@@ -887,7 +887,7 @@ msgstr ""
 
 #: templates/checkout_shipping.html:2
 msgid "Спосіб доставки"
-msgstr ""
+msgstr "Versandart"
 
 #: templates/checkout_shipping.html:28
 msgid "Оберіть спосіб доставки"
@@ -938,7 +938,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_detail.html:30
 #: templates/cabinet/b2b/orders.html:59 templates/checkout_success.html:19
 msgid "Оплачено"
-msgstr ""
+msgstr "Bezahlt"
 
 #: templates/checkout_success.html:23
 msgid "Email:"
@@ -1051,7 +1051,7 @@ msgstr ""
 #: templates/admin/accounting.html:5 templates/admin/layout.html:343
 #: templates/pages/landing.html:198
 msgid "Бухгалтерія"
-msgstr ""
+msgstr "Buchhaltung"
 
 #: templates/admin/accounting.html:6
 msgid "Звіти та експорт CSV за період — дохід, витрати, розбивка по країнах"
@@ -1137,7 +1137,7 @@ msgstr ""
 
 #: templates/admin/ai_settings.html:32
 msgid "Ім'я чатбота"
-msgstr ""
+msgstr "Chatbot-Name"
 
 #: templates/admin/ai_settings.html:37
 msgid "Тон спілкування"
@@ -1177,7 +1177,7 @@ msgstr "0 = Präzise, 1 = Kreativ"
 
 #: templates/admin/ai_settings.html:72
 msgid "Інструкції для чатбота"
-msgstr ""
+msgstr "Chatbot-Anweisungen"
 
 #: templates/admin/ai_settings.html:76
 msgid "Базовий системний промпт"
@@ -1245,7 +1245,7 @@ msgstr "KI-Blogger aktiviert"
 
 #: templates/admin/ai_settings.html:119
 msgid "Ім'я автора"
-msgstr ""
+msgstr "Autorenname"
 
 #: templates/admin/ai_settings.html:124
 msgid "Стиль написання"
@@ -1253,7 +1253,7 @@ msgstr ""
 
 #: templates/admin/ai_settings.html:126
 msgid "Інформативний"
-msgstr ""
+msgstr "Informativ"
 
 #: templates/admin/ai_settings.html:127
 msgid "Розважальний"
@@ -1290,7 +1290,7 @@ msgstr ""
 
 #: templates/admin/ai_settings.html:171
 msgid "Автоматична публікація"
-msgstr ""
+msgstr "Automatische Veröffentlichung"
 
 #: templates/admin/ai_settings.html:175
 msgid "Час публікації"
@@ -1318,11 +1318,11 @@ msgstr ""
 
 #: templates/admin/ai_settings.html:210
 msgid "Автоматичний переклад"
-msgstr ""
+msgstr "Automatische Übersetzung"
 
 #: templates/admin/ai_settings.html:217
 msgid "Автоперекладати статті на інші мови"
-msgstr ""
+msgstr "Artikel automatisch in andere Sprachen übersetzen"
 
 #: templates/admin/ai_settings.html:219
 msgid "При генерації статті автоматично перекладати на вибрані мови"
@@ -1355,7 +1355,7 @@ msgstr "SEO-Anweisungen"
 
 #: templates/admin/ai_settings.html:253
 msgid "Інструкції щодо SEO-оптимізації статей..."
-msgstr ""
+msgstr "SEO-Optimierungsanweisungen für Artikel..."
 
 #: templates/admin/ai_settings.html:256
 msgid "Структура статті"
@@ -1375,7 +1375,7 @@ msgstr "3. H2-Überschriften"
 
 #: templates/admin/ai_settings.html:261
 msgid "4. Висновок"
-msgstr ""
+msgstr "4. Fazit"
 
 #: templates/admin/ai_settings.html:269 templates/admin/settings.html:465
 msgid "Зберегти налаштування"
@@ -1392,7 +1392,7 @@ msgstr ""
 #: templates/admin/orders.html:2 templates/admin/products.html:3
 #: templates/admin/stats.html:2
 msgid "Адмін панель"
-msgstr ""
+msgstr "Admin-Panel"
 
 #: templates/admin/blocks.html:5
 msgid "Контент сайту"
@@ -1466,7 +1466,7 @@ msgstr ""
 
 #: templates/admin/blocks.html:87
 msgid "Інструкції для AI-продавця..."
-msgstr ""
+msgstr "Anweisungen für KI-Verkäufer..."
 
 #: templates/admin/blocks.html:89
 msgid "Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він може/не може робити"
@@ -1534,7 +1534,7 @@ msgstr ""
 
 #: templates/admin/blog.html:52
 msgid "Стаття"
-msgstr ""
+msgstr "Artikel"
 
 #: templates/admin/blog.html:53 templates/admin/blog_edit.html:149
 #: templates/admin/blog_plan.html:116 templates/admin/crm.html:81
@@ -1552,7 +1552,7 @@ msgstr "Status"
 
 #: templates/admin/blog.html:54 templates/admin/blog_edit.html:164
 msgid "Автор"
-msgstr ""
+msgstr "Autor"
 
 #: templates/admin/blog.html:55 templates/admin/blog_plan.html:113
 #: templates/admin/crm_partner.html:226 templates/admin/dashboard.html:38
@@ -1561,7 +1561,7 @@ msgstr ""
 #: templates/admin/warehouse/stock_history.html:21
 #: templates/cabinet/b2b/orders.html:107
 msgid "Дата"
-msgstr ""
+msgstr "Datum"
 
 #: templates/admin/blog.html:56
 msgid "Перегляди"
@@ -1583,7 +1583,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment.html:104
 #: templates/admin/warehouse/replenishment_detail.html:14
 msgid "Чернетка"
-msgstr ""
+msgstr "Entwurf"
 
 #: templates/admin/blog.html:110 templates/admin/blog_edit.html:171
 msgid "Опублікувати"
@@ -1591,11 +1591,11 @@ msgstr ""
 
 #: templates/admin/blog.html:113
 msgid "Автопереклад EN+DE"
-msgstr ""
+msgstr "Automatische Übersetzung EN+DE"
 
 #: templates/admin/blog.html:116 templates/admin/crm.html:13
 msgid "Переглянути"
-msgstr ""
+msgstr "Anzeigen"
 
 #: templates/admin/blog.html:117 templates/admin/blog_plan.html:45
 #: templates/admin/categories.html:110 templates/admin/products.html:188
@@ -1655,7 +1655,7 @@ msgstr ""
 
 #: templates/admin/blog_edit.html:42
 msgid "Заголовок статті"
-msgstr ""
+msgstr "Artikel-Titel"
 
 #: templates/admin/blog_edit.html:45
 msgid "Введіть заголовок статті..."
@@ -1703,11 +1703,11 @@ msgstr ""
 
 #: templates/admin/blog_edit.html:153
 msgid "Опублікована"
-msgstr ""
+msgstr "Veröffentlicht"
 
 #: templates/admin/blog_edit.html:158
 msgid "Дата публікації"
-msgstr ""
+msgstr "Veröffentlichungsdatum"
 
 #: templates/admin/blog_edit.html:170 templates/admin/crm_partner.html:186
 #: templates/admin/domain_settings.html:29
@@ -1719,7 +1719,7 @@ msgstr "Speichern"
 
 #: templates/admin/blog_edit.html:178
 msgid "Автопереклад (EN + DE)"
-msgstr ""
+msgstr "Automatische Übersetzung (EN + DE)"
 
 #: templates/admin/blog_edit.html:182
 msgid "Переклад..."
@@ -1746,7 +1746,7 @@ msgstr ""
 #: templates/admin/warehouse/expense_add.html:15
 #: templates/admin/warehouse/expenses.html:78
 msgid "Категорія"
-msgstr ""
+msgstr "Kategorie"
 
 #: templates/admin/blog_edit.html:223
 msgid "Огляди, Поради, Новини..."
@@ -1877,7 +1877,7 @@ msgstr ""
 
 #: templates/admin/blog_plan.html:108
 msgid "Історія планів"
-msgstr ""
+msgstr "Planungsverlauf"
 
 #: templates/admin/blog_plan.html:114 templates/pages/contacts.html:269
 msgid "Тема"
@@ -1920,7 +1920,7 @@ msgstr ""
 #: templates/admin/categories.html:2 templates/admin/categories.html:5
 #: templates/admin/dashboard.html:13 templates/admin/layout.html:353
 msgid "Категорії"
-msgstr ""
+msgstr "Kategorien"
 
 #: templates/admin/categories.html:6
 msgid "Управління категоріями товарів"
@@ -1936,7 +1936,7 @@ msgstr ""
 
 #: templates/admin/categories.html:31 templates/admin/category_edit.html:20
 msgid "Назва категорії"
-msgstr ""
+msgstr "Kategoriename"
 
 #: templates/admin/categories.html:32 templates/admin/category_edit.html:21
 msgid "Наприклад: Електроніка"
@@ -1944,7 +1944,7 @@ msgstr ""
 
 #: templates/admin/categories.html:36 templates/admin/category_edit.html:31
 msgid "Опис категорії"
-msgstr ""
+msgstr "Kategoriebeschreibung"
 
 #: templates/admin/categories.html:37 templates/admin/category_edit.html:32
 msgid "Короткий опис категорії..."
@@ -1980,7 +1980,7 @@ msgstr ""
 #: templates/admin/categories.html:90
 #: templates/admin/warehouse/replenishment.html:77
 msgid "Товарів"
-msgstr ""
+msgstr "Produkte"
 
 #: templates/admin/categories.html:103 templates/cabinet/b2b/orders.html:125
 #: templates/pages/ai_assistant.html:365
@@ -2013,7 +2013,7 @@ msgstr ""
 
 #: templates/admin/category_edit.html:15
 msgid "Інформація про категорію"
-msgstr ""
+msgstr "Kategorieinformationen"
 
 #: templates/admin/category_edit.html:40
 msgid "Товари в категорії"
@@ -2231,7 +2231,7 @@ msgstr ""
 #: templates/auth/register_b2b.html:102 templates/cabinet/b2b/company.html:129
 #: templates/cabinet/b2b/dashboard.html:188
 msgid "Країна"
-msgstr ""
+msgstr "Land"
 
 #: templates/admin/crm.html:110
 msgid "Пошук"
@@ -2367,7 +2367,7 @@ msgstr "Warnung"
 
 #: templates/admin/crm_alerts.html:29 templates/admin/crm_alerts.html:44
 msgid "Інформаційні"
-msgstr ""
+msgstr "Informativ"
 
 #: templates/admin/crm_alerts.html:33 templates/admin/crm_alerts.html:48
 msgid "Непрочитані"
@@ -2446,7 +2446,7 @@ msgstr ""
 #: templates/admin/crm_partner.html:70 templates/admin/settings.html:424
 #: templates/auth/register_b2b.html:72 templates/cabinet/b2b/company.html:153
 msgid "Веб-сайт"
-msgstr ""
+msgstr "Website"
 
 #: templates/admin/crm_partner.html:95
 msgid "Надійність контрагента"
@@ -2520,7 +2520,7 @@ msgstr ""
 
 #: templates/admin/crm_partner.html:222
 msgid "Історія перевірок"
-msgstr ""
+msgstr "Überprüfungsverlauf"
 
 #: templates/admin/crm_partner.html:227 templates/admin/domain_settings.html:53
 #: templates/admin/warehouse/stock_history.html:22
@@ -2537,7 +2537,7 @@ msgstr ""
 
 #: templates/admin/crm_partner.html:242
 msgid "Успішно"
-msgstr ""
+msgstr "Erfolgreich"
 
 #: templates/admin/crm_partner.html:249
 msgid "Зміни!"
@@ -2629,7 +2629,7 @@ msgstr "ID"
 #: templates/admin/warehouse/print_label.html:72
 #: templates/admin/warehouse/tasks.html:66
 msgid "Клієнт"
-msgstr ""
+msgstr "Kunde"
 
 #: templates/admin/dashboard.html:50 templates/admin/orders.html:98
 msgid "Гість"
@@ -2651,13 +2651,13 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_detail.html:159
 #: templates/cabinet/b2b/orders.html:60
 msgid "Відправлено"
-msgstr ""
+msgstr "Versandt"
 
 #: templates/admin/dashboard.html:58 templates/admin/order_detail.html:39
 #: templates/admin/order_detail.html:153 templates/admin/orders.html:20
 #: templates/admin/orders.html:119 templates/cabinet/b2b/orders.html:61
 msgid "Доставлено"
-msgstr ""
+msgstr "Zugestellt"
 
 #: templates/admin/dashboard.html:59 templates/admin/order_detail.html:41
 #: templates/admin/order_detail.html:154 templates/admin/orders.html:21
@@ -2667,7 +2667,7 @@ msgstr ""
 #: templates/admin/warehouse/replenishment_detail.html:26
 #: templates/cabinet/b2b/orders.html:62
 msgid "Скасовано"
-msgstr ""
+msgstr "Storniert"
 
 #: templates/admin/dashboard.html:71
 msgid "Переглянути всі замовлення"
@@ -2783,7 +2783,7 @@ msgstr ""
 
 #: templates/admin/domain_settings.html:5 templates/admin/layout.html:380
 msgid "Власний домен"
-msgstr ""
+msgstr "Benutzerdefinierte Domain"
 
 #: templates/admin/domain_settings.html:6
 msgid "Підключіть свій домен (напр. myshop.com) замість стандартного"
@@ -2816,7 +2816,7 @@ msgstr ""
 #: templates/admin/domain_settings.html:54 templates/admin/order_detail.html:67
 #: templates/auth/register.html:24 templates/auth/register_b2b.html:115
 msgid "Ім'я"
-msgstr ""
+msgstr "Name"
 
 #: templates/admin/domain_settings.html:54 templates/admin/product_edit.html:79
 #: templates/admin/products.html:92 templates/admin/settings.html:43
@@ -2839,7 +2839,7 @@ msgstr "DNS-Änderungen können einige Minuten bis Stunden dauern. Nach der Konf
 
 #: templates/admin/layout.html:5 templates/admin/layout.html:280
 msgid "Адмін-панель"
-msgstr ""
+msgstr "Admin-Panel"
 
 #: templates/admin/layout.html:293
 msgid "Огляд"
@@ -2860,11 +2860,11 @@ msgstr ""
 #: templates/admin/layout.html:323 templates/admin/products.html:134
 #: templates/admin/warehouse/expenses.html:93 templates/pages/landing.html:186
 msgid "Склад"
-msgstr ""
+msgstr "Lager"
 
 #: templates/admin/layout.html:325
 msgid "Завдання"
-msgstr ""
+msgstr "Aufgabe"
 
 #: templates/admin/layout.html:328
 msgid "Залишки"
@@ -2880,7 +2880,7 @@ msgstr ""
 
 #: templates/admin/layout.html:337
 msgid "Звіти"
-msgstr ""
+msgstr "Berichte"
 
 #: templates/admin/layout.html:350
 msgid "Головна сторінка"
@@ -2888,7 +2888,7 @@ msgstr ""
 
 #: templates/admin/layout.html:364
 msgid "ІІ-асистенти"
-msgstr ""
+msgstr "KI-Assistenten"
 
 #: templates/admin/layout.html:366
 msgid "Налаштування ІІ"
@@ -2904,7 +2904,7 @@ msgstr ""
 
 #: templates/admin/layout.html:377
 msgid "Налаштування"
-msgstr ""
+msgstr "Einstellungen"
 
 #: templates/admin/layout.html:383 templates/admin/payments_settings.html:5
 msgid "Прийом оплат"
@@ -2977,7 +2977,7 @@ msgstr "Bestellnummer"
 
 #: templates/admin/order_detail.html:24
 msgid "Дата створення"
-msgstr ""
+msgstr "Erstellungsdatum"
 
 #: templates/admin/order_detail.html:33 templates/admin/order_detail.html:150
 #: templates/admin/orders.html:17 templates/admin/stats.html:92
@@ -3305,7 +3305,7 @@ msgstr ""
 
 #: templates/admin/products.html:181
 msgid "Активний"
-msgstr ""
+msgstr "Aktiv"
 
 #: templates/admin/products.html:183
 msgid "Прихований"
@@ -3441,7 +3441,7 @@ msgstr "HTML/JS-Code, der eingefügt wird vor"
 
 #: templates/admin/settings.html:246
 msgid "Налаштування магазину"
-msgstr ""
+msgstr "Shop-Einstellungen"
 
 #: templates/admin/settings.html:251
 #: templates/admin/warehouse/expense_add.html:44
@@ -3458,7 +3458,7 @@ msgstr ""
 
 #: templates/admin/settings.html:271
 msgid "Інформація про доставку"
-msgstr ""
+msgstr "Versandinformationen"
 
 #: templates/admin/settings.html:272
 msgid "Безкоштовна доставка від 1000 грн..."
@@ -3530,7 +3530,7 @@ msgstr ""
 #: templates/admin/settings.html:340 templates/auth/register_b2b.html:46
 #: templates/cabinet/b2b/company.html:133
 msgid "Австрія"
-msgstr ""
+msgstr "Österreich"
 
 #: templates/admin/settings.html:341 templates/auth/register_b2b.html:47
 #: templates/cabinet/b2b/company.html:134
@@ -3560,12 +3560,12 @@ msgstr ""
 #: templates/admin/settings.html:346 templates/auth/register_b2b.html:50
 #: templates/cabinet/b2b/company.html:137
 msgid "Італія"
-msgstr ""
+msgstr "Italien"
 
 #: templates/admin/settings.html:347 templates/auth/register_b2b.html:51
 #: templates/cabinet/b2b/company.html:138
 msgid "Іспанія"
-msgstr ""
+msgstr "Spanien"
 
 #: templates/admin/settings.html:348 templates/auth/register_b2b.html:104
 #: templates/cabinet/b2b/company.html:141
@@ -3586,7 +3586,7 @@ msgstr ""
 
 #: templates/admin/settings.html:352
 msgid "Болгарія"
-msgstr ""
+msgstr "Bulgarien"
 
 #: templates/admin/settings.html:353
 msgid "Литва"
@@ -3692,7 +3692,7 @@ msgstr ""
 
 #: templates/admin/shipping_account_form.html:48
 msgid "Адреса відправлення (звідки їдуть посилки)"
-msgstr ""
+msgstr "Versendungsadresse (von wo Pakete versandt werden)"
 
 #: templates/admin/shipping_account_form.html:50
 msgid "Назва відправника / компанія"
@@ -3760,7 +3760,7 @@ msgstr ""
 
 #: templates/admin/shipping_settings.html:72 templates/pages/landing.html:222
 msgid "Самовивіз"
-msgstr ""
+msgstr "Selbstabholung"
 
 #: templates/admin/shipping_settings.html:75
 msgid "Безкоштовна альтернатива доставці перевізником - клієнт сам забирає замовлення. Зʼявиться як окрема опція на кроці вибору доставки в checkout, навіть якщо DHL/UPS не налаштовані."
@@ -3780,7 +3780,7 @@ msgstr ""
 
 #: templates/admin/shipping_settings.html:89
 msgid "Інструкції для клієнта (графік роботи тощо)"
-msgstr ""
+msgstr "Kundenanweisungen (Arbeitszeiten, etc.)"
 
 #: templates/admin/stats.html:5
 msgid "📊 Статистика"
@@ -3816,7 +3816,7 @@ msgstr ""
 
 #: templates/admin/stats.html:69
 msgid "Інтеграція з реальними даними в розробці"
-msgstr ""
+msgstr "Integration mit Live-Daten in Entwicklung"
 
 #: templates/admin/stats.html:75
 msgid "🥧 Розподіл за статусами"
@@ -3882,7 +3882,7 @@ msgstr ""
 #: templates/admin/warehouse/stock.html:170
 #: templates/cabinet/b2b/company.html:112
 msgid "Інше"
-msgstr ""
+msgstr "Sonstiges"
 
 #: templates/admin/warehouse/expense_add.html:34
 msgid "Наприклад: Оплата Нової Пошти за листопад"
@@ -4115,7 +4115,7 @@ msgstr ""
 
 #: templates/admin/warehouse/replenishment_detail.html:204
 msgid "Автор:"
-msgstr ""
+msgstr "Autor:"
 
 #: templates/admin/warehouse/replenishment_detail.html:209
 msgid "Замовлено:"
@@ -4341,7 +4341,7 @@ msgstr ""
 
 #: templates/admin/warehouse/stock.html:148
 msgid "± Коригування залишку"
-msgstr ""
+msgstr "± Bestandsanpassung"
 
 #: templates/admin/warehouse/stock.html:154
 msgid "Поточний залишок:"
@@ -4362,7 +4362,7 @@ msgstr ""
 
 #: templates/admin/warehouse/stock.html:166
 msgid "Інвентаризація"
-msgstr ""
+msgstr "Bestandsaufnahme"
 
 #: templates/admin/warehouse/stock.html:167
 msgid "Пошкодження"
@@ -4404,7 +4404,7 @@ msgstr ""
 
 #: templates/admin/warehouse/stock_history.html:27
 msgid "Виконавець"
-msgstr ""
+msgstr "Ausführender"
 
 #: templates/admin/warehouse/stock_history.html:36
 msgid "🛒 Продаж"
@@ -4420,7 +4420,7 @@ msgstr ""
 
 #: templates/admin/warehouse/stock_history.html:42
 msgid "± Коригування"
-msgstr ""
+msgstr "± Anpassung"
 
 #: templates/admin/warehouse/stock_history.html:60
 msgid "📭 Немає записів про рух товару"
@@ -4513,7 +4513,7 @@ msgstr ""
 
 #: templates/admin/warehouse/task_detail.html:83
 msgid "Ім'я:"
-msgstr ""
+msgstr "Name:"
 
 #: templates/admin/warehouse/task_detail.html:87
 msgid "Телефон:"
@@ -4675,7 +4675,7 @@ msgstr ""
 
 #: templates/auth/login.html:3 templates/auth/login.html:9
 msgid "Вхід"
-msgstr ""
+msgstr "Anmelden"
 
 #: templates/auth/login.html:10
 msgid "Увійдіть до свого акаунту"
@@ -4692,7 +4692,7 @@ msgstr ""
 #: templates/auth/login.html:50 templates/auth/register.html:3
 #: templates/auth/register.html:9
 msgid "Реєстрація"
-msgstr ""
+msgstr "Registrierung"
 
 #: templates/auth/login.html:53 templates/auth/register_b2b.html:9
 msgid "B2B Партнерство"
@@ -4704,11 +4704,11 @@ msgstr ""
 
 #: templates/auth/register.html:26 templates/auth/register_b2b.html:117
 msgid "Іван"
-msgstr ""
+msgstr "Ivan"
 
 #: templates/auth/register.html:30 templates/auth/register_b2b.html:121
 msgid "Прізвище"
-msgstr ""
+msgstr "Nachname"
 
 #: templates/auth/register.html:32 templates/auth/register_b2b.html:123
 msgid "Петренко"
@@ -4721,7 +4721,7 @@ msgstr ""
 #: templates/auth/register.html:56 templates/auth/register_b2b.html:154
 #: templates/auth/signup.html:54
 msgid "Підтвердження"
-msgstr ""
+msgstr "Bestätigung"
 
 #: templates/auth/register.html:58 templates/auth/register_b2b.html:156
 #: templates/auth/signup.html:56
@@ -4782,7 +4782,7 @@ msgstr ""
 
 #: templates/auth/register_b2b.html:144
 msgid "Безпека"
-msgstr ""
+msgstr "Sicherheit"
 
 #: templates/auth/register_b2b.html:150 templates/auth/signup.html:50
 msgid "Мін. 8 символів"
@@ -4819,7 +4819,7 @@ msgstr ""
 
 #: templates/auth/signup.html:23
 msgid "Назва магазину"
-msgstr ""
+msgstr "Shop-Name"
 
 #: templates/auth/signup.html:25
 msgid "Мій магазин"
@@ -4835,7 +4835,7 @@ msgstr ""
 
 #: templates/auth/signup.html:37
 msgid "Іван Петренко"
-msgstr ""
+msgstr "Ivan Petrenko"
 
 #: templates/auth/signup.html:61
 msgid "Тарифний план"
@@ -4860,7 +4860,7 @@ msgstr ""
 
 #: templates/auth/signup_success.html:14
 msgid "Адреса вашого магазину"
-msgstr ""
+msgstr "Adresse deines Shops"
 
 #: templates/auth/signup_success.html:18
 msgid "Піддомен магазину ще не активовано на платформі - зверніться до підтримки, щоб отримати посилання."
@@ -5003,7 +5003,7 @@ msgstr ""
 
 #: templates/cabinet/b2b/dashboard.html:45
 msgid "Аналітика"
-msgstr ""
+msgstr "Analytics"
 
 #: templates/cabinet/b2b/dashboard.html:48
 #: templates/cabinet/b2c/dashboard.html:24
@@ -5030,7 +5030,7 @@ msgstr ""
 #: templates/cabinet/b2b/dashboard.html:86 templates/cabinet/b2b/orders.html:58
 #: templates/cabinet/b2b/orders.html:93
 msgid "В обробці"
-msgstr ""
+msgstr "In Bearbeitung"
 
 #: templates/cabinet/b2b/dashboard.html:91
 msgid "Загальна сума (EUR)"
@@ -5059,7 +5059,7 @@ msgstr ""
 
 #: templates/cabinet/b2b/dashboard.html:170
 msgid "Інформація про компанію"
-msgstr ""
+msgstr "Unternehmensinformationen"
 
 #: templates/cabinet/b2b/dashboard.html:561
 msgid "Січ"
@@ -5088,7 +5088,7 @@ msgstr ""
 #: templates/cabinet/b2b/dashboard.html:563
 #: templates/cabinet/b2c/dashboard.html:53
 msgid "Замовлень"
-msgstr ""
+msgstr "Bestellungen"
 
 #: templates/cabinet/b2b/orders.html:3
 msgid "B2B Замовлення"
@@ -5100,7 +5100,7 @@ msgstr ""
 
 #: templates/cabinet/b2b/orders.html:41
 msgid "Історія та статус ваших замовлень"
-msgstr ""
+msgstr "Bestellhistorie und Status"
 
 #: templates/cabinet/b2b/orders.html:67
 msgid "Період:"
@@ -5288,7 +5288,7 @@ msgstr ""
 
 #: templates/email/b2b_verification_pending.html:13
 msgid "Автоматична перевірка VAT номера через VIES"
-msgstr ""
+msgstr "Automatische Umsatzsteuer-ID-Überprüfung via VIES"
 
 #: templates/email/b2b_verification_pending.html:14
 msgid "Верифікація домену через WHOIS"
@@ -5424,11 +5424,11 @@ msgstr ""
 
 #: templates/email/layout.html:166
 msgid "Інтелектуальна торгова платформа"
-msgstr ""
+msgstr "Intelligente Handelsplattform"
 
 #: templates/email/layout.html:178
 msgid "Інтелектуальна торгова платформа з AI-асистентом"
-msgstr ""
+msgstr "Intelligente Handelsplattform mit KI-Assistent"
 
 #: templates/email/layout.html:188
 msgid "Цей email надіслано автоматично. Будь ласка, не відповідайте на нього."
@@ -5633,7 +5633,7 @@ msgstr ""
 #: templates/pages/ai_assistant.html:307 templates/pages/ai_assistant.html:311
 #: templates/pages/landing.html:171 templates/pages/landing.html:220
 msgid "ІІ-продавець"
-msgstr ""
+msgstr "KI-Verkäufer"
 
 #: templates/pages/ai_assistant.html:312
 msgid "Ваш персональний помічник, який знає весь каталог та готовий допомогти 24/7"
@@ -5761,7 +5761,7 @@ msgstr ""
 
 #: templates/pages/contacts.html:252
 msgid "ІІ-помічник"
-msgstr ""
+msgstr "KI-Assistent"
 
 #: templates/pages/contacts.html:258
 msgid "Напишіть нам"
@@ -5781,7 +5781,7 @@ msgstr ""
 
 #: templates/pages/contacts.html:273
 msgid "Повідомлення"
-msgstr ""
+msgstr "Nachricht"
 
 #: templates/pages/contacts.html:274
 msgid "Ваше повідомлення"
@@ -5797,7 +5797,7 @@ msgstr ""
 
 #: templates/pages/contacts.html:284
 msgid "Інтеграція з Google Maps / OpenStreetMap"
-msgstr ""
+msgstr "Integration mit Google Maps / OpenStreetMap"
 
 #: templates/pages/contacts.html:289
 msgid "Потрібна швидка відповідь?"
@@ -5869,11 +5869,11 @@ msgstr ""
 
 #: templates/pages/landing.html:176
 msgid "Автоматичний блог"
-msgstr ""
+msgstr "Automatischer Blog"
 
 #: templates/pages/landing.html:177
 msgid "ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими словами."
-msgstr ""
+msgstr "KI schreibt Artikel nach Ihrem Themenplan mit SEO-Titeln, Beschreibungen und Keywords."
 
 #: templates/pages/landing.html:181 templates/pages/landing.html:221
 msgid "Оплата карткою"
@@ -5931,7 +5931,7 @@ msgstr ""
 
 #: templates/pages/landing.html:231
 msgid "Автоматичний блог з SEO"
-msgstr ""
+msgstr "Automatischer Blog mit SEO"
 
 #: templates/pages/landing.html:232
 msgid "Склад і служби доставки"
