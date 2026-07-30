@@ -16,7 +16,11 @@
             </div>
             <div class="detail-row">
                 <span>{{ _('Статус:') }}</span>
+                {% if order.status == 'paid' %}
                 <span class="status status-paid">{{ _('Оплачено') }}</span>
+                {% else %}
+                <span class="status status-pending">{{ _('Очікує підтвердження оплати') }}</span>
+                {% endif %}
             </div>
             {% if order.customer_email %}
             <div class="detail-row">
@@ -27,9 +31,15 @@
         </div>
         {% endif %}
 
+        {% if order and order.status == 'paid' %}
         <p class="success-message">
             {{ _("Ми отримали вашу оплату і незабаром зв'яжемося з вами для підтвердження доставки.") }}
         </p>
+        {% else %}
+        <p class="success-message">
+            {{ _("Оплату ще не підтверджено. Якщо ви завершили оплату на сторінці Stripe, зачекайте кілька хвилин - статус оновиться автоматично. Якщо проблема повторюється, зверніться до підтримки.") }}
+        </p>
+        {% endif %}
 
         <div class="success-actions">
             <a href="{{ url_for('shop') }}" class="btn">{{ _('Продовжити покупки') }}</a>
@@ -96,6 +106,11 @@
 
     .status-paid {
         color: #22c55e;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        color: #f59e0b;
         font-weight: 600;
     }
 

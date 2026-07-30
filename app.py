@@ -1764,7 +1764,12 @@ def create_app():
                 checkout_session = stripe.checkout.Session.retrieve(session_id)
                 order = Order.query.filter_by(stripe_session_id=session_id, store_id=g.store.id).first()
 
-                if order and order.status == "pending":
+                # КРИТИЧНО: успішний retrieve() лише означає, що session_id
+                # існує - НЕ означає, що оплата відбулась. Без цієї перевірки
+                # клієнт міг скасувати оплату на сторінці Stripe і вручну
+                # перейти на /checkout/success?session_id=... - замовлення
+                # позначилось б оплаченим без жодної реальної транзакції.
+                if order and order.status == "pending" and checkout_session.payment_status == "paid":
                     order.status = "paid"
                     order.paid_at = datetime.utcnow()
                     order.customer_email = checkout_session.customer_details.email if checkout_session.customer_details else None
@@ -1824,13 +1829,23 @@ def create_app():
         sig_header = request.headers.get("Stripe-Signature")
         webhook_secret = app.config["STRIPE_WEBHOOK_SECRET"]
 
+        # КРИТИЧНО: без webhook_secret немає способу перевірити, що запит
+        # справді прийшов від Stripe, а не від будь-кого, хто відправив
+        # довільний JSON на цей публічний ендпоінт. Раніше тут був фолбек
+        # на stripe.Event.construct_from(), який довіряв НЕПІДПИСАНОМУ
+        # тілу запиту - це дозволяло будь-кому позначити чуже замовлення
+        # оплаченим або активувати підписку магазину без жодної реальної
+        # транзакції. Без секрету обробка події повинна відмовляти, а не
+        # довіряти вхідним даним.
+        if not webhook_secret:
+            app.logger.warning(
+                "Отримано запит на /webhook/stripe, але STRIPE_WEBHOOK_SECRET не налаштовано - "
+                "подію відхилено без верифікації підпису."
+            )
+            return jsonify({"error": _("Webhook not configured")}), 503
+
         try:
-            if webhook_secret:
-                event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
-            else:
-                event = stripe.Event.construct_from(
-                    request.get_json(), stripe.api_key
-                )
+            event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
         except ValueError:
             return jsonify({"error": _("Invalid payload")}), 400
         except stripe.error.SignatureVerificationError:
@@ -5105,36 +5120,6 @@ def create_app():
             ["Країна доставки", "К-сть замовлень", "Сума товарів", "Разом (з доставкою)"],
             rows,
         )
-
-    # Автоматичне створення завдання після оплати
-    @app.route("/webhook/payment-success", methods=["POST"])
-    def webhook_payment_success():
-        """Webhook для обробки успішної оплати - створює завдання для складу."""
-        from models.warehouse import WarehouseTask
-        
-        data = request.get_json()
-        order_id = data.get("order_id")
-        
-        if not order_id:
-            return jsonify({"error": _("order_id required")}), 400
-        
-        order = Order.query.get(order_id)
-        if not order:
-            return jsonify({"error": _("order not found")}), 404
-        
-        # Перевіряємо чи не існує вже завдання
-        existing_task = WarehouseTask.query.filter_by(order_id=order_id).first()
-        if existing_task:
-            return jsonify({"message": "task already exists", "task_id": existing_task.id})
-        
-        # Створюємо завдання
-        task = WarehouseTask.create_from_order(
-            order_id=order_id,
-            priority=2 if order.is_b2b else 3,  # B2B - вищий пріоритет
-            notes=order.notes,
-        )
-        
-        return jsonify({"success": True, "task_id": task.id, "task_number": task.task_number})
 
     # =====================================================================
     # AI SETTINGS ROUTES
