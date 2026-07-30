@@ -3,10 +3,18 @@
 сторінки. Власник магазину обирає з цього фіксованого набору (не довільний
 CSS/HTML) - просто і безпечно, без ризику зламати верстку чи внести XSS.
 """
+from flask_babel import lazy_gettext as _l
+
+# lazy_gettext (не gettext) - ці словники обчислюються ОДИН РАЗ при імпорті
+# модуля, до появи будь-якого запиту/локалі. Звичайний _() зафіксував би
+# переклад назавжди в тій локалі, що була активна при старті процесу.
+# LazyString відкладає переклад до фактичного рендеру (коли рядок
+# перетворюється на str() всередині шаблону чи f-рядка) - саме тоді вже
+# є активний контекст запиту з правильною мовою.
 
 THEME_PRESETS = {
     "emerald_dark": {
-        "label": "Смарагдова темна (за замовчуванням)",
+        "label": _l("Смарагдова темна (за замовчуванням)"),
         "is_dark": True,
         "bg_main": "#050816",
         "bg_card": "#0b1020",
@@ -19,7 +27,7 @@ THEME_PRESETS = {
         "body_gradient": "radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%)",
     },
     "slate_light": {
-        "label": "Світла графітова",
+        "label": _l("Світла графітова"),
         "is_dark": False,
         "bg_main": "#f8fafc",
         "bg_card": "#ffffff",
@@ -32,7 +40,7 @@ THEME_PRESETS = {
         "body_gradient": "radial-gradient(circle at top, #ffffff 0, #eef2f7 60%, #e2e8f0 100%)",
     },
     "sunset_warm": {
-        "label": "Теплий захід сонця",
+        "label": _l("Теплий захід сонця"),
         "is_dark": True,
         "bg_main": "#1c1207",
         "bg_card": "#2b1c0f",
@@ -45,7 +53,7 @@ THEME_PRESETS = {
         "body_gradient": "radial-gradient(circle at top, #2b1c0f 0, #1c1207 45%, #000 100%)",
     },
     "ocean_blue": {
-        "label": "Океанський синій",
+        "label": _l("Океанський синій"),
         "is_dark": False,
         "bg_main": "#f0f9ff",
         "bg_card": "#ffffff",
@@ -58,7 +66,7 @@ THEME_PRESETS = {
         "body_gradient": "radial-gradient(circle at top, #ffffff 0, #e0f2fe 100%)",
     },
     "monochrome_dark": {
-        "label": "Монохромна темна",
+        "label": _l("Монохромна темна"),
         "is_dark": True,
         "bg_main": "#0a0a0a",
         "bg_card": "#171717",
@@ -71,7 +79,7 @@ THEME_PRESETS = {
         "body_gradient": "radial-gradient(circle at top, #171717 0, #0a0a0a 45%, #000 100%)",
     },
     "rose_light": {
-        "label": "Ніжна рожева",
+        "label": _l("Ніжна рожева"),
         "is_dark": False,
         "bg_main": "#fff1f2",
         "bg_card": "#ffffff",
@@ -89,27 +97,27 @@ DEFAULT_THEME_PRESET = "emerald_dark"
 
 FONT_PRESETS = {
     "system_sans": {
-        "label": "Системний (за замовчуванням)",
+        "label": _l("Системний (за замовчуванням)"),
         "family": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
         "google_font_url": None,
     },
     "modern_serif": {
-        "label": "Сучасний серіф",
+        "label": _l("Сучасний серіф"),
         "family": "'Merriweather', Georgia, serif",
         "google_font_url": "https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap",
     },
     "rounded_friendly": {
-        "label": "Округлий дружній",
+        "label": _l("Округлий дружній"),
         "family": "'Quicksand', system-ui, sans-serif",
         "google_font_url": "https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap",
     },
     "elegant_display": {
-        "label": "Елегантний",
+        "label": _l("Елегантний"),
         "family": "'Playfair Display', Georgia, serif",
         "google_font_url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap",
     },
     "techno_grotesk": {
-        "label": "Технологічний",
+        "label": _l("Технологічний"),
         "family": "'Space Grotesk', system-ui, sans-serif",
         "google_font_url": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap",
     },
@@ -119,12 +127,12 @@ DEFAULT_FONT_PRESET = "system_sans"
 
 HOMEPAGE_LAYOUTS = {
     "hero_grid": {
-        "label": "Товари сіткою (за замовчуванням)",
-        "description": "Великий hero-блок, 4 картки розділів, потім товари сіткою.",
+        "label": _l("Товари сіткою (за замовчуванням)"),
+        "description": _l("Великий hero-блок, 4 картки розділів, потім товари сіткою."),
     },
     "categories_first": {
-        "label": "Спочатку категорії",
-        "description": "Компактний заголовок і одразу категорії з товарами - для магазинів з великим каталогом.",
+        "label": _l("Спочатку категорії"),
+        "description": _l("Компактний заголовок і одразу категорії з товарами - для магазинів з великим каталогом."),
     },
 }
 
