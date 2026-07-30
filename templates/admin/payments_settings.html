@@ -39,11 +39,13 @@
             </p>
 
             <form method="POST" action="{{ url_for('admin_payments_connect') }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="country" value="DE">
                 <button type="submit" class="btn">🔄 {{ _('Керувати в Stripe / оновити дані') }}</button>
             </form>
             <form method="POST" action="{{ url_for('admin_payments_reset') }}" style="display:inline;"
                   onsubmit="return confirm('{{ _("Відв'язати Stripe-акаунт від магазину? Клієнти не зможуть оформити замовлення, доки ви не підключите новий.")|replace("'", "\\'") }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-danger">{{ _("Відв'язати акаунт") }}</button>
             </form>
 
@@ -57,6 +59,7 @@
                     {{ _('Ви вже почали підключення Stripe, але не завершили заповнення даних. Продовжіть реєстрацію.') }}
                 </p>
                 <form method="POST" action="{{ url_for('admin_payments_connect') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="country" value="DE">
                     <button type="submit" class="btn btn-primary">{{ _('Продовжити реєстрацію в Stripe') }}</button>
                 </form>
@@ -66,6 +69,7 @@
                     ({{ _('кнопка «Оформити замовлення» буде показувати помилку') }}).
                 </p>
                 <form method="POST" action="{{ url_for('admin_payments_connect') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-group">
                         <label for="country">{{ _('Країна вашого бізнесу') }}</label>
                         <select id="country" name="country">

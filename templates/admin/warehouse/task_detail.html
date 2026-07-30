@@ -172,6 +172,7 @@
             <div class="card">
                 <h3>{{ _('📝 Нотатки') }}</h3>
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="update_notes">
                     <textarea name="admin_notes" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">{{ task.admin_notes or '' }}</textarea>
                     <button type="submit" class="btn btn-sm btn-secondary" style="margin-top: 0.5rem;">{{ _('💾 Зберегти нотатки') }}</button>
@@ -186,6 +187,7 @@
                 
                 {% if task.status == 'pending' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="start_processing">
                     <div class="form-group">
                         <label>{{ _('Виконавець:') }}</label>
@@ -197,6 +199,7 @@
 
                 {% if task.status == 'processing' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_packed">
                     <div class="form-group">
                         <label>{{ _('Вага (кг):') }}</label>
@@ -212,6 +215,7 @@
 
                 {% if task.status == 'packed' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_ready">
                     <button type="submit" class="btn btn-success btn-block">{{ _('✅ Готово до відправки') }}</button>
                 </form>
@@ -220,6 +224,7 @@
                 {% if task.status == 'ready' %}
                 {% if task.is_pickup %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_shipped">
                     <p style="color: var(--text-muted); margin-bottom: 0.5rem;">{{ _('🏬 Самовивіз — трек-номер не потрібен.') }}</p>
                     <button type="submit" class="btn btn-success btn-block">{{ _('✅ Видано клієнту') }}</button>
@@ -230,11 +235,13 @@
                     <a href="{{ task.label_url }}" target="_blank" class="btn btn-outline btn-block">{{ _('🏷️ Завантажити лейбл') }}</a>
                 </div>
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_shipped">
                     <button type="submit" class="btn btn-warning btn-block">{{ _('🚚 Відправлено') }}</button>
                 </form>
                 {% else %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_shipped">
                     <div class="form-group">
                         <label>{{ _('Перевізник:') }}</label>
@@ -258,6 +265,7 @@
 
                 {% if task.status == 'shipped' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_delivered">
                     <button type="submit" class="btn btn-success btn-block">{{ _('✔️ Доставлено') }}</button>
                 </form>
@@ -266,6 +274,7 @@
                 {% if task.status not in ['delivered', 'cancelled'] %}
                 <hr style="margin: 1.5rem 0;">
                 <form method="POST" onsubmit="return confirm('Ви впевнені що хочете скасувати це завдання?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="cancel">
                     <div class="form-group">
                         <label>{{ _('Причина скасування:') }}</label>

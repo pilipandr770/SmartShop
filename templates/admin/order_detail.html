@@ -145,6 +145,7 @@
     </div>
     <div class="form-section">
         <form method="post" action="{{ url_for('admin_order_update_status', order_id=order.id) }}" class="status-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <select name="status" class="status-select">
                 <option value="created" {% if order.status == 'created' %}selected{% endif %}>{{ _('Створено') }}</option>
                 <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>{{ _('Очікує оплати') }}</option>
@@ -165,6 +166,7 @@
     </div>
     <div class="form-section">
         <form method="post" action="{{ url_for('admin_order_update_notes', order_id=order.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <textarea name="notes" rows="3" placeholder="{{ _('Внутрішні нотатки (тільки для адміністратора)...') }}">{{ order.notes or '' }}</textarea>
             <div class="form-actions" style="margin-top: 1rem;">
                 <button type="submit" class="btn btn-secondary">💾 {{ _('Зберегти нотатки') }}</button>
@@ -181,6 +183,7 @@
         {% endif %}
 
         <form method="post" action="{{ url_for('admin_order_delete', order_id=order.id) }}" style="margin-left: auto;" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити це замовлення?') }}');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger">🗑️ {{ _('Видалити замовлення') }}</button>
         </form>
     </div>

@@ -149,6 +149,7 @@
             <button type="button" class="close" onclick="closeAdjustModal()">&times;</button>
         </div>
         <form id="adjustForm" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="modal-body">
                 <p><strong id="productName"></strong></p>
                 <p>{{ _('Поточний залишок:') }}<strong id="currentStock"></strong>{{ _('шт.') }}</p>

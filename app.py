@@ -67,7 +67,7 @@ except ImportError:
     CLOUDINARY_AVAILABLE = False
 
 # Ініціалізація SQLAlchemy та Flask-Login - імпортуємо з extensions для уникнення дублювання
-from extensions import db, login_manager, migrate
+from extensions import db, login_manager, migrate, csrf
 
 
 def create_app():
@@ -326,6 +326,7 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
+    csrf.init_app(app)
 
     # Ініціалізація Flask-Login
     login_manager.init_app(app)
@@ -1820,8 +1821,11 @@ def create_app():
         return redirect(url_for("cart_page"))
 
     @app.route("/webhook/stripe", methods=["POST"])
+    @csrf.exempt
     def stripe_webhook():
-        """Webhook для Stripe."""
+        """Webhook для Stripe. CSRF-виняток: запит приходить від Stripe,
+        не з браузера з session-кукою, і автентичність перевіряється
+        підписом (stripe.Webhook.construct_event), а не CSRF-токеном."""
         if not STRIPE_AVAILABLE:
             return jsonify({"error": _("Stripe not available")}), 400
 

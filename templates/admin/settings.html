@@ -7,6 +7,7 @@
 </div>
 
 <form method="post" class="settings-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Основні налаштування -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">

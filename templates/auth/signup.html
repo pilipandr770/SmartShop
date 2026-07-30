@@ -19,6 +19,7 @@
         {% endwith %}
 
         <form method="POST" class="auth-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label for="store_name">{{ _('Назва магазину') }} *</label>
                 <input type="text" id="store_name" name="store_name" required

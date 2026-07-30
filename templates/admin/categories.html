@@ -19,6 +19,7 @@
     </div>
 
     <form method="post" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <label for="slug">Slug (URL) *</label>
             <input type="text" id="slug" name="slug" required placeholder="elektronika">
@@ -111,6 +112,7 @@
                                 ✏️
                             </a>
                             <form method="post" action="{{ url_for('admin_categories_delete', category_id=c.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити категорію? Товари залишаться без категорії.') }}');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Видалити') }}">
                                     🗑️
                                 </button>

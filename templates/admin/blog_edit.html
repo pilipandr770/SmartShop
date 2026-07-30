@@ -14,6 +14,7 @@
 </div>
 
 <form method="post" id="postForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="editor-layout">
         <!-- Основний контент -->
         <div class="editor-main">

@@ -7,6 +7,7 @@
 </div>
 
 <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Навігація по табах -->
     <div class="tabs">
         <button type="button" class="tab active" onclick="showTab('chatbot')">💬 {{ _('Чатбот') }}</button>

@@ -10,6 +10,7 @@
 </div>
 
 <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
             <h3>{{ _('📦 Основна інформація') }}</h3>
@@ -127,6 +128,7 @@
     <div class="form-section">
         <p class="text-muted">{{ _('Видалення товару є незворотною дією.') }}</p>
         <form method="post" action="{{ url_for('admin_products_delete', product_id=product.id) }}" onsubmit="return confirm('Ви впевнені, що хочете видалити цей товар?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger">{{ _('🗑️ Видалити товар') }}</button>
         </form>
     </div>

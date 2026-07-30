@@ -37,9 +37,11 @@
     <div class="card-content">
         <span class="actions-label">{{ _('Масові дії:') }}</span>
         <form method="post" action="{{ url_for('admin_contacts_mark_all_read') }}" style="display: inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-secondary btn-sm">✓ {{ _('Позначити всі прочитаними') }}</button>
         </form>
         <form method="post" action="{{ url_for('admin_contacts_delete_read') }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити всі прочитані заявки?') }}');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger btn-sm">🗑️ {{ _('Видалити прочитані') }}</button>
         </form>
     </div>
@@ -84,11 +86,13 @@
 
             {% if not contact.is_read %}
             <form method="post" action="{{ url_for('admin_contact_mark_read', contact_id=contact.id) }}" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-secondary btn-sm">✓ {{ _('Прочитано') }}</button>
             </form>
             {% endif %}
 
             <form method="post" action="{{ url_for('admin_contact_delete', contact_id=contact.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити цю заявку?') }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-danger btn-sm">🗑️ {{ _('Видалити') }}</button>
             </form>
         </div>

@@ -107,6 +107,7 @@
                         <div class="actions">
                             {% if post.status != 'published' %}
                             <form method="post" action="{{ url_for('admin_blog_publish', id=post.id) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn-icon success" title="{{ _('Опублікувати') }}">🚀</button>
                             </form>
                             {% endif %}
@@ -116,6 +117,7 @@
                             <a href="{{ url_for('blog_post_page', slug=post.slug) }}" target="_blank" class="btn-icon" title="{{ _('Переглянути') }}">👁</a>
                             <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="btn-icon" title="{{ _('Редагувати') }}">✏️</a>
                             <form method="post" action="{{ url_for('admin_blog_delete', id=post.id) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn-icon danger" title="{{ _('Видалити') }}" onclick="return confirm('{{ _('Видалити цю статтю?') }}')">🗑</button>
                             </form>
                         </div>

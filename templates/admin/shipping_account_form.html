@@ -9,6 +9,7 @@
 
 <div class="card">
     <form method="post" class="form-grid">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <label>
                 <input type="checkbox" name="is_sandbox" {% if not account or account.is_sandbox %}checked{% endif %}>{{ _('Sandbox / тестовий режим') }}</label>

@@ -19,6 +19,7 @@
         {% endwith %}
         
         <form method="POST" class="auth-form" id="b2bForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <!-- Секція: Дані компанії -->
             <div class="form-section">
                 <h3>📋 {{ _('Дані компанії') }}</h3>

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ _('Панель платформи – SmartShop AI') }}</title>
     <style>
         :root {
@@ -147,10 +148,12 @@
                 <td style="display:flex; gap:0.4rem; flex-wrap:wrap;">
                     <form method="POST" action="{{ url_for('platform_admin.impersonate', store_id=store.id) }}"
                           onsubmit="return confirm('{{ _('Увійти як власник магазину') }} «{{ store.name }}»?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-impersonate" title="{{ _('Увійти як власник, щоб налаштувати магазин на прохання клієнта') }}">🕵️ {{ _('Увійти як') }}</button>
                     </form>
                     <form method="POST" action="{{ url_for('platform_admin.toggle_store_active', store_id=store.id) }}"
                           onsubmit="return confirm('{{ 'Заблокувати' if store.is_active else 'Розблокувати' }} магазин «{{ store.name }}»?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn">{{ '⛔ Заблокувати' if store.is_active else '✅ Розблокувати' }}</button>
                     </form>
                 </td>

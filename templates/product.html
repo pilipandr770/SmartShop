@@ -209,6 +209,7 @@
 
             <!-- Форма додавання в кошик -->
             <form action="{{ url_for('cart_add', product_id=product.id) }}" method="post" class="add-to-cart-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ url_for('product_page', product_id=product.id) }}">
                 <label for="quantity" style="color: var(--text-muted);">{{ _('Quantity') }}:</label>
                 <input type="number" name="quantity" id="quantity" value="1" min="1" max="99">

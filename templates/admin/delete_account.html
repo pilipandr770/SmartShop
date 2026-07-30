@@ -29,6 +29,7 @@
         </ul>
 
         <form method="POST" style="margin-top: 1.5rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label for="password">{{ _('Підтвердіть паролем') }}</label>
                 <input type="password" id="password" name="password" required autocomplete="current-password">

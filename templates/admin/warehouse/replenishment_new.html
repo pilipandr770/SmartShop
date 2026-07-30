@@ -10,6 +10,7 @@
     </div>
 
     <form method="POST" id="replenishmentForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <!-- Ліва колонка - постачальник -->
             <div class="card">

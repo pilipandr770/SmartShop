@@ -40,6 +40,7 @@
                     <a href="{{ url_for('admin_shipping_account_edit', id=account.id) }}" class="btn btn-outline">✏️ {{ _('Редагувати') }}</a>
                     <form method="POST" action="{{ url_for('admin_shipping_account_delete', id=account.id) }}" style="display:inline;"
                           onsubmit="return confirm('{{ _('Видалити цей обліковий запис?') }}');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-outline" style="color:#ef4444;border-color:#ef4444;">🗑️</button>
                     </form>
                 </td>
@@ -75,6 +76,7 @@
         {{ _('Безкоштовна альтернатива доставці перевізником - клієнт сам забирає замовлення. Зʼявиться як окрема опція на кроці вибору доставки в checkout, навіть якщо DHL/UPS не налаштовані.') }}
     </p>
     <form method="POST" class="form-grid" style="padding: 1rem;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-group">
             <label>
                 <input type="checkbox" name="pickup_enabled" {% if settings.pickup_enabled %}checked{% endif %}>

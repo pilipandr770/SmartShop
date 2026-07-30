@@ -10,6 +10,7 @@
 </div>
 
 <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
             <h3>📁 {{ _('Інформація про категорію') }}</h3>
@@ -80,6 +81,7 @@
     <div class="form-section">
         <p class="text-muted">{{ _('При видаленні категорії товари залишаться, але будуть без категорії.') }}</p>
         <form method="post" action="{{ url_for('admin_categories_delete', category_id=category.id) }}" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити цю категорію?') }}');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger">🗑️ {{ _('Видалити категорію') }}</button>
         </form>
     </div>

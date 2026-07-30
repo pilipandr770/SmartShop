@@ -4,6 +4,7 @@ Flask-Migrate==4.0.7
 Flask-Login==0.6.3
 Flask-Babel==4.0.0
 Flask-Mail==0.9.1
+Flask-WTF==1.2.1
 stripe==7.0.0
 openai==1.50.0
 python-dotenv==1.0.1

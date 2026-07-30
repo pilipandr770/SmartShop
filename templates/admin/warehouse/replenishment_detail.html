@@ -141,6 +141,7 @@
 
                 {% if order.status == 'draft' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="approve">
                     <button type="submit" class="btn btn-info btn-block">✅ {{ _('Підтвердити') }}</button>
                 </form>
@@ -148,6 +149,7 @@
 
                 {% if order.status in ['pending', 'approved'] %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="order">
                     <button type="submit" class="btn btn-primary btn-block">📤 {{ _('Замовити у постачальника') }}</button>
                 </form>
@@ -155,6 +157,7 @@
 
                 {% if order.status == 'ordered' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="shipped">
                     <button type="submit" class="btn btn-info btn-block">🚚 {{ _('Відправлено') }}</button>
                 </form>
@@ -162,6 +165,7 @@
 
                 {% if order.status == 'shipped' %}
                 <form method="POST" style="margin-bottom: 1rem;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="receive">
                     <button type="submit" class="btn btn-success btn-block">✔️ {{ _('Отримано (оновити залишки)') }}</button>
                 </form>
@@ -170,6 +174,7 @@
                 {% if order.status not in ['received', 'cancelled'] %}
                 <hr style="margin: 1.5rem 0;">
                 <form method="POST" onsubmit="return confirm('{{ _('Ви впевнені що хочете скасувати це замовлення?') }}');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="cancel">
                     <button type="submit" class="btn btn-danger btn-block">❌ {{ _('Скасувати') }}</button>
                 </form>
@@ -178,6 +183,7 @@
                 {% if not order.is_paid and order.status != 'cancelled' %}
                 <hr style="margin: 1.5rem 0;">
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="mark_paid">
                     <div class="form-group">
                         <label>{{ _('Спосіб оплати:') }}</label>

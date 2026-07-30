@@ -63,6 +63,7 @@
         <h3>➕ {{ _('Створити план на 7 днів') }}</h3>
     </div>
     <form method="post" id="planForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-section">
             <p class="form-hint" style="margin-bottom: 1rem;">
                 💡 {{ _('Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані статті автоматично.') }}
