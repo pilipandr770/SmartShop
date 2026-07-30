@@ -6,6 +6,7 @@ from flask_babel import gettext as _
 from flask_login import login_required, current_user
 from extensions import db
 from models.order import Order, OrderStatus
+from models.settings import SiteSettings
 
 cabinet_bp = Blueprint("cabinet", __name__, url_prefix="/cabinet")
 
@@ -36,6 +37,7 @@ def b2c_dashboard():
         "cabinet/b2c/dashboard.html",
         recent_orders=recent_orders,
         total_orders=total_orders,
+        settings=SiteSettings.get_or_create(g.store.id),
     )
 
 
@@ -60,6 +62,7 @@ def b2b_dashboard():
         return render_template(
             "cabinet/b2b/pending.html",
             company=company,
+            settings=SiteSettings.get_or_create(g.store.id),
         )
 
     # Останні замовлення компанії
@@ -82,6 +85,7 @@ def b2b_dashboard():
         total_orders=total_orders,
         paid_orders=paid_orders,
         total_spent=total_spent,
+        settings=SiteSettings.get_or_create(g.store.id),
     )
 
 
@@ -103,7 +107,7 @@ def orders():
     orders = pagination.items
     
     template = "cabinet/b2b/orders.html" if current_user.is_b2b else "cabinet/b2c/orders.html"
-    return render_template(template, orders=orders, pagination=pagination)
+    return render_template(template, orders=orders, pagination=pagination, settings=SiteSettings.get_or_create(g.store.id))
 
 
 @cabinet_bp.route("/orders/<int:order_id>")
@@ -157,7 +161,7 @@ def company():
         flash(_("Дані компанії оновлено."), "success")
         return redirect(url_for("cabinet.company"))
     
-    return render_template("cabinet/b2b/company.html", company=company)
+    return render_template("cabinet/b2b/company.html", company=company, settings=SiteSettings.get_or_create(g.store.id))
 
 
 @cabinet_bp.route("/change-password", methods=["GET", "POST"])

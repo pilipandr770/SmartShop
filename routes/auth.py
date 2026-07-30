@@ -15,40 +15,49 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    """Сторінка входу."""
+    """Сторінка входу.
+
+    Застаріла, дублює /login (user_login у app.py) - той є основним
+    (login_manager.login_view на нього вказує) і має повнішу логіку
+    редіректу за роллю (platform_owner/b2b). Цей маршрут лишається для
+    зворотної сумісності зі старими закладками; render_template тут все
+    одно має передавати `settings`, інакше шаблон падає з UndefinedError."""
     if current_user.is_authenticated:
         return redirect(url_for("cabinet.dashboard"))
-    
+
+    from models.settings import SiteSettings
+    settings = SiteSettings.get_or_create(g.store.id)
+
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         remember = request.form.get("remember") == "on"
-        
+
         user = User.get_by_email(email)
-        
+
         if user and user.check_password(password):
             if not user.is_active:
                 flash(_("Ваш акаунт деактивовано. Зверніться до підтримки."), "danger")
-                return render_template("auth/login.html")
-            
+                return render_template("auth/login.html", settings=settings)
+
             login_user(user, remember=remember)
             user.update_last_login()
-            
+
             flash(_("Вітаємо, %(name)s!") % {"name": user.full_name}, "success")
-            
+
             # Редірект залежно від ролі
             next_page = request.args.get("next")
             if next_page:
                 return redirect(next_page)
-            
+
             if user.is_admin or user.is_manager:
                 return redirect(url_for("admin_dashboard"))
-            
+
             return redirect(url_for("cabinet.dashboard"))
-        
+
         flash(_("Невірний email або пароль."), "danger")
-    
-    return render_template("auth/login.html")
+
+    return render_template("auth/login.html", settings=settings)
 
 
 @auth_bp.route("/logout")
@@ -62,10 +71,14 @@ def logout():
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    """Реєстрація B2C клієнта."""
+    """Реєстрація B2C клієнта. Застаріла, дублює /register (user_register
+    у app.py) - див. коментар у login() вище."""
     if current_user.is_authenticated:
         return redirect(url_for("cabinet.dashboard"))
-    
+
+    from models.settings import SiteSettings
+    settings = SiteSettings.get_or_create(g.store.id)
+
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
@@ -73,26 +86,26 @@ def register():
         first_name = request.form.get("first_name", "").strip()
         last_name = request.form.get("last_name", "").strip()
         phone = request.form.get("phone", "").strip()
-        
+
         # Валідація
         errors = []
-        
+
         if not email:
             errors.append(_("Email обов'язковий"))
         elif User.get_by_email(email):
             errors.append(_("Користувач з таким email вже існує"))
-        
+
         if not password:
             errors.append(_("Пароль обов'язковий"))
         elif len(password) < 6:
             errors.append(_("Пароль має бути не менше 6 символів"))
         elif password != password_confirm:
             errors.append(_("Паролі не співпадають"))
-        
+
         if errors:
             for error in errors:
                 flash(error, "danger")
-            return render_template("auth/register.html")
+            return render_template("auth/register.html", settings=settings)
         
         # Створення користувача
         user = User.create_user(
@@ -108,8 +121,8 @@ def register():
         login_user(user)
         flash(_("Реєстрація успішна! Ласкаво просимо!"), "success")
         return redirect(url_for("cabinet.dashboard"))
-    
-    return render_template("auth/register.html")
+
+    return render_template("auth/register.html", settings=settings)
 
 
 @auth_bp.route("/register/b2b", methods=["GET", "POST"])
@@ -195,7 +208,7 @@ def register_b2b():
         if errors:
             for error in errors:
                 flash(error, "danger")
-            return render_template("auth/register_b2b.html", vat_result=vat_result)
+            return render_template("auth/register_b2b.html", vat_result=vat_result, settings=settings)
         
         # Створення компанії
         company = Company(
@@ -265,7 +278,7 @@ def register_b2b():
         
         return redirect(url_for("cabinet.dashboard"))
     
-    return render_template("auth/register_b2b.html", vat_result=vat_result)
+    return render_template("auth/register_b2b.html", vat_result=vat_result, settings=settings)
 
 
 @auth_bp.route("/check-vat", methods=["POST"])

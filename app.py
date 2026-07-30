@@ -329,7 +329,13 @@ def create_app():
 
     # Ініціалізація Flask-Login
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
+    # ВАЖЛИВО: "user_login" (маршрут /login у цьому файлі), а НЕ застаріле
+    # "auth.login" (routes/auth.py) - той дублюючий маршрут не передає
+    # `settings` у шаблон і не має повної логіки редіректу за роллю
+    # (platform_owner/b2b), тому будь-який @login_required-редірект
+    # (наприклад, анонімний візит на /cabinet) через нього падав з
+    # UndefinedError: 'settings' is undefined.
+    login_manager.login_view = "user_login"
     login_manager.login_message = "Будь ласка, увійдіть для доступу до цієї сторінки."
     login_manager.login_message_category = "info"
 
