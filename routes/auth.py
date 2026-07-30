@@ -119,7 +119,10 @@ def register():
             phone=phone or None,
             store_id=g.store.id,
         )
-        
+
+        from services.email_service import send_verification_email_for_user
+        send_verification_email_for_user(user)
+
         login_user(user)
         flash(_("Реєстрація успішна! Ласкаво просимо!"), "success")
         return redirect(url_for("cabinet.dashboard"))
@@ -265,12 +268,14 @@ def register_b2b():
             phone=phone or None,
             company_id=company.id,
             store_id=g.store.id,
-            is_verified=vat_verified,  # Якщо VAT підтверджено - верифікуємо і юзера
         )
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        
+
+        from services.email_service import send_verification_email_for_user
+        send_verification_email_for_user(user)
+
         # Логін
         login_user(user)
         

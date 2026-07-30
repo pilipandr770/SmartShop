@@ -1,0 +1,22 @@
+{% extends "email/layout.html" %}
+
+{% block title %}{{ _('Підтвердіть вашу email адресу') }}{% endblock %}
+
+{% block content %}
+<h2>✉️ {{ _('Підтвердіть email, %(name)s', name=user_name) }}</h2>
+
+<p>{{ _('Дякуємо за реєстрацію! Щоб підтвердити, що ця email адреса належить вам, натисніть кнопку нижче.') }}</p>
+
+<p style="text-align: center;">
+    <a href="{{ verify_url }}" class="button">
+        ✅ {{ _('Підтвердити email') }}
+    </a>
+</p>
+
+<div class="info-box">
+    <p style="margin: 0;">{{ _('Посилання дійсне протягом 3 днів. Якщо кнопка не працює, скопіюйте це посилання у браузер:') }}</p>
+    <p style="margin: 10px 0 0; word-break: break-all;"><a href="{{ verify_url }}">{{ verify_url }}</a></p>
+</div>
+
+<p>{{ _('Якщо ви не реєструвались на SmartShop AI, просто проігноруйте цей лист.') }}</p>
+{% endblock %}

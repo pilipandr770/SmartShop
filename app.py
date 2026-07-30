@@ -3521,6 +3521,103 @@ def create_app():
 
     # ----- AUTH: ВХІД/РЕЄСТРАЦІЯ B2C/B2B -----
 
+    def _send_verification_email_for(user, locale=None):
+        from services.email_service import send_verification_email_for_user
+        send_verification_email_for_user(user, locale=locale)
+
+    @app.route("/verify-email/<token>")
+    def verify_email(token):
+        """Підтвердження email за токеном з листа."""
+        from services.tokens import verify_token, EMAIL_VERIFY_SALT, EMAIL_VERIFY_MAX_AGE
+        email = verify_token(token, EMAIL_VERIFY_SALT, EMAIL_VERIFY_MAX_AGE)
+        if not email:
+            flash(_("Посилання для підтвердження email недійсне або протерміноване. Запросіть нове нижче."), "danger")
+            return redirect(url_for("resend_verification"))
+
+        user = User.get_by_email(email)
+        if not user:
+            flash(_("Користувача не знайдено."), "danger")
+            return redirect(url_for("user_login"))
+
+        if not user.is_verified:
+            user.is_verified = True
+            db.session.commit()
+        flash(_("✅ Email підтверджено!"), "success")
+        return redirect(url_for("user_cabinet") if current_user.is_authenticated else url_for("user_login"))
+
+    @app.route("/resend-verification", methods=["GET", "POST"])
+    @limiter.limit("5 per minute;15 per hour")
+    def resend_verification():
+        """Повторне надсилання листа підтвердження email."""
+        if request.method == "POST":
+            email = request.form.get("email", "").strip().lower()
+            user = User.get_by_email(email)
+            # Однакове повідомлення незалежно від того, чи існує акаунт -
+            # щоб не давати змогу перебором дізнатись, які email зареєстровані.
+            if user and not user.is_verified:
+                _send_verification_email_for(user, locale=str(get_locale()))
+            flash(_("Якщо цей email зареєстровано і ще не підтверджено, ми надіслали новий лист."), "info")
+            return redirect(url_for("user_login"))
+        settings = SiteSettings.get_or_create(g.store.id)
+        return render_template("auth/resend_verification.html", settings=settings)
+
+    @app.route("/reset-password", methods=["GET", "POST"])
+    @limiter.limit("5 per minute;15 per hour")
+    def reset_password_request():
+        """Форма запиту скидання пароля - вводиться email."""
+        if request.method == "POST":
+            email = request.form.get("email", "").strip().lower()
+            user = User.get_by_email(email)
+            if user:
+                from services.tokens import generate_token, PASSWORD_RESET_SALT
+                token = generate_token(user.email, PASSWORD_RESET_SALT)
+                reset_url = url_for("reset_password", token=token, _external=True)
+                try:
+                    from services.email_service import send_password_reset_email
+                    send_password_reset_email(user.email, user.full_name, reset_url, locale=str(get_locale()))
+                except Exception as e:
+                    app.logger.error(f'Failed to send password reset email: {str(e)}')
+            # Однакове повідомлення незалежно від існування акаунта -
+            # захист від User enumeration через цю форму.
+            flash(_("Якщо цей email зареєстровано, ми надіслали посилання для скидання пароля."), "info")
+            return redirect(url_for("user_login"))
+        settings = SiteSettings.get_or_create(g.store.id)
+        return render_template("auth/reset_password_request.html", settings=settings)
+
+    @app.route("/reset-password/<token>", methods=["GET", "POST"])
+    @limiter.limit("10 per minute;30 per hour")
+    def reset_password(token):
+        """Встановлення нового пароля за токеном з листа."""
+        from services.tokens import verify_token, PASSWORD_RESET_SALT, PASSWORD_RESET_MAX_AGE
+        email = verify_token(token, PASSWORD_RESET_SALT, PASSWORD_RESET_MAX_AGE)
+        if not email:
+            flash(_("Посилання для скидання пароля недійсне або протерміноване. Запросіть нове."), "danger")
+            return redirect(url_for("reset_password_request"))
+
+        user = User.get_by_email(email)
+        if not user:
+            flash(_("Користувача не знайдено."), "danger")
+            return redirect(url_for("reset_password_request"))
+
+        settings = SiteSettings.get_or_create(g.store.id)
+
+        if request.method == "POST":
+            password = request.form.get("password", "")
+            password_confirm = request.form.get("password_confirm", "")
+            if not password or len(password) < 6:
+                flash(_("Пароль має бути не менше 6 символів"), "danger")
+                return render_template("auth/reset_password.html", token=token, settings=settings)
+            if password != password_confirm:
+                flash(_("Паролі не співпадають"), "danger")
+                return render_template("auth/reset_password.html", token=token, settings=settings)
+
+            user.set_password(password)
+            db.session.commit()
+            flash(_("✅ Пароль оновлено! Тепер ви можете увійти."), "success")
+            return redirect(url_for("user_login"))
+
+        return render_template("auth/reset_password.html", token=token, settings=settings)
+
     @app.route("/login", methods=["GET", "POST"])
     @limiter.limit("15 per minute;50 per hour")
     def user_login():
@@ -3630,7 +3727,9 @@ def create_app():
                 app.logger.info(f'Registration email sent to {email}')
             except Exception as e:
                 app.logger.error(f'Failed to send registration email: {str(e)}')
-            
+
+            _send_verification_email_for(user, locale=str(get_locale()))
+
             from flask_login import login_user as flask_login_user
             flask_login_user(user)
             flash(_("Реєстрація успішна! Ласкаво просимо!"), "success")
@@ -3741,12 +3840,11 @@ def create_app():
                 phone=phone or None,
                 company_id=company.id,
                 store_id=g.store.id,
-                is_verified=vat_verified,
             )
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
-            
+
             # Відправити email залежно від статусу
             try:
                 from services.email_service import send_b2b_verification_pending, send_b2b_verification_approved
@@ -3759,7 +3857,9 @@ def create_app():
                     app.logger.info(f'B2B pending email sent to {email}')
             except Exception as e:
                 app.logger.error(f'Failed to send B2B email: {str(e)}')
-            
+
+            _send_verification_email_for(user, reg_locale)
+
             from flask_login import login_user as flask_login_user
             flask_login_user(user)
             

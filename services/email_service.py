@@ -124,6 +124,65 @@ def send_registration_email(user_email, user_name, locale=None):
     send_email(subject, user_email, html_body)
 
 
+def send_verification_email_for_user(user, locale=None):
+    """
+    Best-effort надсилання листа підтвердження email для User-об'єкта -
+    генерує токен і формує посилання сам. Ніколи не блокує реєстрацію:
+    якщо SMTP не налаштовано або сталася будь-яка помилка, лише пише
+    попередження в лог.
+    """
+    try:
+        from flask import url_for
+        from services.tokens import generate_token, EMAIL_VERIFY_SALT
+        token = generate_token(user.email, EMAIL_VERIFY_SALT)
+        verify_url = url_for("verify_email", token=token, _external=True)
+        send_verification_email(user.email, user.full_name, verify_url, locale=locale)
+    except Exception as e:
+        current_app.logger.error(f'Failed to send verification email: {str(e)}')
+
+
+def send_verification_email(user_email, user_name, verify_url, locale=None):
+    """
+    Лист із посиланням для підтвердження email адреси.
+
+    Args:
+        user_email: Email користувача
+        user_name: Ім'я користувача
+        verify_url: Повне посилання /verify-email/<token>
+        locale: Мова листа (uk/en/de)
+    """
+    with force_locale(_locale_or_default(locale)):
+        subject = _('Підтвердіть вашу email адресу - SmartShop AI')
+        html_body = render_template(
+            'email/verify_email.html',
+            user_name=user_name,
+            verify_url=verify_url,
+        )
+
+    send_email(subject, user_email, html_body)
+
+
+def send_password_reset_email(user_email, user_name, reset_url, locale=None):
+    """
+    Лист із посиланням для скидання пароля.
+
+    Args:
+        user_email: Email користувача
+        user_name: Ім'я користувача
+        reset_url: Повне посилання /reset-password/<token>
+        locale: Мова листа (uk/en/de)
+    """
+    with force_locale(_locale_or_default(locale)):
+        subject = _('Скидання пароля - SmartShop AI')
+        html_body = render_template(
+            'email/password_reset.html',
+            user_name=user_name,
+            reset_url=reset_url,
+        )
+
+    send_email(subject, user_email, html_body)
+
+
 def send_b2b_verification_pending(user_email, company_name, locale=None):
     """
     Email для B2B партнера - очікування верифікації.
