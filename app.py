@@ -924,7 +924,12 @@ def create_app():
             try:
                 from models.store import Store, StoreSubscriptionStatus
 
-                default_store = Store.query.order_by(Store.id.asc()).first()
+                # is_deleted=False - інакше м'яко видалений старий Store (напр.
+                # після self-service видалення акаунту) назавжди "займає" роль
+                # бутстрап-магазину для будь-якого наступного запуску процесу,
+                # заважаючи реальному новому магазину коли-небудь стати ним.
+                default_store = Store.query.filter_by(is_deleted=False).order_by(Store.id.asc()).first()
+                created_new_default_store = False
                 if default_store is None:
                     owner = (
                         User.query.filter_by(role=UserRole.STORE_OWNER.value).first()
@@ -966,6 +971,7 @@ def create_app():
                     db.session.add(default_store)
                     db.session.flush()
                     db.session.commit()
+                    created_new_default_store = True
                     print(f"✅ Створено дефолтний Store #{default_store.id} ('{default_store.slug}')")
 
                 DEFAULT_STORE_ID = default_store.id
@@ -990,8 +996,15 @@ def create_app():
                 # Тепер безпечно працювати з моделями
                 SiteSettings.get_or_create(DEFAULT_STORE_ID)
 
-                # Створюємо тестові дані, якщо БД порожня
-                if Category.query.filter_by(store_id=DEFAULT_STORE_ID).count() == 0:
+                # Тестові демо-товари створюємо ЛИШЕ одразу після створення
+                # нового бутстрап-магазину (перший запуск на порожній БД) - а
+                # НЕ будь-коли, коли у "першого по ID" магазину раптом 0
+                # категорій. Інакше будь-який реальний клієнтський магазин, що
+                # просто ще не додав жодного товару, ризикує отримати чужі
+                # демо-товари (iPhone/MacBook/...) при наступному старті
+                # процесу - це реально стався один раз через діагностичний
+                # запуск, що випадково "усиновив" такий магазин як бутстрап.
+                if created_new_default_store and Category.query.filter_by(store_id=DEFAULT_STORE_ID).count() == 0:
                     # Тестова категорія
                     test_category = Category(
                         store_id=DEFAULT_STORE_ID,
