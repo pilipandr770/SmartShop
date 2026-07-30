@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, g
 from flask_babel import gettext as _
 from flask_login import login_user, logout_user, login_required, current_user
-from extensions import db
+from extensions import db, limiter
 from models.user import User, UserRole
 from models.company import Company, CompanyStatus, VerificationLog
 from services.vat_checker import check_vat_number
@@ -14,6 +14,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("15 per minute;50 per hour")
 def login():
     """Сторінка входу.
 
@@ -70,6 +71,7 @@ def logout():
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@limiter.limit("10 per minute;30 per hour")
 def register():
     """Реєстрація B2C клієнта. Застаріла, дублює /register (user_register
     у app.py) - див. коментар у login() вище."""
@@ -126,6 +128,7 @@ def register():
 
 
 @auth_bp.route("/register/b2b", methods=["GET", "POST"])
+@limiter.limit("10 per minute;30 per hour")
 def register_b2b():
     """Реєстрація B2B партнера."""
     if current_user.is_authenticated:

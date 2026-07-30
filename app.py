@@ -67,7 +67,7 @@ except ImportError:
     CLOUDINARY_AVAILABLE = False
 
 # Ініціалізація SQLAlchemy та Flask-Login - імпортуємо з extensions для уникнення дублювання
-from extensions import db, login_manager, migrate, csrf
+from extensions import db, login_manager, migrate, csrf, limiter
 
 
 def create_app():
@@ -327,6 +327,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     csrf.init_app(app)
+    limiter.init_app(app)
 
     # Ініціалізація Flask-Login
     login_manager.init_app(app)
@@ -3521,6 +3522,7 @@ def create_app():
     # ----- AUTH: ВХІД/РЕЄСТРАЦІЯ B2C/B2B -----
 
     @app.route("/login", methods=["GET", "POST"])
+    @limiter.limit("15 per minute;50 per hour")
     def user_login():
         """Сторінка входу для користувачів."""
         if current_user.is_authenticated:
@@ -3576,6 +3578,7 @@ def create_app():
         return redirect(url_for("user_login"))
 
     @app.route("/register", methods=["GET", "POST"])
+    @limiter.limit("10 per minute;30 per hour")
     def user_register():
         """Реєстрація B2C клієнта."""
         if current_user.is_authenticated:
@@ -3637,6 +3640,7 @@ def create_app():
         return render_template("auth/register.html", settings=settings)
 
     @app.route("/register/b2b", methods=["GET", "POST"])
+    @limiter.limit("10 per minute;30 per hour")
     def user_register_b2b():
         """Реєстрація B2B партнера."""
         if current_user.is_authenticated:

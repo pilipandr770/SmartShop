@@ -9,7 +9,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_babel import gettext as _
 from flask_login import login_user, current_user
 
-from extensions import db
+from extensions import db, limiter
 from models.user import User, UserRole
 from models.store import Store, StoreSubscriptionStatus, PLAN_CHOICES, DEFAULT_PLAN
 
@@ -76,6 +76,7 @@ def _store_admin_url(store):
 
 
 @signup_bp.route("", methods=["GET", "POST"])
+@limiter.limit("10 per minute;30 per hour")
 def new_store():
     """Форма створення нового магазину (SaaS-реєстрація власника)."""
     if current_user.is_authenticated and current_user.is_store_owner:
