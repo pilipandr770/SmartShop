@@ -497,7 +497,7 @@
 <body>
 <div class="page">
     <!-- HEADER -->
-    {% if g.store and not g.store.is_deleted and g.store.is_active %}
+    {% if g.store and not g.store.is_deleted and g.store.is_active and not g.is_platform_root %}
     <header class="header">
         <a href="{{ url_for('index') }}" class="brand">
             {% if settings and settings.logo_url %}
