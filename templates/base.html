@@ -33,6 +33,13 @@
     {# Favicon - власний фавікон магазину, якщо завантажений, інакше дефолтний #}
     <link rel="icon" href="{{ settings.favicon_url if settings and settings.favicon_url else url_for('static', filename='favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ settings.favicon_url if settings and settings.favicon_url else url_for('static', filename='images/apple-touch-icon.png') }}">
+
+    {# Шрифт пресету дизайну вітрини (якщо не системний) #}
+    {% if active_font and active_font.google_font_url %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ active_font.google_font_url }}">
+    {% endif %}
     
     {# Multilingual Support #}
     <link rel="alternate" hreflang="en" href="{{ request.base_url }}?lang=en">
@@ -63,15 +70,15 @@
     
     <style>
         :root {
-            --bg-main: #050816;
-            --bg-card: #0b1020;
-            --bg-card-hover: #101731;
-            --accent: #10b981;
-            --accent-soft: rgba(16, 185, 129, 0.12);
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --border-soft: rgba(148, 163, 184, 0.25);
-            --shadow-soft: 0 20px 40px rgba(15, 23, 42, 0.75);
+            --bg-main: {{ active_theme.bg_main }};
+            --bg-card: {{ active_theme.bg_card }};
+            --bg-card-hover: {{ active_theme.bg_card_hover }};
+            --accent: {{ active_theme.accent }};
+            --accent-soft: {{ active_theme.accent_soft }};
+            --text-main: {{ active_theme.text_main }};
+            --text-muted: {{ active_theme.text_muted }};
+            --border-soft: {{ active_theme.border_soft }};
+            --shadow-soft: 0 20px 40px rgba(15, 23, 42, {{ '0.35' if not active_theme.is_dark else '0.75' }});
             --radius-xl: 1.25rem;
             --transition-fast: 0.2s ease;
         }
@@ -82,8 +89,8 @@
 
         body {
             margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: radial-gradient(circle at top, #0f172a 0, #020617 45%, #000 100%);
+            font-family: {{ active_font.family | safe }};
+            background: {{ active_theme.body_gradient }};
             color: var(--text-main);
             min-height: 100vh;
             display: flex;

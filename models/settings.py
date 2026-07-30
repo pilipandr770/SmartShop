@@ -62,6 +62,13 @@ class SiteSettings(db.Model):
     min_order_amount = db.Column(db.Float, nullable=True, default=0.0)
     shipping_info = db.Column(db.Text, nullable=True)
     
+    # Дизайн вітрини - кожне значення це ключ у services/theme_presets.py,
+    # а не довільний CSS: власник обирає з готового набору пресетів, ми
+    # ніколи не зберігаємо і не рендеримо довільний CSS/HTML від нього.
+    theme_preset = db.Column(db.String(30), nullable=True, default="emerald_dark")
+    font_preset = db.Column(db.String(30), nullable=True, default="system_sans")
+    homepage_layout = db.Column(db.String(30), nullable=True, default="hero_grid")
+
     # Самовивіз (click & collect) - безкоштовна альтернатива доставці перевізником
     pickup_enabled = db.Column(db.Boolean, default=False)
     pickup_address = db.Column(db.String(500), nullable=True)

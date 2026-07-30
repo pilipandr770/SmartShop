@@ -116,6 +116,57 @@
         </div>
     </div>
 
+    <!-- Дизайн вітрини -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h3>🎨 {{ _('Дизайн вітрини') }}</h3>
+        </div>
+        <div class="form-section">
+            {% for url in font_presets.values() | map(attribute='google_font_url') | select | list %}
+            <link rel="stylesheet" href="{{ url }}">
+            {% endfor %}
+
+            <label class="design-picker-label">{{ _('Кольорова тема') }}</label>
+            <div class="theme-picker-grid">
+                {% for key, theme in theme_presets.items() %}
+                <label class="theme-swatch-card {{ 'selected' if (settings.theme_preset or 'emerald_dark') == key }}">
+                    <input type="radio" name="theme_preset" value="{{ key }}" {{ 'checked' if (settings.theme_preset or 'emerald_dark') == key }}>
+                    <span class="theme-swatch-preview" style="background:{{ theme.bg_main }}; border-color:{{ theme.border_soft }};">
+                        <span class="theme-swatch-card-mini" style="background:{{ theme.bg_card }};">
+                            <span class="theme-swatch-dot" style="background:{{ theme.accent }};"></span>
+                            <span class="theme-swatch-line" style="background:{{ theme.text_main }};"></span>
+                            <span class="theme-swatch-line short" style="background:{{ theme.text_muted }};"></span>
+                        </span>
+                    </span>
+                    <span class="theme-swatch-name">{{ theme.label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <label class="design-picker-label" style="margin-top:1.5rem;">{{ _('Шрифт') }}</label>
+            <div class="font-picker-grid">
+                {% for key, font in font_presets.items() %}
+                <label class="font-picker-card {{ 'selected' if (settings.font_preset or 'system_sans') == key }}">
+                    <input type="radio" name="font_preset" value="{{ key }}" {{ 'checked' if (settings.font_preset or 'system_sans') == key }}>
+                    <span class="font-picker-preview" style="font-family: {{ font.family | safe }};">Аа Bb 123</span>
+                    <span class="font-picker-name">{{ font.label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <label class="design-picker-label" style="margin-top:1.5rem;">{{ _('Розкладка головної сторінки') }}</label>
+            <div class="layout-picker-grid">
+                {% for key, layout in homepage_layouts.items() %}
+                <label class="layout-picker-card {{ 'selected' if (settings.homepage_layout or 'hero_grid') == key }}">
+                    <input type="radio" name="homepage_layout" value="{{ key }}" {{ 'checked' if (settings.homepage_layout or 'hero_grid') == key }}>
+                    <span class="layout-picker-name">{{ layout.label }}</span>
+                    <span class="layout-picker-desc">{{ layout.description }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
     <!-- Контактна інформація -->
     <div class="card" style="margin-bottom: 2rem;">
         <div class="card-header">
@@ -591,6 +642,114 @@
 .upload-status.success { color: #22c55e; }
 .upload-status.error { color: #ef4444; }
 .upload-status.loading { color: #3b82f6; }
+
+/* Дизайн вітрини: пікери тем/шрифтів/розкладки */
+.design-picker-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-primary, #1f2937);
+}
+
+.theme-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+}
+
+.theme-swatch-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+}
+
+.theme-swatch-card:hover { border-color: rgba(148, 163, 184, 0.4); }
+.theme-swatch-card.selected { border-color: #10b981; }
+.theme-swatch-card input { position: absolute; opacity: 0; pointer-events: none; }
+
+.theme-swatch-preview {
+    width: 100%;
+    height: 72px;
+    border-radius: 0.6rem;
+    border: 1px solid;
+    padding: 8px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.theme-swatch-card-mini {
+    width: 100%;
+    border-radius: 0.4rem;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.theme-swatch-dot { width: 10px; height: 10px; border-radius: 999px; }
+.theme-swatch-line { width: 70%; height: 4px; border-radius: 2px; }
+.theme-swatch-line.short { width: 45%; }
+
+.theme-swatch-name {
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--text-secondary, #6b7280);
+}
+
+.font-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+}
+
+.font-picker-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: 2px solid rgba(148, 163, 184, 0.25);
+    transition: border-color 0.15s;
+}
+
+.font-picker-card:hover { border-color: rgba(148, 163, 184, 0.5); }
+.font-picker-card.selected { border-color: #10b981; }
+.font-picker-card input { position: absolute; opacity: 0; pointer-events: none; }
+
+.font-picker-preview { font-size: 1.2rem; }
+.font-picker-name { font-size: 0.75rem; color: var(--text-secondary, #6b7280); }
+
+.layout-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+}
+
+.layout-picker-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid rgba(148, 163, 184, 0.25);
+    transition: border-color 0.15s;
+}
+
+.layout-picker-card:hover { border-color: rgba(148, 163, 184, 0.5); }
+.layout-picker-card.selected { border-color: #10b981; }
+.layout-picker-card input { position: absolute; opacity: 0; pointer-events: none; }
+
+.layout-picker-name { font-weight: 600; font-size: 0.85rem; }
+.layout-picker-desc { font-size: 0.75rem; color: var(--text-secondary, #6b7280); }
 </style>
 
 <script>
@@ -630,5 +789,14 @@ async function uploadSettingsImage(input, fieldKey) {
         statusEl.className = 'upload-status error';
     }
 }
+
+// Підсвічує обрану картку в пікерах теми/шрифту/розкладки
+document.querySelectorAll('.theme-swatch-card, .font-picker-card, .layout-picker-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+        const group = card.parentElement.querySelectorAll('label');
+        group.forEach(function(el) { el.classList.remove('selected'); });
+        card.classList.add('selected');
+    });
+});
 </script>
 {% endblock %}

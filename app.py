@@ -2160,6 +2160,19 @@ def create_app():
             return symbols.get(currency_code, currency_code)
         return {"get_currency_symbol": get_currency_symbol}
 
+    @app.context_processor
+    def theme_context():
+        """Дає шаблонам доступ до готових пресетів дизайну (кольори/шрифт/
+        розкладка) поточного магазину - завжди беремо з фіксованого набору
+        в services/theme_presets.py, ніколи не рендеримо довільний CSS/HTML
+        від власника магазину."""
+        from services.theme_presets import get_theme, get_font, get_layout
+        current_settings = getattr(g, "store", None) and SiteSettings.get_or_create(g.store.id)
+        theme = get_theme(current_settings.theme_preset if current_settings else None)
+        font = get_font(current_settings.font_preset if current_settings else None)
+        layout = get_layout(current_settings.homepage_layout if current_settings else None)
+        return {"active_theme": theme, "active_font": font, "active_homepage_layout": layout}
+
     # ----- АДМІНКА: АВТОРИЗАЦІЯ -----
 
     @app.route("/admin/login", methods=["GET", "POST"])
@@ -2894,6 +2907,19 @@ def create_app():
             settings.site_name = request.form.get("site_name") or None
             settings.site_tagline = request.form.get("site_tagline") or None
 
+            # Дизайн вітрини - валідуємо проти фіксованого набору пресетів,
+            # ніколи не приймаємо довільне значення від форми.
+            from services.theme_presets import THEME_PRESETS, FONT_PRESETS, HOMEPAGE_LAYOUTS
+            posted_theme = request.form.get("theme_preset", "")
+            if posted_theme in THEME_PRESETS:
+                settings.theme_preset = posted_theme
+            posted_font = request.form.get("font_preset", "")
+            if posted_font in FONT_PRESETS:
+                settings.font_preset = posted_font
+            posted_layout = request.form.get("homepage_layout", "")
+            if posted_layout in HOMEPAGE_LAYOUTS:
+                settings.homepage_layout = posted_layout
+
             # Зображення (лого/фавікон/банер/фото "Про нас") - видаляємо старе
             # завантажене зображення з БД, якщо власник замінив його на нове.
             # Одна й та сама картинка теоретично може бути використана одразу
@@ -2988,7 +3014,14 @@ def create_app():
             flash(_("Налаштування сайту збережено."), "success")
             return redirect(url_for("admin_settings"))
 
-        return render_template("admin/settings.html", settings=settings)
+        from services.theme_presets import THEME_PRESETS, FONT_PRESETS, HOMEPAGE_LAYOUTS
+        return render_template(
+            "admin/settings.html",
+            settings=settings,
+            theme_presets=THEME_PRESETS,
+            font_presets=FONT_PRESETS,
+            homepage_layouts=HOMEPAGE_LAYOUTS,
+        )
 
     # ----- АДМІНКА: ВЛАСНИЙ ДОМЕН МАГАЗИНУ -----
 

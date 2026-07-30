@@ -382,6 +382,52 @@
         object-fit: cover;
         display: block;
     }
+
+    /* РОЗКЛАДКА "СПОЧАТКУ КАТЕГОРІЇ" */
+    .compact-header {
+        text-align: center;
+        padding: 1rem 0 0.5rem;
+    }
+
+    .compact-header-title {
+        font-size: clamp(1.6rem, 2vw + 1rem, 2.2rem);
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .compact-header-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        max-width: 36rem;
+        margin: 0 auto;
+    }
+
+    .categories-row-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+
+    .category-pill-card {
+        padding: 0.6rem 1.1rem;
+        border-radius: 999px;
+        border: 1px solid var(--border-soft);
+        background: var(--bg-card);
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: transform var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .category-pill-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+    }
+
+    .category-pill-all {
+        background: var(--accent);
+        color: #022c22;
+        border-color: var(--accent);
+    }
 </style>
 {% endblock %}
 
@@ -392,6 +438,27 @@
     <img src="{{ settings.hero_image_url }}" alt="{{ settings.site_name or '' }}">
 </section>
 {% endif %}
+{% if active_homepage_layout == 'categories_first' %}
+<!-- РОЗКЛАДКА "СПОЧАТКУ КАТЕГОРІЇ" -->
+<section class="compact-header">
+    <h1 class="compact-header-title">{{ settings.site_name or 'SmartShop AI' }}</h1>
+    <p class="compact-header-subtitle">{{ settings.site_tagline or settings.blog_excerpt or _('Your intelligent shopping assistant') }}</p>
+</section>
+
+{% if categories %}
+<section class="categories-row">
+    <h2 style="font-size:1.1rem;margin-bottom:0.6rem;">{{ _('Categories') }}</h2>
+    <div class="categories-row-grid">
+        {% for cat in categories %}
+        <a href="{{ url_for('category_page', slug=cat.slug) }}" class="category-pill-card">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+        <a href="{{ url_for('shop') }}" class="category-pill-card category-pill-all">{{ _('All Products') }} &#8594;</a>
+    </div>
+</section>
+{% endif %}
+{% else %}
 <!-- HERO -->
 <section class="hero" id="top">
     <div class="hero-left">
@@ -525,6 +592,7 @@
         </div>
     </a>
 </section>
+{% endif %}
 
 <!-- PRODUCTS PREVIEW -->
 <section class="products-section">
