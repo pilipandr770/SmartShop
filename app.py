@@ -2109,6 +2109,15 @@ def create_app():
         cart = get_cart()
         cart_count = sum(cart.values()) if cart else 0
         return {"cart_count": cart_count}
+
+    @app.context_processor
+    def impersonation_context():
+        """Прапорець для банера "ви імперсонуєте власника" в адмінці - показує
+        оператору платформи, що поточна сесія тимчасова, і дає швидкий вихід."""
+        return {
+            "is_impersonating": "impersonator_id" in session,
+            "impersonating_store_name": session.get("impersonating_store_name"),
+        }
     
     @app.context_processor
     def currency_context():

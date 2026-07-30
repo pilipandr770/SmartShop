@@ -398,6 +398,12 @@
     </aside>
 
     <main class="content">
+        {% if is_impersonating %}
+        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #1c1917; padding: 0.7rem 1.25rem; border-radius: 0.6rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-weight: 600; font-size: 0.9rem;">
+            <span>🕵️ {{ _('Ви увійшли як власник магазину "%(name)s" від імені платформи.', name=impersonating_store_name) }}</span>
+            <a href="{{ url_for('platform_admin.stop_impersonating') }}" style="background: #1c1917; color: #fbbf24; padding: 0.4rem 0.9rem; border-radius: 999px; text-decoration: none; white-space: nowrap;">{{ _('Повернутися до платформи') }}</a>
+        </div>
+        {% endif %}
         <div class="topbar">
             <div></div>
             <div>
