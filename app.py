@@ -367,8 +367,9 @@ def create_app():
     BASE_DOMAIN = os.environ.get("BASE_DOMAIN", "").lower().strip().strip(".")
     RESERVED_SUBDOMAINS = {"www", "api", "admin", "app"}
     # Шляхи, доступні навіть якщо жодного Store ще не існує в БД (порожня
-    # інсталяція до першої реєстрації) - реєстрація, статика, healthcheck.
-    STORE_OPTIONAL_PATH_PREFIXES = ("/signup", "/static", "/webhook", "/health")
+    # інсталяція до першої реєстрації) - реєстрація, статика, healthcheck,
+    # перемикач мови (глобальна утиліта, що лише пише сесію і не читає g.store).
+    STORE_OPTIONAL_PATH_PREFIXES = ("/signup", "/static", "/webhook", "/health", "/set-language")
 
     def resolve_current_store():
         """Визначає поточний Store за піддоменом запиту (або дефолтний, якщо
