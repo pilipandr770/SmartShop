@@ -552,7 +552,11 @@
                     {% endif %}
                 </a>
                 {% if current_user.is_authenticated %}
-                    {% if current_user.is_b2b %}
+                    {% if current_user.can_manage_store(g.store) %}
+                        <!-- Власник/менеджер ЦЬОГО магазину - "Dashboard" має вести
+                             в адмінку магазину, а не в клієнтський кабінет покупця. -->
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary">⚙️ {{ _('Admin Panel') }}</a>
+                    {% elif current_user.is_b2b %}
                         <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
                     {% else %}
                         <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 {{ _('Dashboard') }}</a>
@@ -561,9 +565,6 @@
                 {% else %}
                     <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Login') }}</a>
                     <a href="{{ url_for('user_register') }}" class="btn">{{ _('Register') }}</a>
-                {% endif %}
-                {% if current_user.is_authenticated and current_user.can_manage_store(g.store) %}
-                    <a href="{{ url_for('admin_login') }}" class="social-pill" title="{{ _('Admin Panel') }}">⚙️</a>
                 {% endif %}
             {% endif %}
         </div>
