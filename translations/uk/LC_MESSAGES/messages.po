@@ -3050,7 +3050,7 @@ msgstr "Фільтр:"
 
 #: templates/admin/orders.html:77
 msgid "№"
-msgstr ""
+msgstr "№"
 
 #: templates/admin/orders.html:145
 msgid "Сторінка"
