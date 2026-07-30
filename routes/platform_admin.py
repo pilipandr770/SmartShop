@@ -184,7 +184,14 @@ def impersonate(store_id):
     base_domain = os.environ.get("BASE_DOMAIN", "").strip().strip(".")
     if base_domain:
         return redirect(f"https://{store.slug}.{base_domain}/admin/")
-    return redirect(url_for("admin_dashboard"))
+    # Локальна розробка без BASE_DOMAIN: використовуємо <slug>.localhost -
+    # той самий піддоменний механізм, що resolve_current_store() вже
+    # підтримує для .localhost - інакше relative url_for лишає на
+    # "голому" localhost, де g.store резолвиться у чужий фолбек-магазин
+    # і admin_required коректно 403-ить (не бачить прав на нього).
+    port = request.host.split(":")[1] if ":" in request.host else None
+    port_suffix = f":{port}" if port else ""
+    return redirect(f"http://{store.slug}.localhost{port_suffix}/admin/")
 
 
 @platform_admin_bp.route("/stop-impersonating")

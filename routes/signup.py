@@ -62,12 +62,17 @@ def _store_admin_url(store):
     поточного хосту - критично, бо реєстрація і Stripe checkout відбуваються
     на голому BASE_DOMAIN, а relative url_for там же і лишає користувача,
     де g.store резолвиться у фолбек-магазин платформи, а не в щойно
-    створений. Якщо BASE_DOMAIN не налаштовано (локальна розробка без
-    піддоменів) - падаємо назад на звичайний relative url_for."""
+    створений. Якщо BASE_DOMAIN не налаштовано (локальна розробка) -
+    використовуємо <slug>.localhost:<port> - той самий піддоменний механізм,
+    що resolve_current_store() вже підтримує для .localhost, замість
+    relative url_for, який лишає локального тестувальника на тому ж
+    "голому" localhost і так само підставляє чужий фолбек-магазин."""
     base_domain = os.environ.get("BASE_DOMAIN", "").strip().strip(".")
-    if not base_domain:
-        return url_for("admin_dashboard")
-    return f"https://{store.slug}.{base_domain}/admin/"
+    if base_domain:
+        return f"https://{store.slug}.{base_domain}/admin/"
+    port = request.host.split(":")[1] if ":" in request.host else None
+    port_suffix = f":{port}" if port else ""
+    return f"http://{store.slug}.localhost{port_suffix}/admin/"
 
 
 @signup_bp.route("", methods=["GET", "POST"])

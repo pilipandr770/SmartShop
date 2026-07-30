@@ -85,6 +85,13 @@ def create_app():
     # одразу після Stripe checkout), не переноситься на власний піддомен
     # магазину - адмінка вимагає повторного входу або (гірше) g.store
     # резолвиться у чужий фолбек-магазин голого домену.
+    # Примітка: тільки для реального BASE_DOMAIN (напр. shop.andrii-it.de) -
+    # такий кук-домен потребує щонайменше однієї крапки. Спроба зробити те
+    # саме для "localhost" (Domain=.localhost) не працює - браузери й curl
+    # відмовляються ділити куку по піддоменах для однослівного хосту без
+    # крапок (захист від supercookie-атак), тому локальна розробка без
+    # BASE_DOMAIN не може відтворити цю крос-піддоменну поведінку - для
+    # цього є справжній сервер.
     _base_domain_for_cookie = os.environ.get("BASE_DOMAIN", "").lower().strip().strip(".")
     if _base_domain_for_cookie:
         app.config["SESSION_COOKIE_DOMAIN"] = f".{_base_domain_for_cookie}"
