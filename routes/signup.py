@@ -55,12 +55,28 @@ def _store_url(store):
     return f"https://{store.slug}.{base_domain}/"
 
 
+def _store_admin_url(store):
+    """Посилання на адмінку САМЕ цього магазину (<slug>.<BASE_DOMAIN>/admin/).
+
+    На відміну від url_for('admin_dashboard'), яке резолвиться відносно
+    поточного хосту - критично, бо реєстрація і Stripe checkout відбуваються
+    на голому BASE_DOMAIN, а relative url_for там же і лишає користувача,
+    де g.store резолвиться у фолбек-магазин платформи, а не в щойно
+    створений. Якщо BASE_DOMAIN не налаштовано (локальна розробка без
+    піддоменів) - падаємо назад на звичайний relative url_for."""
+    base_domain = os.environ.get("BASE_DOMAIN", "").strip().strip(".")
+    if not base_domain:
+        return url_for("admin_dashboard")
+    return f"https://{store.slug}.{base_domain}/admin/"
+
+
 @signup_bp.route("", methods=["GET", "POST"])
 def new_store():
     """Форма створення нового магазину (SaaS-реєстрація власника)."""
     if current_user.is_authenticated and current_user.is_store_owner:
         flash(_("У вас вже є магазин. Керуйте ним з адмінки."), "info")
-        return redirect(url_for("admin_dashboard"))
+        own_store = Store.query.filter_by(owner_user_id=current_user.id).first()
+        return redirect(_store_admin_url(own_store) if own_store else url_for("admin_dashboard"))
 
     if request.method == "POST":
         store_name = request.form.get("store_name", "").strip()
@@ -136,13 +152,18 @@ def new_store():
                 return redirect(checkout_session.url)
             except stripe.error.StripeError as e:
                 flash(_("Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте пізніше в адмінці.") % {"error": e}, "warning")
-                return redirect(url_for("admin_dashboard"))
+                return redirect(_store_admin_url(store))
 
         # Stripe не налаштовано (лише для локальної розробки/демо) - одразу
         # активуємо магазин без реальної оплати.
         store.subscription_status = StoreSubscriptionStatus.ACTIVE
         db.session.commit()
-        return render_template("auth/signup_success.html", store=store, store_url=_store_url(store))
+        return render_template(
+            "auth/signup_success.html",
+            store=store,
+            store_url=_store_url(store),
+            admin_url=_store_admin_url(store),
+        )
 
     return render_template("auth/signup.html", plans=PLAN_CHOICES, form={})
 
@@ -179,4 +200,5 @@ def success():
         "auth/signup_success.html",
         store=store,
         store_url=_store_url(store) if store else None,
+        admin_url=_store_admin_url(store) if store else url_for("admin_dashboard"),
     )

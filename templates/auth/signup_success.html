@@ -21,7 +21,7 @@
             <p>{{ _('Оплату отримано. Заходьте в адмінку, щоб налаштувати магазин.') }}</p>
             {% endif %}
         </div>
-        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-block">{{ _('Перейти в адмінку') }}</a>
+        <a href="{{ admin_url or url_for('admin_dashboard') }}" class="btn btn-primary btn-block">{{ _('Перейти в адмінку') }}</a>
     </div>
 </div>
 

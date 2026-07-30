@@ -79,7 +79,16 @@ def create_app():
 
     # Базові налаштування
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
-    
+
+    # Сесійна кука має діяти на всіх піддоменах платформи (<slug>.BASE_DOMAIN),
+    # інакше логін власника магазину, зроблений на голому BASE_DOMAIN (напр.
+    # одразу після Stripe checkout), не переноситься на власний піддомен
+    # магазину - адмінка вимагає повторного входу або (гірше) g.store
+    # резолвиться у чужий фолбек-магазин голого домену.
+    _base_domain_for_cookie = os.environ.get("BASE_DOMAIN", "").lower().strip().strip(".")
+    if _base_domain_for_cookie:
+        app.config["SESSION_COOKIE_DOMAIN"] = f".{_base_domain_for_cookie}"
+
     # Налаштування логування та моніторингу (критично для production)
     from config.logging_config import setup_logging, setup_sentry, log_request, log_exceptions
     setup_logging(app)
