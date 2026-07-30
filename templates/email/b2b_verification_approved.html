@@ -10,7 +10,7 @@
 <div class="success-box">
     <p style="margin: 0;"><strong>🎉 {{ _('Ваші B2B привілеї:') }}</strong></p>
     <ul style="margin: 10px 0 0; padding-left: 20px;">
-        <li><strong>{{ _('Знижка %(percent)s%%') % {'percent': discount_percent} }}</strong> {{ _('на всі товари') }}</li>
+        <li><strong>{{ _('Знижка %(percent)s%%', percent=discount_percent) }}</strong> {{ _('на всі товари') }}</li>
         <li>{{ _('Оплата за рахунком-фактурою (Net 30)') }}</li>
         <li>{{ _('Персональний менеджер') }}</li>
         <li>{{ _('Пріоритетна доставка') }}</li>

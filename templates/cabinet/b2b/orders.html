@@ -164,7 +164,7 @@
             <a href="?page={{ pagination.prev_num }}" class="page-btn">← {{ _('Попередня') }}</a>
             {% endif %}
 
-            <span class="page-info">{{ _('Сторінка %(page)s з %(pages)s') % {'page': pagination.page, 'pages': pagination.pages} }}</span>
+            <span class="page-info">{{ _('Сторінка %(page)s з %(pages)s', page=pagination.page, pages=pagination.pages) }}</span>
 
             {% if pagination.has_next %}
             <a href="?page={{ pagination.next_num }}" class="page-btn">{{ _('Наступна') }} →</a>

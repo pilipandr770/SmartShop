@@ -8,7 +8,7 @@
         <div class="auth-header">
             <h1>⏳ {{ _('Заявку на розгляді') }}</h1>
             <p>
-                {{ _('Компанія «%(name)s» ще не верифікована. Ми повідомимо вас на email, щойно перевірку буде завершено.') % {'name': company.name} }}
+                {{ _('Компанія «%(name)s» ще не верифікована. Ми повідомимо вас на email, щойно перевірку буде завершено.', name=company.name) }}
             </p>
         </div>
         <a href="{{ url_for('user_logout') }}" class="btn btn-outline btn-block">{{ _('Вийти') }}</a>

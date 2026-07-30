@@ -9,7 +9,7 @@
     <div class="alerts-banner critical">
         <div class="alert-icon">⚠️</div>
         <div class="alert-content">
-            <strong>{{ _('%(count)s критичних алертів!') % {'count': critical_alerts|length} }}</strong>
+            <strong>{{ _('%(count)s критичних алертів!', count=critical_alerts|length) }}</strong>
             <a href="{{ url_for('admin_crm_alerts') }}">{{ _('Переглянути') }}</a>
         </div>
     </div>
@@ -237,7 +237,7 @@
         {% if page > 1 %}
         <a href="?page={{ page - 1 }}&status={{ filter_status }}&reliability={{ filter_reliability }}&country={{ filter_country }}&search={{ search }}" class="btn">← {{ _('Назад') }}</a>
         {% endif %}
-        <span class="page-info">{{ _('Сторінка %(page)s з %(total)s') % {'page': page, 'total': total_pages} }}</span>
+        <span class="page-info">{{ _('Сторінка %(page)s з %(total)s', page=page, total=total_pages) }}</span>
         {% if page < total_pages %}
         <a href="?page={{ page + 1 }}&status={{ filter_status }}&reliability={{ filter_reliability }}&country={{ filter_country }}&search={{ search }}" class="btn">{{ _('Вперед') }} →</a>
         {% endif %}

@@ -8,7 +8,7 @@
         <div class="auth-header">
             <h1>✅ {{ _('Готово!') }}</h1>
             {% if store %}
-            <p>{{ _('Магазин «%(name)s» активовано. Підписка: %(status)s.') % {'name': store.name, 'status': store.subscription_status} }}</p>
+            <p>{{ _('Магазин «%(name)s» активовано. Підписка: %(status)s.', name=store.name, status=store.subscription_status) }}</p>
             {% if store_url %}
             <div class="store-link-box">
                 <div class="store-link-label">{{ _('Адреса вашого магазину') }}</div>

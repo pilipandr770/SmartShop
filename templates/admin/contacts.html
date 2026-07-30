@@ -104,7 +104,7 @@
     {% endif %}
 
     <span class="pagination-info">
-        {{ _('Сторінка %(page)s з %(total)s') % {'page': pagination.page, 'total': pagination.pages} }}
+        {{ _('Сторінка %(page)s з %(total)s', page=pagination.page, total=pagination.pages) }}
     </span>
 
     {% if pagination.has_next %}

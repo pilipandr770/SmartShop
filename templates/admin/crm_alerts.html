@@ -110,7 +110,7 @@
         {% if page > 1 %}
         <a href="?page={{ page - 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">← {{ _('Назад') }}</a>
         {% endif %}
-        <span class="page-info">{{ _('Сторінка %(page)s з %(total)s') % {'page': page, 'total': total_pages} }}</span>
+        <span class="page-info">{{ _('Сторінка %(page)s з %(total)s', page=page, total=total_pages) }}</span>
         {% if page < total_pages %}
         <a href="?page={{ page + 1 }}&severity={{ filter_severity }}&status={{ filter_status }}" class="btn">{{ _('Вперед') }} →</a>
         {% endif %}

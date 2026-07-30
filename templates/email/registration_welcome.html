@@ -3,7 +3,7 @@
 {% block title %}{{ _('Вітаємо в SmartShop AI!') }}{% endblock %}
 
 {% block content %}
-<h2>🎉 {{ _('Вітаємо, %(name)s!') % {'name': user_name} }}</h2>
+<h2>🎉 {{ _('Вітаємо, %(name)s!', name=user_name) }}</h2>
 
 <p>{{ _('Дякуємо, що приєдналися до SmartShop AI - інтелектуальної торгової платформи нового покоління!') }}</p>
 

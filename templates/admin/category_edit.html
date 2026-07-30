@@ -59,7 +59,7 @@
             {% endfor %}
             {% if category.products|length > 10 %}
             <div class="more-products">
-                <span class="text-muted">{{ _('...та ще %(count)s товарів') % {'count': category.products|length - 10} }}</span>
+                <span class="text-muted">{{ _('...та ще %(count)s товарів', count=category.products|length - 10) }}</span>
             </div>
             {% endif %}
         </div>

@@ -34,7 +34,7 @@
 
     <div class="cabinet-content">
         <div class="page-header">
-            <h1>👋 {{ _('Вітаємо, %(name)s!') % {'name': current_user.first_name or current_user.full_name} }}</h1>
+            <h1>👋 {{ _('Вітаємо, %(name)s!', name=current_user.first_name or current_user.full_name) }}</h1>
             <p>{{ _('Ваш особистий кабінет') }}</p>
         </div>
         
