@@ -1780,11 +1780,11 @@ def create_app():
                     db.session.commit()
                     
                     # Відправити email підтвердження замовлення
-                    if order.email:
+                    if order.customer_email:
                         try:
                             from services.email_service import send_order_confirmation
-                            send_order_confirmation(order.email, order)
-                            app.logger.info(f'Order confirmation email sent to {order.email}')
+                            send_order_confirmation(order.customer_email, order)
+                            app.logger.info(f'Order confirmation email sent to {order.customer_email}')
                         except Exception as e:
                             app.logger.error(f'Failed to send order confirmation: {str(e)}')
                     
@@ -2791,11 +2791,11 @@ def create_app():
             db.session.commit()
             
             # Відправити email про зміну статусу
-            if order.email and old_status != new_status:
+            if order.customer_email and old_status != new_status:
                 try:
                     from services.email_service import send_order_status_update
-                    send_order_status_update(order.email, order, old_status, new_status)
-                    app.logger.info(f'Order status email sent to {order.email}')
+                    send_order_status_update(order.customer_email, order, old_status, new_status)
+                    app.logger.info(f'Order status email sent to {order.customer_email}')
                 except Exception as e:
                     app.logger.error(f'Failed to send order status email: {str(e)}')
             

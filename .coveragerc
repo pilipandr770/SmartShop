@@ -1,0 +1,6 @@
+[run]
+omit =
+    .venv/*
+    tests/*
+    migrations/*
+    */site-packages/*
