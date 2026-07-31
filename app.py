@@ -1224,7 +1224,15 @@ def create_app():
 
     @app.route("/datenschutz")
     def datenschutz_page():
-        """Політика конфіденційності (Datenschutzerklärung)."""
+        """Політика конфіденційності (Datenschutzerklärung).
+
+        На голому домені платформи (g.is_platform_root) показуємо РЕАЛЬНУ
+        Datenschutzerklärung оператора самої платформи SmartShop AI, а не
+        шаблонний текст якогось випадкового fallback-магазину - ці два
+        документи описують різні речі (сама SaaS-платформа vs. конкретний
+        магазин орендаря) і не мають підмінювати одне одного."""
+        if g.is_platform_root:
+            return render_template("pages/platform_datenschutz.html")
         settings = SiteSettings.get_or_create(g.store.id)
         return render_template("pages/datenschutz.html", settings=settings)
 
@@ -1236,7 +1244,12 @@ def create_app():
 
     @app.route("/impressum")
     def impressum_page():
-        """Юридичні реквізити власника магазину (Impressum, §5 TMG)."""
+        """Юридичні реквізити (Impressum, §5 TMG).
+
+        На голому домені платформи показуємо реальні реквізити оператора
+        SmartShop AI (Andrii Pylypchuk), а не Impressum якогось орендаря."""
+        if g.is_platform_root:
+            return render_template("pages/platform_impressum.html")
         settings = SiteSettings.get_or_create(g.store.id)
         return render_template("pages/impressum.html", settings=settings)
 

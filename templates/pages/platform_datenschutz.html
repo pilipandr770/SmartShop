@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Datenschutz – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .legal-page { max-width: 780px; margin: 0 auto; line-height: 1.7; }
+    .legal-page h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .legal-page h2 { font-size: 1.15rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+    .legal-page h3 { font-size: 1rem; margin-top: 1.25rem; margin-bottom: 0.4rem; color: var(--text-main); }
+    .legal-page p, .legal-page li { color: var(--text-muted); }
+    .legal-page a { color: var(--accent); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="legal-page">
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Home</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">Datenschutz</span>
+    </div>
+
+    <h1>Datenschutzerklärung</h1>
+    <p>Stand: Juli 2026</p>
+
+    <h2>1. Verantwortlicher</h2>
+    <p>
+        Verantwortlicher im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:<br>
+        Andrii Pylypchuk, Bergmannweg 16, 65934 Frankfurt am Main, Deutschland<br>
+        E-Mail: <a href="mailto:info@andrii-it.de">info@andrii-it.de</a> —
+        siehe <a href="{{ url_for('impressum_page') }}">Impressum</a>.
+    </p>
+
+    <h2>2. Was ist SmartShop AI?</h2>
+    <p>
+        SmartShop AI (diese Website, <code>shop.andrii-it.de</code>) ist eine SaaS-Plattform,
+        über die Kunden einen eigenen Online-Shop (Unterdomäne oder eigene Domain) betreiben
+        können. Diese Datenschutzerklärung betrifft die Plattform selbst - für den jeweiligen
+        Shop eines Kunden gilt zusätzlich dessen eigene, im Shop hinterlegte
+        Datenschutzerklärung.
+    </p>
+
+    <h2>3. Welche Daten wir verarbeiten</h2>
+    <h3>3.1 Kontodaten (Plattform-Registrierung)</h3>
+    <p>
+        Bei der Registrierung eines Shops verarbeiten wir E-Mail-Adresse, verschlüsseltes
+        Passwort (Hash, kein Klartext), Vor-/Nachname und optional Firmen- und Rechnungsdaten.
+        Rechtsgrundlage: Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO).
+    </p>
+    <h3>3.2 Zahlungsdaten</h3>
+    <p>
+        Zahlungen für Abonnements und Bestellungen in Kundenshops werden über
+        <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener">Stripe</a>
+        abgewickelt. Kreditkartendaten werden ausschließlich von Stripe verarbeitet und laufen
+        nicht über unsere Server. Zahlungsstatus wird ausschließlich anhand eines von Stripe
+        signierten Webhooks bestätigt.
+    </p>
+    <h3>3.3 KI-Funktionen (Chat-Assistent, automatischer Blog)</h3>
+    <p>
+        Für den ІІ-Chat-Assistenten und die automatische Blog-Erstellung nutzen wir
+        <a href="https://openai.com/de-DE/policies/privacy-policy/" target="_blank" rel="noopener">OpenAI</a>
+        als Auftragsverarbeiter. Nachrichten, die Sie an den Chat senden, sowie der
+        Produktkatalog des jeweiligen Shops werden zur Beantwortung an OpenAI übermittelt.
+        Der Chat-Assistent legt offen, dass er ein KI-System ist, und gibt keine Daten anderer
+        Kunden preis.
+    </p>
+    <h3>3.4 Server-Logs und Cookies</h3>
+    <p>
+        Beim Aufruf dieser Website erfasst unser Hosting-Anbieter automatisch technische Daten
+        (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browsertyp) in Server-Logs. Wir verwenden
+        Cookies für die Anmeldesitzung, den Warenkorb und die Sprachauswahl; ein
+        Cookie-Consent-Banner informiert über nicht notwendige Cookies.
+    </p>
+
+    <h2>4. Empfänger und Auftragsverarbeiter</h2>
+    <ul>
+        <li>Stripe Payments Europe, Limited - Zahlungsabwicklung</li>
+        <li>OpenAI, L.L.C. - KI-Chat und Textgenerierung</li>
+        <li>Hosting-Anbieter (Hostinger) - Serverbetrieb (Deutschland/EU)</li>
+    </ul>
+
+    <h2>5. Speicherdauer</h2>
+    <p>
+        Kontodaten werden gespeichert, solange ein Konto besteht. Sie können Ihr Konto und den
+        zugehörigen Shop jederzeit selbst über die Kontoeinstellungen löschen ("Recht auf
+        Vergessenwerden"). Gesetzliche Aufbewahrungsfristen (z. B. für Rechnungsdaten nach
+        Handels- und Steuerrecht) bleiben davon unberührt.
+    </p>
+
+    <h2>6. Ihre Rechte</h2>
+    <p>
+        Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung
+        (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und
+        Widerspruch (Art. 21) bezüglich Ihrer personenbezogenen Daten. Kontaktieren Sie uns dazu
+        über die im <a href="{{ url_for('impressum_page') }}">Impressum</a> angegebenen Kontaktdaten.
+        Zudem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren,
+        z. B. beim Hessischen Beauftragten für Datenschutz und Informationsfreiheit.
+    </p>
+</section>
+{% endblock %}
