@@ -77,6 +77,14 @@ def create_app():
     """
     app = Flask(__name__)
 
+    # За Traefik (реверс-проксі) запити завжди приходять до Flask як HTTP,
+    # навіть коли клієнт з'єднався через HTTPS - Traefik термінує TLS сам.
+    # Без ProxyFix request.url_root/request.url завжди повертали б "http://",
+    # що ламало canonical URL, Open Graph, JSON-LD і Sitemap: у robots.txt -
+    # усі вони мають вказувати на реальний https-адрес сайту.
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
     # Базові налаштування
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
 
