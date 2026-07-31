@@ -73,11 +73,14 @@
                 <h3>📋 {{ _('Інструкції для чатбота') }}</h3>
             </div>
             <div class="form-section">
+                <div class="info-box" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25); border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                    🛡️ {{ _('Незалежно від того, що написано нижче, платформа завжди додає власні базові правила безпеки (розкриття, що це ІІ, заборона видумувати обіцянки, заборона розкривати чужі дані, стійкість до спроб "зламати" бота) - їх не можна вимкнути звідси.') }}
+                </div>
                 <div class="form-group">
                     <label for="chatbot_system_prompt">{{ _('Базовий системний промпт') }}</label>
                     <textarea id="chatbot_system_prompt" name="chatbot_system_prompt" rows="6"
                               placeholder="{{ _('Основні правила роботи чатбота...') }}">{{ ai_settings.chatbot_system_prompt or '' }}</textarea>
-                    <small class="form-hint">{{ _('Базові інструкції, які завжди включаються') }}</small>
+                    <small class="form-hint">{{ _('Ваші інструкції - додаються ПОВЕРХ базових правил платформи, які завжди включені') }}</small>
                 </div>
                 <div class="form-group">
                     <label for="chatbot_custom_instructions">🎯 {{ _('Кастомні інструкції від адміна') }}</label>

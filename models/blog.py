@@ -353,24 +353,6 @@ class AISettings(db.Model):
             db.session.commit()
         return settings
     
-    def get_full_chatbot_prompt(self, catalog_info=""):
-        """Формує повний промпт для чатбота."""
-        parts = []
-        
-        if self.chatbot_system_prompt:
-            parts.append(self.chatbot_system_prompt)
-        
-        if self.chatbot_custom_instructions:
-            parts.append(f"\nДодаткові інструкції від адміна:\n{self.chatbot_custom_instructions}")
-        
-        if catalog_info:
-            parts.append(f"\n{catalog_info}")
-        
-        if self.chatbot_forbidden_topics:
-            parts.append(f"\nТеми, на які не можна відповідати:\n{self.chatbot_forbidden_topics}")
-        
-        return "\n".join(parts)
-    
     def get_blogger_prompt(self, topic, keywords=""):
         """Формує промпт для генерації статті."""
         parts = []
