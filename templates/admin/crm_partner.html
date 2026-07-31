@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}Партнер: {{ company.name }}{% endblock %}
+{% block title %}{{ _('Партнер: %(name)s', name=company.name) }}{% endblock %}
 
 {% block content %}
 <div class="partner-detail-page">

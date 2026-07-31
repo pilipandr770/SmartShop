@@ -515,11 +515,11 @@
             {% endif %}
             <div>
                 <div class="brand-text-main">SmartShop AI</div>
-                <div class="brand-text-sub">Конструктор магазину</div>
+                <div class="brand-text-sub">{{ _('Конструктор магазину') }}</div>
             </div>
         </a>
 
-        <nav class="nav" aria-label="Головна навігація">
+        <nav class="nav" aria-label="{{ _('Головна навігація') }}">
             <a href="{{ url_for('index') }}">{{ _('Home') }}</a>
             <a href="{{ url_for('shop') }}">{{ _('Shop') }}</a>
             <a href="{{ url_for('blog_page') }}">{{ _('Blog') }}</a>
@@ -541,8 +541,8 @@
                 <!-- Оператор платформи не є "клієнтом" жодного магазину - кошик
                      і посилання на клієнтський кабінет тут нерелевантні і лише
                      заважають; показуємо тільки те, що йому потрібно. -->
-                <a href="{{ url_for('platform_admin.dashboard') }}" class="btn btn-outline">🛠️ Платформа</a>
-                <a href="{{ url_for('cabinet.change_password') }}" class="social-pill" title="Змінити пароль">🔐</a>
+                <a href="{{ url_for('platform_admin.dashboard') }}" class="btn btn-outline">🛠️ {{ _('Платформа') }}</a>
+                <a href="{{ url_for('cabinet.change_password') }}" class="social-pill" title="{{ _('Змінити пароль') }}">🔐</a>
                 <a href="{{ url_for('user_logout') }}" class="social-pill" title="{{ _('Logout') }}">🚪</a>
             {% else %}
                 <div class="socials">

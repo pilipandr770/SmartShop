@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}📊 Склад - Залишки{% endblock %}
+{% block title %}{{ _('📊 Склад - Залишки') }}{% endblock %}
 
 {% block content %}
 <div class="stock-dashboard">
@@ -43,7 +43,7 @@
     <!-- Фільтри та пошук -->
     <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
         <form method="GET" style="display: flex; gap: 0.5rem; flex-grow: 1;">
-            <input type="text" name="search" value="{{ search }}" placeholder="🔍 Пошук за назвою або SKU..." 
+            <input type="text" name="search" value="{{ search }}" placeholder="{{ _('🔍 Пошук за назвою або SKU...') }}"
                    class="form-control" style="max-width: 300px;">
             <button type="submit" class="btn btn-primary">{{ _('Знайти') }}</button>
         </form>
@@ -108,7 +108,7 @@
                                 ±
                             </button>
                             <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id) }}" 
-                               class="btn btn-sm btn-outline" title="Історія">
+                               class="btn btn-sm btn-outline" title="{{ _('Історія') }}">
                                 📜
                             </a>
                         </div>
@@ -132,7 +132,7 @@
         <a href="{{ url_for('admin_warehouse_stock', page=page-1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
-        <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
+        <span class="btn btn-sm disabled">{{ _('%(page)s з %(total)s', page=page, total=total_pages) }}</span>
         
         {% if page < total_pages %}
         <a href="{{ url_for('admin_warehouse_stock', page=page+1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
@@ -156,8 +156,8 @@
                 
                 <div class="form-group">
                     <label>{{ _('Коригування (+/-):') }}</label>
-                    <input type="number" name="adjustment" id="adjustment" class="form-control" 
-                           placeholder="-5 або +10" required>
+                    <input type="number" name="adjustment" id="adjustment" class="form-control"
+                           placeholder="{{ _('-5 або +10') }}" required>
                     <small class="text-muted">{{ _('Введіть від\'ємне число для зменшення, додатне для збільшення') }}</small>
                 </div>
                 
@@ -174,7 +174,7 @@
                 
                 <div class="form-group">
                     <label>{{ _('Примітка:') }}</label>
-                    <textarea name="notes" class="form-control" rows="2" placeholder="Опціонально..."></textarea>
+                    <textarea name="notes" class="form-control" rows="2" placeholder="{{ _('Опціонально...') }}"></textarea>
                 </div>
             </div>
             <div class="modal-footer">

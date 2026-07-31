@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}📈 Звіти складу{% endblock %}
+{% block title %}{{ _('📈 Звіти складу') }}{% endblock %}
 
 {% block content %}
 <div class="reports-dashboard">
@@ -82,13 +82,13 @@
                 {% for category, amount in expense_by_category.items() %}
                 <div class="report-row">
                     <span class="label">
-                        {% if category == 'shipping' %}🚚 Доставка
-                        {% elif category == 'packaging' %}📦 Пакування
-                        {% elif category == 'warehouse' %}🏭 Склад
-                        {% elif category == 'returns' %}↩️ Повернення
-                        {% elif category == 'salary' %}👷 Зарплата
-                        {% elif category == 'equipment' %}🔧 Обладнання
-                        {% elif category == 'utilities' %}💡 Комунальні
+                        {% if category == 'shipping' %}🚚 {{ _('Доставка') }}
+                        {% elif category == 'packaging' %}📦 {{ _('Пакування') }}
+                        {% elif category == 'warehouse' %}🏭 {{ _('Склад') }}
+                        {% elif category == 'returns' %}↩️ {{ _('Повернення') }}
+                        {% elif category == 'salary' %}👷 {{ _('Зарплата') }}
+                        {% elif category == 'equipment' %}🔧 {{ _('Обладнання') }}
+                        {% elif category == 'utilities' %}💡 {{ _('Комунальні') }}
                         {% else %}📋 {{ category }}{% endif %}
                     </span>
                     <span class="value">{{ "%.2f"|format(amount) }} UAH</span>

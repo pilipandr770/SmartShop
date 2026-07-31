@@ -189,9 +189,9 @@
                             <a href="{{ url_for('admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary" title="{{ _('Редагувати') }}">
                                 ✏️
                             </a>
-                            <form method="POST" action="{{ url_for('admin_products_delete', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('Видалити товар?')">
+                            <form method="POST" action="{{ url_for('admin_products_delete', product_id=product.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити товар?') }}')">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-danger" title="Видалити">
+                                <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Видалити') }}">
                                     🗑️
                                 </button>
                             </form>
@@ -461,12 +461,12 @@ async function uploadImage(input) {
     
     // Перевірка розміру (max 16MB)
     if (file.size > 16 * 1024 * 1024) {
-        statusEl.textContent = '❌ Файл занадто великий (макс. 16 МБ)';
+        statusEl.textContent = '{{ _("❌ Файл занадто великий (макс. 16 МБ)") }}';
         statusEl.className = 'upload-status error';
         return;
     }
-    
-    statusEl.textContent = '⏳ Завантаження...';
+
+    statusEl.textContent = '{{ _("⏳ Завантаження...") }}';
     statusEl.className = 'upload-status loading';
     
     const formData = new FormData();
@@ -488,14 +488,14 @@ async function uploadImage(input) {
             hiddenInput.value = data.url;
             urlInput.value = data.url;
             
-            statusEl.textContent = '✅ Зображення завантажено!';
+            statusEl.textContent = '{{ _("✅ Зображення завантажено!") }}';
             statusEl.className = 'upload-status success';
         } else {
-            statusEl.textContent = '❌ ' + (data.error || 'Помилка завантаження');
+            statusEl.textContent = '❌ ' + (data.error || '{{ _("Помилка завантаження") }}');
             statusEl.className = 'upload-status error';
         }
     } catch (error) {
-        statusEl.textContent = '❌ Помилка з\'єднання';
+        statusEl.textContent = '{{ _("❌ Помилка з\'єднання") }}';
         statusEl.className = 'upload-status error';
     }
 }

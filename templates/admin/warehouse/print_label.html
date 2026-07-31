@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>Пакувальний лист — {{ task.task_number or task.id }}</title>
+    <title>{{ _('Пакувальний лист — %(number)s', number=(task.task_number or task.id)) }}</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -59,7 +59,7 @@
     <div class="label-sheet">
         <div class="label-header">
             <h1>{{ settings.site_name or 'SmartShop' }}</h1>
-            <div>Завдання №{{ task.task_number or task.id }}{% if order %} · Замовлення №{{ order.order_number or order.id }}{% endif %}</div>
+            <div>{{ _('Завдання №%(number)s', number=(task.task_number or task.id)) }}{% if order %} · {{ _('Замовлення №%(number)s', number=(order.order_number or order.id)) }}{% endif %}</div>
         </div>
 
         {% if task.is_pickup %}
@@ -105,7 +105,7 @@
 
         {% if task.tracking_number %}
         <div class="tracking-block">
-            <div class="tr-carrier">{{ task.carrier or task.shipping_method or 'Перевізник' }}</div>
+            <div class="tr-carrier">{{ task.carrier or task.shipping_method or _('Перевізник') }}</div>
             <div class="tr-number">{{ task.tracking_number }}</div>
         </div>
         {% endif %}
@@ -129,7 +129,7 @@
         {% endif %}
 
         <div class="meta-row">
-            <span>Пріоритет: {{ task.priority_display }}</span>
+            <span>{{ _('Пріоритет: %(priority)s', priority=task.priority_display) }}</span>
             <span>{{ task.created_at.strftime("%Y-%m-%d") if task.created_at else '' }}</span>
         </div>
     </div>

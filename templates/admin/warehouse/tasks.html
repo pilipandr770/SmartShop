@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}📦 Склад - Завдання{% endblock %}
+{% block title %}{{ _('📦 Склад - Завдання') }}{% endblock %}
 
 {% block content %}
 <div class="warehouse-dashboard">
@@ -133,8 +133,8 @@
                 <tr>
                     <td colspan="8" class="text-center text-muted">
                         <p style="padding: 2rem;">
-                            📭 Немає завдань
-                            {% if status_filter %}з таким статусом{% endif %}
+                            📭 {{ _('Немає завдань') }}
+                            {% if status_filter %}{{ _('з таким статусом') }}{% endif %}
                         </p>
                     </td>
                 </tr>
@@ -150,7 +150,7 @@
         <a href="{{ url_for('admin_warehouse', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
-        <span class="btn btn-sm disabled">{{ page }} з {{ total_pages }}</span>
+        <span class="btn btn-sm disabled">{{ _('%(page)s з %(total)s', page=page, total=total_pages) }}</span>
         
         {% if page < total_pages %}
         <a href="{{ url_for('admin_warehouse', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>

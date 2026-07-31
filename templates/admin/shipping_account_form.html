@@ -1,8 +1,8 @@
 {% extends 'admin/layout.html' %}
-{% block title %}{{ carrier_label }} - Доставка - Адмін панель{% endblock %}
+{% block title %}{{ carrier_label }} - {{ _('Доставка') }} - {{ _('Адмін панель') }}{% endblock %}
 {% block content %}
 <div class="page-header">
-    <h1>{{ '✏️ Редагувати' if account else '➕ Додати' }} {{ carrier_label }}</h1>
+    <h1>{{ _('✏️ Редагувати') if account else _('➕ Додати') }} {{ carrier_label }}</h1>
     <p class="page-subtitle">{{ _('Немає реальних ключів? Вкажіть') }}<code>test</code>{{ _('в усіх полях креденшелів і увімкніть Sandbox -
         checkout буде показувати синтетичні тарифи без звернення до мережі.') }}</p>
 </div>

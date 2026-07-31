@@ -1,6 +1,6 @@
 {% extends "admin/layout.html" %}
 
-{% block title %}📦 Завдання {{ task.task_number or '#' ~ task.id }}{% endblock %}
+{% block title %}{{ _('📦 Завдання %(number)s', number=(task.task_number or '#' ~ task.id)) }}{% endblock %}
 
 {% block content %}
 <div class="task-detail">
@@ -155,7 +155,7 @@
                     {% if task.weight_kg %}
                     <div class="info-row">
                         <span class="label">{{ _('Вага:') }}</span>
-                        <span class="value">{{ task.weight_kg }} кг</span>
+                        <span class="value">{{ _('%(weight)s кг', weight=task.weight_kg) }}</span>
                     </div>
                     {% endif %}
                     {% if task.dimensions %}
@@ -191,7 +191,7 @@
                     <input type="hidden" name="action" value="start_processing">
                     <div class="form-group">
                         <label>{{ _('Виконавець:') }}</label>
-                        <input type="text" name="assigned_to" class="form-control" placeholder="Ім'я працівника">
+                        <input type="text" name="assigned_to" class="form-control" placeholder="{{ _(\"Ім'я працівника\") }}">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">{{ _('🔄 Взяти в роботу') }}</button>
                 </form>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="form-group">
                         <label>{{ _('Розміри:') }}</label>
-                        <input type="text" name="dimensions" class="form-control" placeholder="30x20x10 см">
+                        <input type="text" name="dimensions" class="form-control" placeholder="{{ _('30x20x10 см') }}">
                     </div>
                     <button type="submit" class="btn btn-info btn-block">{{ _('📦 Запаковано') }}</button>
                 </form>
@@ -273,7 +273,7 @@
 
                 {% if task.status not in ['delivered', 'cancelled'] %}
                 <hr style="margin: 1.5rem 0;">
-                <form method="POST" onsubmit="return confirm('Ви впевнені що хочете скасувати це завдання?');">
+                <form method="POST" onsubmit="return confirm('{{ _('Ви впевнені що хочете скасувати це завдання?') }}');">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="action" value="cancel">
                     <div class="form-group">

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}ІІ-продавець – SmartShop AI{% endblock %}
+{% block title %}{{ _('ІІ-продавець – SmartShop AI') }}{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -382,12 +382,12 @@
             </div>
 
             <div class="ai-sidebar-card">
-                <h4>⚙️ Інструкції ІІ</h4>
+                <h4>⚙️ {{ _('Інструкції ІІ') }}</h4>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
-                    {{ (settings.ai_instructions or 'ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів.')[:100] }}...
+                    {{ (settings.ai_instructions or _('ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів.'))[:100] }}...
                 </p>
                 <a href="{{ url_for('admin_blocks') }}" style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent);">
-                    Налаштувати в адмінці →
+                    {{ _('Налаштувати в адмінці') }} →
                 </a>
             </div>
         </div>
@@ -396,18 +396,18 @@
     <div class="ai-features">
         <div class="ai-feature">
             <div class="icon">🧠</div>
-            <h4>Знає каталог</h4>
-            <p>Бачить усі товари, ціни та характеристики в реальному часі</p>
+            <h4>{{ _('Знає каталог') }}</h4>
+            <p>{{ _('Бачить усі товари, ціни та характеристики в реальному часі') }}</p>
         </div>
         <div class="ai-feature">
             <div class="icon">💬</div>
-            <h4>Природна мова</h4>
-            <p>Розуміє запитання українською, англійською та німецькою</p>
+            <h4>{{ _('Природна мова') }}</h4>
+            <p>{{ _('Розуміє запитання українською, англійською та німецькою') }}</p>
         </div>
         <div class="ai-feature">
             <div class="icon">⚡</div>
-            <h4>Миттєві відповіді</h4>
-            <p>Працює 24/7 і відповідає за секунди</p>
+            <h4>{{ _('Миттєві відповіді') }}</h4>
+            <p>{{ _('Працює 24/7 і відповідає за секунди') }}</p>
         </div>
     </div>
 </section>

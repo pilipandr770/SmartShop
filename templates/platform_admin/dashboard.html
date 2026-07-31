@@ -152,9 +152,9 @@
                         <button type="submit" class="btn btn-impersonate" title="{{ _('Увійти як власник, щоб налаштувати магазин на прохання клієнта') }}">🕵️ {{ _('Увійти як') }}</button>
                     </form>
                     <form method="POST" action="{{ url_for('platform_admin.toggle_store_active', store_id=store.id) }}"
-                          onsubmit="return confirm('{{ 'Заблокувати' if store.is_active else 'Розблокувати' }} магазин «{{ store.name }}»?');">
+                          onsubmit="return confirm('{{ _('Заблокувати') if store.is_active else _('Розблокувати') }} {{ _('магазин') }} «{{ store.name }}»?');">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn">{{ '⛔ Заблокувати' if store.is_active else '✅ Розблокувати' }}</button>
+                        <button type="submit" class="btn">{{ _('⛔ Заблокувати') if store.is_active else _('✅ Розблокувати') }}</button>
                     </form>
                 </td>
             </tr>

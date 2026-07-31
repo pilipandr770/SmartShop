@@ -22,7 +22,7 @@
             </div>
             <div class="detail-row">
                 <span class="detail-label">{{ _('Дата створення') }}</span>
-                <span class="detail-value">{{ order.created_at.strftime('%d.%m.%Y о %H:%M') }}</span>
+                <span class="detail-value">{{ order.created_at.strftime('%d.%m.%Y') }} {{ _('о') }} {{ order.created_at.strftime('%H:%M') }}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">{{ _('Статус') }}</span>
