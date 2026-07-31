@@ -70,6 +70,21 @@
                 </div>
             </div>
 
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="business_purpose_confirmed" required
+                           {% if form.get('business_purpose_confirmed') %}checked{% endif %}>
+                    <span>{{ _('Я підтверджую, що використовую платформу для підприємницької/професійної діяльності (не як споживач).') }}</span>
+                </label>
+            </div>
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="terms_accepted" required
+                           {% if form.get('terms_accepted') %}checked{% endif %}>
+                    <span>{{ _('Я приймаю') }} <a href="{{ url_for('agb_page') }}" target="_blank">{{ _('умови надання послуг (AGB)') }}</a> {{ _('та') }} <a href="{{ url_for('datenschutz_page') }}" target="_blank">{{ _('політику конфіденційності') }}</a>.</span>
+                </label>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-block">
                 {{ _('Створити магазин') }}
             </button>
@@ -99,6 +114,11 @@
 .plan-choice { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem;
     border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 0.5rem; cursor: pointer; color: var(--text-primary, #f1f5f9); }
 .plan-choice input { accent-color: #10b981; }
+.checkbox-group { margin-bottom: 1rem; }
+.checkbox-label { display: flex; align-items: flex-start; gap: 0.6rem; font-weight: 400; cursor: pointer; }
+.checkbox-label input[type="checkbox"] { margin-top: 0.2rem; accent-color: #10b981; flex-shrink: 0; }
+.checkbox-label span { font-size: 0.85rem; color: var(--text-secondary, #94a3b8); }
+.checkbox-label a { color: var(--primary-color, #10b981); }
 .btn-block { width: 100%; padding: 1rem; font-size: 1rem; }
 .btn-primary { background: linear-gradient(135deg, #10b981, #14b8a6); border: none; color: #022c22; font-weight: 600;
     border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; }

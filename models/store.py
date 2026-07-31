@@ -71,6 +71,14 @@ class Store(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
 
+    # Юридично значуще підтвердження при реєстрації (§14 BGB): клієнт
+    # прийняв AGB/Datenschutz і підтвердив, що діє як Unternehmer, а не
+    # Verbraucher - це є підставою відсутності Widerrufsrecht (§ 355 BGB
+    # застосовується лише до споживчих договорів). Зберігаємо timestamp, а
+    # не лише boolean, щоб мати доказ моменту згоди у разі спору.
+    terms_accepted_at = db.Column(db.DateTime, nullable=True)
+    business_purpose_confirmed_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

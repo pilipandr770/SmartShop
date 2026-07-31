@@ -94,6 +94,8 @@ def new_store():
         plan = request.form.get("plan", DEFAULT_PLAN)
         if plan not in PLAN_CHOICES:
             plan = DEFAULT_PLAN
+        business_purpose_confirmed = request.form.get("business_purpose_confirmed") == "on"
+        terms_accepted = request.form.get("terms_accepted") == "on"
 
         errors = []
         if not store_name:
@@ -110,6 +112,10 @@ def new_store():
             errors.append(_("Пароль має бути не менше 8 символів."))
         elif password != password_confirm:
             errors.append(_("Паролі не співпадають."))
+        if not business_purpose_confirmed:
+            errors.append(_("Потрібно підтвердити, що ви використовуєте платформу для підприємницької діяльності."))
+        if not terms_accepted:
+            errors.append(_("Потрібно прийняти умови надання послуг (AGB) та політику конфіденційності."))
 
         if errors:
             for error in errors:
@@ -126,13 +132,16 @@ def new_store():
         db.session.add(owner)
         db.session.flush()
 
+        now = datetime.utcnow()
         store = Store(
             name=store_name,
             slug=slug,
             owner_user_id=owner.id,
             plan=plan,
             subscription_status=StoreSubscriptionStatus.TRIALING,
-            trial_ends_at=datetime.utcnow() + timedelta(days=TRIAL_PERIOD_DAYS),
+            trial_ends_at=now + timedelta(days=TRIAL_PERIOD_DAYS),
+            terms_accepted_at=now,
+            business_purpose_confirmed_at=now,
         )
         db.session.add(store)
         db.session.commit()

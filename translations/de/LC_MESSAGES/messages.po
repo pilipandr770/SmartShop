@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SmartShop AI 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-31 13:25+0000\n"
+"POT-Creation-Date: 2026-07-31 17:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -195,7 +195,7 @@ msgstr "Gelesene Anfragen gelöscht."
 msgid "Пароль має бути мінімум 6 символів."
 msgstr "Passwort muss mindestens 6 Zeichen lang sein."
 
-#: app.py:3156 routes/cabinet.py:181 routes/signup.py:112
+#: app.py:3156 routes/cabinet.py:181 routes/signup.py:114
 msgid "Паролі не співпадають."
 msgstr "Passwörter stimmen nicht überein."
 
@@ -681,11 +681,11 @@ msgstr "Sie sind zum Plattform-Panel zurückgekehrt."
 msgid "У вас вже є магазин. Керуйте ним з адмінки."
 msgstr "Sie haben bereits einen Shop. Verwalten Sie ihn über das Admin-Panel."
 
-#: routes/signup.py:100
+#: routes/signup.py:102
 msgid "Назва магазину обов'язкова."
 msgstr "Shop-Name ist erforderlich."
 
-#: routes/signup.py:102
+#: routes/signup.py:104
 msgid ""
 "Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, цифри, "
 "дефіс)."
@@ -693,22 +693,35 @@ msgstr ""
 "Die Shop-Adresse (Slug) muss mindestens 3 Zeichen lang sein (nur lateinische"
 " Buchstaben, Zahlen, Bindestrich)."
 
-#: routes/signup.py:106
+#: routes/signup.py:108
 msgid "Email обов'язковий."
 msgstr "E-Mail ist erforderlich."
 
-#: routes/signup.py:108
+#: routes/signup.py:110
 msgid "Користувач з таким email вже існує. Увійдіть у свій акаунт."
 msgstr ""
 "Ein Benutzer mit dieser E-Mail existiert bereits. Bitte melden Sie sich "
 "an.Ein Benutzer mit dieser E-Mail existiert bereits. Bitte melden Sie sich "
 "an."
 
-#: routes/signup.py:110
+#: routes/signup.py:112
 msgid "Пароль має бути не менше 8 символів."
 msgstr "Passwort muss mindestens 8 Zeichen lang sein."
 
-#: routes/signup.py:160
+#: routes/signup.py:116
+msgid ""
+"Потрібно підтвердити, що ви використовуєте платформу для підприємницької "
+"діяльності."
+msgstr ""
+"Sie müssen bestätigen, dass Sie die Plattform zu gewerblichen Zwecken "
+"nutzen."
+
+#: routes/signup.py:118
+msgid ""
+"Потрібно прийняти умови надання послуг (AGB) та політику конфіденційності."
+msgstr "Sie müssen die AGB und die Datenschutzerklärung akzeptieren."
+
+#: routes/signup.py:169
 #, python-format
 msgid ""
 "Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте "
@@ -3280,7 +3293,7 @@ msgstr "Passwort eingeben"
 
 #: templates/admin/login.html:25 templates/auth/login.html:43
 #: templates/auth/register.html:69 templates/auth/register_b2b.html:172
-#: templates/auth/signup.html:79 templates/pages/landing.html:235
+#: templates/auth/signup.html:94 templates/pages/landing.html:235
 msgid "Увійти"
 msgstr "Anmelden"
 
@@ -5206,7 +5219,7 @@ msgstr "Geben Sie die bei der Registrierung verwendete E-Mail-Adresse ein"
 msgid "Надіслати посилання"
 msgstr "Link senden"
 
-#: templates/auth/signup.html:3 templates/auth/signup.html:74
+#: templates/auth/signup.html:3 templates/auth/signup.html:89
 #: templates/pages/landing.html:236
 msgid "Створити магазин"
 msgstr "Shop erstellen"
@@ -5243,7 +5256,31 @@ msgstr "Ivan Petrenko"
 msgid "Тарифний план"
 msgstr "Tarifplan"
 
-#: templates/auth/signup.html:79
+#: templates/auth/signup.html:77
+msgid ""
+"Я підтверджую, що використовую платформу для підприємницької/професійної "
+"діяльності (не як споживач)."
+msgstr ""
+"Ich bestätige, dass ich die Plattform zu gewerblichen/beruflichen Zwecken "
+"nutze (nicht als Verbraucher)."
+
+#: templates/auth/signup.html:84
+msgid "Я приймаю"
+msgstr "Ich akzeptiere die"
+
+#: templates/auth/signup.html:84
+msgid "умови надання послуг (AGB)"
+msgstr "AGB"
+
+#: templates/auth/signup.html:84
+msgid "та"
+msgstr "und die"
+
+#: templates/auth/signup.html:84
+msgid "політику конфіденційності"
+msgstr "Datenschutzerklärung"
+
+#: templates/auth/signup.html:94
 msgid "Вже є магазин?"
 msgstr "Haben Sie bereits einen Shop?"
 
