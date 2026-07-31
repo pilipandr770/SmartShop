@@ -5,7 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ _('SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем') }}</title>
     <meta name="description" content="{{ _('SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс.') }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    {# Open Graph / Twitter Card - лендінг standalone і раніше не мав жодного #}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}">
+    <meta property="og:title" content="{{ _('SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем') }}">
+    <meta property="og:description" content="{{ _('SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс.') }}">
+    <meta property="og:site_name" content="SmartShop AI">
+    <meta property="og:locale" content="{{ get_locale().language }}_{{ get_locale().territory or get_locale().language|upper }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ _('SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем') }}">
+    <meta name="twitter:description" content="{{ _('SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. Підписка від 19€/міс.') }}">
+
+    {# Structured data: щоб AI-пошук і чат-боти могли коректно описати
+       платформу, коли користувач запитує про створення онлайн-магазину. #}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "SmartShop AI",
+        "url": "{{ request.url_root }}",
+        "description": "{{ _('SaaS-платформа для запуску безпечного онлайн-магазину з ІІ-продавцем — альтернатива WordPress/WooCommerce та Ecwid.')|e }}"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SmartShop AI",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "url": "{{ request.url_root }}",
+        "offers": [
+            {"@type": "Offer", "name": "Starter", "price": "19", "priceCurrency": "EUR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "EUR", "billingIncrement": 1, "unitCode": "MON"}},
+            {"@type": "Offer", "name": "Pro", "price": "49", "priceCurrency": "EUR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "49", "priceCurrency": "EUR", "billingIncrement": 1, "unitCode": "MON"}},
+            {"@type": "Offer", "name": "Business", "price": "99", "priceCurrency": "EUR", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "99", "priceCurrency": "EUR", "billingIncrement": 1, "unitCode": "MON"}}
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "{{ _('Чим SmartShop AI кращий за WordPress (WooCommerce) чи Ecwid?')|e }}",
+                "acceptedAnswer": {"@type": "Answer", "text": "{{ _('WordPress/WooCommerce покладається на сторонні плагіни — найчастішу причину злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та ІІ-продавець вбудовані в саму платформу й підтримуються централізовано, без плагінного ризику. Захист від CSRF, обмеження на перебір паролів, шифрування ключів доставки та перевірка оплати через підписані Stripe-вебхуки закладені з самого початку.')|e }}"}
+            },
+            {
+                "@type": "Question",
+                "name": "{{ _('Чи потрібні розробники для запуску магазину?')|e }}",
+                "acceptedAnswer": {"@type": "Answer", "text": "{{ _('Ні. Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину прямо з адмінки — без коду, без хостингу і без оновлень безпеки, про які треба думати самостійно.')|e }}"}
+            },
+            {
+                "@type": "Question",
+                "name": "{{ _('Що робить ІІ-продавець на сайті?')|e }}",
+                "acceptedAnswer": {"@type": "Answer", "text": "{{ _('Чат-бот знає ваш каталог, ціни та наявність, консультує покупця і підказує статус замовлення. Він прозоро повідомляє, що є ІІ (відповідно до вимог EU AI Act), і ніколи не розкриває дані інших клієнтів чи не вигадує обіцянок від імені магазину.')|e }}"}
+            },
+            {
+                "@type": "Question",
+                "name": "{{ _('Чи безпечні платежі на SmartShop AI?')|e }}",
+                "acceptedAnswer": {"@type": "Answer", "text": "{{ _('Так. Замовлення позначається оплаченим лише після підтвердженого статусу оплати від Stripe через підписаний вебхук — без винятків.')|e }}"}
+            },
+            {
+                "@type": "Question",
+                "name": "{{ _('Чи можна скасувати підписку в будь-який момент?')|e }}",
+                "acceptedAnswer": {"@type": "Answer", "text": "{{ _('Так, скасувати підписку можна в будь-який момент прямо з адмінки, без прихованих умов.')|e }}"}
+            }
+        ]
+    }
+    </script>
 
     <style>
         :root {
@@ -76,6 +149,22 @@
             border-radius: 999px; background: var(--accent-soft); color: var(--accent);
         }
 
+        .faq-list {
+            max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.75rem;
+        }
+        .faq-item {
+            background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 0.85rem;
+            padding: 1rem 1.25rem;
+        }
+        .faq-item summary {
+            cursor: pointer; font-weight: 600; list-style: none; display: flex;
+            align-items: center; justify-content: space-between; gap: 1rem;
+        }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        .faq-item summary::after { content: "+"; color: var(--accent); font-size: 1.2rem; flex: none; }
+        .faq-item[open] summary::after { content: "−"; }
+        .faq-item p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.55; margin: 0.75rem 0 0; }
+
         .pricing-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;
         }
@@ -133,6 +222,7 @@
             <a href="#features">{{ _('Можливості') }}</a>
             <a href="#security">{{ _('Безпека') }}</a>
             <a href="#pricing">{{ _('Тарифи') }}</a>
+            <a href="#faq">{{ _('Запитання') }}</a>
         </nav>
         <div class="header-actions">
             <div class="lang-switcher">
@@ -292,6 +382,33 @@
                 </ul>
                 <a href="{{ url_for('signup.new_store') }}" class="btn btn-outline">{{ _('Обрати Business') }}</a>
             </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <h2>{{ _('Часті запитання') }}</h2>
+        <p class="section-lead">{{ _('Прозорі відповіді — без маркетингових обіцянок.') }}</p>
+        <div class="faq-list">
+            <details class="faq-item">
+                <summary>{{ _('Чим SmartShop AI кращий за WordPress (WooCommerce) чи Ecwid?') }}</summary>
+                <p>{{ _('WordPress/WooCommerce покладається на сторонні плагіни — найчастішу причину злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та ІІ-продавець вбудовані в саму платформу й підтримуються централізовано, без плагінного ризику. Захист від CSRF, обмеження на перебір паролів, шифрування ключів доставки та перевірка оплати через підписані Stripe-вебхуки закладені з самого початку.') }}</p>
+            </details>
+            <details class="faq-item">
+                <summary>{{ _('Чи потрібні розробники для запуску магазину?') }}</summary>
+                <p>{{ _('Ні. Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину прямо з адмінки — без коду, без хостингу і без оновлень безпеки, про які треба думати самостійно.') }}</p>
+            </details>
+            <details class="faq-item">
+                <summary>{{ _('Що робить ІІ-продавець на сайті?') }}</summary>
+                <p>{{ _('Чат-бот знає ваш каталог, ціни та наявність, консультує покупця і підказує статус замовлення. Він прозоро повідомляє, що є ІІ (відповідно до вимог EU AI Act), і ніколи не розкриває дані інших клієнтів чи не вигадує обіцянок від імені магазину.') }}</p>
+            </details>
+            <details class="faq-item">
+                <summary>{{ _('Чи безпечні платежі на SmartShop AI?') }}</summary>
+                <p>{{ _('Так. Замовлення позначається оплаченим лише після підтвердженого статусу оплати від Stripe через підписаний вебхук — без винятків.') }}</p>
+            </details>
+            <details class="faq-item">
+                <summary>{{ _('Чи можна скасувати підписку в будь-який момент?') }}</summary>
+                <p>{{ _('Так, скасувати підписку можна в будь-який момент прямо з адмінки, без прихованих умов.') }}</p>
+            </details>
         </div>
     </section>
 
