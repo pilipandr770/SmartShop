@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}AGB – SmartShop AI{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .legal-page { max-width: 780px; margin: 0 auto; line-height: 1.7; }
+    .legal-page h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .legal-page h2 { font-size: 1.15rem; margin-top: 1.75rem; margin-bottom: 0.5rem; }
+    .legal-page p, .legal-page li { color: var(--text-muted); }
+    .legal-page a { color: var(--accent); }
+    .legal-page ul { padding-left: 1.25rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="legal-page">
+    <div class="breadcrumb">
+        <a href="{{ url_for('index') }}">Home</a>
+        <span>/</span>
+        <span style="color: var(--text-main);">AGB</span>
+    </div>
+
+    <h1>Allgemeine Geschäftsbedingungen</h1>
+    <p>für die Nutzung der SaaS-Plattform SmartShop AI (Stand: Juli 2026)</p>
+
+    <h2>§ 1 Geltungsbereich, Anbieter</h2>
+    <p>
+        Diese AGB regeln das Vertragsverhältnis zwischen Andrii Pylypchuk, Bergmannweg 16,
+        65934 Frankfurt am Main (siehe <a href="{{ url_for('impressum_page') }}">Impressum</a>,
+        nachfolgend "Anbieter") und Unternehmern im Sinne des § 14 BGB, die über
+        <code>shop.andrii-it.de</code> einen eigenen Online-Shop betreiben (nachfolgend
+        "Kunde"). Sie gelten nicht für das Verhältnis zwischen dem Kunden und dessen eigenen
+        Endkunden - dafür gelten die vom Kunden selbst hinterlegten Geschäftsbedingungen seines
+        Shops. Das Angebot richtet sich ausschließlich an Unternehmer, nicht an Verbraucher.
+    </p>
+
+    <h2>§ 2 Leistungsbeschreibung</h2>
+    <p>
+        Der Anbieter stellt eine SaaS-Plattform bereit, mit der der Kunde ohne eigene
+        Serverinfrastruktur einen Online-Shop betreiben kann. Je nach gebuchtem Tarif umfasst
+        dies insbesondere:
+    </p>
+    <ul>
+        <li><strong>Starter</strong> - Shop-Vitrine und Produktkatalog, ІІ-Verkaufsassistent
+            (Chatbot), Kartenzahlung über Stripe, Selbstabholung als Versandoption.</li>
+        <li><strong>Pro</strong> - zusätzlich automatischer, KI-generierter Blog mit
+            SEO-Metadaten, Lagerverwaltung und Anbindung von Versanddienstleistern (DHL/UPS).</li>
+        <li><strong>Business</strong> - zusätzlich Buchhaltungsberichte mit CSV-Export und
+            bevorzugter Support.</li>
+    </ul>
+    <p>
+        Der genaue Funktionsumfang der einzelnen Tarife ergibt sich aus der jeweils aktuellen
+        Darstellung auf der Startseite. Der Anbieter ist berechtigt, den Funktionsumfang
+        weiterzuentwickeln, sofern dadurch der Kern der gebuchten Leistung nicht wesentlich
+        beeinträchtigt wird.
+    </p>
+
+    <h2>§ 3 Registrierung, Testphase, Vertragsschluss</h2>
+    <p>
+        Für die Nutzung ist eine Registrierung mit gültiger E-Mail-Adresse erforderlich. Neue
+        Kunden erhalten eine kostenlose, unverbindliche Testphase von 7 Tagen ab Registrierung.
+        Der Vertrag über den gebuchten Tarif kommt mit erfolgreicher Zahlungsautorisierung über
+        Stripe zustande und verlängert sich nach Ablauf der Testphase automatisch in ein
+        kostenpflichtiges Abonnement, sofern der Kunde nicht vorher kündigt.
+    </p>
+
+    <h2>§ 4 Preise und Zahlung</h2>
+    <p>
+        Es gelten die zum Zeitpunkt der Buchung auf der Startseite angegebenen monatlichen
+        Preise (Starter 19 €, Pro 49 €, Business 99 €, jeweils zzgl. gesetzlicher
+        Umsatzsteuer, sofern anwendbar). Die Zahlung erfolgt monatlich im Voraus per
+        Kreditkarte über den Zahlungsdienstleister Stripe. Preisänderungen für zukünftige
+        Abrechnungszeiträume werden dem Kunden mit angemessenem Vorlauf mitgeteilt; setzt der
+        Kunde die Nutzung danach fort, gilt dies als Zustimmung.
+    </p>
+
+    <h2>§ 5 Vertragslaufzeit und Kündigung</h2>
+    <p>
+        Das Abonnement läuft auf unbestimmte Zeit mit monatlicher Abrechnung. Der Kunde kann
+        jederzeit selbst über die Kontoeinstellungen im Admin-Bereich kündigen; die Kündigung
+        wird sofort wirksam, eine anteilige Rückerstattung für den laufenden Abrechnungszeitraum
+        erfolgt nicht. Mit der Kündigung werden das Stripe-Abonnement sofort beendet und die
+        personenbezogenen Daten des Kunden sowie seiner Endkunden anonymisiert; Bestelldaten
+        bleiben in anonymisierter Form zu steuerrechtlichen Zwecken gespeichert
+        (Art. 17 Abs. 3 lit. b DSGVO). Der Anbieter kann den Vertrag bei erheblichem Verstoß
+        gegen § 7 dieser AGB fristlos kündigen.
+    </p>
+
+    <h2>§ 6 Pflichten des Kunden</h2>
+    <p>
+        Der Kunde ist für den Inhalt seines Shops (Produktbeschreibungen, Bilder, Preise) sowie
+        für die Einhaltung der für ihn geltenden gesetzlichen Pflichten selbst verantwortlich,
+        insbesondere für ein eigenes, korrektes Impressum und eine eigene
+        Datenschutzerklärung seines Shops, die Einhaltung von Verbraucherschutz-, Wettbewerbs-
+        und Steuerrecht sowie ggf. erforderliche Kennzeichnungen. Die Nutzung der Plattform für
+        rechtswidrige, betrügerische oder die Rechte Dritter verletzende Zwecke ist untersagt.
+    </p>
+
+    <h2>§ 7 Zahlungsabwicklung gegenüber den Endkunden des Kunden</h2>
+    <p>
+        Zahlungen der Endkunden des Kunden werden über eine eigene Stripe-Connect-Verbindung
+        des Kunden abgewickelt; die Gelder fließen direkt an den vom Kunden verbundenen
+        Stripe-Account. Der Anbieter erhebt hierauf zum Zeitpunkt dieser AGB keine zusätzliche
+        Provision; eine Änderung dieser Regelung für die Zukunft bleibt vorbehalten und wird
+        dem Kunden vorab mitgeteilt.
+    </p>
+
+    <h2>§ 8 KI-Funktionen</h2>
+    <p>
+        Der ІІ-Verkaufsassistent und die automatische Blog-Erstellung nutzen einen externen
+        KI-Dienstleister (OpenAI) und arbeiten mit den vom Kunden hinterlegten Produkt- und
+        Textdaten. Von der KI erzeugte Inhalte (Chat-Antworten, Blogartikel) werden ohne
+        Gewähr für Richtigkeit, Vollständigkeit oder rechtliche Zulässigkeit bereitgestellt;
+        der Kunde ist verpflichtet, automatisch generierte Blogartikel vor Veröffentlichung zu
+        prüfen. Der Assistent ist so konfiguriert, dass er sich gegenüber Endkunden stets als
+        KI zu erkennen gibt und keine über die hinterlegten Daten hinausgehenden Zusagen macht.
+    </p>
+
+    <h2>§ 9 Verfügbarkeit</h2>
+    <p>
+        Der Anbieter bemüht sich um eine hohe Verfügbarkeit der Plattform, sichert jedoch keine
+        bestimmte Verfügbarkeit im Sinne einer Beschaffenheitsgarantie zu. Wartungsarbeiten
+        werden, soweit zumutbar, außerhalb der üblichen Geschäftszeiten durchgeführt.
+    </p>
+
+    <h2>§ 10 Haftung</h2>
+    <p>
+        Der Anbieter haftet unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie nach den
+        Vorschriften des Produkthaftungsgesetzes. Bei einfacher Fahrlässigkeit haftet der
+        Anbieter nur bei Verletzung einer wesentlichen Vertragspflicht (Kardinalpflicht),
+        begrenzt auf den bei Vertragsschluss vorhersehbaren, vertragstypischen Schaden. Die
+        Haftung für entgangenen Gewinn und mittelbare Schäden ist, soweit gesetzlich zulässig,
+        ausgeschlossen. Für Inhalte und Handlungen, die der Kunde über seinen Shop verantwortet
+        (§ 6), haftet der Anbieter nicht.
+    </p>
+
+    <h2>§ 11 Datenschutz</h2>
+    <p>
+        Für die Verarbeitung personenbezogener Daten im Rahmen der Plattformnutzung gilt die
+        <a href="{{ url_for('datenschutz_page') }}">Datenschutzerklärung</a> des Anbieters.
+        Soweit der Kunde personenbezogene Daten seiner eigenen Endkunden über die Plattform
+        verarbeitet, ist er hierfür selbst Verantwortlicher im Sinne der DSGVO.
+    </p>
+
+    <h2>§ 12 Geistiges Eigentum</h2>
+    <p>
+        Alle Rechte an der Plattform-Software selbst verbleiben beim Anbieter. Inhalte, die der
+        Kunde selbst einstellt (Produktdaten, Texte, Bilder), verbleiben im Eigentum des Kunden;
+        der Kunde räumt dem Anbieter die zur Erbringung der vertraglichen Leistung notwendigen
+        Nutzungsrechte ein.
+    </p>
+
+    <h2>§ 13 Änderungen dieser AGB</h2>
+    <p>
+        Der Anbieter kann diese AGB mit Wirkung für die Zukunft ändern, wenn dies aus
+        rechtlichen Gründen oder zur Anpassung an geänderte Leistungen erforderlich ist. Der
+        Kunde wird über wesentliche Änderungen rechtzeitig informiert; widerspricht er nicht
+        innerhalb von vier Wochen, gilt die Änderung als angenommen.
+    </p>
+
+    <h2>§ 14 Schlussbestimmungen</h2>
+    <p>
+        Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts. Gerichtsstand für alle
+        Streitigkeiten aus diesem Vertragsverhältnis ist, soweit gesetzlich zulässig, Frankfurt
+        am Main. Sollte eine Bestimmung dieser AGB unwirksam sein, bleibt die Wirksamkeit der
+        übrigen Bestimmungen unberührt.
+    </p>
+</section>
+{% endblock %}

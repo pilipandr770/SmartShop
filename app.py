@@ -1238,7 +1238,14 @@ def create_app():
 
     @app.route("/agb")
     def agb_page():
-        """Умови використання (Allgemeine Geschäftsbedingungen)."""
+        """Умови використання (Allgemeine Geschäftsbedingungen).
+
+        На голому домені платформи - це умови SaaS-підписки на саму
+        платформу SmartShop AI (між Andrii Pylypchuk і власником магазину),
+        а НЕ умови продажу товарів кінцевим покупцям конкретного магазину -
+        це принципово різні документи, як і з Impressum/Datenschutz вище."""
+        if g.is_platform_root:
+            return render_template("pages/platform_agb.html")
         settings = SiteSettings.get_or_create(g.store.id)
         return render_template("pages/agb.html", settings=settings)
 
