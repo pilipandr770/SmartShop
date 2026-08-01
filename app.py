@@ -1752,14 +1752,19 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
         for product_id_str, qty in cart.items():
             product = Product.query.filter_by(id=int(product_id_str), store_id=g.store.id).first()
             if product and product.is_active:
+                product_data = {
+                    "name": product.name,
+                    "images": [product.image_url] if product.image_url else [],
+                }
+                # Stripe відхиляє порожній рядок для description (тільки
+                # непорожнє значення або повна відсутність ключа) - товар без
+                # short_description раніше ламав весь checkout.
+                if product.short_description:
+                    product_data["description"] = product.short_description
                 line_items.append({
                     "price_data": {
                         "currency": product.currency.lower(),
-                        "product_data": {
-                            "name": product.name,
-                            "description": product.short_description or "",
-                            "images": [product.image_url] if product.image_url else [],
-                        },
+                        "product_data": product_data,
                         "unit_amount": int(product.price * 100),  # Stripe працює з центами
                     },
                     "quantity": qty,
