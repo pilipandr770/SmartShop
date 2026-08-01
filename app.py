@@ -1863,7 +1863,10 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
 
         except stripe.error.StripeError as e:
             db.session.rollback()
-            flash(_("Помилка Stripe: %(error)s") % {"error": str(e)}, "danger")
+            # Клієнту не показуємо сирий текст помилки Stripe (може містити
+            # деталі конфігурації акаунту продавця) - лише продавцю в логах.
+            app.logger.error(f"Checkout Stripe error for store_id={g.store.id}: {e}")
+            flash(_("Оплата тимчасово недоступна. Спробуйте пізніше або зверніться до продавця."), "danger")
             return redirect(url_for("cart_page"))
 
     def _auto_create_shipment(order, task, carrier_code, service_code):
