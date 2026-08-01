@@ -70,12 +70,12 @@
         </div>
         
         <div class="form-group">
-            <label for="price">{{ _('Ціна ({{ get_currency_symbol(settings.default_currency or \'EUR\') }}) *') }}</label>
+            <label for="price">{{ _('Ціна (%(currency)s) *', currency=get_currency_symbol(settings.default_currency or 'EUR')) }}</label>
             <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="0.00">
         </div>
         
         <div class="form-group">
-            <label for="old_price">{{ _('Стара ціна ({{ get_currency_symbol(settings.default_currency or \'EUR\') }})') }}</label>
+            <label for="old_price">{{ _('Стара ціна (%(currency)s)', currency=get_currency_symbol(settings.default_currency or 'EUR')) }}</label>
             <input type="number" id="old_price" name="old_price" step="0.01" min="0" placeholder="{{ _('Для знижки') }}">
         </div>
         

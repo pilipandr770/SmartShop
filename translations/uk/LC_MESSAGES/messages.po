@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SmartShop AI 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-31 17:25+0000\n"
+"POT-Creation-Date: 2026-08-01 09:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: uk <LL@li.org>\n"
@@ -3486,13 +3486,15 @@ msgstr "📦 Основна інформація"
 msgid "Назва товару *"
 msgstr "Назва товару *"
 
-#: templates/admin/product_edit.html:25
-msgid "Ціна ({{ get_currency_symbol(product.currency) }}) *"
-msgstr "Ціна ({{ get_currency_symbol(product.currency) }}) *"
+#: templates/admin/product_edit.html:25 templates/admin/products.html:73
+#, python-format
+msgid "Ціна (%(currency)s) *"
+msgstr "Ціна (%(currency)s) *"
 
-#: templates/admin/product_edit.html:29
-msgid "Стара ціна ({{ get_currency_symbol(product.currency) }})"
-msgstr "Стара ціна ({{ get_currency_symbol(product.currency) }})"
+#: templates/admin/product_edit.html:29 templates/admin/products.html:78
+#, python-format
+msgid "Стара ціна (%(currency)s)"
+msgstr "Стара ціна (%(currency)s)"
 
 #: templates/admin/product_edit.html:30 templates/admin/products.html:79
 msgid "Для знижки"
@@ -3610,17 +3612,6 @@ msgstr "Категорія *"
 #: templates/admin/products.html:65
 msgid "Оберіть категорію"
 msgstr "Оберіть категорію"
-
-#: templates/admin/products.html:73
-msgid "Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
-msgstr ""
-"Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
-
-#: templates/admin/products.html:78
-msgid ""
-"Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})"
-msgstr ""
-"Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})"
 
 #: templates/admin/products.html:83
 msgid "Зображення товару"
@@ -7029,3 +7020,18 @@ msgstr "Користувачів не знайдено."
 
 #~ msgid "🧾 Замовлення"
 #~ msgstr "🧾 Замовлення"
+
+#~ msgid "Ціна ({{ get_currency_symbol(product.currency) }}) *"
+#~ msgstr "Ціна ({{ get_currency_symbol(product.currency) }}) *"
+
+#~ msgid "Стара ціна ({{ get_currency_symbol(product.currency) }})"
+#~ msgstr "Стара ціна ({{ get_currency_symbol(product.currency) }})"
+
+#~ msgid "Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
+#~ msgstr ""
+#~ "Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
+
+#~ msgid ""
+#~ "Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})"
+#~ msgstr ""
+#~ "Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})"
