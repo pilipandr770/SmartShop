@@ -6,6 +6,105 @@
     <p class="page-subtitle">{{ _('Налаштування текстів та блоків головної сторінки') }}</p>
 </div>
 
+<!-- Блоки на головній сторінці: картки "Про нас" / "Магазин" / "Блог" тощо -
+     кожен блок редагується/вимикається/видаляється незалежно, порядок
+     змінюється стрілками. Раніше ці 4 картки були жорстко зашиті в коді. -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>🧩 {{ _('Блоки на головній сторінці') }}</h3>
+    </div>
+    <div class="form-section">
+        <p class="form-hint" style="margin-top: 0;">
+            💡 {{ _('Ці картки показуються на головній сторінці магазину. Можна редагувати текст, картинку, посилання, порядок і вимикати непотрібні.') }}
+        </p>
+        <div class="blocks-list">
+            {% for block in homepage_blocks %}
+            <div class="block-editor {% if not block.is_active %}block-disabled{% endif %}">
+                <div class="block-order-controls">
+                    <form method="post" action="{{ url_for('admin_blocks_move', block_id=block.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="direction" value="up">
+                        <button type="submit" class="btn btn-sm btn-outline" {% if loop.first %}disabled{% endif %} title="{{ _('Вище') }}">↑</button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin_blocks_move', block_id=block.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="direction" value="down">
+                        <button type="submit" class="btn btn-sm btn-outline" {% if loop.last %}disabled{% endif %} title="{{ _('Нижче') }}">↓</button>
+                    </form>
+                </div>
+
+                <form method="post" action="{{ url_for('admin_blocks_save', block_id=block.id) }}" class="block-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="block-image-wrapper">
+                        <div class="block-image-preview" id="blockImgPreview{{ block.id }}"
+                             {% if block.image_url %}style="background-image:url('{{ block.image_url }}');"{% endif %}>
+                            {% if not block.image_url %}<span>{{ _('Немає картинки') }}</span>{% endif %}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="document.getElementById('blockImgFile{{ block.id }}').click()">
+                            📤 {{ _('Завантажити') }}
+                        </button>
+                        <input type="file" id="blockImgFile{{ block.id }}" accept="image/*" style="display:none;" onchange="uploadBlockImage(this, {{ block.id }})">
+                        <input type="url" name="image_url" id="blockImgUrl{{ block.id }}" value="{{ block.image_url or '' }}" placeholder="{{ _('або вставте URL картинки') }}" class="block-image-url">
+                    </div>
+
+                    <div class="block-fields">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ _('Заголовок') }}</label>
+                                <input type="text" name="title" value="{{ block.title }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>{{ _('Підпис (напр. "Дізнатись більше")') }}</label>
+                                <input type="text" name="subtitle" value="{{ block.subtitle or '' }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>{{ _('Веде на') }}</label>
+                                <select name="link_type" class="block-link-type" onchange="toggleBlockLinkValue(this, {{ block.id }})">
+                                    <option value="about" {% if block.link_type == 'about' %}selected{% endif %}>{{ _('Сторінка "Про нас"') }}</option>
+                                    <option value="shop" {% if block.link_type == 'shop' %}selected{% endif %}>{{ _('Каталог товарів') }}</option>
+                                    <option value="blog" {% if block.link_type == 'blog' %}selected{% endif %}>{{ _('Блог') }}</option>
+                                    <option value="ai_assistant" {% if block.link_type == 'ai_assistant' %}selected{% endif %}>{{ _('ІІ-асистент') }}</option>
+                                    <option value="category" {% if block.link_type == 'category' %}selected{% endif %}>{{ _('Конкретна категорія') }}</option>
+                                    <option value="custom" {% if block.link_type == 'custom' %}selected{% endif %}>{{ _('Довільне посилання') }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>{{ _('Slug категорії або URL') }}</label>
+                                <input type="text" name="link_value" id="blockLinkValue{{ block.id }}" value="{{ block.link_value or '' }}"
+                                       {% if block.link_type not in ('category', 'custom') %}disabled{% endif %}
+                                       placeholder="{{ _('напр. electronics або https://...') }}">
+                            </div>
+                        </div>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_active" {% if block.is_active %}checked{% endif %}>
+                            <span>{{ _('Показувати цей блок') }}</span>
+                        </label>
+                    </div>
+
+                    <div class="block-actions">
+                        <button type="submit" class="btn btn-sm btn-primary">💾 {{ _('Зберегти') }}</button>
+                    </div>
+                </form>
+
+                <form method="post" action="{{ url_for('admin_blocks_delete', block_id=block.id) }}"
+                      onsubmit="return confirm('{{ _('Видалити цей блок?') }}')" class="block-delete-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Видалити') }}">🗑️</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form method="post" action="{{ url_for('admin_blocks_new') }}" style="margin-top: 1rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline">➕ {{ _('Додати блок') }}</button>
+        </form>
+    </div>
+</div>
+
 <form method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Hero блок -->
@@ -147,5 +246,145 @@
         grid-template-columns: 1fr;
     }
 }
+
+.blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.block-editor {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+}
+
+.block-disabled {
+    opacity: 0.55;
+}
+
+.block-order-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.block-order-controls form button {
+    width: 2.2rem;
+}
+
+.block-form {
+    flex: 1;
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.block-image-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 160px;
+    flex-shrink: 0;
+}
+
+.block-image-preview {
+    width: 160px;
+    height: 100px;
+    border-radius: 0.5rem;
+    border: 1px dashed var(--border-color);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.block-image-url {
+    font-size: 0.8rem;
+}
+
+.block-fields {
+    flex: 1;
+    min-width: 280px;
+}
+
+.block-fields .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.block-actions {
+    display: flex;
+    align-items: flex-end;
+}
+
+.block-delete-form {
+    flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+    .block-editor {
+        flex-direction: column;
+    }
+    .block-order-controls {
+        flex-direction: row;
+    }
+    .block-fields .form-row {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
+
+<script>
+async function uploadBlockImage(input, blockId) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const preview = document.getElementById('blockImgPreview' + blockId);
+    const urlInput = document.getElementById('blockImgUrl' + blockId);
+
+    if (file.size > 16 * 1024 * 1024) {
+        alert('{{ _("❌ Файл занадто великий (макс. 16 МБ)") }}');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('/admin/upload', { method: 'POST', body: formData });
+        const data = await response.json();
+        if (data.success) {
+            preview.style.backgroundImage = `url('${data.url}')`;
+            preview.textContent = '';
+            urlInput.value = data.url;
+        } else {
+            alert(data.error || '{{ _("Помилка завантаження") }}');
+        }
+    } catch (error) {
+        alert('{{ _("❌ Помилка з\'єднання") }}');
+    }
+}
+
+function toggleBlockLinkValue(select, blockId) {
+    const input = document.getElementById('blockLinkValue' + blockId);
+    input.disabled = !(select.value === 'category' || select.value === 'custom');
+}
+</script>
 {% endblock %}

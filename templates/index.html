@@ -192,7 +192,7 @@
     .features {
         margin-top: 0.5rem;
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
     }
 
@@ -537,60 +537,27 @@
     </aside>
 </section>
 
-<!-- FOUR MAIN BLOCKS -->
+<!-- Блоки головної сторінки: повністю редаговані в /admin/blocks (заголовок,
+     картинка, посилання, порядок, показувати/сховати) - див. models/homepage_block.py -->
 <section class="features">
-    <!-- About -->
-    <a href="{{ url_for('about_page') }}" class="feature-card">
-        <div class="feature-tag">1</div>
-        <h2 class="feature-title">{{ _('About') }}</h2>
+    {% for block in homepage_blocks %}
+    <a href="{{ block.resolve_url() }}" class="feature-card">
+        <div class="feature-tag">{{ loop.index }}</div>
+        <h2 class="feature-title">{{ block.title }}</h2>
         <div class="feature-thumb"
-             style="background-image: url('https://images.pexels.com/photos/6476587/pexels-photo-6476587.jpeg?auto=compress&cs=tinysrgb&w=800');">
+             {% if block.image_url %}style="background-image: url('{{ block.image_url }}');"{% endif %}>
             <div class="feature-thumb-overlay"></div>
-        </div>
-        <div class="feature-meta">
-            <span>{{ _('Learn more') }} &#8594;</span>
-        </div>
-    </a>
-
-    <!-- Shop -->
-    <a href="{{ url_for('shop') }}" class="feature-card">
-        <div class="feature-tag">2</div>
-        <h2 class="feature-title">{{ _('Shop') }}</h2>
-        <div class="feature-thumb"
-             style="background-image: url('https://images.pexels.com/photos/5632389/pexels-photo-5632389.jpeg?auto=compress&cs=tinysrgb&w=800');">
-            <div class="feature-thumb-overlay"></div>
+            {% if block.link_type == 'shop' %}
             <div class="feature-thumb-label">{{ total_products }} {{ _('Products') }}</div>
+            {% endif %}
         </div>
+        {% if block.subtitle %}
         <div class="feature-meta">
-            <span>{{ _('View all') }} &#8594;</span>
+            <span>{{ block.subtitle }} &#8594;</span>
         </div>
+        {% endif %}
     </a>
-
-    <!-- Blog -->
-    <a href="{{ url_for('blog_page') }}" class="feature-card">
-        <div class="feature-tag">3</div>
-        <h2 class="feature-title">{{ _('Blog') }}</h2>
-        <div class="feature-thumb"
-             style="background-image: url('https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800');">
-            <div class="feature-thumb-overlay"></div>
-        </div>
-        <div class="feature-meta">
-            <span>{{ _('Read more') }} &#8594;</span>
-        </div>
-    </a>
-
-    <!-- AI Chat -->
-    <a href="{{ url_for('ai_assistant_page') }}" class="feature-card">
-        <div class="feature-tag">4</div>
-        <h2 class="feature-title">{{ _('AI Assistant') }}</h2>
-        <div class="feature-thumb"
-             style="background-image: url('https://images.pexels.com/photos/8867439/pexels-photo-8867439.jpeg?auto=compress&cs=tinysrgb&w=800');">
-            <div class="feature-thumb-overlay"></div>
-        </div>
-        <div class="feature-meta">
-            <span>{{ _('Ask me anything...') }} &#8594;</span>
-        </div>
-    </a>
+    {% endfor %}
 </section>
 {% endif %}
 

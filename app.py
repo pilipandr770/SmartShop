@@ -361,6 +361,7 @@ def create_app():
     )
     from models.blog import BlogPost, BlogPlan, AISettings, BlogPostStatus
     from models.store import Store
+    from models.homepage_block import HomepageBlock, LINK_TYPE_CHOICES
 
     # Flask-Login user loader
     @login_manager.user_loader
@@ -1197,6 +1198,8 @@ def create_app():
             )
         ).order_by(BlogPost.publish_date.desc()).limit(3).all()
 
+        homepage_blocks = HomepageBlock.get_active_for_store(g.store.id)
+
         return render_template(
             "index.html",
             settings=settings,
@@ -1206,6 +1209,7 @@ def create_app():
             total_orders=total_orders,
             total_revenue=total_revenue,
             blog_posts=blog_posts,
+            homepage_blocks=homepage_blocks,
         )
 
     # ----- ПУБЛІЧНІ: СТАТИЧНІ СТОРІНКИ -----
@@ -2420,7 +2424,92 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
             flash(_("Налаштування головної сторінки збережені."), "success")
             return redirect(url_for("admin_blocks"))
 
-        return render_template("admin/blocks.html", settings=settings)
+        homepage_blocks = HomepageBlock.get_all_for_store(g.store.id)
+        return render_template(
+            "admin/blocks.html",
+            settings=settings,
+            homepage_blocks=homepage_blocks,
+            link_type_choices=LINK_TYPE_CHOICES,
+        )
+
+    def _get_own_block_or_404(block_id):
+        block = HomepageBlock.query.filter_by(id=block_id, store_id=g.store.id).first()
+        if not block:
+            abort(404)
+        return block
+
+    @app.route("/admin/blocks/new", methods=["POST"])
+    @admin_required
+    def admin_blocks_new():
+        max_order = (
+            db.session.query(db.func.coalesce(db.func.max(HomepageBlock.sort_order), -1))
+            .filter(HomepageBlock.store_id == g.store.id)
+            .scalar()
+        )
+        block = HomepageBlock(
+            store_id=g.store.id,
+            title=_("Новий блок"),
+            subtitle="",
+            link_type="custom",
+            link_value="#",
+            sort_order=max_order + 1,
+            is_active=True,
+        )
+        db.session.add(block)
+        db.session.commit()
+        flash(_("Блок додано. Заповніть його нижче."), "success")
+        return redirect(url_for("admin_blocks"))
+
+    @app.route("/admin/blocks/<int:block_id>", methods=["POST"])
+    @admin_required
+    def admin_blocks_save(block_id):
+        block = _get_own_block_or_404(block_id)
+
+        block.title = request.form.get("title", "").strip() or _("Без назви")
+        block.subtitle = request.form.get("subtitle", "").strip()
+        block.image_url = request.form.get("image_url", "").strip() or None
+
+        link_type = request.form.get("link_type", "custom")
+        block.link_type = link_type if link_type in LINK_TYPE_CHOICES else "custom"
+        block.link_value = request.form.get("link_value", "").strip() or None
+
+        block.is_active = request.form.get("is_active") == "on"
+
+        db.session.commit()
+        flash(_("Блок «%(title)s» збережено.") % {"title": block.title}, "success")
+        return redirect(url_for("admin_blocks"))
+
+    @app.route("/admin/blocks/<int:block_id>/delete", methods=["POST"])
+    @admin_required
+    def admin_blocks_delete(block_id):
+        block = _get_own_block_or_404(block_id)
+        db.session.delete(block)
+        db.session.commit()
+        flash(_("Блок видалено."), "success")
+        return redirect(url_for("admin_blocks"))
+
+    @app.route("/admin/blocks/<int:block_id>/move", methods=["POST"])
+    @admin_required
+    def admin_blocks_move(block_id):
+        block = _get_own_block_or_404(block_id)
+        direction = request.form.get("direction")
+
+        siblings = (
+            HomepageBlock.query.filter_by(store_id=g.store.id)
+            .order_by(HomepageBlock.sort_order)
+            .all()
+        )
+        index = next((i for i, b in enumerate(siblings) if b.id == block.id), None)
+        if index is None:
+            return redirect(url_for("admin_blocks"))
+
+        swap_index = index - 1 if direction == "up" else index + 1
+        if 0 <= swap_index < len(siblings):
+            other = siblings[swap_index]
+            block.sort_order, other.sort_order = other.sort_order, block.sort_order
+            db.session.commit()
+
+        return redirect(url_for("admin_blocks"))
 
     # ----- АДМІНКА: КАТЕГОРІЇ -----
 
