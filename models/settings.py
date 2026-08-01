@@ -57,7 +57,7 @@ class SiteSettings(db.Model):
     custom_head_code = db.Column(db.Text, nullable=True)
     
     # Магазин
-    default_currency = db.Column(db.String(8), nullable=True, default="UAH")
+    default_currency = db.Column(db.String(8), nullable=True, default="EUR")
     products_per_page = db.Column(db.Integer, nullable=True, default=12)
     min_order_amount = db.Column(db.Float, nullable=True, default=0.0)
     shipping_info = db.Column(db.Text, nullable=True)
@@ -131,7 +131,7 @@ class SiteSettings(db.Model):
                     "чого немає на сайті."
                 ),
                 site_name="SmartShop",
-                default_currency="UAH",
+                default_currency="EUR",
             )
             db.session.add(settings)
             db.session.commit()
