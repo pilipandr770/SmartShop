@@ -179,7 +179,7 @@
     <div class="cart-summary">
         <div>
             <span style="color: var(--text-muted);">{{ _('Загальна сума') }}:</span>
-            <span class="cart-total">{{ "%.2f"|format(total) }} EUR</span>
+            <span class="cart-total">{{ "%.2f"|format(total) }} {{ items[0].product.currency if items else (settings.default_currency or 'EUR') }}</span>
         </div>
         <div class="cart-actions">
             <form action="{{ url_for('cart_clear') }}" method="post">

@@ -87,8 +87,8 @@
             </div>
             <div class="stat-card">
                 <div class="stat-icon">💰</div>
-                <div class="stat-value">{{ "%.0f"|format(total_spent) }}</div>
-                <div class="stat-label">{{ _('Загальна сума (EUR)') }}</div>
+                <div class="stat-value">{{ "%.0f"|format(total_spent) }} {{ get_currency_symbol(settings.default_currency or 'EUR') }}</div>
+                <div class="stat-label">{{ _('Загальна сума') }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📊</div>
