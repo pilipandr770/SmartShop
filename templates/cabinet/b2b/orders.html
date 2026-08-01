@@ -93,7 +93,7 @@
                 <span class="stat-label">{{ _('В обробці') }}</span>
             </div>
             <div class="stat-item">
-                <span class="stat-value">{{ "%.2f"|format(orders|sum(attribute='amount')) }} €</span>
+                <span class="stat-value">{{ "%.2f"|format(orders|sum(attribute='amount')) }} {{ get_currency_symbol(settings.default_currency or 'EUR') }}</span>
                 <span class="stat-label">{{ _('Загальна сума') }}</span>
             </div>
         </div>
@@ -125,7 +125,7 @@
                             <span class="items-count">{{ order.items|length if order.items else 0 }} {{ _('товарів') }}</span>
                         </td>
                         <td>
-                            <span class="order-amount">{{ "%.2f"|format(order.amount) }} €</span>
+                            <span class="order-amount">{{ "%.2f"|format(order.amount) }} {{ get_currency_symbol(order.currency) }}</span>
                             {% if order.discount_percent %}
                             <span class="discount-badge">-{{ order.discount_percent }}%</span>
                             {% endif %}

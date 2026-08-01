@@ -7,14 +7,14 @@
 {% set product_long_desc = product.long_description_en if locale == 'en' else (product.long_description_de if locale == 'de' else (product.long_description or '')) %}
 {% set category_name = product.category.name_en if (product.category and locale == 'en') else (product.category.name_de if (product.category and locale == 'de') else (product.category.name if product.category else 'products')) %}
 
-{% block title %}{{ product_name }} - {{ "€%.2f"|format(product.price) }} - SmartShop AI{% endblock %}
+{% block title %}{{ product_name }} - {{ "%.2f"|format(product.price) }}{{ get_currency_symbol(product.currency) }} - SmartShop AI{% endblock %}
 
 {% block meta_description %}{{ product_desc[:155] if product_desc else 'Buy ' ~ product_name ~ ' online at SmartShop. High quality products with fast delivery.' }}{% endblock %}
 
 {% block meta_keywords %}{{ product_name }}, buy {{ product_name }}, {{ category_name }}, online shopping{% endblock %}
 
 {% block og_type %}product{% endblock %}
-{% block og_title %}{{ product_name }} - {{ "€%.2f"|format(product.price) }}{% endblock %}
+{% block og_title %}{{ product_name }} - {{ "%.2f"|format(product.price) }}{{ get_currency_symbol(product.currency) }}{% endblock %}
 {% block og_description %}{{ product_desc[:200] if product_desc else 'Buy ' ~ product_name ~ ' online' }}{% endblock %}
 {% block og_image %}{{ product.image_url or (request.url_root ~ 'static/images/og-default.jpg') }}{% endblock %}
 
@@ -36,7 +36,7 @@
     "offers": {
         "@type": "Offer",
         "url": "{{ url_for('product_page', product_id=product.id, _external=True) }}",
-        "priceCurrency": "EUR",
+        "priceCurrency": "{{ product.currency }}",
         "price": "{{ product.price }}",
         "availability": "{{ 'https://schema.org/InStock' if product.stock > 0 else 'https://schema.org/OutOfStock' }}",
         "itemCondition": "https://schema.org/NewCondition"

@@ -115,7 +115,7 @@
                         <div class="order-status">
                             <span class="status-badge status-{{ order.status }}">{{ order.status_display }}</span>
                         </div>
-                        <div class="order-amount">{{ "%.2f"|format(order.amount) }} €</div>
+                        <div class="order-amount">{{ "%.2f"|format(order.amount) }} {{ get_currency_symbol(order.currency) }}</div>
                     </div>
                     {% endfor %}
                 </div>

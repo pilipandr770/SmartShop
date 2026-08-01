@@ -21,7 +21,7 @@
     </div>
     <div class="stat-card">
         <div class="stat-label">{{ _('Дохід') }}</div>
-        <div class="stat-value">{{ '%.2f'|format(total_revenue) }} €</div>
+        <div class="stat-value">{{ '%.2f'|format(total_revenue) }} {{ get_currency_symbol(settings.default_currency or 'EUR') }}</div>
         <div class="stat-desc">{{ _('Оплачені замовлення') }}</div>
     </div>
 </div>
