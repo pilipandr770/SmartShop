@@ -401,6 +401,9 @@
                 <a href="{{ url_for('admin_payments_settings') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin_payments') %} active{% endif %}">
                     <span class="nav-icon">💳</span> {{ _('Прийом оплат') }}
                 </a>
+                <a href="{{ url_for('admin_2fa') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin_2fa') %} active{% endif %}">
+                    <span class="nav-icon">🔐</span> {{ _('Двофакторна автентифікація') }}
+                </a>
                 {% if current_user.is_authenticated and g.store and current_user.id == g.store.owner_user_id %}
                 <a href="{{ url_for('admin_delete_account') }}" class="nav-link{% if request.endpoint == 'admin_delete_account' %} active{% endif %}" style="color:#f87171;">
                     <span class="nav-icon">⚠️</span> {{ _('Видалити акаунт') }}

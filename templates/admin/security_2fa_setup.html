@@ -1,0 +1,63 @@
+{% extends 'admin/layout.html' %}
+{% block title %}{{ _('Налаштування 2FA - Адмін панель') }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🔐 {{ _('Налаштування двофакторної автентифікації') }}</h1>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>{{ _('Крок 1. Відскануйте QR-код') }}</h3>
+    </div>
+    <div class="form-section" style="padding: 1.5rem;">
+        <p style="color: var(--text-muted);">
+            {{ _('Відкрийте застосунок-автентифікатор (Google Authenticator, Authy, Microsoft Authenticator тощо) і відскануйте цей QR-код.') }}
+        </p>
+        {% if qr_data_uri %}
+        <img src="{{ qr_data_uri }}" alt="QR" style="width:220px; height:220px; border-radius: 0.75rem; background:#fff; padding:0.75rem;">
+        {% endif %}
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem;">
+            {{ _('Не вдається відсканувати? Введіть ключ вручну:') }}
+        </p>
+        <code style="display:inline-block; padding: 0.5rem 0.75rem; background: var(--bg-main); border-radius: 0.5rem; letter-spacing: 0.05em;">{{ secret }}</code>
+
+        <form method="POST" action="{{ url_for('admin_2fa_restart') }}" style="margin-top: 1rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline btn-sm">🔄 {{ _('QR-код не працює? Згенерувати новий') }}</button>
+        </form>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h3>{{ _('Крок 2. Підтвердіть код') }}</h3>
+    </div>
+    <div class="form-section" style="padding: 1.5rem;">
+        <form method="POST" action="{{ url_for('admin_2fa_setup') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label for="code">{{ _('6-значний код з застосунку') }}</label>
+                <input type="text" id="code" name="code" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+                       autocomplete="one-time-code" required autofocus
+                       style="font-size:1.4rem; letter-spacing:0.3em; text-align:center; max-width:200px;" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:1rem;">✅ {{ _('Підтвердити і увімкнути') }}</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; }
+.form-control { padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--bg-main); color: var(--text-main); }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+</style>
+{% endblock %}

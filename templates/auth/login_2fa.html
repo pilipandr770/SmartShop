@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Двофакторна автентифікація') }} - SmartShop{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>🔐 {{ _('Двофакторна автентифікація') }}</h1>
+            <p>{{ _('Введіть код з застосунку-автентифікатора') }}</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="auth-form" id="twofaForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="use_backup" id="use_backup" value="">
+            <div class="form-group">
+                <label for="code" id="code_label">{{ _('6-значний код') }}</label>
+                <input type="text" id="code" name="code" inputmode="numeric" pattern="[0-9A-Za-z-]*" maxlength="9"
+                       autocomplete="one-time-code" required autofocus
+                       style="font-size:1.4rem; letter-spacing:0.2em; text-align:center;">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                {{ _('Підтвердити') }}
+            </button>
+        </form>
+
+        <div class="auth-footer" style="border-top: none; padding-top: 0; margin-top: 0.5rem;">
+            <p style="margin-bottom: 0;">
+                <a href="#" id="toggle_backup" style="color: var(--text-secondary, #94a3b8); font-size: 0.9rem;">
+                    {{ _('Немає доступу до телефону? Використати резервний код') }}
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('toggle_backup').addEventListener('click', function(e) {
+    e.preventDefault();
+    const useBackup = document.getElementById('use_backup');
+    const codeInput = document.getElementById('code');
+    const label = document.getElementById('code_label');
+    const isBackup = useBackup.value === 'on';
+    useBackup.value = isBackup ? '' : 'on';
+    codeInput.value = '';
+    if (isBackup) {
+        label.textContent = {{ _('6-значний код')|tojson }};
+        codeInput.maxLength = 6;
+        this.textContent = {{ _('Немає доступу до телефону? Використати резервний код')|tojson }};
+    } else {
+        label.textContent = {{ _('Резервний код')|tojson }};
+        codeInput.maxLength = 9;
+        this.textContent = {{ _('Використати код з телефону')|tojson }};
+    }
+});
+</script>
+{% endblock %}

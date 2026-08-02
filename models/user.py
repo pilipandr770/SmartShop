@@ -1,6 +1,8 @@
 """
 Модель користувача та ролі
 """
+import json
+import secrets
 from datetime import datetime
 from enum import Enum
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -46,6 +48,16 @@ class User(UserMixin, db.Model):
     # для акаунтів, створених до впровадження multi-tenancy.
     store_id = db.Column(db.Integer, db.ForeignKey("stores.id"), nullable=True, index=True)
     
+    # Двофакторна автентифікація (опційна, вмикається користувачем самостійно
+    # в адмінці). Секрет зберігається ЗАШИФРОВАНИМ (Fernet, той самий ключ,
+    # що й для креденшелів перевізників - services/crypto.py) - витік БД сам
+    # по собі не дав би змоги генерувати коди. Резервні коди зберігаються як
+    # ХЕШІ (як пароль) - навіть застосунок не може їх "прочитати" назад,
+    # лише звірити введений код з хешем.
+    _totp_secret_encrypted = db.Column("totp_secret_encrypted", db.Text, nullable=True)
+    totp_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    _totp_backup_codes = db.Column("totp_backup_codes", db.Text, nullable=True)
+
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -118,6 +130,80 @@ class User(UserMixin, db.Model):
         """Оновлює час останнього входу."""
         self.last_login = datetime.utcnow()
         db.session.commit()
+
+    # ----- Двофакторна автентифікація (TOTP) -----
+
+    @property
+    def totp_secret(self):
+        from services.crypto import decrypt_str
+        return decrypt_str(self._totp_secret_encrypted)
+
+    def start_totp_setup(self):
+        """Генерує НОВИЙ секрет і зберігає його (зашифрованим), але ще НЕ
+        вмикає 2FA - totp_enabled лишається False, доки користувач не
+        підтвердить, що дійсно додав акаунт у застосунок-автентифікатор
+        (confirm_totp_setup). Повторний виклик перезаписує попередній
+        непідтверджений секрет - нешкідливо, бо він ще ніде не активний."""
+        import pyotp
+        from services.crypto import encrypt_str
+        secret = pyotp.random_base32()
+        self._totp_secret_encrypted = encrypt_str(secret)
+        self.totp_enabled = False
+        return secret
+
+    def get_totp_uri(self, issuer="SmartShop AI"):
+        import pyotp
+        secret = self.totp_secret
+        if not secret:
+            return None
+        return pyotp.totp.TOTP(secret).provisioning_uri(name=self.email, issuer_name=issuer)
+
+    def verify_totp_code(self, code):
+        """Перевіряє 6-значний код з застосунку-автентифікатора. valid_window=1
+        дозволяє невеликий дрейф годинника (±30с) - стандартна практика для TOTP."""
+        import pyotp
+        secret = self.totp_secret
+        if not secret or not code:
+            return False
+        return pyotp.TOTP(secret).verify(code.strip(), valid_window=1)
+
+    def confirm_totp_setup(self, code):
+        """Підтверджує налаштування 2FA введеним кодом і вмикає його.
+        Повертає список ОДНОРАЗОВО показаних резервних кодів (plaintext) -
+        застосунок сам їх більше ніколи не зможе показати, лише звірити хеш."""
+        if not self.verify_totp_code(code):
+            return None
+        self.totp_enabled = True
+        return self.regenerate_backup_codes()
+
+    def regenerate_backup_codes(self, count=8):
+        """Створює новий набір резервних кодів (на випадок втрати телефону),
+        інвалідуючи всі попередні. Повертає plaintext-коди для одноразового
+        показу - у БД лишаються тільки їхні хеші."""
+        codes = ["-".join([secrets.token_hex(2), secrets.token_hex(2)]) for _ in range(count)]
+        self._totp_backup_codes = json.dumps([
+            {"hash": generate_password_hash(code), "used": False} for code in codes
+        ])
+        return codes
+
+    def verify_backup_code(self, code):
+        """Звіряє одноразовий резервний код і, якщо він валідний і ще не
+        використаний, позначає його використаним (одноразовість)."""
+        if not self._totp_backup_codes or not code:
+            return False
+        entries = json.loads(self._totp_backup_codes)
+        code = code.strip()
+        for entry in entries:
+            if not entry["used"] and check_password_hash(entry["hash"], code):
+                entry["used"] = True
+                self._totp_backup_codes = json.dumps(entries)
+                return True
+        return False
+
+    def disable_totp(self):
+        self.totp_enabled = False
+        self._totp_secret_encrypted = None
+        self._totp_backup_codes = None
     
     @staticmethod
     def get_by_email(email):

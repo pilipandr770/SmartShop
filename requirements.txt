@@ -6,6 +6,8 @@ Flask-Babel==4.0.0
 Flask-Mail==0.9.1
 Flask-WTF==1.2.1
 cryptography==42.0.8
+pyotp==2.9.0
+qrcode[pil]==7.4.2
 Flask-Limiter==3.8.0
 stripe==7.0.0
 openai==1.50.0

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SmartShop AI 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-02 16:17+0000\n"
+"POT-Creation-Date: 2026-08-02 20:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -226,25 +226,51 @@ msgstr "Administrator password changed."
 msgid "Налаштування сайту збережено."
 msgstr "Website settings saved."
 
-#: app.py:3376
+#: app.py:3327
+msgid "2FA вже увімкнена."
+msgstr "2FA is already enabled."
+
+#: app.py:3335
+msgid "Двофакторну автентифікацію увімкнено."
+msgstr "Two-factor authentication has been enabled."
+
+#: app.py:3337
+msgid ""
+"Невірний код. Перевірте, що годинник телефону синхронізований, і спробуйте "
+"ще раз."
+msgstr "Invalid code. Make sure your phone's clock is in sync and try again."
+
+#: app.py:3365 app.py:3377 app.py:3697
+msgid "Невірний пароль."
+msgstr "Incorrect password."
+
+#: app.py:3369
+msgid "Двофакторну автентифікацію вимкнено."
+msgstr "Two-factor authentication has been disabled."
+
+#: app.py:3383
+msgid "Нові резервні коди згенеровано. Старі коди більше не діють."
+msgstr "New backup codes have been generated. The old codes no longer work."
+
+#: app.py:3457
 msgid "Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити»."
 msgstr "Domain saved. Now configure DNS and click \"Verify\"."
 
-#: app.py:3378
+#: app.py:3459
 msgid "Власний домен видалено."
 msgstr "Custom domain removed."
 
-#: app.py:3383
+#: app.py:3464
 msgid "Спочатку вкажіть домен."
 msgstr "Please specify a domain first."
 
-#: app.py:3387
+#: app.py:3468
 msgid ""
 "Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."
 msgstr ""
 "The platform hasn't set up domain verification yet. Please contact support."
 
-#: app.py:3402
+#: app.py:3483
 #, python-format
 msgid ""
 "✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька "
@@ -253,7 +279,7 @@ msgstr ""
 "✅ Domain %(domain)s confirmed and activated! It may take a few minutes for "
 "the certificate to appear."
 
-#: app.py:3408
+#: app.py:3489
 #, python-format
 msgid ""
 "Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). Перевірте"
@@ -263,20 +289,20 @@ msgstr ""
 "%(resolved)s). Check DNS settings (A record to %(ip)s) and try again in a "
 "few minutes."
 
-#: app.py:3455 routes/platform_admin.py:128
+#: app.py:3536 routes/platform_admin.py:128
 msgid "Stripe не налаштовано на платформі."
 msgstr "Stripe is not configured on the platform."
 
-#: app.py:3475 app.py:3489
+#: app.py:3556 app.py:3570
 #, python-format
 msgid "Помилка Stripe Connect: %(error)s"
 msgstr "Stripe Connect error: %(error)s"
 
-#: app.py:3506
+#: app.py:3587
 msgid "✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів."
 msgstr "✅ Stripe connected! You can now accept payments from customers."
 
-#: app.py:3508
+#: app.py:3589
 msgid ""
 "Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та "
 "спробуйте ще раз."
@@ -284,67 +310,63 @@ msgstr ""
 "Stripe registration is not yet complete. Fill in all required data and try "
 "again."
 
-#: app.py:3510
+#: app.py:3591
 #, python-format
 msgid "Не вдалося перевірити статус Stripe: %(error)s"
 msgstr "Failed to verify Stripe status: %(error)s"
 
-#: app.py:3522
+#: app.py:3603
 msgid "Stripe-акаунт відв'язано від магазину."
 msgstr "Stripe account has been disconnected from the shop."
 
-#: app.py:3613
+#: app.py:3694
 msgid "Підтвердіть, що розумієте наслідки видалення."
 msgstr "Confirm that you understand the consequences of deletion."
 
-#: app.py:3616
-msgid "Невірний пароль."
-msgstr "Incorrect password."
-
-#: app.py:3623
+#: app.py:3704
 msgid "Ваш акаунт і магазин видалено. Дякуємо, що були з нами."
 msgstr "Your account and shop have been deleted. Thank you for being with us."
 
-#: app.py:3647
+#: app.py:3728
 msgid "Налаштування самовивозу збережено."
 msgstr "Pickup settings saved."
 
-#: app.py:3669
+#: app.py:3750
 msgid "Невідома служба доставки."
 msgstr "Unknown shipping service."
 
-#: app.py:3673
+#: app.py:3754
 #, python-format
 msgid "%(carrier)s вже налаштовано для цього магазину."
 msgstr "%(carrier)s is already configured for this shop."
 
-#: app.py:3706
+#: app.py:3787
 #, python-format
 msgid "%(carrier)s налаштовано."
 msgstr "%(carrier)s is configured."
 
-#: app.py:3740
+#: app.py:3821
 #, python-format
 msgid "%(carrier)s оновлено."
 msgstr "%(carrier)s has been updated."
 
-#: app.py:3753
+#: app.py:3834
 msgid "Обліковий запис видалено."
 msgstr "Account deleted."
 
-#: app.py:3771
+#: app.py:3852
 msgid "Заповніть обов'язкові поля"
 msgstr "Fill in required fields"
 
-#: app.py:3772
+#: app.py:3853
 msgid "Заповніть обов'язкові поля: ім'я, email, повідомлення."
 msgstr "Fill in required fields: name, email, message."
 
-#: app.py:3789
+#: app.py:3870
 msgid "Дякуємо! Ваше повідомлення надіслано."
 msgstr "Thank you! Your message has been sent."
 
-#: app.py:3804
+#: app.py:3885
 msgid ""
 "Посилання для підтвердження email недійсне або протерміноване. Запросіть "
 "нове нижче."
@@ -352,250 +374,255 @@ msgstr ""
 "This email confirmation link is invalid or has expired. Please request a new"
 " one below."
 
-#: app.py:3809 app.py:3869
+#: app.py:3890 app.py:3950
 msgid "Користувача не знайдено."
 msgstr "User not found."
 
-#: app.py:3815
+#: app.py:3896
 msgid "✅ Email підтверджено!"
 msgstr "✅ Email confirmed!"
 
-#: app.py:3829
+#: app.py:3910
 msgid ""
 "Якщо цей email зареєстровано і ще не підтверджено, ми надіслали новий лист."
 msgstr ""
 "If this email is registered and not yet confirmed, we've sent a new email."
 
-#: app.py:3852
+#: app.py:3933
 msgid ""
 "Якщо цей email зареєстровано, ми надіслали посилання для скидання пароля."
 msgstr "If this email is registered, we've sent a password reset link."
 
-#: app.py:3864
+#: app.py:3945
 msgid ""
 "Посилання для скидання пароля недійсне або протерміноване. Запросіть нове."
 msgstr ""
 "This password reset link is invalid or has expired. Please request a new "
 "one."
 
-#: app.py:3878 app.py:3972 routes/auth.py:103
+#: app.py:3959 app.py:4110 routes/auth.py:103
 msgid "Пароль має бути не менше 6 символів"
 msgstr "Password must be at least 6 characters"
 
-#: app.py:3881 app.py:3974 app.py:4053 routes/auth.py:105 routes/auth.py:184
+#: app.py:3962 app.py:4112 app.py:4191 routes/auth.py:105 routes/auth.py:184
 msgid "Паролі не співпадають"
 msgstr "Passwords do not match"
 
-#: app.py:3886
+#: app.py:3967
 msgid "✅ Пароль оновлено! Тепер ви можете увійти."
 msgstr "✅ Password updated! You can now log in."
 
-#: app.py:3911 routes/auth.py:41
+#: app.py:3992 routes/auth.py:41
 msgid "Ваш акаунт деактивовано. Зверніться до підтримки."
 msgstr "Your account has been deactivated. Please contact support."
 
-#: app.py:3918 routes/auth.py:47 templates/cabinet/b2c/dashboard.html:37
+#: app.py:4008 app.py:4060 routes/auth.py:47
+#: templates/cabinet/b2c/dashboard.html:37
 #: templates/email/registration_welcome.html:6
 #, python-format
 msgid "Вітаємо, %(name)s!"
 msgstr "Welcome, %(name)s!"
 
-#: app.py:3933 routes/auth.py:59
+#: app.py:4023 routes/auth.py:59
 msgid "Невірний email або пароль."
 msgstr "Invalid email or password."
 
-#: app.py:3944 routes/auth.py:69
+#: app.py:4072
+msgid "Невірний код. Спробуйте ще раз."
+msgstr "Invalid code. Please try again."
+
+#: app.py:4082 routes/auth.py:69
 msgid "Ви успішно вийшли з системи."
 msgstr "You have successfully logged out."
 
-#: app.py:3965 app.py:4044 routes/auth.py:96 routes/auth.py:175
+#: app.py:4103 app.py:4182 routes/auth.py:96 routes/auth.py:175
 msgid "Email обов'язковий"
 msgstr "Email is required"
 
-#: app.py:3967 app.py:4046 routes/auth.py:98 routes/auth.py:177
+#: app.py:4105 app.py:4184 routes/auth.py:98 routes/auth.py:177
 msgid "Користувач з таким email вже існує"
 msgstr "A user with this email already exists"
 
-#: app.py:3970 app.py:4049 routes/auth.py:101 routes/auth.py:180
+#: app.py:4108 app.py:4187 routes/auth.py:101 routes/auth.py:180
 msgid "Пароль обов'язковий"
 msgstr "Password is required"
 
-#: app.py:4005 routes/auth.py:127
+#: app.py:4143 routes/auth.py:127
 msgid "Реєстрація успішна! Ласкаво просимо!"
 msgstr "Registration successful! Welcome!"
 
-#: app.py:4020 routes/auth.py:144
+#: app.py:4158 routes/auth.py:144
 msgid "B2B реєстрація тимчасово закрита."
 msgstr "B2B registration is temporarily closed."
 
-#: app.py:4051 routes/auth.py:182
+#: app.py:4189 routes/auth.py:182
 msgid "Пароль має бути не менше 8 символів"
 msgstr "Password must be at least 8 characters"
 
-#: app.py:4056 routes/auth.py:187
+#: app.py:4194 routes/auth.py:187
 msgid "Назва компанії обов'язкова"
 msgstr "Company name is required"
 
-#: app.py:4059 routes/auth.py:190
+#: app.py:4197 routes/auth.py:190
 msgid "Ім'я та прізвище контактної особи обов'язкові"
 msgstr "Contact person's first and last name are required"
 
-#: app.py:4077
+#: app.py:4215
 msgid "✅ VAT номер підтверджено!"
 msgstr "✅ VAT number confirmed!"
 
-#: app.py:4079
+#: app.py:4217
 #, python-format
 msgid "⚠️ VAT не підтверджено: %(error)s"
 msgstr "⚠️ VAT not confirmed: %(error)s"
 
-#: app.py:4081
+#: app.py:4219
 #, python-format
 msgid "⚠️ Помилка перевірки VAT: %(error)s"
 msgstr "⚠️ VAT verification error: %(error)s"
 
-#: app.py:4137
+#: app.py:4275
 msgid "✅ Реєстрація успішна! Ваша компанія верифікована."
 msgstr "✅ Registration successful! Your company is verified."
 
-#: app.py:4139
+#: app.py:4277
 msgid "📋 Реєстрація успішна! Ваша заявка на розгляді."
 msgstr "📋 Registration successful! Your application is under review."
 
-#: app.py:4154
+#: app.py:4292
 msgid "VAT номер обов'язковий"
 msgstr "VAT number is required"
 
-#: app.py:4292
+#: app.py:4430
 msgid "Дані компанії оновлено!"
 msgstr "Company data updated!"
 
-#: app.py:4569
+#: app.py:4707
 msgid "Налаштування оновлено!"
 msgstr "Settings updated!"
 
-#: app.py:4821
+#: app.py:4959
 msgid "✅ Завдання взято в роботу"
 msgstr "✅ Task started"
 
-#: app.py:4828
+#: app.py:4966
 msgid "📦 Замовлення запаковано"
 msgstr "📦 Order packed"
 
-#: app.py:4833
+#: app.py:4971
 msgid "✅ Готово до відправки"
 msgstr "✅ Ready to ship"
 
-#: app.py:4840
+#: app.py:4978
 msgid "🚚 Відправлено!"
 msgstr "🚚 Shipped!"
 
-#: app.py:4844
+#: app.py:4982
 msgid "✔️ Доставлено!"
 msgstr "✔️ Delivered!"
 
-#: app.py:4850
+#: app.py:4988
 msgid "❌ Завдання скасовано"
 msgstr "❌ Task cancelled"
 
-#: app.py:4855
+#: app.py:4993
 msgid "💾 Нотатки збережено"
 msgstr "💾 Notes saved"
 
-#: app.py:4975
+#: app.py:5113
 msgid "Введіть кількість для коригування"
 msgstr "Enter the adjustment quantity"
 
-#: app.py:4988
+#: app.py:5126
 #, python-format
 msgid "✅ Залишок '%(name)s' скориговано на %(adjustment)+d"
 msgstr "✅ Stock '%(name)s' adjusted by %(adjustment)+d"
 
-#: app.py:4990
+#: app.py:5128
 #, python-format
 msgid "❌ Помилка: %(error)s"
 msgstr "❌ Error: %(error)s"
 
-#: app.py:5098
+#: app.py:5236
 #, python-format
 msgid "✅ Замовлення %(order_number)s створено"
 msgstr "✅ Order %(order_number)s created"
 
-#: app.py:5129
+#: app.py:5267
 msgid "✅ Замовлення підтверджено"
 msgstr "✅ Order confirmed"
 
-#: app.py:5135
+#: app.py:5273
 msgid "📤 Замовлено у постачальника"
 msgstr "📤 Ordered from supplier"
 
-#: app.py:5141
+#: app.py:5279
 msgid "🚚 Позначено як відправлено"
 msgstr "🚚 Marked as shipped"
 
-#: app.py:5145
+#: app.py:5283
 msgid "✔️ Товар отримано, залишки оновлено!"
 msgstr "✔️ Item received, stock updated!"
 
-#: app.py:5150
+#: app.py:5288
 msgid "❌ Замовлення скасовано"
 msgstr "❌ Order cancelled"
 
-#: app.py:5157
+#: app.py:5295
 msgid "💰 Оплату зафіксовано"
 msgstr "💰 Payment recorded"
 
-#: app.py:5243
+#: app.py:5381
 msgid "✅ Витрату додано"
 msgstr "✅ Expense added"
 
-#: app.py:5568
+#: app.py:5706
 msgid "✅ AI налаштування збережено!"
 msgstr "✅ AI settings saved!"
 
-#: app.py:5667
+#: app.py:5805
 msgid "✅ Статтю створено!"
 msgstr "✅ Article created!"
 
-#: app.py:5732
+#: app.py:5870
 msgid "✅ Статтю оновлено!"
 msgstr "✅ Article updated!"
 
-#: app.py:5749
+#: app.py:5887
 msgid "Статтю видалено."
 msgstr "Article deleted."
 
-#: app.py:5762
+#: app.py:5900
 #, python-format
 msgid "✅ Статтю '%(title)s' опубліковано!"
 msgstr "✅ Article '%(title)s' published!"
 
-#: app.py:5789
+#: app.py:5927
 #, python-format
 msgid "✅ Створено план на %(count)s днів!"
 msgstr "✅ Plan created for %(count)s days!"
 
-#: app.py:5791
+#: app.py:5929
 msgid "Введіть хоча б одну тему."
 msgstr "Enter at least one topic."
 
-#: app.py:5831
+#: app.py:5969
 msgid "AI не налаштовано"
 msgstr "AI not configured"
 
-#: app.py:5838
+#: app.py:5976
 msgid "Тема обов'язкова"
 msgstr "Topic is required"
 
-#: app.py:6166
+#: app.py:6304
 msgid "План вже оброблено"
 msgstr "Plan already processed"
 
-#: app.py:6240
+#: app.py:6378
 msgid "AI не налаштовано. Додайте OPENAI_API_KEY"
 msgstr "AI not configured. Add OPENAI_API_KEY"
 
-#: app.py:6247
+#: app.py:6385
 msgid "Стаття не має контенту для перекладу"
 msgstr "Article has no content to translate"
 
@@ -970,6 +997,7 @@ msgstr "Quantity"
 msgid "Сума"
 msgstr "Amount"
 
+#: templates/cabinet/b2b/dashboard.html:91
 #: templates/cabinet/b2b/orders.html:97 templates/cart.html:181
 msgid "Загальна сума"
 msgstr "Total amount"
@@ -1148,6 +1176,7 @@ msgstr "Amount:"
 #: templates/admin/domain_settings.html:36 templates/admin/orders.html:13
 #: templates/admin/payments_settings.html:30
 #: templates/admin/payments_settings.html:55
+#: templates/admin/security_2fa.html:24 templates/admin/security_2fa.html:49
 #: templates/cabinet/b2b/orders.html:54 templates/checkout_success.html:18
 #: templates/email/order_confirmation.html:22
 msgid "Статус:"
@@ -1921,8 +1950,8 @@ msgstr "Article"
 #: templates/admin/blog_plan.html:117 templates/admin/crm.html:81
 #: templates/admin/crm.html:128 templates/admin/dashboard.html:41
 #: templates/admin/order_detail.html:28 templates/admin/orders.html:82
-#: templates/admin/products.html:136 templates/admin/shipping_settings.html:27
-#: templates/admin/stats.html:134
+#: templates/admin/products.html:136 templates/admin/security_2fa.html:19
+#: templates/admin/shipping_settings.html:27 templates/admin/stats.html:134
 #: templates/admin/warehouse/replenishment.html:79
 #: templates/admin/warehouse/stock.html:68
 #: templates/admin/warehouse/tasks.html:69
@@ -2668,6 +2697,7 @@ msgstr "Verify"
 
 #: templates/admin/crm.html:212
 #: templates/admin/warehouse/replenishment_detail.html:146
+#: templates/auth/login_2fa.html:32
 msgid "Підтвердити"
 msgstr "Confirm"
 
@@ -3306,29 +3336,34 @@ msgstr "Settings"
 msgid "Прийом оплат"
 msgstr "Payment acceptance"
 
-#: templates/admin/layout.html:406
+#: templates/admin/layout.html:405 templates/admin/security_2fa.html:5
+#: templates/auth/login_2fa.html:3 templates/auth/login_2fa.html:9
+msgid "Двофакторна автентифікація"
+msgstr "Two-factor authentication"
+
+#: templates/admin/layout.html:409
 msgid "Видалити акаунт"
 msgstr "Delete account"
 
-#: templates/admin/layout.html:410 templates/cabinet/b2b/company.html:33
+#: templates/admin/layout.html:413 templates/cabinet/b2b/company.html:33
 #: templates/cabinet/b2b/dashboard.html:51
 #: templates/cabinet/b2b/orders.html:33 templates/cabinet/b2b/pending.html:14
 #: templates/cabinet/b2c/dashboard.html:30
 msgid "Вийти"
 msgstr "Log out"
 
-#: templates/admin/layout.html:413 templates/admin/layout.html:429
+#: templates/admin/layout.html:416 templates/admin/layout.html:432
 msgid "Відкрити сайт"
 msgstr "Open site"
 
-#: templates/admin/layout.html:422
+#: templates/admin/layout.html:425
 #, python-format
 msgid "Ви увійшли як власник магазину \"%(name)s\" від імені платформи."
 msgstr ""
 "You are logged in as the owner of store \"%(name)s\" on behalf of the "
 "platform."
 
-#: templates/admin/layout.html:423
+#: templates/admin/layout.html:426
 msgid "Повернутися до платформи"
 msgstr "Return to platform"
 
@@ -3763,6 +3798,130 @@ msgstr "⏳ Uploading..."
 #: templates/admin/products.html:491
 msgid "✅ Зображення завантажено!"
 msgstr "✅ Image uploaded!"
+
+#: templates/admin/security_2fa.html:2
+msgid "Двофакторна автентифікація - Адмін панель"
+msgstr "Two-factor authentication - Admin Panel"
+
+#: templates/admin/security_2fa.html:6
+msgid ""
+"Додатковий захист вашого акаунту - код з телефону поряд з паролем. "
+"Вмикається за бажанням."
+msgstr ""
+"Extra protection for your account - a code from your phone alongside your "
+"password. Optional."
+
+#: templates/admin/security_2fa.html:25
+#: templates/admin/shipping_settings.html:37
+msgid "Увімкнено"
+msgstr "Enabled"
+
+#: templates/admin/security_2fa.html:28
+msgid ""
+"При вході, окрім пароля, потрібно буде ввести 6-значний код з застосунку-"
+"автентифікатора (Google Authenticator, Authy тощо)."
+msgstr ""
+"When logging in, besides your password you will need to enter a 6-digit code"
+" from an authenticator app (Google Authenticator, Authy, etc.)."
+
+#: templates/admin/security_2fa.html:34 templates/admin/security_2fa.html:43
+msgid "Ваш пароль"
+msgstr "Your password"
+
+#: templates/admin/security_2fa.html:35
+msgid "Перегенерувати резервні коди"
+msgstr "Regenerate backup codes"
+
+#: templates/admin/security_2fa.html:41
+msgid "Вимкнути двофакторну автентифікацію?"
+msgstr "Disable two-factor authentication?"
+
+#: templates/admin/security_2fa.html:44
+msgid "Вимкнути 2FA"
+msgstr "Disable 2FA"
+
+#: templates/admin/security_2fa.html:50
+#: templates/admin/shipping_settings.html:37
+msgid "Вимкнено"
+msgstr "Disabled"
+
+#: templates/admin/security_2fa.html:53
+msgid ""
+"Рекомендуємо увімкнути - це суттєво ускладнює доступ до адмінки навіть якщо "
+"пароль стане відомий третій особі."
+msgstr ""
+"We recommend enabling this - it makes it much harder to access the admin "
+"panel even if your password becomes known to someone else."
+
+#: templates/admin/security_2fa.html:55
+msgid "Увімкнути 2FA"
+msgstr "Enable 2FA"
+
+#: templates/admin/security_2fa_backup_codes.html:2
+msgid "Резервні коди - Адмін панель"
+msgstr "Backup codes - Admin Panel"
+
+#: templates/admin/security_2fa_backup_codes.html:5
+msgid "Резервні коди"
+msgstr "Backup codes"
+
+#: templates/admin/security_2fa_backup_codes.html:10
+msgid "Збережіть ці коди зараз - вони більше ніколи не покажуться"
+msgstr "Save these codes now - they will never be shown again"
+
+#: templates/admin/security_2fa_backup_codes.html:14
+msgid ""
+"Кожен код можна використати ОДИН РАЗ замість коду з телефону - якщо ви його "
+"загубите або він буде недоступний. Роздрукуйте або збережіть у надійному "
+"місці (менеджер паролів)."
+msgstr ""
+"Each code can be used ONCE instead of a code from your phone - if you lose "
+"it or it becomes unavailable. Print them out or store them somewhere safe (a"
+" password manager)."
+
+#: templates/admin/security_2fa_backup_codes.html:21
+msgid "Я зберіг ці коди"
+msgstr "I have saved these codes"
+
+#: templates/admin/security_2fa_setup.html:2
+msgid "Налаштування 2FA - Адмін панель"
+msgstr "2FA setup - Admin Panel"
+
+#: templates/admin/security_2fa_setup.html:5
+msgid "Налаштування двофакторної автентифікації"
+msgstr "Two-factor authentication setup"
+
+#: templates/admin/security_2fa_setup.html:18
+msgid "Крок 1. Відскануйте QR-код"
+msgstr "Step 1. Scan the QR code"
+
+#: templates/admin/security_2fa_setup.html:22
+msgid ""
+"Відкрийте застосунок-автентифікатор (Google Authenticator, Authy, Microsoft "
+"Authenticator тощо) і відскануйте цей QR-код."
+msgstr ""
+"Open an authenticator app (Google Authenticator, Authy, Microsoft "
+"Authenticator, etc.) and scan this QR code."
+
+#: templates/admin/security_2fa_setup.html:28
+msgid "Не вдається відсканувати? Введіть ключ вручну:"
+msgstr "Can't scan it? Enter this key manually:"
+
+#: templates/admin/security_2fa_setup.html:34
+msgid "QR-код не працює? Згенерувати новий"
+msgstr "QR code not working? Generate a new one"
+
+#: templates/admin/security_2fa_setup.html:41
+msgid "Крок 2. Підтвердіть код"
+msgstr "Step 2. Confirm the code"
+
+#: templates/admin/security_2fa_setup.html:47
+msgid "6-значний код з застосунку"
+msgstr "6-digit code from the app"
+
+#: templates/admin/security_2fa_setup.html:52
+msgid "Підтвердити і увімкнути"
+msgstr "Confirm and enable"
 
 #: templates/admin/settings.html:2
 msgid "Налаштування - Адмін панель"
@@ -4236,14 +4395,6 @@ msgstr "Origin city"
 #: templates/admin/shipping_settings.html:36
 msgid "тестовий провайдер, без мережі"
 msgstr "test provider, no network"
-
-#: templates/admin/shipping_settings.html:37
-msgid "Увімкнено"
-msgstr "Enabled"
-
-#: templates/admin/shipping_settings.html:37
-msgid "Вимкнено"
-msgstr "Disabled"
 
 #: templates/admin/shipping_settings.html:42
 msgid "Видалити цей обліковий запис?"
@@ -5116,6 +5267,26 @@ msgstr "Register"
 msgid "B2B Партнерство"
 msgstr "B2B Partnership"
 
+#: templates/auth/login_2fa.html:10
+msgid "Введіть код з застосунку-автентифікатора"
+msgstr "Enter the code from your authenticator app"
+
+#: templates/auth/login_2fa.html:25 templates/auth/login_2fa.html:56
+msgid "6-значний код"
+msgstr "6-digit code"
+
+#: templates/auth/login_2fa.html:39 templates/auth/login_2fa.html:58
+msgid "Немає доступу до телефону? Використати резервний код"
+msgstr "No access to your phone? Use a backup code"
+
+#: templates/auth/login_2fa.html:60
+msgid "Резервний код"
+msgstr "Backup code"
+
+#: templates/auth/login_2fa.html:62
+msgid "Використати код з телефону"
+msgstr "Use the code from your phone"
+
 #: templates/auth/register.html:10
 msgid "Створіть акаунт покупця"
 msgstr "Create a customer account"
@@ -5529,10 +5700,6 @@ msgstr "Total orders"
 #: templates/cabinet/b2b/orders.html:58 templates/cabinet/b2b/orders.html:93
 msgid "В обробці"
 msgstr "Processing"
-
-#: templates/cabinet/b2b/dashboard.html:91
-msgid "Загальна сума (EUR)"
-msgstr "Total amount (EUR)"
 
 #: templates/cabinet/b2b/dashboard.html:96
 msgid "Ваша знижка"
@@ -7170,3 +7337,6 @@ msgstr "No users found."
 
 #~ msgid "Total"
 #~ msgstr "Total"
+
+#~ msgid "Загальна сума (EUR)"
+#~ msgstr "Total amount (EUR)"

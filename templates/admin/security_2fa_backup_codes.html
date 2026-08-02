@@ -1,0 +1,42 @@
+{% extends 'admin/layout.html' %}
+{% block title %}{{ _('Резервні коди - Адмін панель') }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>🔑 {{ _('Резервні коди') }}</h1>
+</div>
+
+<div class="card" style="margin-bottom: 2rem; border-color: rgba(245, 158, 11, 0.5);">
+    <div class="card-header">
+        <h3>⚠️ {{ _('Збережіть ці коди зараз - вони більше ніколи не покажуться') }}</h3>
+    </div>
+    <div class="form-section" style="padding: 1.5rem;">
+        <p style="color: var(--text-muted);">
+            {{ _('Кожен код можна використати ОДИН РАЗ замість коду з телефону - якщо ви його загубите або він буде недоступний. Роздрукуйте або збережіть у надійному місці (менеджер паролів).') }}
+        </p>
+        <div class="backup-codes-grid">
+            {% for code in backup_codes %}
+            <code>{{ code }}</code>
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('admin_2fa') }}" class="btn btn-primary" style="margin-top: 1.5rem;">✅ {{ _('Я зберіг ці коди') }}</a>
+    </div>
+</div>
+
+<style>
+.backup-codes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+.backup-codes-grid code {
+    display: block;
+    text-align: center;
+    padding: 0.6rem;
+    background: var(--bg-main);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+}
+</style>
+{% endblock %}

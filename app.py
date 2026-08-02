@@ -3313,6 +3313,87 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
             font_size_presets=FONT_SIZE_PRESETS,
         )
 
+    # ----- АДМІНКА: ДВОФАКТОРНА АВТЕНТИФІКАЦІЯ (2FA), опційно -----
+
+    @app.route("/admin/security/2fa", methods=["GET"])
+    @admin_required
+    def admin_2fa():
+        return render_template("admin/security_2fa.html", user=current_user)
+
+    @app.route("/admin/security/2fa/setup", methods=["GET", "POST"])
+    @admin_required
+    def admin_2fa_setup():
+        if current_user.totp_enabled:
+            flash(_("2FA вже увімкнена."), "info")
+            return redirect(url_for("admin_2fa"))
+
+        if request.method == "POST":
+            code = request.form.get("code", "").strip()
+            backup_codes = current_user.confirm_totp_setup(code)
+            if backup_codes:
+                db.session.commit()
+                flash(_("Двофакторну автентифікацію увімкнено."), "success")
+                return render_template("admin/security_2fa_backup_codes.html", backup_codes=backup_codes)
+            flash(_("Невірний код. Перевірте, що годинник телефону синхронізований, і спробуйте ще раз."), "danger")
+
+        # GET (або невдала спроба підтвердження) - показуємо QR-код для
+        # поточного (можливо, щойно перегенерованого) непідтвердженого секрету.
+        if not current_user.totp_secret:
+            current_user.start_totp_setup()
+            db.session.commit()
+
+        qr_data_uri = _totp_qr_data_uri(current_user.get_totp_uri())
+        return render_template(
+            "admin/security_2fa_setup.html",
+            qr_data_uri=qr_data_uri,
+            secret=current_user.totp_secret,
+        )
+
+    @app.route("/admin/security/2fa/restart", methods=["POST"])
+    @admin_required
+    def admin_2fa_restart():
+        """Перегенерувати QR-код (напр. якщо попередній не відсканувався)."""
+        current_user.start_totp_setup()
+        db.session.commit()
+        return redirect(url_for("admin_2fa_setup"))
+
+    @app.route("/admin/security/2fa/disable", methods=["POST"])
+    @admin_required
+    def admin_2fa_disable():
+        password = request.form.get("password", "")
+        if not current_user.check_password(password):
+            flash(_("Невірний пароль."), "danger")
+            return redirect(url_for("admin_2fa"))
+        current_user.disable_totp()
+        db.session.commit()
+        flash(_("Двофакторну автентифікацію вимкнено."), "success")
+        return redirect(url_for("admin_2fa"))
+
+    @app.route("/admin/security/2fa/backup-codes/regenerate", methods=["POST"])
+    @admin_required
+    def admin_2fa_regenerate_backup_codes():
+        password = request.form.get("password", "")
+        if not current_user.check_password(password):
+            flash(_("Невірний пароль."), "danger")
+            return redirect(url_for("admin_2fa"))
+        if not current_user.totp_enabled:
+            return redirect(url_for("admin_2fa"))
+        backup_codes = current_user.regenerate_backup_codes()
+        db.session.commit()
+        flash(_("Нові резервні коди згенеровано. Старі коди більше не діють."), "success")
+        return render_template("admin/security_2fa_backup_codes.html", backup_codes=backup_codes)
+
+    def _totp_qr_data_uri(uri):
+        if not uri:
+            return None
+        import io
+        import base64
+        import qrcode
+        img = qrcode.make(uri)
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
     # ----- АДМІНКА: ВЛАСНИЙ ДОМЕН МАГАЗИНУ -----
 
     TRAEFIK_DYNAMIC_DIR = os.environ.get("TRAEFIK_DYNAMIC_DIR", "/app/traefik-dynamic")
@@ -3910,17 +3991,26 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
                 if not user.is_active:
                     flash(_("Ваш акаунт деактивовано. Зверніться до підтримки."), "danger")
                     return render_template("auth/login.html")
-                
+
+                if user.totp_enabled:
+                    # Пароль правильний, але потрібен ще другий фактор - НЕ
+                    # логінимо користувача одразу, а лишаємо "відкладений" вхід
+                    # у сесії до підтвердження коду на окремій сторінці.
+                    session["2fa_pending_user_id"] = user.id
+                    session["2fa_remember"] = remember
+                    session["2fa_next"] = request.args.get("next") or ""
+                    return redirect(url_for("login_2fa"))
+
                 from flask_login import login_user as flask_login_user
                 flask_login_user(user, remember=remember)
                 user.update_last_login()
-                
+
                 flash(_("Вітаємо, %(name)s!") % {"name": user.full_name}, "success")
-                
+
                 next_page = request.args.get("next")
                 if next_page:
                     return redirect(next_page)
-                
+
                 if user.is_platform_owner:
                     return redirect(url_for("platform_admin.dashboard"))
                 elif user.is_admin or user.is_manager:
@@ -3929,11 +4019,59 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
                     return redirect(url_for("b2b_dashboard"))
 
                 return redirect(url_for("user_cabinet"))
-            
+
             flash(_("Невірний email або пароль."), "danger")
         
         settings = SiteSettings.get_or_create(g.store.id)
         return render_template("auth/login.html", settings=settings)
+
+    @app.route("/login/2fa", methods=["GET", "POST"])
+    @limiter.limit("10 per minute;30 per hour")
+    def login_2fa():
+        """Другий крок входу для користувачів з увімкненою 2FA - доступний
+        лише одразу після успішної перевірки пароля (позначено в сесії
+        user_login()), не є самостійною точкою входу."""
+        pending_user_id = session.get("2fa_pending_user_id")
+        if not pending_user_id:
+            return redirect(url_for("user_login"))
+
+        user = User.query.get(pending_user_id)
+        if not user:
+            session.pop("2fa_pending_user_id", None)
+            return redirect(url_for("user_login"))
+
+        if request.method == "POST":
+            code = request.form.get("code", "").strip()
+            use_backup = request.form.get("use_backup") == "on"
+
+            verified = user.verify_backup_code(code) if use_backup else user.verify_totp_code(code)
+            if verified:
+                if use_backup:
+                    db.session.commit()  # позначити резервний код використаним
+
+                remember = session.pop("2fa_remember", False)
+                next_page = session.pop("2fa_next", "") or None
+                session.pop("2fa_pending_user_id", None)
+
+                from flask_login import login_user as flask_login_user
+                flask_login_user(user, remember=remember)
+                user.update_last_login()
+
+                flash(_("Вітаємо, %(name)s!") % {"name": user.full_name}, "success")
+
+                if next_page:
+                    return redirect(next_page)
+                if user.is_platform_owner:
+                    return redirect(url_for("platform_admin.dashboard"))
+                elif user.is_admin or user.is_manager:
+                    return redirect(url_for("admin_dashboard"))
+                elif user.is_b2b:
+                    return redirect(url_for("b2b_dashboard"))
+                return redirect(url_for("user_cabinet"))
+
+            flash(_("Невірний код. Спробуйте ще раз."), "danger")
+
+        return render_template("auth/login_2fa.html")
 
     @app.route("/logout")
     @login_required
