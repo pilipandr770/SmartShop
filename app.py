@@ -2346,12 +2346,23 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
         розкладка) поточного магазину - завжди беремо з фіксованого набору
         в services/theme_presets.py, ніколи не рендеримо довільний CSS/HTML
         від власника магазину."""
-        from services.theme_presets import get_theme, get_font, get_layout
+        from services.theme_presets import (
+            get_theme, get_font, get_layout, get_font_size,
+            is_valid_hex_color, with_custom_accent,
+        )
         current_settings = getattr(g, "store", None) and SiteSettings.get_or_create(g.store.id)
         theme = get_theme(current_settings.theme_preset if current_settings else None)
+        if current_settings and is_valid_hex_color(current_settings.accent_color):
+            theme = with_custom_accent(theme, current_settings.accent_color)
         font = get_font(current_settings.font_preset if current_settings else None)
         layout = get_layout(current_settings.homepage_layout if current_settings else None)
-        return {"active_theme": theme, "active_font": font, "active_homepage_layout": layout}
+        font_size = get_font_size(current_settings.font_size_preset if current_settings else None)
+        return {
+            "active_theme": theme,
+            "active_font": font,
+            "active_homepage_layout": layout,
+            "active_font_size": font_size,
+        }
 
     # ----- АДМІНКА: АВТОРИЗАЦІЯ -----
 
@@ -3174,7 +3185,10 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
 
             # Дизайн вітрини - валідуємо проти фіксованого набору пресетів,
             # ніколи не приймаємо довільне значення від форми.
-            from services.theme_presets import THEME_PRESETS, FONT_PRESETS, HOMEPAGE_LAYOUTS
+            from services.theme_presets import (
+                THEME_PRESETS, FONT_PRESETS, HOMEPAGE_LAYOUTS, FONT_SIZE_PRESETS,
+                is_valid_hex_color,
+            )
             posted_theme = request.form.get("theme_preset", "")
             if posted_theme in THEME_PRESETS:
                 settings.theme_preset = posted_theme
@@ -3184,6 +3198,16 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
             posted_layout = request.form.get("homepage_layout", "")
             if posted_layout in HOMEPAGE_LAYOUTS:
                 settings.homepage_layout = posted_layout
+            posted_font_size = request.form.get("font_size_preset", "")
+            if posted_font_size in FONT_SIZE_PRESETS:
+                settings.font_size_preset = posted_font_size
+            # Довільний колір приймаємо лише якщо це строго hex-формат -
+            # інакше значення потрапило б прямо у <style> в base.html.
+            posted_accent = request.form.get("accent_color", "").strip()
+            if not posted_accent:
+                settings.accent_color = None
+            elif is_valid_hex_color(posted_accent):
+                settings.accent_color = posted_accent
 
             # Зображення (лого/фавікон/банер/фото "Про нас") - видаляємо старе
             # завантажене зображення з БД, якщо власник замінив його на нове.
@@ -3279,13 +3303,14 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
             flash(_("Налаштування сайту збережено."), "success")
             return redirect(url_for("admin_settings"))
 
-        from services.theme_presets import THEME_PRESETS, FONT_PRESETS, HOMEPAGE_LAYOUTS
+        from services.theme_presets import THEME_PRESETS, FONT_PRESETS, HOMEPAGE_LAYOUTS, FONT_SIZE_PRESETS
         return render_template(
             "admin/settings.html",
             settings=settings,
             theme_presets=THEME_PRESETS,
             font_presets=FONT_PRESETS,
             homepage_layouts=HOMEPAGE_LAYOUTS,
+            font_size_presets=FONT_SIZE_PRESETS,
         )
 
     # ----- АДМІНКА: ВЛАСНИЙ ДОМЕН МАГАЗИНУ -----

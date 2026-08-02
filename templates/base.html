@@ -70,6 +70,10 @@
     {% block structured_data %}{% endblock %}
     
     <style>
+        html {
+            font-size: {{ active_font_size.base_size if active_font_size else '16px' }};
+        }
+
         :root {
             --bg-main: {{ active_theme.bg_main }};
             --bg-card: {{ active_theme.bg_card }};

@@ -3,7 +3,10 @@
 сторінки. Власник магазину обирає з цього фіксованого набору (не довільний
 CSS/HTML) - просто і безпечно, без ризику зламати верстку чи внести XSS.
 """
+import re
 from flask_babel import lazy_gettext as _l
+
+HEX_COLOR_RE = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
 # lazy_gettext (не gettext) - ці словники обчислюються ОДИН РАЗ при імпорті
 # модуля, до появи будь-якого запиту/локалі. Звичайний _() зафіксував би
@@ -138,6 +141,14 @@ HOMEPAGE_LAYOUTS = {
 
 DEFAULT_HOMEPAGE_LAYOUT = "hero_grid"
 
+FONT_SIZE_PRESETS = {
+    "small": {"label": _l("Компактний"), "base_size": "15px"},
+    "medium": {"label": _l("Стандартний (за замовчуванням)"), "base_size": "16px"},
+    "large": {"label": _l("Великий"), "base_size": "18px"},
+}
+
+DEFAULT_FONT_SIZE_PRESET = "medium"
+
 
 def get_theme(preset_key):
     return THEME_PRESETS.get(preset_key) or THEME_PRESETS[DEFAULT_THEME_PRESET]
@@ -149,3 +160,24 @@ def get_font(preset_key):
 
 def get_layout(preset_key):
     return preset_key if preset_key in HOMEPAGE_LAYOUTS else DEFAULT_HOMEPAGE_LAYOUT
+
+
+def get_font_size(preset_key):
+    return FONT_SIZE_PRESETS.get(preset_key) or FONT_SIZE_PRESETS[DEFAULT_FONT_SIZE_PRESET]
+
+
+def is_valid_hex_color(value):
+    return bool(value) and bool(HEX_COLOR_RE.match(value))
+
+
+def with_custom_accent(theme, accent_color):
+    """Повертає копію пресету теми з підміненим акцентним кольором (і його
+    "м'якою" версією через CSS color-mix - тому не треба рахувати відтінок
+    на бекенді). accent_color має бути вже провалідований is_valid_hex_color -
+    ця функція не перевіряє повторно, лише підставляє значення в шаблон."""
+    if not accent_color:
+        return theme
+    patched = dict(theme)
+    patched["accent"] = accent_color
+    patched["accent_soft"] = f"color-mix(in srgb, {accent_color} 12%, transparent)"
+    return patched

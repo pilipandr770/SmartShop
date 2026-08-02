@@ -144,6 +144,18 @@
                 {% endfor %}
             </div>
 
+            <label class="design-picker-label" style="margin-top:1.5rem;">{{ _('Акцентний колір') }}</label>
+            <p class="form-hint" style="margin-top:0;">{{ _('За замовчуванням акцент береться з кольорової теми вище. Можна замінити на свій колір бренду.') }}</p>
+            <div class="accent-color-row">
+                <label class="checkbox-label" style="margin-bottom:0;">
+                    <input type="checkbox" id="use_custom_accent" {{ 'checked' if settings.accent_color }} onchange="document.getElementById('accent_color_input').disabled = !this.checked;">
+                    <span>{{ _('Власний акцентний колір') }}</span>
+                </label>
+                <input type="color" id="accent_color_input" name="accent_color"
+                       value="{{ settings.accent_color or active_theme.accent }}"
+                       {{ '' if settings.accent_color else 'disabled' }}>
+            </div>
+
             <label class="design-picker-label" style="margin-top:1.5rem;">{{ _('Шрифт') }}</label>
             <div class="font-picker-grid">
                 {% for key, font in font_presets.items() %}
@@ -151,6 +163,17 @@
                     <input type="radio" name="font_preset" value="{{ key }}" {{ 'checked' if (settings.font_preset or 'system_sans') == key }}>
                     <span class="font-picker-preview" style="font-family: {{ font.family | safe }};">Аа Bb 123</span>
                     <span class="font-picker-name">{{ font.label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <label class="design-picker-label" style="margin-top:1.5rem;">{{ _('Розмір шрифту') }}</label>
+            <div class="font-size-picker-grid">
+                {% for key, size in font_size_presets.items() %}
+                <label class="font-size-picker-card {{ 'selected' if (settings.font_size_preset or 'medium') == key }}">
+                    <input type="radio" name="font_size_preset" value="{{ key }}" {{ 'checked' if (settings.font_size_preset or 'medium') == key }}>
+                    <span class="font-size-picker-preview" style="font-size: {{ size.base_size }};">Аа</span>
+                    <span class="font-size-picker-name">{{ size.label }}</span>
                 </label>
                 {% endfor %}
             </div>
@@ -725,6 +748,60 @@
 .font-picker-card.selected { border-color: #10b981; }
 .font-picker-card input { position: absolute; opacity: 0; pointer-events: none; }
 
+.accent-color-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.accent-color-row .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+#accent_color_input {
+    width: 3rem;
+    height: 2.2rem;
+    padding: 0;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 0.4rem;
+    cursor: pointer;
+    background: none;
+}
+
+#accent_color_input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.font-size-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.font-size-picker-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: 2px solid rgba(148, 163, 184, 0.25);
+    transition: border-color 0.15s;
+    position: relative;
+}
+
+.font-size-picker-card:hover { border-color: rgba(148, 163, 184, 0.5); }
+.font-size-picker-card.selected { border-color: #10b981; }
+.font-size-picker-card input { position: absolute; opacity: 0; pointer-events: none; }
+.font-size-picker-preview { font-weight: 700; }
+.font-size-picker-name { font-size: 0.75rem; color: var(--text-secondary, #6b7280); }
+
 .font-picker-preview { font-size: 1.2rem; }
 .font-picker-name { font-size: 0.75rem; color: var(--text-secondary, #6b7280); }
 
@@ -792,7 +869,7 @@ async function uploadSettingsImage(input, fieldKey) {
 }
 
 // Підсвічує обрану картку в пікерах теми/шрифту/розкладки
-document.querySelectorAll('.theme-swatch-card, .font-picker-card, .layout-picker-card').forEach(function(card) {
+document.querySelectorAll('.theme-swatch-card, .font-picker-card, .font-size-picker-card, .layout-picker-card').forEach(function(card) {
     card.addEventListener('click', function() {
         const group = card.parentElement.querySelectorAll('label');
         group.forEach(function(el) { el.classList.remove('selected'); });

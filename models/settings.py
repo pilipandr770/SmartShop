@@ -69,6 +69,12 @@ class SiteSettings(db.Model):
     font_preset = db.Column(db.String(30), nullable=True, default="system_sans")
     homepage_layout = db.Column(db.String(30), nullable=True, default="hero_grid")
 
+    # Тонке налаштування поверх пресету теми: власний акцентний колір (hex,
+    # валідується суворим regex і на збереженні, і на рендері - ніколи не
+    # рендеримо довільний CSS) і масштаб базового розміру шрифту вітрини.
+    accent_color = db.Column(db.String(7), nullable=True)
+    font_size_preset = db.Column(db.String(20), nullable=True, default="medium")
+
     # Самовивіз (click & collect) - безкоштовна альтернатива доставці перевізником
     pickup_enabled = db.Column(db.Boolean, default=False)
     pickup_address = db.Column(db.String(500), nullable=True)

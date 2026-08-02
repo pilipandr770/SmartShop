@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SmartShop AI 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-02 12:28+0000\n"
+"POT-Creation-Date: 2026-08-02 16:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
 #: app.py:1144
@@ -46,18 +46,18 @@ msgstr "Stripe is not configured. Please contact the administrator."
 #: app.py:1744
 msgid "Цей магазин ще не підключив прийом оплат. Зверніться до продавця."
 msgstr ""
-"This store hasn't set up payment acceptance yet. Please contact the "
-"seller."
+"This store hasn't set up payment acceptance yet. Please contact the seller."
 
 #: app.py:1786
 msgid "Не вдалося знайти товари в кошику."
 msgstr "Could not find items in cart."
 
 #: app.py:1873
-msgid "Оплата тимчасово недоступна. Спробуйте пізніше або зверніться до продавця."
+msgid ""
+"Оплата тимчасово недоступна. Спробуйте пізніше або зверніться до продавця."
 msgstr ""
-"Payment is temporarily unavailable. Please try again later or contact the"
-" seller."
+"Payment is temporarily unavailable. Please try again later or contact the "
+"seller."
 
 #: app.py:1986
 msgid "Оплату скасовано. Ви можете спробувати ще раз."
@@ -103,498 +103,499 @@ msgstr "AI client initialization error"
 msgid "Помилка обробки запиту"
 msgstr "Request processing error"
 
-#: app.py:2424
+#: app.py:2435
 msgid "Налаштування головної сторінки збережені."
 msgstr "Home page settings saved."
 
-#: app.py:2451
+#: app.py:2462
 msgid "Новий блок"
 msgstr "New block"
 
-#: app.py:2460
+#: app.py:2471
 msgid "Блок додано. Заповніть його нижче."
 msgstr "Block added. Fill it in below."
 
-#: app.py:2468
+#: app.py:2479
 msgid "Без назви"
 msgstr "Untitled"
 
-#: app.py:2479
+#: app.py:2490
 #, python-format
 msgid "Блок «%(title)s» збережено."
 msgstr "Block \"%(title)s\" saved."
 
-#: app.py:2488
+#: app.py:2499
 msgid "Блок видалено."
 msgstr "Block deleted."
 
-#: app.py:2531 app.py:2923
+#: app.py:2542 app.py:2934
 msgid "Назва і slug категорії обовʼязкові."
 msgstr "Category name and slug are required."
 
-#: app.py:2535 app.py:2932
+#: app.py:2546 app.py:2943
 msgid "Категорія з таким slug уже існує."
 msgstr "A category with this slug already exists."
 
-#: app.py:2549
+#: app.py:2560
 msgid "Категорія створена."
 msgstr "Category created."
 
-#: app.py:2562 app.py:2566
+#: app.py:2573 app.py:2577
 msgid "Файл не обрано"
 msgstr "No file selected"
 
-#: app.py:2660
+#: app.py:2671
 msgid "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"
 msgstr "File type not allowed. Allowed: png, jpg, jpeg, gif, webp"
 
-#: app.py:2819
+#: app.py:2830
 msgid "Товар створено."
 msgstr "Product created."
 
-#: app.py:2828
+#: app.py:2839
 msgid "Статус товару оновлено."
 msgstr "Product status updated."
 
-#: app.py:2842
+#: app.py:2853
 msgid "Товар видалено."
 msgstr "Product deleted."
 
-#: app.py:2899
+#: app.py:2910
 msgid "Товар оновлено."
 msgstr "Product updated."
 
-#: app.py:2938
+#: app.py:2949
 msgid "Категорія оновлена."
 msgstr "Category updated."
 
-#: app.py:2957
+#: app.py:2968
 msgid "Категорія видалена. Товари залишились без категорії."
 msgstr "Category deleted. Products are now without a category."
 
-#: app.py:3058
+#: app.py:3069
 #, python-format
 msgid "📦 Завдання для складу #%(task_number)s створено!"
 msgstr "📦 Warehouse task #%(task_number)s created!"
 
-#: app.py:3062
+#: app.py:3073
 #, python-format
 msgid "Статус змінено на «%(status)s»."
 msgstr "Status changed to \"%(status)s\"."
 
-#: app.py:3064
+#: app.py:3075
 msgid "Невірний статус."
 msgstr "Invalid status."
 
-#: app.py:3075
+#: app.py:3086
 msgid "Нотатки збережено."
 msgstr "Notes saved."
 
-#: app.py:3087
+#: app.py:3098
 msgid "Замовлення видалено."
 msgstr "Order deleted."
 
-#: app.py:3131
+#: app.py:3142
 msgid "Заявку позначено як прочитану."
 msgstr "Request marked as read."
 
-#: app.py:3141
+#: app.py:3152
 msgid "Заявку видалено."
 msgstr "Request deleted."
 
-#: app.py:3150
+#: app.py:3161
 msgid "Усі заявки позначено як прочитані."
 msgstr "All requests marked as read."
 
-#: app.py:3159
+#: app.py:3170
 msgid "Прочитані заявки видалено."
 msgstr "Read requests deleted."
 
-#: app.py:3251
+#: app.py:3275
 msgid "Пароль має бути мінімум 6 символів."
 msgstr "Password must be at least 6 characters."
 
-#: app.py:3253 routes/cabinet.py:181 routes/signup.py:114
+#: app.py:3277 routes/cabinet.py:181 routes/signup.py:114
 msgid "Паролі не співпадають."
 msgstr "Passwords do not match."
 
-#: app.py:3256
+#: app.py:3280
 msgid "Пароль адміністратора змінено."
 msgstr "Administrator password changed."
 
-#: app.py:3279
+#: app.py:3303
 msgid "Налаштування сайту збережено."
 msgstr "Website settings saved."
 
-#: app.py:3351
+#: app.py:3376
 msgid "Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити»."
 msgstr "Domain saved. Now configure DNS and click \"Verify\"."
 
-#: app.py:3353
+#: app.py:3378
 msgid "Власний домен видалено."
 msgstr "Custom domain removed."
 
-#: app.py:3358
+#: app.py:3383
 msgid "Спочатку вкажіть домен."
 msgstr "Please specify a domain first."
 
-#: app.py:3362
-msgid "Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."
+#: app.py:3387
+msgid ""
+"Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."
 msgstr ""
-"The platform hasn't set up domain verification yet. Please contact "
-"support."
+"The platform hasn't set up domain verification yet. Please contact support."
 
-#: app.py:3377
+#: app.py:3402
 #, python-format
 msgid ""
 "✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька "
 "хвилин, щоб з'явився сертифікат."
 msgstr ""
-"✅ Domain %(domain)s confirmed and activated! It may take a few minutes "
-"for the certificate to appear."
+"✅ Domain %(domain)s confirmed and activated! It may take a few minutes for "
+"the certificate to appear."
 
-#: app.py:3383
+#: app.py:3408
 #, python-format
 msgid ""
-"Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). "
-"Перевірте DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за "
-"кілька хвилин."
+"Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). Перевірте"
+" DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за кілька хвилин."
 msgstr ""
 "Domain does not yet point to the platform (currently resolves to: "
-"%(resolved)s). Check DNS settings (A record to %(ip)s) and try again in a"
-" few minutes."
+"%(resolved)s). Check DNS settings (A record to %(ip)s) and try again in a "
+"few minutes."
 
-#: app.py:3430 routes/platform_admin.py:128
+#: app.py:3455 routes/platform_admin.py:128
 msgid "Stripe не налаштовано на платформі."
 msgstr "Stripe is not configured on the platform."
 
-#: app.py:3450 app.py:3464
+#: app.py:3475 app.py:3489
 #, python-format
 msgid "Помилка Stripe Connect: %(error)s"
 msgstr "Stripe Connect error: %(error)s"
 
-#: app.py:3481
+#: app.py:3506
 msgid "✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів."
 msgstr "✅ Stripe connected! You can now accept payments from customers."
 
-#: app.py:3483
+#: app.py:3508
 msgid ""
 "Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та "
 "спробуйте ще раз."
 msgstr ""
-"Stripe registration is not yet complete. Fill in all required data and "
-"try again."
+"Stripe registration is not yet complete. Fill in all required data and try "
+"again."
 
-#: app.py:3485
+#: app.py:3510
 #, python-format
 msgid "Не вдалося перевірити статус Stripe: %(error)s"
 msgstr "Failed to verify Stripe status: %(error)s"
 
-#: app.py:3497
+#: app.py:3522
 msgid "Stripe-акаунт відв'язано від магазину."
 msgstr "Stripe account has been disconnected from the shop."
 
-#: app.py:3588
+#: app.py:3613
 msgid "Підтвердіть, що розумієте наслідки видалення."
 msgstr "Confirm that you understand the consequences of deletion."
 
-#: app.py:3591
+#: app.py:3616
 msgid "Невірний пароль."
 msgstr "Incorrect password."
 
-#: app.py:3598
+#: app.py:3623
 msgid "Ваш акаунт і магазин видалено. Дякуємо, що були з нами."
 msgstr "Your account and shop have been deleted. Thank you for being with us."
 
-#: app.py:3622
+#: app.py:3647
 msgid "Налаштування самовивозу збережено."
 msgstr "Pickup settings saved."
 
-#: app.py:3644
+#: app.py:3669
 msgid "Невідома служба доставки."
 msgstr "Unknown shipping service."
 
-#: app.py:3648
+#: app.py:3673
 #, python-format
 msgid "%(carrier)s вже налаштовано для цього магазину."
 msgstr "%(carrier)s is already configured for this shop."
 
-#: app.py:3681
+#: app.py:3706
 #, python-format
 msgid "%(carrier)s налаштовано."
 msgstr "%(carrier)s is configured."
 
-#: app.py:3715
+#: app.py:3740
 #, python-format
 msgid "%(carrier)s оновлено."
 msgstr "%(carrier)s has been updated."
 
-#: app.py:3728
+#: app.py:3753
 msgid "Обліковий запис видалено."
 msgstr "Account deleted."
 
-#: app.py:3746
+#: app.py:3771
 msgid "Заповніть обов'язкові поля"
 msgstr "Fill in required fields"
 
-#: app.py:3747
+#: app.py:3772
 msgid "Заповніть обов'язкові поля: ім'я, email, повідомлення."
 msgstr "Fill in required fields: name, email, message."
 
-#: app.py:3764
+#: app.py:3789
 msgid "Дякуємо! Ваше повідомлення надіслано."
 msgstr "Thank you! Your message has been sent."
 
-#: app.py:3779
+#: app.py:3804
 msgid ""
 "Посилання для підтвердження email недійсне або протерміноване. Запросіть "
 "нове нижче."
 msgstr ""
-"This email confirmation link is invalid or has expired. Please request a "
-"new one below."
+"This email confirmation link is invalid or has expired. Please request a new"
+" one below."
 
-#: app.py:3784 app.py:3844
+#: app.py:3809 app.py:3869
 msgid "Користувача не знайдено."
 msgstr "User not found."
 
-#: app.py:3790
+#: app.py:3815
 msgid "✅ Email підтверджено!"
 msgstr "✅ Email confirmed!"
 
-#: app.py:3804
+#: app.py:3829
 msgid ""
-"Якщо цей email зареєстровано і ще не підтверджено, ми надіслали новий "
-"лист."
-msgstr "If this email is registered and not yet confirmed, we've sent a new email."
+"Якщо цей email зареєстровано і ще не підтверджено, ми надіслали новий лист."
+msgstr ""
+"If this email is registered and not yet confirmed, we've sent a new email."
 
-#: app.py:3827
-msgid "Якщо цей email зареєстровано, ми надіслали посилання для скидання пароля."
+#: app.py:3852
+msgid ""
+"Якщо цей email зареєстровано, ми надіслали посилання для скидання пароля."
 msgstr "If this email is registered, we've sent a password reset link."
 
-#: app.py:3839
-msgid "Посилання для скидання пароля недійсне або протерміноване. Запросіть нове."
+#: app.py:3864
+msgid ""
+"Посилання для скидання пароля недійсне або протерміноване. Запросіть нове."
 msgstr ""
 "This password reset link is invalid or has expired. Please request a new "
 "one."
 
-#: app.py:3853 app.py:3947 routes/auth.py:103
+#: app.py:3878 app.py:3972 routes/auth.py:103
 msgid "Пароль має бути не менше 6 символів"
 msgstr "Password must be at least 6 characters"
 
-#: app.py:3856 app.py:3949 app.py:4028 routes/auth.py:105 routes/auth.py:184
+#: app.py:3881 app.py:3974 app.py:4053 routes/auth.py:105 routes/auth.py:184
 msgid "Паролі не співпадають"
 msgstr "Passwords do not match"
 
-#: app.py:3861
+#: app.py:3886
 msgid "✅ Пароль оновлено! Тепер ви можете увійти."
 msgstr "✅ Password updated! You can now log in."
 
-#: app.py:3886 routes/auth.py:41
+#: app.py:3911 routes/auth.py:41
 msgid "Ваш акаунт деактивовано. Зверніться до підтримки."
 msgstr "Your account has been deactivated. Please contact support."
 
-#: app.py:3893 routes/auth.py:47 templates/cabinet/b2c/dashboard.html:37
+#: app.py:3918 routes/auth.py:47 templates/cabinet/b2c/dashboard.html:37
 #: templates/email/registration_welcome.html:6
 #, python-format
 msgid "Вітаємо, %(name)s!"
 msgstr "Welcome, %(name)s!"
 
-#: app.py:3908 routes/auth.py:59
+#: app.py:3933 routes/auth.py:59
 msgid "Невірний email або пароль."
 msgstr "Invalid email or password."
 
-#: app.py:3919 routes/auth.py:69
+#: app.py:3944 routes/auth.py:69
 msgid "Ви успішно вийшли з системи."
 msgstr "You have successfully logged out."
 
-#: app.py:3940 app.py:4019 routes/auth.py:96 routes/auth.py:175
+#: app.py:3965 app.py:4044 routes/auth.py:96 routes/auth.py:175
 msgid "Email обов'язковий"
 msgstr "Email is required"
 
-#: app.py:3942 app.py:4021 routes/auth.py:98 routes/auth.py:177
+#: app.py:3967 app.py:4046 routes/auth.py:98 routes/auth.py:177
 msgid "Користувач з таким email вже існує"
 msgstr "A user with this email already exists"
 
-#: app.py:3945 app.py:4024 routes/auth.py:101 routes/auth.py:180
+#: app.py:3970 app.py:4049 routes/auth.py:101 routes/auth.py:180
 msgid "Пароль обов'язковий"
 msgstr "Password is required"
 
-#: app.py:3980 routes/auth.py:127
+#: app.py:4005 routes/auth.py:127
 msgid "Реєстрація успішна! Ласкаво просимо!"
 msgstr "Registration successful! Welcome!"
 
-#: app.py:3995 routes/auth.py:144
+#: app.py:4020 routes/auth.py:144
 msgid "B2B реєстрація тимчасово закрита."
 msgstr "B2B registration is temporarily closed."
 
-#: app.py:4026 routes/auth.py:182
+#: app.py:4051 routes/auth.py:182
 msgid "Пароль має бути не менше 8 символів"
 msgstr "Password must be at least 8 characters"
 
-#: app.py:4031 routes/auth.py:187
+#: app.py:4056 routes/auth.py:187
 msgid "Назва компанії обов'язкова"
 msgstr "Company name is required"
 
-#: app.py:4034 routes/auth.py:190
+#: app.py:4059 routes/auth.py:190
 msgid "Ім'я та прізвище контактної особи обов'язкові"
 msgstr "Contact person's first and last name are required"
 
-#: app.py:4052
+#: app.py:4077
 msgid "✅ VAT номер підтверджено!"
 msgstr "✅ VAT number confirmed!"
 
-#: app.py:4054
+#: app.py:4079
 #, python-format
 msgid "⚠️ VAT не підтверджено: %(error)s"
 msgstr "⚠️ VAT not confirmed: %(error)s"
 
-#: app.py:4056
+#: app.py:4081
 #, python-format
 msgid "⚠️ Помилка перевірки VAT: %(error)s"
 msgstr "⚠️ VAT verification error: %(error)s"
 
-#: app.py:4112
+#: app.py:4137
 msgid "✅ Реєстрація успішна! Ваша компанія верифікована."
 msgstr "✅ Registration successful! Your company is verified."
 
-#: app.py:4114
+#: app.py:4139
 msgid "📋 Реєстрація успішна! Ваша заявка на розгляді."
 msgstr "📋 Registration successful! Your application is under review."
 
-#: app.py:4129
+#: app.py:4154
 msgid "VAT номер обов'язковий"
 msgstr "VAT number is required"
 
-#: app.py:4267
+#: app.py:4292
 msgid "Дані компанії оновлено!"
 msgstr "Company data updated!"
 
-#: app.py:4544
+#: app.py:4569
 msgid "Налаштування оновлено!"
 msgstr "Settings updated!"
 
-#: app.py:4796
+#: app.py:4821
 msgid "✅ Завдання взято в роботу"
 msgstr "✅ Task started"
 
-#: app.py:4803
+#: app.py:4828
 msgid "📦 Замовлення запаковано"
 msgstr "📦 Order packed"
 
-#: app.py:4808
+#: app.py:4833
 msgid "✅ Готово до відправки"
 msgstr "✅ Ready to ship"
 
-#: app.py:4815
+#: app.py:4840
 msgid "🚚 Відправлено!"
 msgstr "🚚 Shipped!"
 
-#: app.py:4819
+#: app.py:4844
 msgid "✔️ Доставлено!"
 msgstr "✔️ Delivered!"
 
-#: app.py:4825
+#: app.py:4850
 msgid "❌ Завдання скасовано"
 msgstr "❌ Task cancelled"
 
-#: app.py:4830
+#: app.py:4855
 msgid "💾 Нотатки збережено"
 msgstr "💾 Notes saved"
 
-#: app.py:4950
+#: app.py:4975
 msgid "Введіть кількість для коригування"
 msgstr "Enter the adjustment quantity"
 
-#: app.py:4963
+#: app.py:4988
 #, python-format
 msgid "✅ Залишок '%(name)s' скориговано на %(adjustment)+d"
 msgstr "✅ Stock '%(name)s' adjusted by %(adjustment)+d"
 
-#: app.py:4965
+#: app.py:4990
 #, python-format
 msgid "❌ Помилка: %(error)s"
 msgstr "❌ Error: %(error)s"
 
-#: app.py:5073
+#: app.py:5098
 #, python-format
 msgid "✅ Замовлення %(order_number)s створено"
 msgstr "✅ Order %(order_number)s created"
 
-#: app.py:5104
+#: app.py:5129
 msgid "✅ Замовлення підтверджено"
 msgstr "✅ Order confirmed"
 
-#: app.py:5110
+#: app.py:5135
 msgid "📤 Замовлено у постачальника"
 msgstr "📤 Ordered from supplier"
 
-#: app.py:5116
+#: app.py:5141
 msgid "🚚 Позначено як відправлено"
 msgstr "🚚 Marked as shipped"
 
-#: app.py:5120
+#: app.py:5145
 msgid "✔️ Товар отримано, залишки оновлено!"
 msgstr "✔️ Item received, stock updated!"
 
-#: app.py:5125
+#: app.py:5150
 msgid "❌ Замовлення скасовано"
 msgstr "❌ Order cancelled"
 
-#: app.py:5132
+#: app.py:5157
 msgid "💰 Оплату зафіксовано"
 msgstr "💰 Payment recorded"
 
-#: app.py:5218
+#: app.py:5243
 msgid "✅ Витрату додано"
 msgstr "✅ Expense added"
 
-#: app.py:5543
+#: app.py:5568
 msgid "✅ AI налаштування збережено!"
 msgstr "✅ AI settings saved!"
 
-#: app.py:5642
+#: app.py:5667
 msgid "✅ Статтю створено!"
 msgstr "✅ Article created!"
 
-#: app.py:5707
+#: app.py:5732
 msgid "✅ Статтю оновлено!"
 msgstr "✅ Article updated!"
 
-#: app.py:5724
+#: app.py:5749
 msgid "Статтю видалено."
 msgstr "Article deleted."
 
-#: app.py:5737
+#: app.py:5762
 #, python-format
 msgid "✅ Статтю '%(title)s' опубліковано!"
 msgstr "✅ Article '%(title)s' published!"
 
-#: app.py:5764
+#: app.py:5789
 #, python-format
 msgid "✅ Створено план на %(count)s днів!"
 msgstr "✅ Plan created for %(count)s days!"
 
-#: app.py:5766
+#: app.py:5791
 msgid "Введіть хоча б одну тему."
 msgstr "Enter at least one topic."
 
-#: app.py:5806
+#: app.py:5831
 msgid "AI не налаштовано"
 msgstr "AI not configured"
 
-#: app.py:5813
+#: app.py:5838
 msgid "Тема обов'язкова"
 msgstr "Topic is required"
 
-#: app.py:6141
+#: app.py:6166
 msgid "План вже оброблено"
 msgstr "Plan already processed"
 
-#: app.py:6215
+#: app.py:6240
 msgid "AI не налаштовано. Додайте OPENAI_API_KEY"
 msgstr "AI not configured. Add OPENAI_API_KEY"
 
-#: app.py:6222
+#: app.py:6247
 msgid "Стаття не має контенту для перекладу"
 msgstr "Article has no content to translate"
 
@@ -621,8 +622,8 @@ msgid ""
 "📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після "
 "верифікації."
 msgstr ""
-"📋 Registration successful! Your application is under review. We'll notify"
-" you after verification."
+"📋 Registration successful! Your application is under review. We'll notify "
+"you after verification."
 
 #: routes/cabinet.py:49 routes/cabinet.py:148
 msgid "Доступ лише для B2B партнерів."
@@ -697,8 +698,8 @@ msgstr "Store name is required."
 
 #: routes/signup.py:104
 msgid ""
-"Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, "
-"цифри, дефіс)."
+"Адреса магазину (slug) має бути не менше 3 символів (лише латиниця, цифри, "
+"дефіс)."
 msgstr ""
 "The store address (slug) must be at least 3 characters (Latin letters, "
 "digits, hyphen only)."
@@ -722,7 +723,8 @@ msgid ""
 msgstr "You must confirm that you use the platform for a commercial purpose."
 
 #: routes/signup.py:118
-msgid "Потрібно прийняти умови надання послуг (AGB) та політику конфіденційності."
+msgid ""
+"Потрібно прийняти умови надання послуг (AGB) та політику конфіденційності."
 msgstr "You must accept the Terms of Service (AGB) and Privacy Policy."
 
 #: routes/signup.py:169
@@ -731,8 +733,8 @@ msgid ""
 "Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте "
 "пізніше в адмінці."
 msgstr ""
-"Store created, but payment could not be opened: %(error)s. Try again "
-"later in the admin panel."
+"Store created, but payment could not be opened: %(error)s. Try again later "
+"in the admin panel."
 
 #: services/email_service.py:118
 msgid "🎉 Вітаємо в SmartShop AI!"
@@ -777,144 +779,156 @@ msgstr "%(emoji)s CRM Alert: %(title)s - SmartShop AI"
 msgid "📰 Нові статті в блозі SmartShop AI"
 msgstr "📰 New articles on the SmartShop AI blog"
 
-#: services/theme_presets.py:17
+#: services/theme_presets.py:20
 msgid "Смарагдова темна (за замовчуванням)"
 msgstr "Emerald Dark (default)"
 
-#: services/theme_presets.py:30
+#: services/theme_presets.py:33
 msgid "Світла графітова"
 msgstr "Slate Light"
 
-#: services/theme_presets.py:43
+#: services/theme_presets.py:46
 msgid "Теплий захід сонця"
 msgstr "Warm Sunset"
 
-#: services/theme_presets.py:56
+#: services/theme_presets.py:59
 msgid "Океанський синій"
 msgstr "Ocean Blue"
 
-#: services/theme_presets.py:69
+#: services/theme_presets.py:72
 msgid "Монохромна темна"
 msgstr "Monochrome Dark"
 
-#: services/theme_presets.py:82
+#: services/theme_presets.py:85
 msgid "Ніжна рожева"
 msgstr "Rose Light"
 
-#: services/theme_presets.py:100
+#: services/theme_presets.py:103
 msgid "Системний (за замовчуванням)"
 msgstr "System (default)"
 
-#: services/theme_presets.py:105
+#: services/theme_presets.py:108
 msgid "Сучасний серіф"
 msgstr "Modern Serif"
 
-#: services/theme_presets.py:110
+#: services/theme_presets.py:113
 msgid "Округлий дружній"
 msgstr "Rounded friendly"
 
-#: services/theme_presets.py:115
+#: services/theme_presets.py:118
 msgid "Елегантний"
 msgstr "Elegant Display"
 
-#: services/theme_presets.py:120
+#: services/theme_presets.py:123
 msgid "Технологічний"
 msgstr "Techno Grotesk"
 
-#: services/theme_presets.py:130
+#: services/theme_presets.py:133
 msgid "Товари сіткою (за замовчуванням)"
 msgstr "Products in a grid (default)"
 
-#: services/theme_presets.py:131
+#: services/theme_presets.py:134
 msgid "Великий hero-блок, 4 картки розділів, потім товари сіткою."
 msgstr "Large hero block, 4 section cards, then products in a grid."
 
-#: services/theme_presets.py:134
+#: services/theme_presets.py:137
 msgid "Спочатку категорії"
 msgstr "Categories first"
 
-#: services/theme_presets.py:135
+#: services/theme_presets.py:138
 msgid ""
-"Компактний заголовок і одразу категорії з товарами - для магазинів з "
-"великим каталогом."
+"Компактний заголовок і одразу категорії з товарами - для магазинів з великим"
+" каталогом."
 msgstr ""
-"A compact header with categories and products shown right away - ideal "
-"for stores with a large catalog."
+"A compact header with categories and products shown right away - ideal for "
+"stores with a large catalog."
 
-#: templates/base.html:521
+#: services/theme_presets.py:145
+msgid "Компактний"
+msgstr "Compact"
+
+#: services/theme_presets.py:146
+msgid "Стандартний (за замовчуванням)"
+msgstr "Standard (default)"
+
+#: services/theme_presets.py:147
+msgid "Великий"
+msgstr "Large"
+
+#: templates/base.html:525
 msgid "Головна навігація"
 msgstr "Main navigation"
 
-#: templates/base.html:522 templates/pages/blog.html:255
+#: templates/base.html:526 templates/pages/blog.html:255
 #: templates/product.html:57 templates/product.html:178
 msgid "Home"
 msgstr "Home"
 
-#: templates/base.html:523 templates/product.html:63 templates/product.html:180
-#: templates/shop.html:2
+#: templates/base.html:527 templates/product.html:63
+#: templates/product.html:180 templates/shop.html:2
 msgid "Shop"
 msgstr "Shop"
 
-#: templates/base.html:524 templates/pages/blog.html:2
+#: templates/base.html:528 templates/pages/blog.html:2
 #: templates/pages/blog.html:257 templates/pages/blog.html:261
 msgid "Blog"
 msgstr "Blog"
 
-#: templates/base.html:525
+#: templates/base.html:529
 msgid "About"
 msgstr "About"
 
-#: templates/base.html:526 templates/base.html:599
+#: templates/base.html:530 templates/base.html:603
 msgid "Contacts"
 msgstr "Contacts"
 
-#: templates/base.html:543
+#: templates/base.html:547
 msgid "Платформа"
 msgstr "Platform"
 
-#: templates/base.html:544 templates/cabinet/b2c/dashboard.html:27
+#: templates/base.html:548 templates/cabinet/b2c/dashboard.html:27
 #: templates/cabinet/change_password.html:28
 msgid "Змінити пароль"
 msgstr "Change password"
 
-#: templates/base.html:545 templates/base.html:571
+#: templates/base.html:549 templates/base.html:575
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/base.html:556
+#: templates/base.html:560
 msgid "Cart"
 msgstr "Cart"
 
-#: templates/base.html:565
+#: templates/base.html:569
 msgid "Admin Panel"
 msgstr "Admin Panel"
 
-#: templates/base.html:569
+#: templates/base.html:573
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: templates/base.html:573
+#: templates/base.html:577
 msgid "Login"
 msgstr "Login"
 
-#: templates/base.html:574
+#: templates/base.html:578
 msgid "Register"
 msgstr "Register"
 
-#: templates/base.html:602
+#: templates/base.html:606
 msgid "All rights reserved"
 msgstr "All rights reserved"
 
-#: templates/base.html:611 templates/base.html:617
+#: templates/base.html:615 templates/base.html:621
 #: templates/pages/blog.html:334
 msgid "AI Assistant"
 msgstr "AI Assistant"
 
-#: templates/base.html:622
+#: templates/base.html:626
 msgid "How can I help you?"
 msgstr "How can I help you?"
 
-#: templates/base.html:626
+#: templates/base.html:630
 msgid "Ask me anything..."
 msgstr "Ask me anything..."
 
@@ -945,7 +959,8 @@ msgstr "Quantity"
 
 #: templates/admin/dashboard.html:40 templates/admin/order_detail.html:48
 #: templates/admin/order_detail.html:108 templates/admin/orders.html:81
-#: templates/admin/stats.html:133 templates/admin/warehouse/expense_add.html:40
+#: templates/admin/stats.html:133
+#: templates/admin/warehouse/expense_add.html:40
 #: templates/admin/warehouse/expenses.html:80
 #: templates/admin/warehouse/replenishment.html:78
 #: templates/admin/warehouse/replenishment_detail.html:63
@@ -1020,7 +1035,7 @@ msgid "Адреса доставки"
 msgstr "Delivery address"
 
 #: templates/admin/crm_partner.html:83 templates/admin/order_detail.html:87
-#: templates/admin/settings.html:193 templates/admin/settings.html:428
+#: templates/admin/settings.html:216 templates/admin/settings.html:451
 #: templates/admin/warehouse/tasks.html:67 templates/auth/register_b2b.html:81
 #: templates/auth/register_b2b.html:84 templates/cabinet/b2b/company.html:162
 #: templates/cabinet/b2b/company.html:166 templates/checkout_address.html:24
@@ -1033,8 +1048,9 @@ msgstr "Address"
 #: templates/admin/warehouse/expense_add.html:20
 #: templates/admin/warehouse/expenses.html:91
 #: templates/admin/warehouse/replenishment_detail.html:93
-#: templates/admin/warehouse/reports.html:85 templates/checkout_address.html:24
-#: templates/checkout_shipping.html:24 templates/pages/landing.html:283
+#: templates/admin/warehouse/reports.html:85
+#: templates/checkout_address.html:24 templates/checkout_shipping.html:24
+#: templates/pages/landing.html:283
 msgid "Доставка"
 msgstr "Shipping"
 
@@ -1048,7 +1064,7 @@ msgid "Ім'я отримувача"
 msgstr "Recipient's name"
 
 #: templates/admin/crm_partner.html:158 templates/admin/order_detail.html:79
-#: templates/admin/settings.html:183 templates/admin/settings.html:470
+#: templates/admin/settings.html:206 templates/admin/settings.html:493
 #: templates/admin/shipping_account_form.html:55
 #: templates/auth/register.html:44 templates/auth/register_b2b.html:136
 #: templates/cabinet/b2b/company.html:197 templates/checkout_address.html:46
@@ -1058,25 +1074,25 @@ msgstr "Phone"
 
 #: templates/checkout_address.html:57
 msgid ""
-"Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, "
-"її можна не заповнювати."
+"Адреса потрібна лише для доставки перевізником — якщо оберете самовивіз, її "
+"можна не заповнювати."
 msgstr ""
-"The address is only needed for courier delivery — if you choose pickup, "
-"you can leave it blank."
+"The address is only needed for courier delivery — if you choose pickup, you "
+"can leave it blank."
 
 #: templates/admin/shipping_account_form.html:59
 #: templates/cabinet/b2b/company.html:169 templates/checkout_address.html:61
 msgid "Вулиця, будинок"
 msgstr "Street, house number"
 
-#: templates/admin/settings.html:434
+#: templates/admin/settings.html:457
 #: templates/admin/shipping_account_form.html:63
 #: templates/auth/register_b2b.html:91 templates/cabinet/b2b/company.html:173
 #: templates/checkout_address.html:67
 msgid "Місто"
 msgstr "City"
 
-#: templates/admin/settings.html:443
+#: templates/admin/settings.html:466
 #: templates/admin/shipping_account_form.html:67
 #: templates/auth/register_b2b.html:97 templates/cabinet/b2b/company.html:179
 #: templates/checkout_address.html:71
@@ -1168,16 +1184,17 @@ msgid ""
 "зачекайте кілька хвилин - статус оновиться автоматично. Якщо проблема "
 "повторюється, зверніться до підтримки."
 msgstr ""
-"Payment has not been confirmed yet. If you completed payment on the "
-"Stripe page, please wait a few minutes - the status will update "
-"automatically. If the issue persists, please contact support."
+"Payment has not been confirmed yet. If you completed payment on the Stripe "
+"page, please wait a few minutes - the status will update automatically. If "
+"the issue persists, please contact support."
 
 #: templates/checkout_success.html:46
 msgid "На головну"
 msgstr "Go to homepage"
 
 #: templates/index.html:3 templates/index.html:283 templates/index.html:304
-#: templates/index.html:308 templates/pages/blog.html:335 templates/shop.html:8
+#: templates/index.html:308 templates/pages/blog.html:335
+#: templates/shop.html:8
 msgid "Your intelligent shopping assistant"
 msgstr "Your intelligent shopping assistant"
 
@@ -1306,8 +1323,8 @@ msgid ""
 "Файли враховують обраний вище період. Це не податкові документи — просто "
 "структуровані дані для передачі бухгалтеру/імпорту в його програму."
 msgstr ""
-"The files reflect the period selected above. These are not tax documents "
-"— just structured data to hand off to your accountant/import into their "
+"The files reflect the period selected above. These are not tax documents — "
+"just structured data to hand off to your accountant/import into their "
 "software."
 
 #: templates/admin/accounting.html:59
@@ -1398,15 +1415,15 @@ msgstr "Chatbot instructions"
 
 #: templates/admin/ai_settings.html:77
 msgid ""
-"Незалежно від того, що написано нижче, платформа завжди додає власні "
-"базові правила безпеки (розкриття, що це ІІ, заборона видумувати "
-"обіцянки, заборона розкривати чужі дані, стійкість до спроб \"зламати\" "
-"бота) - їх не можна вимкнути звідси."
+"Незалежно від того, що написано нижче, платформа завжди додає власні базові "
+"правила безпеки (розкриття, що це ІІ, заборона видумувати обіцянки, заборона"
+" розкривати чужі дані, стійкість до спроб \"зламати\" бота) - їх не можна "
+"вимкнути звідси."
 msgstr ""
 "Regardless of what's written below, the platform always applies its own "
-"baseline safety rules (AI disclosure, no fabricated promises, no "
-"revealing other customers' data, resistance to attempts to \"jailbreak\" "
-"the bot) - these cannot be turned off here."
+"baseline safety rules (AI disclosure, no fabricated promises, no revealing "
+"other customers' data, resistance to attempts to \"jailbreak\" the bot) - "
+"these cannot be turned off here."
 
 #: templates/admin/ai_settings.html:80
 msgid "Базовий системний промпт"
@@ -1421,8 +1438,8 @@ msgid ""
 "Ваші інструкції - додаються ПОВЕРХ базових правил платформи, які завжди "
 "включені"
 msgstr ""
-"Your instructions are added ON TOP of the platform's baseline rules, "
-"which are always included"
+"Your instructions are added ON TOP of the platform's baseline rules, which "
+"are always included"
 
 #: templates/admin/ai_settings.html:86
 msgid "Кастомні інструкції від адміна"
@@ -1457,8 +1474,8 @@ msgid ""
 "Ці інструкції додаються до базового промпту. Бот буде їх враховувати при "
 "відповідях."
 msgstr ""
-"These instructions are added to the base prompt. The bot will take them "
-"into account when answering."
+"These instructions are added to the base prompt. The bot will take them into"
+" account when answering."
 
 #: templates/admin/ai_settings.html:98
 msgid "Заборонені теми"
@@ -1547,8 +1564,8 @@ msgstr "Generate images for articles"
 
 #: templates/admin/ai_settings.html:199
 msgid ""
-"Використовує DALL-E 3 для створення унікальних зображень на основі змісту"
-" статті"
+"Використовує DALL-E 3 для створення унікальних зображень на основі змісту "
+"статті"
 msgstr "Uses DALL-E 3 to create unique images based on the article content"
 
 #: templates/admin/ai_settings.html:202
@@ -1574,14 +1591,15 @@ msgstr "Automatically translate articles into other languages"
 
 #: templates/admin/ai_settings.html:223
 msgid "При генерації статті автоматично перекладати на вибрані мови"
-msgstr "Automatically translate generated articles into the selected languages"
+msgstr ""
+"Automatically translate generated articles into the selected languages"
 
 #: templates/admin/ai_settings.html:226
 msgid "Мови для перекладу"
 msgstr "Languages for translation"
 
 #: templates/admin/ai_settings.html:245 templates/admin/blog_edit.html:113
-#: templates/admin/settings.html:248
+#: templates/admin/settings.html:271
 msgid "SEO налаштування"
 msgstr "SEO settings"
 
@@ -1625,7 +1643,7 @@ msgstr "3. H2 subheadings"
 msgid "4. Висновок"
 msgstr "4. Conclusion"
 
-#: templates/admin/ai_settings.html:273 templates/admin/settings.html:517
+#: templates/admin/ai_settings.html:273 templates/admin/settings.html:540
 msgid "Зберегти налаштування"
 msgstr "Save settings"
 
@@ -1656,11 +1674,11 @@ msgstr "Homepage blocks"
 
 #: templates/admin/blocks.html:18
 msgid ""
-"Ці картки показуються на головній сторінці магазину. Можна редагувати "
-"текст, картинку, посилання, порядок і вимикати непотрібні."
+"Ці картки показуються на головній сторінці магазину. Можна редагувати текст,"
+" картинку, посилання, порядок і вимикати непотрібні."
 msgstr ""
-"These cards appear on the store's homepage. You can edit the text, image,"
-" link and order, or turn off the ones you don't need."
+"These cards appear on the store's homepage. You can edit the text, image, "
+"link and order, or turn off the ones you don't need."
 
 #: templates/admin/blocks.html:27
 msgid "Вище"
@@ -1735,7 +1753,8 @@ msgid "Показувати цей блок"
 msgstr "Show this block"
 
 #: templates/admin/blocks.html:88 templates/admin/blog_edit.html:171
-#: templates/admin/crm_partner.html:187 templates/admin/domain_settings.html:30
+#: templates/admin/crm_partner.html:187
+#: templates/admin/domain_settings.html:30
 #: templates/admin/shipping_settings.html:94
 #: templates/admin/warehouse/expense_add.html:71
 #: templates/admin/warehouse/stock.html:182
@@ -1823,8 +1842,8 @@ msgid ""
 "Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він "
 "може/не може робити"
 msgstr ""
-"Here you set the rules for the AI seller: tone of voice, what it "
-"can/can't do"
+"Here you set the rules for the AI seller: tone of voice, what it can/can't "
+"do"
 
 #: templates/admin/blocks.html:198 templates/admin/category_edit.html:72
 #: templates/cabinet/b2b/company.html:245
@@ -1836,7 +1855,7 @@ msgid "❌ Файл занадто великий (макс. 16 МБ)"
 msgstr "❌ File too large (max. 16 MB)"
 
 #: templates/admin/blocks.html:378 templates/admin/blog_edit.html:472
-#: templates/admin/products.html:494 templates/admin/settings.html:785
+#: templates/admin/products.html:494 templates/admin/settings.html:862
 msgid "Помилка завантаження"
 msgstr "Loading error"
 
@@ -2164,7 +2183,8 @@ msgstr "7-day publication plan"
 
 #: templates/admin/blog_plan.html:9
 msgid "Заплануйте теми статей і AI згенерує контент автоматично"
-msgstr "Schedule article topics and the AI will generate content automatically"
+msgstr ""
+"Schedule article topics and the AI will generate content automatically"
 
 #: templates/admin/blog_plan.html:12
 msgid "Згенерувати всі pending"
@@ -2193,11 +2213,11 @@ msgstr "Create a 7-day plan"
 
 #: templates/admin/blog_plan.html:69
 msgid ""
-"Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані "
-"статті автоматично."
+"Введіть теми для статей на кожен день. AI згенерує SEO-оптимізовані статті "
+"автоматично."
 msgstr ""
-"Enter topics for articles for each day. The AI will generate SEO-"
-"optimized articles automatically."
+"Enter topics for articles for each day. The AI will generate SEO-optimized "
+"articles automatically."
 
 #: templates/admin/blog_plan.html:75
 msgid "День"
@@ -2384,7 +2404,8 @@ msgstr "...and %(count)s more products"
 msgid "Скасувати"
 msgstr "Cancel"
 
-#: templates/admin/category_edit.html:79 templates/admin/delete_account.html:19
+#: templates/admin/category_edit.html:79
+#: templates/admin/delete_account.html:19
 msgid "Небезпечна зона"
 msgstr "Danger zone"
 
@@ -2580,7 +2601,7 @@ msgid "Критична (0-19)"
 msgstr "Critical (0-19)"
 
 #: templates/admin/crm.html:101 templates/admin/crm.html:125
-#: templates/admin/crm_partner.html:87 templates/admin/settings.html:449
+#: templates/admin/crm_partner.html:87 templates/admin/settings.html:472
 #: templates/auth/register_b2b.html:103 templates/cabinet/b2b/company.html:129
 #: templates/cabinet/b2b/dashboard.html:188
 msgid "Країна"
@@ -2605,7 +2626,8 @@ msgid "Скинути"
 msgstr "Reset"
 
 #: templates/admin/crm.html:123 templates/cabinet/b2b/company.html:24
-#: templates/cabinet/b2b/dashboard.html:36 templates/cabinet/b2b/orders.html:24
+#: templates/cabinet/b2b/dashboard.html:36
+#: templates/cabinet/b2b/orders.html:24
 #: templates/email/b2b_verification_approved.html:8
 msgid "Компанія"
 msgstr "Company"
@@ -2782,12 +2804,12 @@ msgstr "Active alerts"
 msgid "Основна інформація"
 msgstr "Basic information"
 
-#: templates/admin/crm_partner.html:38 templates/admin/settings.html:379
+#: templates/admin/crm_partner.html:38 templates/admin/settings.html:402
 #: templates/auth/register_b2b.html:35
 msgid "Юридична назва"
 msgstr "Legal name"
 
-#: templates/admin/crm_partner.html:42 templates/admin/settings.html:411
+#: templates/admin/crm_partner.html:42 templates/admin/settings.html:434
 #: templates/cabinet/b2b/company.html:117
 #: templates/cabinet/b2b/dashboard.html:179
 msgid "VAT номер"
@@ -2801,7 +2823,7 @@ msgstr "Not verified"
 msgid "Не вказано"
 msgstr "Not specified"
 
-#: templates/admin/crm_partner.html:70 templates/admin/settings.html:476
+#: templates/admin/crm_partner.html:70 templates/admin/settings.html:499
 #: templates/auth/register_b2b.html:73 templates/cabinet/b2b/company.html:153
 msgid "Веб-сайт"
 msgstr "Website"
@@ -2826,7 +2848,7 @@ msgstr "Low reliability level"
 msgid "Критичний рівень"
 msgstr "Critical level"
 
-#: templates/admin/crm_partner.html:143 templates/admin/settings.html:174
+#: templates/admin/crm_partner.html:143 templates/admin/settings.html:197
 #: templates/admin/warehouse/replenishment_new.html:25
 msgid "Контактна інформація"
 msgstr "Contact information"
@@ -2880,7 +2902,8 @@ msgstr "Results of the last check"
 msgid "Історія перевірок"
 msgstr "Check history"
 
-#: templates/admin/crm_partner.html:228 templates/admin/domain_settings.html:54
+#: templates/admin/crm_partner.html:228
+#: templates/admin/domain_settings.html:54
 #: templates/admin/warehouse/stock_history.html:22
 msgid "Тип"
 msgstr "Type"
@@ -2957,7 +2980,8 @@ msgstr "Store structure"
 #: templates/admin/warehouse/replenishment_detail.html:10
 #: templates/admin/warehouse/tasks.html:65
 #: templates/cabinet/b2b/company.html:21
-#: templates/cabinet/b2b/dashboard.html:33 templates/cabinet/b2b/orders.html:21
+#: templates/cabinet/b2b/dashboard.html:33
+#: templates/cabinet/b2b/orders.html:21
 msgid "Замовлення"
 msgstr "Orders"
 
@@ -3101,7 +3125,8 @@ msgid "Ваша Stripe-підписка на платформу буде нег�
 msgstr "Your Stripe platform subscription will be cancelled immediately."
 
 #: templates/admin/delete_account.html:25
-msgid "Магазин перестане бути доступним за поточною адресою та власним доменом."
+msgid ""
+"Магазин перестане бути доступним за поточною адресою та власним доменом."
 msgstr ""
 "The store will no longer be reachable at its current address or custom "
 "domain."
@@ -3111,7 +3136,8 @@ msgid "Персональні дані (ваші, клієнтів, партне
 msgstr "Personal data (yours, customers', partners') will be anonymized."
 
 #: templates/admin/delete_account.html:27
-msgid "Замовлення та рахунки зберігаються знеособленими для податкового обліку."
+msgid ""
+"Замовлення та рахунки зберігаються знеособленими для податкового обліку."
 msgstr "Orders and invoices are kept anonymized for tax accounting."
 
 #: templates/admin/delete_account.html:28
@@ -3176,15 +3202,17 @@ msgstr "What you need to do:"
 msgid "У панелі керування вашим доменом додайте A-запис:"
 msgstr "In your domain's management panel, add an A record:"
 
-#: templates/admin/domain_settings.html:55 templates/admin/order_detail.html:67
-#: templates/auth/register.html:25 templates/auth/register_b2b.html:116
+#: templates/admin/domain_settings.html:55
+#: templates/admin/order_detail.html:67 templates/auth/register.html:25
+#: templates/auth/register_b2b.html:116
 msgid "Ім'я"
 msgstr "Name"
 
-#: templates/admin/domain_settings.html:55 templates/admin/product_edit.html:80
-#: templates/admin/products.html:93 templates/admin/settings.html:44
-#: templates/admin/settings.html:65 templates/admin/settings.html:89
-#: templates/admin/settings.html:110 templates/auth/register.html:71
+#: templates/admin/domain_settings.html:55
+#: templates/admin/product_edit.html:80 templates/admin/products.html:93
+#: templates/admin/settings.html:44 templates/admin/settings.html:65
+#: templates/admin/settings.html:89 templates/admin/settings.html:110
+#: templates/auth/register.html:71
 msgid "або"
 msgstr "or"
 
@@ -3283,8 +3311,8 @@ msgid "Видалити акаунт"
 msgstr "Delete account"
 
 #: templates/admin/layout.html:410 templates/cabinet/b2b/company.html:33
-#: templates/cabinet/b2b/dashboard.html:51 templates/cabinet/b2b/orders.html:33
-#: templates/cabinet/b2b/pending.html:14
+#: templates/cabinet/b2b/dashboard.html:51
+#: templates/cabinet/b2b/orders.html:33 templates/cabinet/b2b/pending.html:14
 #: templates/cabinet/b2c/dashboard.html:30
 msgid "Вийти"
 msgstr "Log out"
@@ -3462,11 +3490,11 @@ msgstr "Payment acceptance - Admin Panel"
 
 #: templates/admin/payments_settings.html:6
 msgid ""
-"Підключіть Stripe, щоб приймати оплати карткою від своїх клієнтів напряму"
-" на свій рахунок."
+"Підключіть Stripe, щоб приймати оплати карткою від своїх клієнтів напряму на"
+" свій рахунок."
 msgstr ""
-"Connect Stripe to accept card payments from your customers directly to "
-"your account."
+"Connect Stripe to accept card payments from your customers directly to your "
+"account."
 
 #: templates/admin/payments_settings.html:25
 msgid "Stripe ще не налаштовано на платформі. Зверніться до підтримки."
@@ -3509,8 +3537,8 @@ msgid ""
 "Ви вже почали підключення Stripe, але не завершили заповнення даних. "
 "Продовжіть реєстрацію."
 msgstr ""
-"You've already started connecting Stripe but haven't finished filling in "
-"the details. Continue the registration."
+"You've already started connecting Stripe but haven't finished filling in the"
+" details. Continue the registration."
 
 #: templates/admin/payments_settings.html:64
 msgid "Продовжити реєстрацію в Stripe"
@@ -3521,8 +3549,8 @@ msgid ""
 "Без підключеного Stripe клієнти не зможуть оплатити замовлення у вашому "
 "магазині"
 msgstr ""
-"Without Stripe connected, customers won't be able to pay for orders in "
-"your store"
+"Without Stripe connected, customers won't be able to pay for orders in your "
+"store"
 
 #: templates/admin/payments_settings.html:69
 msgid "кнопка «Оформити замовлення» буде показувати помилку"
@@ -3805,303 +3833,323 @@ msgid "Кольорова тема"
 msgstr "Color Theme"
 
 #: templates/admin/settings.html:147
+msgid "Акцентний колір"
+msgstr "Accent color"
+
+#: templates/admin/settings.html:148
+msgid ""
+"За замовчуванням акцент береться з кольорової теми вище. Можна замінити на "
+"свій колір бренду."
+msgstr ""
+"By default the accent comes from the color theme above. You can replace it "
+"with your own brand color."
+
+#: templates/admin/settings.html:152
+msgid "Власний акцентний колір"
+msgstr "Custom accent color"
+
+#: templates/admin/settings.html:159
 msgid "Шрифт"
 msgstr "Font"
 
-#: templates/admin/settings.html:158
+#: templates/admin/settings.html:170
+msgid "Розмір шрифту"
+msgstr "Font size"
+
+#: templates/admin/settings.html:181
 msgid "Розкладка головної сторінки"
 msgstr "Homepage layout"
 
-#: templates/admin/settings.html:187
+#: templates/admin/settings.html:210
 msgid "Години роботи"
 msgstr "Business hours"
 
-#: templates/admin/settings.html:188
+#: templates/admin/settings.html:211
 msgid "Пн-Пт: 9:00-18:00"
 msgstr "Mon-Fri: 9:00-18:00"
 
-#: templates/admin/settings.html:194
+#: templates/admin/settings.html:217
 msgid "м. Київ, вул. Хрещатик, 1"
 msgstr "Kyiv, Khreshchatyk St. 1"
 
-#: templates/admin/settings.html:198
+#: templates/admin/settings.html:221
 msgid "Посилання на Google Maps"
 msgstr "Google Maps link"
 
-#: templates/admin/settings.html:207
+#: templates/admin/settings.html:230
 msgid "Соціальні мережі"
 msgstr "Social media"
 
-#: templates/admin/settings.html:253
+#: templates/admin/settings.html:276
 msgid "SmartShop AI - Ваш надійний онлайн-магазин"
 msgstr "SmartShop AI - Your reliable online store"
 
-#: templates/admin/settings.html:254
+#: templates/admin/settings.html:277
 msgid "Рекомендована довжина: 50-60 символів"
 msgstr "Recommended length: 50-60 characters"
 
-#: templates/admin/settings.html:259
+#: templates/admin/settings.html:282
 msgid "Короткий опис вашого магазину для пошукових систем..."
 msgstr "Short description of your store for search engines..."
 
-#: templates/admin/settings.html:260
+#: templates/admin/settings.html:283
 msgid "Рекомендована довжина: 150-160 символів"
 msgstr "Recommended length: 150-160 characters"
 
-#: templates/admin/settings.html:265
+#: templates/admin/settings.html:288
 msgid "онлайн магазин, купити, товари, доставка"
 msgstr "online store, buy, products, delivery"
 
-#: templates/admin/settings.html:273
+#: templates/admin/settings.html:296
 msgid "Аналітика та інтеграції"
 msgstr "Analytics and integrations"
 
-#: templates/admin/settings.html:288
+#: templates/admin/settings.html:311
 msgid "Додатковий код в"
 msgstr "Extra code in"
 
-#: templates/admin/settings.html:289
+#: templates/admin/settings.html:312
 msgid "Ваш кастомний код"
 msgstr "Your custom code"
 
-#: templates/admin/settings.html:290
+#: templates/admin/settings.html:313
 msgid "HTML/JS код, який буде вставлено перед"
 msgstr "HTML/JS code to be inserted before"
 
-#: templates/admin/settings.html:298
+#: templates/admin/settings.html:321
 msgid "Налаштування магазину"
 msgstr "Store settings"
 
-#: templates/admin/settings.html:303
+#: templates/admin/settings.html:326
 #: templates/admin/warehouse/expense_add.html:45
 msgid "Валюта"
 msgstr "Currency"
 
-#: templates/admin/settings.html:313
+#: templates/admin/settings.html:336
 msgid "Товарів на сторінці"
 msgstr "Products per page"
 
-#: templates/admin/settings.html:317
+#: templates/admin/settings.html:340
 msgid "Мін. сума замовлення"
 msgstr "Minimum order amount"
 
-#: templates/admin/settings.html:323
+#: templates/admin/settings.html:346
 msgid "Інформація про доставку"
 msgstr "Shipping information"
 
-#: templates/admin/settings.html:324
+#: templates/admin/settings.html:347
 msgid "Безкоштовна доставка від 1000 грн..."
 msgstr "Free shipping from 1000 UAH..."
 
-#: templates/admin/settings.html:332
+#: templates/admin/settings.html:355
 msgid "Обліковий запис адміністратора"
 msgstr "Administrator account"
 
-#: templates/admin/settings.html:337
+#: templates/admin/settings.html:360
 msgid "Логін адміністратора"
 msgstr "Administrator login"
 
-#: templates/admin/settings.html:341
+#: templates/admin/settings.html:364
 msgid "Використовується для входу в адмін-панель"
 msgstr "Used to log in to the admin panel"
 
-#: templates/admin/settings.html:344 templates/auth/reset_password.html:3
+#: templates/admin/settings.html:367 templates/auth/reset_password.html:3
 #: templates/auth/reset_password.html:9 templates/auth/reset_password.html:24
 #: templates/cabinet/change_password.html:21
 msgid "Новий пароль"
 msgstr "New password"
 
-#: templates/admin/settings.html:346
+#: templates/admin/settings.html:369
 msgid "Залиште порожнім, щоб не змінювати"
 msgstr "Leave blank to keep unchanged"
 
-#: templates/admin/settings.html:347
+#: templates/admin/settings.html:370
 msgid "Мінімум 6 символів. Залиште порожнім, якщо не хочете змінювати"
 msgstr "Minimum 6 characters. Leave blank if you don't want to change it"
 
-#: templates/admin/settings.html:352
+#: templates/admin/settings.html:375
 msgid "Підтвердження пароля"
 msgstr "Password confirmation"
 
-#: templates/admin/settings.html:354
+#: templates/admin/settings.html:377
 msgid "Повторіть новий пароль"
 msgstr "Repeat the new password"
 
-#: templates/admin/settings.html:364
+#: templates/admin/settings.html:387
 msgid "Ваша компанія (для запитів до реєстрів)"
 msgstr "Your company (for registry lookups)"
 
-#: templates/admin/settings.html:366
+#: templates/admin/settings.html:389
 msgid ""
 "Ці дані використовуються для верифікації контрагентів через VIES, "
 "Handelsregister та інші реєстри."
 msgstr ""
-"This data is used to verify counterparties via VIES, Handelsregister, and"
-" other registries."
+"This data is used to verify counterparties via VIES, Handelsregister, and "
+"other registries."
 
-#: templates/admin/settings.html:367
+#: templates/admin/settings.html:390
 msgid "Заповніть, щоб отримувати повні відповіді від реєстрів."
 msgstr "Fill in to get complete responses from the registries."
 
-#: templates/admin/settings.html:373 templates/auth/register_b2b.html:29
+#: templates/admin/settings.html:396 templates/auth/register_b2b.html:29
 #: templates/cabinet/b2b/company.html:95
 #: templates/cabinet/b2b/dashboard.html:175
 msgid "Назва компанії"
 msgstr "Company name"
 
-#: templates/admin/settings.html:388 templates/auth/register_b2b.html:43
+#: templates/admin/settings.html:411 templates/auth/register_b2b.html:43
 msgid "Країна VAT"
 msgstr "VAT country"
 
-#: templates/admin/settings.html:390
+#: templates/admin/settings.html:413
 msgid "Оберіть"
 msgstr "Select"
 
-#: templates/admin/settings.html:391 templates/auth/register_b2b.html:46
+#: templates/admin/settings.html:414 templates/auth/register_b2b.html:46
 #: templates/cabinet/b2b/company.html:132
 msgid "Німеччина"
 msgstr "Germany"
 
-#: templates/admin/settings.html:392 templates/auth/register_b2b.html:47
+#: templates/admin/settings.html:415 templates/auth/register_b2b.html:47
 #: templates/cabinet/b2b/company.html:133
 msgid "Австрія"
 msgstr "Austria"
 
-#: templates/admin/settings.html:393 templates/auth/register_b2b.html:48
+#: templates/admin/settings.html:416 templates/auth/register_b2b.html:48
 #: templates/cabinet/b2b/company.html:134
 msgid "Польща"
 msgstr "Poland"
 
-#: templates/admin/settings.html:394 templates/auth/register_b2b.html:49
+#: templates/admin/settings.html:417 templates/auth/register_b2b.html:49
 #: templates/cabinet/b2b/company.html:135
 msgid "Чехія"
 msgstr "Czechia"
 
-#: templates/admin/settings.html:395 templates/auth/register_b2b.html:53
+#: templates/admin/settings.html:418 templates/auth/register_b2b.html:53
 #: templates/cabinet/b2b/company.html:139
 msgid "Нідерланди"
 msgstr "Netherlands"
 
-#: templates/admin/settings.html:396 templates/auth/register_b2b.html:54
+#: templates/admin/settings.html:419 templates/auth/register_b2b.html:54
 #: templates/cabinet/b2b/company.html:140
 msgid "Бельгія"
 msgstr "Belgium"
 
-#: templates/admin/settings.html:397 templates/auth/register_b2b.html:50
+#: templates/admin/settings.html:420 templates/auth/register_b2b.html:50
 #: templates/cabinet/b2b/company.html:136
 msgid "Франція"
 msgstr "France"
 
-#: templates/admin/settings.html:398 templates/auth/register_b2b.html:51
+#: templates/admin/settings.html:421 templates/auth/register_b2b.html:51
 #: templates/cabinet/b2b/company.html:137
 msgid "Італія"
 msgstr "Italy"
 
-#: templates/admin/settings.html:399 templates/auth/register_b2b.html:52
+#: templates/admin/settings.html:422 templates/auth/register_b2b.html:52
 #: templates/cabinet/b2b/company.html:138
 msgid "Іспанія"
 msgstr "Spain"
 
-#: templates/admin/settings.html:400 templates/auth/register_b2b.html:105
+#: templates/admin/settings.html:423 templates/auth/register_b2b.html:105
 #: templates/cabinet/b2b/company.html:141
 msgid "Україна"
 msgstr "Ukraine"
 
-#: templates/admin/settings.html:401
+#: templates/admin/settings.html:424
 msgid "Словаччина"
 msgstr "Slovakia"
 
-#: templates/admin/settings.html:402
+#: templates/admin/settings.html:425
 msgid "Угорщина"
 msgstr "Hungary"
 
-#: templates/admin/settings.html:403
+#: templates/admin/settings.html:426
 msgid "Румунія"
 msgstr "Romania"
 
-#: templates/admin/settings.html:404
+#: templates/admin/settings.html:427
 msgid "Болгарія"
 msgstr "Bulgaria"
 
-#: templates/admin/settings.html:405
+#: templates/admin/settings.html:428
 msgid "Литва"
 msgstr "Lithuania"
 
-#: templates/admin/settings.html:406
+#: templates/admin/settings.html:429
 msgid "Латвія"
 msgstr "Latvia"
 
-#: templates/admin/settings.html:407
+#: templates/admin/settings.html:430
 msgid "Естонія"
 msgstr "Estonia"
 
-#: templates/admin/settings.html:415
+#: templates/admin/settings.html:438
 msgid "Без коду країни (DE, AT...)"
 msgstr "Without country code (DE, AT...)"
 
-#: templates/admin/settings.html:422
+#: templates/admin/settings.html:445
 msgid "Тільки для Німеччини"
 msgstr "Germany only"
 
-#: templates/admin/settings.html:455
+#: templates/admin/settings.html:478
 msgid "Код країни"
 msgstr "Country code"
 
-#: templates/admin/settings.html:464 templates/cabinet/b2b/company.html:191
+#: templates/admin/settings.html:487 templates/cabinet/b2b/company.html:191
 msgid "Email компанії"
 msgstr "Company email"
 
-#: templates/admin/settings.html:484
+#: templates/admin/settings.html:507
 msgid "Статус даних:"
 msgstr "Data status:"
 
-#: templates/admin/settings.html:486
+#: templates/admin/settings.html:509
 msgid "VAT заповнено"
 msgstr "VAT filled in"
 
-#: templates/admin/settings.html:488
+#: templates/admin/settings.html:511
 msgid "VAT не заповнено - запити до реєстрів можуть бути обмежені"
 msgstr "VAT not filled in - registry lookups may be limited"
 
-#: templates/admin/settings.html:496
+#: templates/admin/settings.html:519
 msgid "Юридичні тексти (Datenschutz / AGB)"
 msgstr "Legal texts (Datenschutz / AGB)"
 
-#: templates/admin/settings.html:500
+#: templates/admin/settings.html:523
 msgid ""
-"Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не"
-" юридична консультація). Impressum окремого тексту не потребує - він "
+"Якщо поле порожнє - на сторінці показується загальний шаблонний текст (не "
+"юридична консультація). Impressum окремого тексту не потребує - він "
 "збирається з даних юрособи вище."
 msgstr ""
-"If the field is empty, a generic template text is shown (not legal "
-"advice). The Impressum doesn't need separate text - it's assembled from "
-"the company data above."
+"If the field is empty, a generic template text is shown (not legal advice). "
+"The Impressum doesn't need separate text - it's assembled from the company "
+"data above."
 
-#: templates/admin/settings.html:503
+#: templates/admin/settings.html:526
 msgid "Політика конфіденційності (Datenschutz)"
 msgstr "Privacy Policy (Datenschutz)"
 
-#: templates/admin/settings.html:505 templates/admin/settings.html:510
+#: templates/admin/settings.html:528 templates/admin/settings.html:533
 msgid "Залиште порожнім, щоб використовувати шаблонний текст"
 msgstr "Leave blank to use the template text"
 
-#: templates/admin/settings.html:508
+#: templates/admin/settings.html:531
 msgid "Умови використання (AGB)"
 msgstr "Terms of Use (AGB)"
 
-#: templates/admin/settings.html:765
+#: templates/admin/settings.html:842
 msgid "Файл занадто великий (макс. 16 МБ)"
 msgstr "File too large (max. 16 MB)"
 
-#: templates/admin/settings.html:770
+#: templates/admin/settings.html:847
 msgid "Завантаження..."
 msgstr "Loading..."
 
-#: templates/admin/settings.html:782
+#: templates/admin/settings.html:859
 msgid "Завантажено!"
 msgstr "Uploaded!"
 
-#: templates/admin/settings.html:789 templates/cabinet/b2b/company.html:600
+#: templates/admin/settings.html:866 templates/cabinet/b2b/company.html:600
 msgid "Помилка з'єднання"
 msgstr "Connection error"
 
@@ -4120,11 +4168,10 @@ msgstr "No real keys yet? Enter"
 #: templates/admin/shipping_account_form.html:6
 msgid ""
 "в усіх полях креденшелів і увімкніть Sandbox -\n"
-"        checkout буде показувати синтетичні тарифи без звернення до "
-"мережі."
+"        checkout буде показувати синтетичні тарифи без звернення до мережі."
 msgstr ""
-"in all credential fields and enable Sandbox - checkout will show "
-"synthetic rates without contacting the network."
+"in all credential fields and enable Sandbox - checkout will show synthetic "
+"rates without contacting the network."
 
 #: templates/admin/shipping_account_form.html:15
 msgid "Sandbox / тестовий режим"
@@ -4221,12 +4268,12 @@ msgstr "Pickup"
 #: templates/admin/shipping_settings.html:76
 msgid ""
 "Безкоштовна альтернатива доставці перевізником - клієнт сам забирає "
-"замовлення. Зʼявиться як окрема опція на кроці вибору доставки в "
-"checkout, навіть якщо DHL/UPS не налаштовані."
+"замовлення. Зʼявиться як окрема опція на кроці вибору доставки в checkout, "
+"навіть якщо DHL/UPS не налаштовані."
 msgstr ""
 "A free alternative to courier delivery - the customer picks up the order "
-"themselves. Appears as a separate option at the shipping step of "
-"checkout, even if DHL/UPS are not configured."
+"themselves. Appears as a separate option at the shipping step of checkout, "
+"even if DHL/UPS are not configured."
 
 #: templates/admin/shipping_settings.html:83
 msgid "Увімкнути самовивіз"
@@ -5161,8 +5208,8 @@ msgstr "Min. 8 characters"
 
 #: templates/auth/register_b2b.html:163
 msgid ""
-"Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії"
-" та повідомимо про результат на вказаний email."
+"Після реєстрації ваша заявка буде розглянута. Ми перевіримо дані компанії та"
+" повідомимо про результат на вказаний email."
 msgstr ""
 "After registration, your application will be reviewed. We'll verify the "
 "company details and let you know the result by email."
@@ -5265,8 +5312,8 @@ msgid ""
 "Я підтверджую, що використовую платформу для підприємницької/професійної "
 "діяльності (не як споживач)."
 msgstr ""
-"I confirm that I use the platform for a commercial or professional "
-"purpose (not as a consumer)."
+"I confirm that I use the platform for a commercial or professional purpose "
+"(not as a consumer)."
 
 #: templates/auth/signup.html:84
 msgid "Я приймаю"
@@ -5307,11 +5354,11 @@ msgstr "Your store's address"
 
 #: templates/auth/signup_success.html:18
 msgid ""
-"Піддомен магазину ще не активовано на платформі - зверніться до "
-"підтримки, щоб отримати посилання."
+"Піддомен магазину ще не активовано на платформі - зверніться до підтримки, "
+"щоб отримати посилання."
 msgstr ""
-"The store's subdomain is not yet active on the platform - contact support"
-" to get the link."
+"The store's subdomain is not yet active on the platform - contact support to"
+" get the link."
 
 #: templates/auth/signup_success.html:21
 msgid "Оплату отримано. Заходьте в адмінку, щоб налаштувати магазин."
@@ -5339,17 +5386,20 @@ msgid "Профіль компанії"
 msgstr "Company profile"
 
 #: templates/cabinet/b2b/company.html:12
-#: templates/cabinet/b2b/dashboard.html:12 templates/cabinet/b2b/orders.html:12
+#: templates/cabinet/b2b/dashboard.html:12
+#: templates/cabinet/b2b/orders.html:12
 msgid "B2B Партнер"
 msgstr "B2B Partner"
 
 #: templates/cabinet/b2b/company.html:27
-#: templates/cabinet/b2b/dashboard.html:39 templates/cabinet/b2b/orders.html:27
+#: templates/cabinet/b2b/dashboard.html:39
+#: templates/cabinet/b2b/orders.html:27
 msgid "Прайс-листи"
 msgstr "Price lists"
 
 #: templates/cabinet/b2b/company.html:30
-#: templates/cabinet/b2b/dashboard.html:42 templates/cabinet/b2b/orders.html:30
+#: templates/cabinet/b2b/dashboard.html:42
+#: templates/cabinet/b2b/orders.html:30
 msgid "Документи"
 msgstr "Documents"
 
@@ -5361,7 +5411,8 @@ msgstr "Manage your company's data"
 msgid "Статус верифікації"
 msgstr "Verification status"
 
-#: templates/cabinet/b2b/company.html:58 templates/platform_admin/users.html:80
+#: templates/cabinet/b2b/company.html:58
+#: templates/platform_admin/users.html:80
 msgid "Верифіковано"
 msgstr "Verified"
 
@@ -5466,15 +5517,16 @@ msgid ""
 "Ми перевіряємо надані вами дані. Це може зайняти до 24 годин. Після "
 "верифікації ви отримаєте доступ до повного функціоналу B2B кабінету."
 msgstr ""
-"We're reviewing the data you provided. This may take up to 24 hours. Once"
-" verified, you'll get access to the full B2B dashboard functionality."
+"We're reviewing the data you provided. This may take up to 24 hours. Once "
+"verified, you'll get access to the full B2B dashboard functionality."
 
-#: templates/cabinet/b2b/dashboard.html:81 templates/cabinet/b2b/orders.html:89
+#: templates/cabinet/b2b/dashboard.html:81
+#: templates/cabinet/b2b/orders.html:89
 msgid "Всього замовлень"
 msgstr "Total orders"
 
-#: templates/cabinet/b2b/dashboard.html:86 templates/cabinet/b2b/orders.html:58
-#: templates/cabinet/b2b/orders.html:93
+#: templates/cabinet/b2b/dashboard.html:86
+#: templates/cabinet/b2b/orders.html:58 templates/cabinet/b2b/orders.html:93
 msgid "В обробці"
 msgstr "Processing"
 
@@ -5540,7 +5592,8 @@ msgstr "Orders"
 msgid "B2B Замовлення"
 msgstr "B2B Orders"
 
-#: templates/cabinet/b2b/orders.html:40 templates/cabinet/b2c/dashboard.html:21
+#: templates/cabinet/b2b/orders.html:40
+#: templates/cabinet/b2c/dashboard.html:21
 msgid "Мої замовлення"
 msgstr "My orders"
 
@@ -5614,11 +5667,11 @@ msgstr "Application under review"
 #: templates/cabinet/b2b/pending.html:11
 #, python-format
 msgid ""
-"Компанія «%(name)s» ще не верифікована. Ми повідомимо вас на email, щойно"
-" перевірку буде завершено."
+"Компанія «%(name)s» ще не верифікована. Ми повідомимо вас на email, щойно "
+"перевірку буде завершено."
 msgstr ""
-"Company \"%(name)s\" is not yet verified. We'll notify you by email as "
-"soon as the review is complete."
+"Company \"%(name)s\" is not yet verified. We'll notify you by email as soon "
+"as the review is complete."
 
 #: templates/cabinet/b2c/dashboard.html:3
 msgid "Особистий кабінет"
@@ -5774,8 +5827,8 @@ msgstr "What to do next?"
 
 #: templates/email/b2b_verification_pending.html:26
 msgid ""
-"Поки очікуєте, можете переглянути каталог товарів та ознайомитися з "
-"умовами B2B співпраці."
+"Поки очікуєте, можете переглянути каталог товарів та ознайомитися з умовами "
+"B2B співпраці."
 msgstr ""
 "While you wait, you can browse the product catalog and review the B2B "
 "partnership terms."
@@ -5876,7 +5929,8 @@ msgstr "Company:"
 msgid "Тип:"
 msgstr "Type:"
 
-#: templates/email/crm_alert.html:31 templates/email/order_confirmation.html:18
+#: templates/email/crm_alert.html:31
+#: templates/email/order_confirmation.html:18
 msgid "Дата:"
 msgstr "Date:"
 
@@ -5987,7 +6041,8 @@ msgstr "View details"
 #: templates/email/password_reset.html:8
 #, python-format
 msgid "%(name)s, ми отримали запит на скидання пароля для вашого акаунта."
-msgstr "%(name)s, we received a request to reset the password for your account."
+msgstr ""
+"%(name)s, we received a request to reset the password for your account."
 
 #: templates/email/password_reset.html:12
 msgid "Встановити новий пароль"
@@ -5998,13 +6053,13 @@ msgid ""
 "Посилання дійсне протягом 1 години. Якщо кнопка не працює, скопіюйте це "
 "посилання у браузер:"
 msgstr ""
-"This link is valid for 1 hour. If the button doesn't work, copy this link"
-" into your browser:"
+"This link is valid for 1 hour. If the button doesn't work, copy this link "
+"into your browser:"
 
 #: templates/email/password_reset.html:21
 msgid ""
-"Якщо ви не запитували скидання пароля, просто проігноруйте цей лист - ваш"
-" пароль залишиться незмінним."
+"Якщо ви не запитували скидання пароля, просто проігноруйте цей лист - ваш "
+"пароль залишиться незмінним."
 msgstr ""
 "If you didn't request a password reset, simply ignore this email - your "
 "password will remain unchanged."
@@ -6015,8 +6070,8 @@ msgstr "Welcome to SmartShop AI!"
 
 #: templates/email/registration_welcome.html:8
 msgid ""
-"Дякуємо, що приєдналися до SmartShop AI - інтелектуальної торгової "
-"платформи нового покоління!"
+"Дякуємо, що приєдналися до SmartShop AI - інтелектуальної торгової платформи"
+" нового покоління!"
 msgstr ""
 "Thank you for joining SmartShop AI - the next-generation intelligent "
 "commerce platform!"
@@ -6054,7 +6109,8 @@ msgid "Почати покупки"
 msgstr "Start shopping"
 
 #: templates/email/registration_welcome.html:29
-msgid "Якщо у вас виникли запитання, наш AI-асистент завжди готовий допомогти!"
+msgid ""
+"Якщо у вас виникли запитання, наш AI-асистент завжди готовий допомогти!"
 msgstr "If you have any questions, our AI assistant is always ready to help!"
 
 #: templates/email/registration_welcome.html:32
@@ -6087,11 +6143,12 @@ msgid ""
 "Посилання дійсне протягом 3 днів. Якщо кнопка не працює, скопіюйте це "
 "посилання у браузер:"
 msgstr ""
-"This link is valid for 3 days. If the button doesn't work, copy this link"
-" into your browser:"
+"This link is valid for 3 days. If the button doesn't work, copy this link "
+"into your browser:"
 
 #: templates/email/verify_email.html:21
-msgid "Якщо ви не реєструвались на SmartShop AI, просто проігноруйте цей лист."
+msgid ""
+"Якщо ви не реєструвались на SmartShop AI, просто проігноруйте цей лист."
 msgstr "If you didn't sign up for SmartShop AI, simply ignore this email."
 
 #: templates/pages/about.html:125
@@ -6111,7 +6168,8 @@ msgid "Тут ви зможете розповісти про свій брен�
 msgstr "Here you can tell about your brand, team, and values."
 
 #: templates/pages/about.html:136
-msgid "Ми прагнемо надавати найкращий сервіс та якісні товари для наших клієнтів."
+msgid ""
+"Ми прагнемо надавати найкращий сервіс та якісні товари для наших клієнтів."
 msgstr ""
 "We strive to provide the best service and quality products for our "
 "customers."
@@ -6162,8 +6220,7 @@ msgstr "AI Sales Assistant – SmartShop AI"
 
 #: templates/pages/ai_assistant.html:312
 msgid ""
-"Ваш персональний помічник, який знає весь каталог та готовий допомогти "
-"24/7"
+"Ваш персональний помічник, який знає весь каталог та готовий допомогти 24/7"
 msgstr ""
 "Your personal assistant who knows the whole catalog and is ready to help "
 "24/7"
@@ -6245,7 +6302,8 @@ msgid "Інструкції ІІ"
 msgstr "AI Instructions"
 
 #: templates/pages/ai_assistant.html:387
-msgid "ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів."
+msgid ""
+"ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів."
 msgstr ""
 "The AI sales assistant is configured to be polite and help with product "
 "selection."
@@ -6391,12 +6449,12 @@ msgstr "SmartShop AI — an online store builder with an AI seller"
 #: templates/pages/landing.html:21
 msgid ""
 "SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, "
-"підключіть склад, доставку, бухгалтерію, автоматичний блог та "
-"ІІ-продавця. Підписка від 19€/міс."
+"підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. "
+"Підписка від 19€/міс."
 msgstr ""
 "SmartShop AI — a SaaS store builder: build your storefront in an hour, "
-"connect warehouse, shipping, accounting, automatic blog, and an AI "
-"seller. Subscription from €19/mo."
+"connect warehouse, shipping, accounting, automatic blog, and an AI seller. "
+"Subscription from €19/mo."
 
 #: templates/pages/landing.html:31
 msgid ""
@@ -6412,19 +6470,19 @@ msgstr "How is SmartShop AI better than WordPress (WooCommerce) or Ecwid?"
 
 #: templates/pages/landing.html:57 templates/pages/landing.html:394
 msgid ""
-"WordPress/WooCommerce покладається на сторонні плагіни — найчастішу "
-"причину злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та "
-"ІІ-продавець вбудовані в саму платформу й підтримуються централізовано, "
-"без плагінного ризику. Захист від CSRF, обмеження на перебір паролів, "
-"шифрування ключів доставки та перевірка оплати через підписані "
-"Stripe-вебхуки закладені з самого початку."
+"WordPress/WooCommerce покладається на сторонні плагіни — найчастішу причину "
+"злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та ІІ-"
+"продавець вбудовані в саму платформу й підтримуються централізовано, без "
+"плагінного ризику. Захист від CSRF, обмеження на перебір паролів, шифрування"
+" ключів доставки та перевірка оплати через підписані Stripe-вебхуки "
+"закладені з самого початку."
 msgstr ""
-"WordPress/WooCommerce relies on third-party plugins - the most common "
-"cause of such sites being hacked. In SmartShop AI, warehouse, shipping, "
-"CRM, blog, and the AI sales assistant are built into the platform itself "
-"and maintained centrally, with no plugin risk. CSRF protection, brute-"
-"force rate limiting, encrypted shipping credentials, and payment "
-"verification via signed Stripe webhooks are built in from the start."
+"WordPress/WooCommerce relies on third-party plugins - the most common cause "
+"of such sites being hacked. In SmartShop AI, warehouse, shipping, CRM, blog,"
+" and the AI sales assistant are built into the platform itself and "
+"maintained centrally, with no plugin risk. CSRF protection, brute-force rate"
+" limiting, encrypted shipping credentials, and payment verification via "
+"signed Stripe webhooks are built in from the start."
 
 #: templates/pages/landing.html:61 templates/pages/landing.html:397
 msgid "Чи потрібні розробники для запуску магазину?"
@@ -6432,13 +6490,13 @@ msgstr "Do I need developers to launch a store?"
 
 #: templates/pages/landing.html:62 templates/pages/landing.html:398
 msgid ""
-"Ні. Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину прямо "
-"з адмінки — без коду, без хостингу і без оновлень безпеки, про які треба "
+"Ні. Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину прямо з "
+"адмінки — без коду, без хостингу і без оновлень безпеки, про які треба "
 "думати самостійно."
 msgstr ""
 "No. You sign up, subscribe, and assemble your storefront right from the "
-"admin panel within an hour - no code, no hosting, and no security updates"
-" for you to manage yourself."
+"admin panel within an hour - no code, no hosting, and no security updates "
+"for you to manage yourself."
 
 #: templates/pages/landing.html:66 templates/pages/landing.html:401
 msgid "Що робить ІІ-продавець на сайті?"
@@ -6446,15 +6504,15 @@ msgstr "What does the AI sales assistant do on the site?"
 
 #: templates/pages/landing.html:67 templates/pages/landing.html:402
 msgid ""
-"Чат-бот знає ваш каталог, ціни та наявність, консультує покупця і "
-"підказує статус замовлення. Він прозоро повідомляє, що є ІІ (відповідно "
-"до вимог EU AI Act), і ніколи не розкриває дані інших клієнтів чи не "
-"вигадує обіцянок від імені магазину."
+"Чат-бот знає ваш каталог, ціни та наявність, консультує покупця і підказує "
+"статус замовлення. Він прозоро повідомляє, що є ІІ (відповідно до вимог EU "
+"AI Act), і ніколи не розкриває дані інших клієнтів чи не вигадує обіцянок "
+"від імені магазину."
 msgstr ""
-"The chatbot knows your catalog, prices, and stock, helps customers, and "
-"can look up order status. It clearly discloses that it's an AI (per the "
-"EU AI Act's requirements), and never reveals other customers' data or "
-"invents promises on the store's behalf."
+"The chatbot knows your catalog, prices, and stock, helps customers, and can "
+"look up order status. It clearly discloses that it's an AI (per the EU AI "
+"Act's requirements), and never reveals other customers' data or invents "
+"promises on the store's behalf."
 
 #: templates/pages/landing.html:71 templates/pages/landing.html:405
 msgid "Чи безпечні платежі на SmartShop AI?"
@@ -6465,8 +6523,8 @@ msgid ""
 "Так. Замовлення позначається оплаченим лише після підтвердженого статусу "
 "оплати від Stripe через підписаний вебхук — без винятків."
 msgstr ""
-"An order is only marked as paid after a confirmed payment status from "
-"Stripe via a signed webhook - no exceptions."
+"An order is only marked as paid after a confirmed payment status from Stripe"
+" via a signed webhook - no exceptions."
 
 #: templates/pages/landing.html:76 templates/pages/landing.html:409
 msgid "Чи можна скасувати підписку в будь-який момент?"
@@ -6477,8 +6535,8 @@ msgid ""
 "Так, скасувати підписку можна в будь-який момент прямо з адмінки, без "
 "прихованих умов."
 msgstr ""
-"Yes, you can cancel your subscription at any time right from the admin "
-"panel - no hidden conditions."
+"Yes, you can cancel your subscription at any time right from the admin panel"
+" - no hidden conditions."
 
 #: templates/pages/landing.html:222
 msgid "Можливості"
@@ -6503,8 +6561,8 @@ msgstr "no developers, no code"
 #: templates/pages/landing.html:243
 msgid ""
 "Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, "
-"тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. "
-"Блог пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець."
+"тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. Блог "
+"пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець."
 msgstr ""
 "Sign up, subscribe, and build your storefront in an hour: photos, text, "
 "products. Connect warehouse, shipping, and accounting as needed. The AI "
@@ -6528,8 +6586,8 @@ msgid ""
 "Базові функції одразу включені в підписку. Складські та фінансові модулі "
 "підключаються за потреби — окремо для кожного магазину."
 msgstr ""
-"Basic features are included in the subscription right away. Warehouse and"
-" financial modules are connected as needed — separately for each store."
+"Basic features are included in the subscription right away. Warehouse and "
+"financial modules are connected as needed — separately for each store."
 
 #: templates/pages/landing.html:257
 msgid "Конструктор вітрини"
@@ -6540,8 +6598,8 @@ msgid ""
 "Логотип, тексти, категорії та товари редагуються прямо з адмінки — фото, "
 "опис, ціна, наявність."
 msgstr ""
-"Logo, text, categories, and products are edited right from the admin "
-"panel — photo, description, price, availability."
+"Logo, text, categories, and products are edited right from the admin panel —"
+" photo, description, price, availability."
 
 #: templates/pages/landing.html:263
 msgid ""
@@ -6558,11 +6616,11 @@ msgstr "Automatic blog"
 
 #: templates/pages/landing.html:268
 msgid ""
-"ІІ пише статті за вашим планом тем з SEO-заголовками, описами та "
-"ключовими словами."
+"ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими "
+"словами."
 msgstr ""
-"The AI writes articles from your topic plan with SEO titles, "
-"descriptions, and keywords."
+"The AI writes articles from your topic plan with SEO titles, descriptions, "
+"and keywords."
 
 #: templates/pages/landing.html:272 templates/pages/landing.html:359
 msgid "Оплата карткою"
@@ -6573,8 +6631,8 @@ msgid ""
 "Приймайте оплату через Stripe одразу після реєстрації — без додаткових "
 "інтеграцій."
 msgstr ""
-"Accept payment via Stripe right after signup — no additional integrations"
-" needed."
+"Accept payment via Stripe right after signup — no additional integrations "
+"needed."
 
 #: templates/pages/landing.html:278
 msgid ""
@@ -6608,8 +6666,8 @@ msgid ""
 "Окрема реєстрація партнерів з перевіркою компанії та особливими умовами "
 "замовлень."
 msgstr ""
-"Separate partner registration with company verification and special order"
-" terms."
+"Separate partner registration with company verification and special order "
+"terms."
 
 #: templates/pages/landing.html:303
 msgid "Безпека та відповідність вимогам регуляторів"
@@ -6618,12 +6676,10 @@ msgstr "Security & Regulatory Compliance"
 #: templates/pages/landing.html:304
 msgid ""
 "Ідея SmartShop AI від початку була в тому, щоб зробити безпечнішу "
-"альтернативу WordPress та Ecwid. Ось конкретні заходи, а не просто "
-"обіцянки."
+"альтернативу WordPress та Ecwid. Ось конкретні заходи, а не просто обіцянки."
 msgstr ""
-"SmartShop AI was built from day one to be a safer alternative to "
-"WordPress and Ecwid. Here are the concrete measures we've taken - not "
-"just promises."
+"SmartShop AI was built from day one to be a safer alternative to WordPress "
+"and Ecwid. Here are the concrete measures we've taken - not just promises."
 
 #: templates/pages/landing.html:308
 msgid "Шифрування чутливих даних"
@@ -6631,11 +6687,11 @@ msgstr "Encrypted sensitive data"
 
 #: templates/pages/landing.html:309
 msgid ""
-"Ключі доступу до служб доставки (DHL/UPS) зберігаються зашифрованими в "
-"базі даних, а не відкритим текстом."
+"Ключі доступу до служб доставки (DHL/UPS) зберігаються зашифрованими в базі "
+"даних, а не відкритим текстом."
 msgstr ""
-"Carrier API keys (DHL/UPS) are stored encrypted in the database, never as"
-" plain text."
+"Carrier API keys (DHL/UPS) are stored encrypted in the database, never as "
+"plain text."
 
 #: templates/pages/landing.html:313
 msgid "Захист від підробки запитів і перебору"
@@ -6646,8 +6702,8 @@ msgid ""
 "Кожна форма захищена CSRF-токеном. Спроби входу, реєстрації та скидання "
 "пароля обмежені за кількістю на IP-адресу."
 msgstr ""
-"Every form is protected by a CSRF token. Login, registration, and "
-"password-reset attempts are rate-limited per IP address."
+"Every form is protected by a CSRF token. Login, registration, and password-"
+"reset attempts are rate-limited per IP address."
 
 #: templates/pages/landing.html:318
 msgid "Перевірені платежі"
@@ -6655,11 +6711,11 @@ msgstr "Verified payments"
 
 #: templates/pages/landing.html:319
 msgid ""
-"Замовлення позначається оплаченим лише після підтвердженого статусу "
-"оплати від Stripe через підписаний вебхук — без винятків."
+"Замовлення позначається оплаченим лише після підтвердженого статусу оплати "
+"від Stripe через підписаний вебхук — без винятків."
 msgstr ""
-"An order is only marked as paid after a confirmed payment status from "
-"Stripe via a signed webhook - no exceptions."
+"An order is only marked as paid after a confirmed payment status from Stripe"
+" via a signed webhook - no exceptions."
 
 #: templates/pages/landing.html:323
 msgid "Ізоляція між магазинами"
@@ -6667,11 +6723,11 @@ msgstr "Store-to-store isolation"
 
 #: templates/pages/landing.html:324
 msgid ""
-"Кожен магазин бачить лише власні товари, замовлення та клієнтів. Ізоляція"
-" перевіряється автоматизованими тестами перед кожним оновленням."
+"Кожен магазин бачить лише власні товари, замовлення та клієнтів. Ізоляція "
+"перевіряється автоматизованими тестами перед кожним оновленням."
 msgstr ""
-"Each store sees only its own products, orders, and customers. This "
-"isolation is checked by automated tests before every release."
+"Each store sees only its own products, orders, and customers. This isolation"
+" is checked by automated tests before every release."
 
 #: templates/pages/landing.html:328
 msgid "ІІ-продавець з вбудованими обмеженнями"
@@ -6679,16 +6735,16 @@ msgstr "AI sales assistant with built-in guardrails"
 
 #: templates/pages/landing.html:329
 msgid ""
-"Незалежно від налаштувань власника магазину, платформа завжди додає "
-"власні базові правила: чат-бот прозоро повідомляє, що він ІІ, не "
-"розголошує чужі дані і не вигадує обіцянок від імені магазину — з "
-"урахуванням вимог EU AI Act щодо прозорості ІІ-систем."
+"Незалежно від налаштувань власника магазину, платформа завжди додає власні "
+"базові правила: чат-бот прозоро повідомляє, що він ІІ, не розголошує чужі "
+"дані і не вигадує обіцянок від імені магазину — з урахуванням вимог EU AI "
+"Act щодо прозорості ІІ-систем."
 msgstr ""
-"Regardless of the store owner's own settings, the platform always applies"
-" its own baseline rules: the chatbot clearly discloses that it's an AI, "
-"never reveals other customers' data, and never invents promises on the "
-"store's behalf - in line with the EU AI Act's transparency requirements "
-"for AI systems."
+"Regardless of the store owner's own settings, the platform always applies "
+"its own baseline rules: the chatbot clearly discloses that it's an AI, never"
+" reveals other customers' data, and never invents promises on the store's "
+"behalf - in line with the EU AI Act's transparency requirements for AI "
+"systems."
 
 #: templates/pages/landing.html:333
 msgid "Захищений доступ до акаунту"
@@ -6708,11 +6764,11 @@ msgstr "GDPR by default"
 
 #: templates/pages/landing.html:339
 msgid ""
-"Банер згоди на cookies, самостійне видалення акаунту (\"право на "
-"забуття\") та прозорі юридичні сторінки для кожного магазину."
+"Банер згоди на cookies, самостійне видалення акаунту (\"право на забуття\") "
+"та прозорі юридичні сторінки для кожного магазину."
 msgstr ""
-"A cookie consent banner, self-service account deletion (the \"right to be"
-" forgotten\"), and transparent legal pages for every store."
+"A cookie consent banner, self-service account deletion (the \"right to be "
+"forgotten\"), and transparent legal pages for every store."
 
 #: templates/pages/landing.html:343
 msgid "Автоматизоване тестування перед кожним релізом"
@@ -6720,8 +6776,8 @@ msgstr "Automated testing before every release"
 
 #: templates/pages/landing.html:344
 msgid ""
-"Кожна зміна коду проходить набір автоматизованих тестів безпеки та "
-"ізоляції даних, перш ніж потрапити на бойовий сервер."
+"Кожна зміна коду проходить набір автоматизованих тестів безпеки та ізоляції "
+"даних, перш ніж потрапити на бойовий сервер."
 msgstr ""
 "Every code change runs through a suite of automated security and data-"
 "isolation tests before it reaches the live server."
@@ -6789,8 +6845,7 @@ msgstr "All rights reserved"
 
 #: templates/partials/cookie_banner.html:3
 msgid ""
-"Цей сайт використовує cookie для роботи кошика, входу в акаунт та "
-"аналітики."
+"Цей сайт використовує cookie для роботи кошика, входу в акаунт та аналітики."
 msgstr "This site uses cookies for the cart, account login, and analytics."
 
 #: templates/partials/cookie_banner.html:4
@@ -6843,7 +6898,8 @@ msgstr "Stores"
 
 #: templates/platform_admin/dashboard.html:77
 #: templates/platform_admin/payments.html:67
-#: templates/platform_admin/users.html:6 templates/platform_admin/users.html:52
+#: templates/platform_admin/users.html:6
+#: templates/platform_admin/users.html:52
 #: templates/platform_admin/users.html:62
 msgid "Користувачі"
 msgstr "Users"
@@ -7086,16 +7142,13 @@ msgstr "No users found."
 #~ msgstr "Old price ({{ get_currency_symbol(product.currency) }})"
 
 #~ msgid "Ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
-#~ msgstr "Price ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
+#~ msgstr ""
+#~ "Price ({{ get_currency_symbol(settings.default_currency or 'EUR') }}) *"
 
 #~ msgid ""
-#~ "Стара ціна ({{ "
-#~ "get_currency_symbol(settings.default_currency or 'EUR')"
-#~ " }})"
+#~ "Стара ціна ({{ get_currency_symbol(settings.default_currency or 'EUR') }})"
 #~ msgstr ""
-#~ "Old price ({{ "
-#~ "get_currency_symbol(settings.default_currency or 'EUR')"
-#~ " }})"
+#~ "Old price ({{ get_currency_symbol(settings.default_currency or 'EUR') }})"
 
 #~ msgid "Категорія *"
 #~ msgstr "Category *"
@@ -7117,4 +7170,3 @@ msgstr "No users found."
 
 #~ msgid "Total"
 #~ msgstr "Total"
-
