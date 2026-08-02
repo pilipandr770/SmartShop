@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}SmartShop AI – {{ _('Your intelligent shopping assistant') }}{% endblock %}
+{% block title %}{{ settings.site_name or 'SmartShop' }} – {{ settings.hero_subtitle or settings.blog_excerpt or _('Your intelligent shopping assistant') }}{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -13,26 +13,6 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-    }
-
-    .hero-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.32rem 0.7rem 0.32rem 0.32rem;
-        border-radius: 999px;
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(45, 212, 191, 0.45);
-        font-size: 0.72rem;
-        color: var(--text-muted);
-    }
-
-    .hero-kicker-dot {
-        width: 18px;
-        height: 18px;
-        border-radius: 999px;
-        background: radial-gradient(circle at 30% 20%, #bbf7d0 0, #22c55e 25%, #06b6d4 65%, #022c22 100%);
-        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25), 0 0 24px rgba(34, 197, 94, 0.9);
     }
 
     .hero-title {
@@ -52,22 +32,6 @@
         font-size: 0.95rem;
         color: var(--text-muted);
         max-width: 32rem;
-    }
-
-    .hero-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.25rem;
-    }
-
-    .hero-badge {
-        padding: 0.3rem 0.7rem;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        background: rgba(15, 23, 42, 0.85);
-        font-size: 0.7rem;
-        color: var(--text-muted);
     }
 
     /* FOUR MAIN BLOCKS */
@@ -316,7 +280,7 @@
 <!-- РОЗКЛАДКА "СПОЧАТКУ КАТЕГОРІЇ" -->
 <section class="compact-header">
     <h1 class="compact-header-title">{{ settings.site_name or 'SmartShop AI' }}</h1>
-    <p class="compact-header-subtitle">{{ settings.site_tagline or settings.blog_excerpt or _('Your intelligent shopping assistant') }}</p>
+    <p class="compact-header-subtitle">{{ settings.hero_subtitle or settings.blog_excerpt or _('Your intelligent shopping assistant') }}</p>
 </section>
 
 {% if categories %}
@@ -336,25 +300,13 @@
 <!-- HERO -->
 <section class="hero" id="top">
     <div class="hero-left">
-        <div class="hero-kicker">
-            <div class="hero-kicker-dot"></div>
-            <span>{{ _('Welcome to SmartShop AI') }}</span>
-        </div>
-
         <h1 class="hero-title">
-            {{ _('Your intelligent shopping assistant') }}
+            {{ settings.site_name or _('Your intelligent shopping assistant') }}
         </h1>
 
         <p class="hero-subtitle">
-            {{ settings.blog_excerpt or _('Your intelligent shopping assistant') }}
+            {{ settings.hero_subtitle or settings.blog_excerpt or _('Your intelligent shopping assistant') }}
         </p>
-
-        <div class="hero-badges">
-            <span class="hero-badge">Flask + HTML/CSS</span>
-            <span class="hero-badge">Stripe</span>
-            <span class="hero-badge">{{ _('Blog') }}</span>
-            <span class="hero-badge">{{ _('AI Assistant') }}</span>
-        </div>
     </div>
 </section>
 

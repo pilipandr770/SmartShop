@@ -514,8 +514,7 @@
                 <div class="brand-logo"></div>
             {% endif %}
             <div>
-                <div class="brand-text-main">SmartShop AI</div>
-                <div class="brand-text-sub">{{ _('Конструктор магазину') }}</div>
+                <div class="brand-text-main">{{ settings.site_name or 'SmartShop' if settings else 'SmartShop' }}</div>
             </div>
         </a>
 
