@@ -10,13 +10,13 @@
 
     <!-- Вибір періоду -->
     <div class="period-selector" style="margin-bottom: 2rem; display: flex; gap: 1rem;">
-        <a href="{{ url_for('admin_warehouse_reports', period='week') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse_reports', period='week') }}" 
            class="btn {% if period == 'week' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Тиждень') }}</a>
-        <a href="{{ url_for('admin_warehouse_reports', period='month') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse_reports', period='month') }}" 
            class="btn {% if period == 'month' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Місяць') }}</a>
-        <a href="{{ url_for('admin_warehouse_reports', period='quarter') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse_reports', period='quarter') }}" 
            class="btn {% if period == 'quarter' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Квартал') }}</a>
-        <a href="{{ url_for('admin_warehouse_reports', period='year') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse_reports', period='year') }}" 
            class="btn {% if period == 'year' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Рік') }}</a>
     </div>
 
@@ -126,10 +126,10 @@
 
     <!-- Швидкі посилання -->
     <div class="quick-links" style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline">{{ _('📦 Завдання') }}</a>
-        <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline">{{ _('📊 Залишки') }}</a>
-        <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-outline">{{ _('📥 Поповнення') }}</a>
-        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('💰 Витрати') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse') }}" class="btn btn-outline">{{ _('📦 Завдання') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_stock') }}" class="btn btn-outline">{{ _('📊 Залишки') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment') }}" class="btn btn-outline">{{ _('📥 Поповнення') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('💰 Витрати') }}</a>
     </div>
 </div>
 

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="expense-add">
     <div class="page-header" style="margin-bottom: 2rem;">
-        <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-sm btn-outline">← {{ _('До витрат') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_expenses') }}" class="btn btn-sm btn-outline">← {{ _('До витрат') }}</a>
         <h1 style="margin: 0.5rem 0;">➕ {{ _('Додати витрату') }}</h1>
     </div>
 
@@ -67,7 +67,7 @@
             </div>
 
             <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('Скасувати') }}</a>
+                <a href="{{ url_for('warehouse.admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('Скасувати') }}</a>
                 <button type="submit" class="btn btn-primary">💾 {{ _('Зберегти') }}</button>
             </div>
         </form>

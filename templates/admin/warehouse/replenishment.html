@@ -6,7 +6,7 @@
 <div class="replenishment-list">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h1>📥 {{ _('Замовлення на поповнення') }}</h1>
-        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment_new') }}" class="btn btn-success">
             ➕ {{ _('Нове замовлення') }}
         </a>
     </div>
@@ -45,23 +45,23 @@
 
     <!-- Фільтри -->
     <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="{{ url_for('admin_warehouse_replenishment') }}"
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment') }}"
            class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">
             {{ _('Всі') }}
         </a>
-        <a href="{{ url_for('admin_warehouse_replenishment', status='draft') }}"
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment', status='draft') }}"
            class="btn {% if status_filter == 'draft' %}btn-primary{% else %}btn-outline{% endif %}">
             📝 {{ _('Чернетки') }}
         </a>
-        <a href="{{ url_for('admin_warehouse_replenishment', status='pending') }}"
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment', status='pending') }}"
            class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">
             ⏳ {{ _('Очікують') }}
         </a>
-        <a href="{{ url_for('admin_warehouse_replenishment', status='ordered') }}"
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment', status='ordered') }}"
            class="btn {% if status_filter == 'ordered' %}btn-primary{% else %}btn-outline{% endif %}">
             📤 {{ _('Замовлено') }}
         </a>
-        <a href="{{ url_for('admin_warehouse_replenishment', status='received') }}"
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment', status='received') }}"
            class="btn {% if status_filter == 'received' %}btn-primary{% else %}btn-outline{% endif %}">
             ✔️ {{ _('Отримано') }}
         </a>
@@ -118,7 +118,7 @@
                     </td>
                     <td>{{ order.created_at.strftime('%d.%m.%Y') }}</td>
                     <td>
-                        <a href="{{ url_for('admin_warehouse_replenishment_detail', id=order.id) }}" class="btn btn-sm btn-primary">
+                        <a href="{{ url_for('warehouse.admin_warehouse_replenishment_detail', id=order.id) }}" class="btn btn-sm btn-primary">
                             👁️ {{ _('Деталі') }}
                         </a>
                     </td>
@@ -129,7 +129,7 @@
                         <p style="padding: 2rem;">
                             📭 {{ _('Немає замовлень на поповнення') }}
                         </p>
-                        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">
+                        <a href="{{ url_for('warehouse.admin_warehouse_replenishment_new') }}" class="btn btn-success">
                             ➕ {{ _('Створити перше замовлення') }}
                         </a>
                     </td>
@@ -143,13 +143,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse_replenishment', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">← {{ _('Назад') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">← {{ _('Назад') }}</a>
         {% endif %}
 
         <span class="btn btn-sm disabled">{{ page }} {{ _('з') }} {{ total_pages }}</span>
 
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse_replenishment', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('Далі') }} →</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('Далі') }} →</a>
         {% endif %}
     </div>
     {% endif %}

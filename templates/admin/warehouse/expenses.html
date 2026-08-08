@@ -6,7 +6,7 @@
 <div class="expenses-dashboard">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h1>💰 {{ _('Витрати складу') }}</h1>
-        <a href="{{ url_for('admin_warehouse_expenses_add') }}" class="btn btn-success">
+        <a href="{{ url_for('warehouse.admin_warehouse_expenses_add') }}" class="btn btn-success">
             ➕ {{ _('Додати витрату') }}
         </a>
     </div>
@@ -65,7 +65,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">🔍 {{ _('Фільтрувати') }}</button>
-            <a href="{{ url_for('admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('Скинути') }}</a>
+            <a href="{{ url_for('warehouse.admin_warehouse_expenses') }}" class="btn btn-outline">{{ _('Скинути') }}</a>
         </form>
     </div>
 
@@ -109,7 +109,7 @@
                         <p style="padding: 2rem;">
                             📭 {{ _('Немає витрат за обраний період') }}
                         </p>
-                        <a href="{{ url_for('admin_warehouse_expenses_add') }}" class="btn btn-success">
+                        <a href="{{ url_for('warehouse.admin_warehouse_expenses_add') }}" class="btn btn-success">
                             ➕ {{ _('Додати першу витрату') }}
                         </a>
                     </td>
@@ -123,13 +123,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse_expenses', page=page-1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">← {{ _('Назад') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_expenses', page=page-1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">← {{ _('Назад') }}</a>
         {% endif %}
 
         <span class="btn btn-sm disabled">{{ page }} {{ _('з') }} {{ total_pages }}</span>
 
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse_expenses', page=page+1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">{{ _('Далі') }} →</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_expenses', page=page+1, category=category_filter, date_from=date_from, date_to=date_to) }}" class="btn btn-sm btn-outline">{{ _('Далі') }} →</a>
         {% endif %}
     </div>
     {% endif %}

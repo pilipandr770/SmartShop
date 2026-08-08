@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SmartShop AI 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-02 20:16+0000\n"
+"POT-Creation-Date: 2026-08-08 18:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: uk <LL@li.org>\n"
@@ -14,225 +14,221 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app.py:1144
-msgid "Потрібен вхід в адмін-панель."
-msgstr "Потрібен вхід в адмін-панель."
-
-#: app.py:1575
+#: app.py:1529
 #, python-format
 msgid "«%(name)s» додано в кошик."
 msgstr "«%(name)s» додано в кошик."
 
-#: app.py:1606
+#: app.py:1560
 msgid "Товар видалено з кошика."
 msgstr "Товар видалено з кошика."
 
-#: app.py:1614
+#: app.py:1568
 msgid "Кошик очищено."
 msgstr "Кошик очищено."
 
-#: app.py:1638 app.py:1749
+#: app.py:1592 app.py:1703
 msgid "Ваш кошик порожній."
 msgstr "Ваш кошик порожній."
 
-#: app.py:1655
+#: app.py:1609
 msgid "Вкажіть ім'я та телефон."
 msgstr "Вкажіть ім'я та телефон."
 
-#: app.py:1740
+#: app.py:1694
 msgid "Stripe не налаштовано. Зверніться до адміністратора."
 msgstr "Stripe не налаштовано. Зверніться до адміністратора."
 
-#: app.py:1744
+#: app.py:1698
 msgid "Цей магазин ще не підключив прийом оплат. Зверніться до продавця."
 msgstr "Цей магазин ще не підключив прийом оплат. Зверніться до продавця."
 
-#: app.py:1786
+#: app.py:1740
 msgid "Не вдалося знайти товари в кошику."
 msgstr "Не вдалося знайти товари в кошику."
 
-#: app.py:1873
+#: app.py:1827
 msgid ""
 "Оплата тимчасово недоступна. Спробуйте пізніше або зверніться до продавця."
 msgstr ""
 "Оплата тимчасово недоступна. Спробуйте пізніше або зверніться до продавця."
 
-#: app.py:1986
+#: app.py:1940
 msgid "Оплату скасовано. Ви можете спробувати ще раз."
 msgstr "Оплату скасовано. Ви можете спробувати ще раз."
 
-#: app.py:1996
+#: app.py:1950
 msgid "Stripe not available"
 msgstr "Stripe недоступний"
 
-#: app.py:2015
+#: app.py:1969
 msgid "Webhook not configured"
 msgstr "Webhook не налаштовано"
 
-#: app.py:2020
+#: app.py:1974
 msgid "Invalid payload"
 msgstr "Невірні дані запиту"
 
-#: app.py:2022
+#: app.py:1976
 msgid "Invalid signature"
 msgstr "Невірний підпис"
 
-#: app.py:2140
+#: app.py:2094
 msgid "AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше."
 msgstr "AI чатбот тимчасово недоступний. Будь ласка, спробуйте пізніше."
 
-#: app.py:2148
+#: app.py:2102
 msgid "Повідомлення порожнє"
 msgstr "Повідомлення порожнє"
 
-#: app.py:2155
+#: app.py:2109
 msgid "Чатбот тимчасово недоступний"
 msgstr "Чатбот тимчасово недоступний"
 
-#: app.py:2158
+#: app.py:2112
 msgid "Помилка налаштувань чатбота"
 msgstr "Помилка налаштувань чатбота"
 
-#: app.py:2298
+#: app.py:2252
 msgid "Помилка ініціалізації AI клієнта"
 msgstr "Помилка ініціалізації AI клієнта"
 
-#: app.py:2302
+#: app.py:2256
 msgid "Помилка обробки запиту"
 msgstr "Помилка обробки запиту"
 
-#: app.py:2435
+#: app.py:2389
 msgid "Налаштування головної сторінки збережені."
 msgstr "Налаштування головної сторінки збережені."
 
-#: app.py:2462
+#: app.py:2416
 msgid "Новий блок"
 msgstr "Новий блок"
 
-#: app.py:2471
+#: app.py:2425
 msgid "Блок додано. Заповніть його нижче."
 msgstr "Блок додано. Заповніть його нижче."
 
-#: app.py:2479
+#: app.py:2433
 msgid "Без назви"
 msgstr "Без назви"
 
-#: app.py:2490
+#: app.py:2444
 #, python-format
 msgid "Блок «%(title)s» збережено."
 msgstr "Блок «%(title)s» збережено."
 
-#: app.py:2499
+#: app.py:2453
 msgid "Блок видалено."
 msgstr "Блок видалено."
 
-#: app.py:2542 app.py:2934
+#: app.py:2496 app.py:2850
 msgid "Назва і slug категорії обовʼязкові."
 msgstr "Назва і slug категорії обовʼязкові."
 
-#: app.py:2546 app.py:2943
+#: app.py:2500 app.py:2859
 msgid "Категорія з таким slug уже існує."
 msgstr "Категорія з таким slug уже існує."
 
-#: app.py:2560
+#: app.py:2514
 msgid "Категорія створена."
 msgstr "Категорія створена."
 
-#: app.py:2573 app.py:2577
+#: app.py:2527 app.py:2531
 msgid "Файл не обрано"
 msgstr "Файл не обрано"
 
-#: app.py:2671
+#: app.py:2625
 msgid "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"
 msgstr "Недозволений тип файлу. Дозволено: png, jpg, jpeg, gif, webp"
 
-#: app.py:2830
+#: app.py:2746
 msgid "Товар створено."
 msgstr "Товар створено."
 
-#: app.py:2839
+#: app.py:2755
 msgid "Статус товару оновлено."
 msgstr "Статус товару оновлено."
 
-#: app.py:2853
+#: app.py:2769
 msgid "Товар видалено."
 msgstr "Товар видалено."
 
-#: app.py:2910
+#: app.py:2826
 msgid "Товар оновлено."
 msgstr "Товар оновлено."
 
-#: app.py:2949
+#: app.py:2865
 msgid "Категорія оновлена."
 msgstr "Категорія оновлена."
 
-#: app.py:2968
+#: app.py:2884
 msgid "Категорія видалена. Товари залишились без категорії."
 msgstr "Категорія видалена. Товари залишились без категорії."
 
-#: app.py:3069
+#: app.py:2985
 #, python-format
 msgid "📦 Завдання для складу #%(task_number)s створено!"
 msgstr "📦 Завдання для складу #%(task_number)s створено!"
 
-#: app.py:3073
+#: app.py:2989
 #, python-format
 msgid "Статус змінено на «%(status)s»."
 msgstr "Статус змінено на «%(status)s»."
 
-#: app.py:3075
+#: app.py:2991
 msgid "Невірний статус."
 msgstr "Невірний статус."
 
-#: app.py:3086
+#: app.py:3002
 msgid "Нотатки збережено."
 msgstr "Нотатки збережено."
 
-#: app.py:3098
+#: app.py:3014
 msgid "Замовлення видалено."
 msgstr "Замовлення видалено."
 
-#: app.py:3142
+#: app.py:3058
 msgid "Заявку позначено як прочитану."
 msgstr "Заявку позначено як прочитану."
 
-#: app.py:3152
+#: app.py:3068
 msgid "Заявку видалено."
 msgstr "Заявку видалено."
 
-#: app.py:3161
+#: app.py:3077
 msgid "Усі заявки позначено як прочитані."
 msgstr "Усі заявки позначено як прочитані."
 
-#: app.py:3170
+#: app.py:3086
 msgid "Прочитані заявки видалено."
 msgstr "Прочитані заявки видалено."
 
-#: app.py:3275
+#: app.py:3191
 msgid "Пароль має бути мінімум 6 символів."
 msgstr "Пароль має бути мінімум 6 символів."
 
-#: app.py:3277 routes/cabinet.py:181 routes/signup.py:114
+#: app.py:3193 routes/cabinet.py:181 routes/signup.py:114
 msgid "Паролі не співпадають."
 msgstr "Паролі не співпадають."
 
-#: app.py:3280
+#: app.py:3196
 msgid "Пароль адміністратора змінено."
 msgstr "Пароль адміністратора змінено."
 
-#: app.py:3303
+#: app.py:3219
 msgid "Налаштування сайту збережено."
 msgstr "Налаштування сайту збережено."
 
-#: app.py:3327
+#: app.py:3243
 msgid "2FA вже увімкнена."
 msgstr "2FA вже увімкнена."
 
-#: app.py:3335
+#: app.py:3251
 msgid "Двофакторну автентифікацію увімкнено."
 msgstr "Двофакторну автентифікацію увімкнено."
 
-#: app.py:3337
+#: app.py:3253
 msgid ""
 "Невірний код. Перевірте, що годинник телефону синхронізований, і спробуйте "
 "ще раз."
@@ -240,37 +236,37 @@ msgstr ""
 "Невірний код. Перевірте, що годинник телефону синхронізований, і спробуйте "
 "ще раз."
 
-#: app.py:3365 app.py:3377 app.py:3697
+#: app.py:3281 app.py:3293 app.py:3613
 msgid "Невірний пароль."
 msgstr "Невірний пароль."
 
-#: app.py:3369
+#: app.py:3285
 msgid "Двофакторну автентифікацію вимкнено."
 msgstr "Двофакторну автентифікацію вимкнено."
 
-#: app.py:3383
+#: app.py:3299
 msgid "Нові резервні коди згенеровано. Старі коди більше не діють."
 msgstr "Нові резервні коди згенеровано. Старі коди більше не діють."
 
-#: app.py:3457
+#: app.py:3373
 msgid "Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити»."
 msgstr "Домен збережено. Тепер налаштуйте DNS і натисніть «Перевірити»."
 
-#: app.py:3459
+#: app.py:3375
 msgid "Власний домен видалено."
 msgstr "Власний домен видалено."
 
-#: app.py:3464
+#: app.py:3380
 msgid "Спочатку вкажіть домен."
 msgstr "Спочатку вкажіть домен."
 
-#: app.py:3468
+#: app.py:3384
 msgid ""
 "Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."
 msgstr ""
 "Платформа ще не налаштувала перевірку доменів. Зверніться до підтримки."
 
-#: app.py:3483
+#: app.py:3399
 #, python-format
 msgid ""
 "✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька "
@@ -279,7 +275,7 @@ msgstr ""
 "✅ Домен %(domain)s підтверджено і активовано! Може знадобитись кілька "
 "хвилин, щоб з'явився сертифікат."
 
-#: app.py:3489
+#: app.py:3405
 #, python-format
 msgid ""
 "Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). Перевірте"
@@ -288,20 +284,20 @@ msgstr ""
 "Домен ще не вказує на платформу (зараз резолвиться: %(resolved)s). Перевірте"
 " DNS-налаштування (A-запис на %(ip)s) і спробуйте ще раз за кілька хвилин."
 
-#: app.py:3536 routes/platform_admin.py:128
+#: app.py:3452 routes/platform_admin.py:128
 msgid "Stripe не налаштовано на платформі."
 msgstr "Stripe не налаштовано на платформі."
 
-#: app.py:3556 app.py:3570
+#: app.py:3472 app.py:3486
 #, python-format
 msgid "Помилка Stripe Connect: %(error)s"
 msgstr "Помилка Stripe Connect: %(error)s"
 
-#: app.py:3587
+#: app.py:3503
 msgid "✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів."
 msgstr "✅ Stripe підключено! Тепер ви можете приймати оплати від клієнтів."
 
-#: app.py:3589
+#: app.py:3505
 msgid ""
 "Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та "
 "спробуйте ще раз."
@@ -309,63 +305,63 @@ msgstr ""
 "Реєстрацію в Stripe ще не завершено. Заповніть усі необхідні дані та "
 "спробуйте ще раз."
 
-#: app.py:3591
+#: app.py:3507
 #, python-format
 msgid "Не вдалося перевірити статус Stripe: %(error)s"
 msgstr "Не вдалося перевірити статус Stripe: %(error)s"
 
-#: app.py:3603
+#: app.py:3519
 msgid "Stripe-акаунт відв'язано від магазину."
 msgstr "Stripe-акаунт відв'язано від магазину."
 
-#: app.py:3694
+#: app.py:3610
 msgid "Підтвердіть, що розумієте наслідки видалення."
 msgstr "Підтвердіть, що розумієте наслідки видалення."
 
-#: app.py:3704
+#: app.py:3620
 msgid "Ваш акаунт і магазин видалено. Дякуємо, що були з нами."
 msgstr "Ваш акаунт і магазин видалено. Дякуємо, що були з нами."
 
-#: app.py:3728
+#: app.py:3644
 msgid "Налаштування самовивозу збережено."
 msgstr "Налаштування самовивозу збережено."
 
-#: app.py:3750
+#: app.py:3666
 msgid "Невідома служба доставки."
 msgstr "Невідома служба доставки."
 
-#: app.py:3754
+#: app.py:3670
 #, python-format
 msgid "%(carrier)s вже налаштовано для цього магазину."
 msgstr "%(carrier)s вже налаштовано для цього магазину."
 
-#: app.py:3787
+#: app.py:3703
 #, python-format
 msgid "%(carrier)s налаштовано."
 msgstr "%(carrier)s налаштовано."
 
-#: app.py:3821
+#: app.py:3737
 #, python-format
 msgid "%(carrier)s оновлено."
 msgstr "%(carrier)s оновлено."
 
-#: app.py:3834
+#: app.py:3750
 msgid "Обліковий запис видалено."
 msgstr "Обліковий запис видалено."
 
-#: app.py:3852
+#: app.py:3768
 msgid "Заповніть обов'язкові поля"
 msgstr "Заповніть обов'язкові поля"
 
-#: app.py:3853
+#: app.py:3769
 msgid "Заповніть обов'язкові поля: ім'я, email, повідомлення."
 msgstr "Заповніть обов'язкові поля: ім'я, email, повідомлення."
 
-#: app.py:3870
+#: app.py:3786
 msgid "Дякуємо! Ваше повідомлення надіслано."
 msgstr "Дякуємо! Ваше повідомлення надіслано."
 
-#: app.py:3885
+#: app.py:3801
 msgid ""
 "Посилання для підтвердження email недійсне або протерміноване. Запросіть "
 "нове нижче."
@@ -373,283 +369,177 @@ msgstr ""
 "Посилання для підтвердження email недійсне або протерміноване. Запросіть "
 "нове нижче."
 
-#: app.py:3890 app.py:3950
+#: app.py:3806 app.py:3866
 msgid "Користувача не знайдено."
 msgstr "Користувача не знайдено."
 
-#: app.py:3896
+#: app.py:3812
 msgid "✅ Email підтверджено!"
 msgstr "✅ Email підтверджено!"
 
-#: app.py:3910
+#: app.py:3826
 msgid ""
 "Якщо цей email зареєстровано і ще не підтверджено, ми надіслали новий лист."
 msgstr ""
 "Якщо цей email зареєстровано і ще не підтверджено, ми надіслали новий лист."
 
-#: app.py:3933
+#: app.py:3849
 msgid ""
 "Якщо цей email зареєстровано, ми надіслали посилання для скидання пароля."
 msgstr ""
 "Якщо цей email зареєстровано, ми надіслали посилання для скидання пароля."
 
-#: app.py:3945
+#: app.py:3861
 msgid ""
 "Посилання для скидання пароля недійсне або протерміноване. Запросіть нове."
 msgstr ""
 "Посилання для скидання пароля недійсне або протерміноване. Запросіть нове."
 
-#: app.py:3959 app.py:4110 routes/auth.py:103
+#: app.py:3875 app.py:4026
 msgid "Пароль має бути не менше 6 символів"
 msgstr "Пароль має бути не менше 6 символів"
 
-#: app.py:3962 app.py:4112 app.py:4191 routes/auth.py:105 routes/auth.py:184
+#: app.py:3878 app.py:4028 app.py:4107
 msgid "Паролі не співпадають"
 msgstr "Паролі не співпадають"
 
-#: app.py:3967
+#: app.py:3883
 msgid "✅ Пароль оновлено! Тепер ви можете увійти."
 msgstr "✅ Пароль оновлено! Тепер ви можете увійти."
 
-#: app.py:3992 routes/auth.py:41
+#: app.py:3908
 msgid "Ваш акаунт деактивовано. Зверніться до підтримки."
 msgstr "Ваш акаунт деактивовано. Зверніться до підтримки."
 
-#: app.py:4008 app.py:4060 routes/auth.py:47
-#: templates/cabinet/b2c/dashboard.html:37
+#: app.py:3924 app.py:3976 templates/cabinet/b2c/dashboard.html:37
 #: templates/email/registration_welcome.html:6
 #, python-format
 msgid "Вітаємо, %(name)s!"
 msgstr "Вітаємо, %(name)s!"
 
-#: app.py:4023 routes/auth.py:59
+#: app.py:3939
 msgid "Невірний email або пароль."
 msgstr "Невірний email або пароль."
 
-#: app.py:4072
+#: app.py:3988
 msgid "Невірний код. Спробуйте ще раз."
 msgstr "Невірний код. Спробуйте ще раз."
 
-#: app.py:4082 routes/auth.py:69
+#: app.py:3998
 msgid "Ви успішно вийшли з системи."
 msgstr "Ви успішно вийшли з системи."
 
-#: app.py:4103 app.py:4182 routes/auth.py:96 routes/auth.py:175
+#: app.py:4019 app.py:4098
 msgid "Email обов'язковий"
 msgstr "Email обов'язковий"
 
-#: app.py:4105 app.py:4184 routes/auth.py:98 routes/auth.py:177
+#: app.py:4021 app.py:4100
 msgid "Користувач з таким email вже існує"
 msgstr "Користувач з таким email вже існує"
 
-#: app.py:4108 app.py:4187 routes/auth.py:101 routes/auth.py:180
+#: app.py:4024 app.py:4103
 msgid "Пароль обов'язковий"
 msgstr "Пароль обов'язковий"
 
-#: app.py:4143 routes/auth.py:127
+#: app.py:4059
 msgid "Реєстрація успішна! Ласкаво просимо!"
 msgstr "Реєстрація успішна! Ласкаво просимо!"
 
-#: app.py:4158 routes/auth.py:144
+#: app.py:4074
 msgid "B2B реєстрація тимчасово закрита."
 msgstr "B2B реєстрація тимчасово закрита."
 
-#: app.py:4189 routes/auth.py:182
+#: app.py:4105
 msgid "Пароль має бути не менше 8 символів"
 msgstr "Пароль має бути не менше 8 символів"
 
-#: app.py:4194 routes/auth.py:187
+#: app.py:4110
 msgid "Назва компанії обов'язкова"
 msgstr "Назва компанії обов'язкова"
 
-#: app.py:4197 routes/auth.py:190
+#: app.py:4113
 msgid "Ім'я та прізвище контактної особи обов'язкові"
 msgstr "Ім'я та прізвище контактної особи обов'язкові"
 
-#: app.py:4215
+#: app.py:4131
 msgid "✅ VAT номер підтверджено!"
 msgstr "✅ VAT номер підтверджено!"
 
-#: app.py:4217
+#: app.py:4133
 #, python-format
 msgid "⚠️ VAT не підтверджено: %(error)s"
 msgstr "⚠️ VAT не підтверджено: %(error)s"
 
-#: app.py:4219
+#: app.py:4135
 #, python-format
 msgid "⚠️ Помилка перевірки VAT: %(error)s"
 msgstr "⚠️ Помилка перевірки VAT: %(error)s"
 
-#: app.py:4275
+#: app.py:4191
 msgid "✅ Реєстрація успішна! Ваша компанія верифікована."
 msgstr "✅ Реєстрація успішна! Ваша компанія верифікована."
 
-#: app.py:4277
+#: app.py:4193
 msgid "📋 Реєстрація успішна! Ваша заявка на розгляді."
 msgstr "📋 Реєстрація успішна! Ваша заявка на розгляді."
 
-#: app.py:4292
+#: app.py:4208
 msgid "VAT номер обов'язковий"
 msgstr "VAT номер обов'язковий"
 
-#: app.py:4430
+#: app.py:4346
 msgid "Дані компанії оновлено!"
 msgstr "Дані компанії оновлено!"
 
-#: app.py:4707
-msgid "Налаштування оновлено!"
-msgstr "Налаштування оновлено!"
-
-#: app.py:4959
-msgid "✅ Завдання взято в роботу"
-msgstr "✅ Завдання взято в роботу"
-
-#: app.py:4966
-msgid "📦 Замовлення запаковано"
-msgstr "📦 Замовлення запаковано"
-
-#: app.py:4971
-msgid "✅ Готово до відправки"
-msgstr "✅ Готово до відправки"
-
-#: app.py:4978
-msgid "🚚 Відправлено!"
-msgstr "🚚 Відправлено!"
-
-#: app.py:4982
-msgid "✔️ Доставлено!"
-msgstr "✔️ Доставлено!"
-
-#: app.py:4988
-msgid "❌ Завдання скасовано"
-msgstr "❌ Завдання скасовано"
-
-#: app.py:4993
-msgid "💾 Нотатки збережено"
-msgstr "💾 Нотатки збережено"
-
-#: app.py:5113
-msgid "Введіть кількість для коригування"
-msgstr "Введіть кількість для коригування"
-
-#: app.py:5126
-#, python-format
-msgid "✅ Залишок '%(name)s' скориговано на %(adjustment)+d"
-msgstr "✅ Залишок '%(name)s' скориговано на %(adjustment)+d"
-
-#: app.py:5128
-#, python-format
-msgid "❌ Помилка: %(error)s"
-msgstr "❌ Помилка: %(error)s"
-
-#: app.py:5236
-#, python-format
-msgid "✅ Замовлення %(order_number)s створено"
-msgstr "✅ Замовлення %(order_number)s створено"
-
-#: app.py:5267
-msgid "✅ Замовлення підтверджено"
-msgstr "✅ Замовлення підтверджено"
-
-#: app.py:5273
-msgid "📤 Замовлено у постачальника"
-msgstr "📤 Замовлено у постачальника"
-
-#: app.py:5279
-msgid "🚚 Позначено як відправлено"
-msgstr "🚚 Позначено як відправлено"
-
-#: app.py:5283
-msgid "✔️ Товар отримано, залишки оновлено!"
-msgstr "✔️ Товар отримано, залишки оновлено!"
-
-#: app.py:5288
-msgid "❌ Замовлення скасовано"
-msgstr "❌ Замовлення скасовано"
-
-#: app.py:5295
-msgid "💰 Оплату зафіксовано"
-msgstr "💰 Оплату зафіксовано"
-
-#: app.py:5381
-msgid "✅ Витрату додано"
-msgstr "✅ Витрату додано"
-
-#: app.py:5706
+#: app.py:4591
 msgid "✅ AI налаштування збережено!"
 msgstr "✅ AI налаштування збережено!"
 
-#: app.py:5805
+#: routes/blog.py:127
 msgid "✅ Статтю створено!"
 msgstr "✅ Статтю створено!"
 
-#: app.py:5870
+#: routes/blog.py:190
 msgid "✅ Статтю оновлено!"
 msgstr "✅ Статтю оновлено!"
 
-#: app.py:5887
+#: routes/blog.py:207
 msgid "Статтю видалено."
 msgstr "Статтю видалено."
 
-#: app.py:5900
+#: routes/blog.py:220
 #, python-format
 msgid "✅ Статтю '%(title)s' опубліковано!"
 msgstr "✅ Статтю '%(title)s' опубліковано!"
 
-#: app.py:5927
+#: routes/blog.py:247
 #, python-format
 msgid "✅ Створено план на %(count)s днів!"
 msgstr "✅ Створено план на %(count)s днів!"
 
-#: app.py:5929
+#: routes/blog.py:249
 msgid "Введіть хоча б одну тему."
 msgstr "Введіть хоча б одну тему."
 
-#: app.py:5969
+#: routes/blog.py:288
 msgid "AI не налаштовано"
 msgstr "AI не налаштовано"
 
-#: app.py:5976
+#: routes/blog.py:295
 msgid "Тема обов'язкова"
 msgstr "Тема обов'язкова"
 
-#: app.py:6304
+#: routes/blog.py:598
 msgid "План вже оброблено"
 msgstr "План вже оброблено"
 
-#: app.py:6378
+#: routes/blog.py:675
 msgid "AI не налаштовано. Додайте OPENAI_API_KEY"
 msgstr "AI не налаштовано. Додайте OPENAI_API_KEY"
 
-#: app.py:6385
+#: routes/blog.py:682
 msgid "Стаття не має контенту для перекладу"
 msgstr "Стаття не має контенту для перекладу"
-
-#: routes/auth.py:205
-#, python-format
-msgid "✅ VAT номер підтверджено: %(name)s"
-msgstr "✅ VAT номер підтверджено: %(name)s"
-
-#: routes/auth.py:212
-#, python-format
-msgid "⚠️ VAT номер не підтверджено: %(error)s"
-msgstr "⚠️ VAT номер не підтверджено: %(error)s"
-
-#: routes/auth.py:283
-msgid ""
-"✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити "
-"замовлення."
-msgstr ""
-"✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити "
-"замовлення."
-
-#: routes/auth.py:285
-msgid ""
-"📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після "
-"верифікації."
-msgstr ""
-"📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після "
-"верифікації."
 
 #: routes/cabinet.py:49 routes/cabinet.py:148
 msgid "Доступ лише для B2B партнерів."
@@ -678,6 +568,10 @@ msgstr "Новий пароль має бути не менше 6 символі
 #: routes/cabinet.py:185
 msgid "Пароль успішно змінено."
 msgstr "Пароль успішно змінено."
+
+#: routes/crm.py:275
+msgid "Налаштування оновлено!"
+msgstr "Налаштування оновлено!"
 
 #: routes/platform_admin.py:46
 msgid "Доступ лише для оператора платформи."
@@ -764,6 +658,86 @@ msgid ""
 msgstr ""
 "Магазин створено, але не вдалося відкрити оплату: %(error)s. Спробуйте "
 "пізніше в адмінці."
+
+#: routes/warehouse.py:91
+msgid "✅ Завдання взято в роботу"
+msgstr "✅ Завдання взято в роботу"
+
+#: routes/warehouse.py:98
+msgid "📦 Замовлення запаковано"
+msgstr "📦 Замовлення запаковано"
+
+#: routes/warehouse.py:103 templates/admin/warehouse/task_detail.html:21
+#: templates/admin/warehouse/task_detail.html:220
+msgid "✅ Готово до відправки"
+msgstr "✅ Готово до відправки"
+
+#: routes/warehouse.py:110
+msgid "🚚 Відправлено!"
+msgstr "🚚 Відправлено!"
+
+#: routes/warehouse.py:114
+msgid "✔️ Доставлено!"
+msgstr "✔️ Доставлено!"
+
+#: routes/warehouse.py:120
+msgid "❌ Завдання скасовано"
+msgstr "❌ Завдання скасовано"
+
+#: routes/warehouse.py:125
+msgid "💾 Нотатки збережено"
+msgstr "💾 Нотатки збережено"
+
+#: routes/warehouse.py:238
+msgid "Введіть кількість для коригування"
+msgstr "Введіть кількість для коригування"
+
+#: routes/warehouse.py:251
+#, python-format
+msgid "✅ Залишок '%(name)s' скориговано на %(adjustment)+d"
+msgstr "✅ Залишок '%(name)s' скориговано на %(adjustment)+d"
+
+#: routes/warehouse.py:253
+#, python-format
+msgid "❌ Помилка: %(error)s"
+msgstr "❌ Помилка: %(error)s"
+
+#: routes/warehouse.py:356
+#, python-format
+msgid "✅ Замовлення %(order_number)s створено"
+msgstr "✅ Замовлення %(order_number)s створено"
+
+#: routes/warehouse.py:385
+msgid "✅ Замовлення підтверджено"
+msgstr "✅ Замовлення підтверджено"
+
+#: routes/warehouse.py:391
+msgid "📤 Замовлено у постачальника"
+msgstr "📤 Замовлено у постачальника"
+
+#: routes/warehouse.py:397
+msgid "🚚 Позначено як відправлено"
+msgstr "🚚 Позначено як відправлено"
+
+#: routes/warehouse.py:401
+msgid "✔️ Товар отримано, залишки оновлено!"
+msgstr "✔️ Товар отримано, залишки оновлено!"
+
+#: routes/warehouse.py:406
+msgid "❌ Замовлення скасовано"
+msgstr "❌ Замовлення скасовано"
+
+#: routes/warehouse.py:413
+msgid "💰 Оплату зафіксовано"
+msgstr "💰 Оплату зафіксовано"
+
+#: routes/warehouse.py:494
+msgid "✅ Витрату додано"
+msgstr "✅ Витрату додано"
+
+#: services/admin_auth.py:34
+msgid "Потрібен вхід в адмін-панель."
+msgstr "Потрібен вхід в адмін-панель."
 
 #: services/email_service.py:118
 msgid "🎉 Вітаємо в SmartShop AI!"
@@ -969,7 +943,8 @@ msgstr "Кошик"
 #: templates/admin/warehouse/print_label.html:117
 #: templates/admin/warehouse/replenishment_detail.html:59
 #: templates/admin/warehouse/replenishment_new.html:72
-#: templates/admin/warehouse/stock.html:64 templates/cart.html:134
+#: templates/admin/warehouse/stock.html:64
+#: templates/admin/warehouse/task_detail.html:114 templates/cart.html:134
 msgid "Товар"
 msgstr "Товар"
 
@@ -982,7 +957,8 @@ msgstr "Ціна"
 #: templates/admin/order_detail.html:107
 #: templates/admin/warehouse/replenishment_detail.html:61
 #: templates/admin/warehouse/replenishment_new.html:73
-#: templates/admin/warehouse/stock_history.html:23 templates/cart.html:136
+#: templates/admin/warehouse/stock_history.html:23
+#: templates/admin/warehouse/task_detail.html:116 templates/cart.html:136
 msgid "Кількість"
 msgstr "Кількість"
 
@@ -2362,6 +2338,7 @@ msgstr "Список категорій"
 #: templates/admin/products.html:123 templates/admin/products.html:173
 #: templates/admin/products.html:175 templates/admin/warehouse/stock.html:155
 #: templates/admin/warehouse/stock_history.html:13
+#: templates/admin/warehouse/task_detail.html:124
 msgid "шт."
 msgstr "шт."
 
@@ -2921,6 +2898,7 @@ msgid "60 днів"
 msgstr "60 днів"
 
 #: templates/admin/crm_partner.html:184
+#, python-format
 msgid "Знижка (%%)"
 msgstr "Знижка (%%)"
 
@@ -4794,6 +4772,7 @@ msgid "Зафіксувати оплату"
 msgstr "Зафіксувати оплату"
 
 #: templates/admin/warehouse/replenishment_detail.html:206
+#: templates/admin/warehouse/task_detail.html:72
 msgid "Створено:"
 msgstr "Створено:"
 
@@ -4888,10 +4867,12 @@ msgid "Всього завдань:"
 msgstr "Всього завдань:"
 
 #: templates/admin/warehouse/reports.html:36
+#: templates/admin/warehouse/task_detail.html:146
 msgid "Відправлено:"
 msgstr "Відправлено:"
 
 #: templates/admin/warehouse/reports.html:40
+#: templates/admin/warehouse/task_detail.html:151
 msgid "Доставлено:"
 msgstr "Доставлено:"
 
@@ -4946,6 +4927,7 @@ msgid "📦 Завдання"
 msgstr "📦 Завдання"
 
 #: templates/admin/warehouse/reports.html:130
+#: templates/admin/warehouse/task_detail.html:301
 msgid "📊 Залишки"
 msgstr "📊 Залишки"
 
@@ -5142,6 +5124,228 @@ msgstr "± Коригування"
 msgid "📭 Немає записів про рух товару"
 msgstr "📭 Немає записів про рух товару"
 
+#: templates/admin/warehouse/task_detail.html:3
+#: templates/admin/warehouse/task_detail.html:10
+#, python-format
+msgid "📦 Завдання %(number)s"
+msgstr "📦 Завдання %(number)s"
+
+#: templates/admin/warehouse/task_detail.html:9
+msgid "← До списку"
+msgstr "← До списку"
+
+#: templates/admin/warehouse/task_detail.html:11
+msgid "🖨️ Друкувати пакувальний лист"
+msgstr "🖨️ Друкувати пакувальний лист"
+
+#: templates/admin/warehouse/task_detail.html:15
+msgid "⏳ Очікує обробки"
+msgstr "⏳ Очікує обробки"
+
+#: templates/admin/warehouse/task_detail.html:17
+#: templates/admin/warehouse/tasks.html:50
+#: templates/admin/warehouse/tasks.html:112
+msgid "🔄 В роботі"
+msgstr "🔄 В роботі"
+
+#: templates/admin/warehouse/task_detail.html:19
+#: templates/admin/warehouse/task_detail.html:212
+#: templates/admin/warehouse/tasks.html:52
+#: templates/admin/warehouse/tasks.html:114
+msgid "📦 Запаковано"
+msgstr "📦 Запаковано"
+
+#: templates/admin/warehouse/task_detail.html:23
+#: templates/admin/warehouse/task_detail.html:240
+#: templates/admin/warehouse/task_detail.html:261
+#: templates/admin/warehouse/tasks.html:54
+#: templates/admin/warehouse/tasks.html:118
+msgid "🚚 Відправлено"
+msgstr "🚚 Відправлено"
+
+#: templates/admin/warehouse/task_detail.html:25
+#: templates/admin/warehouse/task_detail.html:270
+#: templates/admin/warehouse/tasks.html:56
+#: templates/admin/warehouse/tasks.html:120
+msgid "✔️ Доставлено"
+msgstr "✔️ Доставлено"
+
+#: templates/admin/warehouse/task_detail.html:27
+#: templates/admin/warehouse/tasks.html:122
+msgid "❌ Скасовано"
+msgstr "❌ Скасовано"
+
+#: templates/admin/warehouse/task_detail.html:37
+msgid "📋 Замовлення"
+msgstr "📋 Замовлення"
+
+#: templates/admin/warehouse/task_detail.html:40
+msgid "ID Замовлення:"
+msgstr "ID Замовлення:"
+
+#: templates/admin/warehouse/task_detail.html:50
+#: templates/email/crm_alert.html:30
+msgid "Тип:"
+msgstr "Тип:"
+
+#: templates/admin/warehouse/task_detail.html:60
+msgid "Пріоритет:"
+msgstr "Пріоритет:"
+
+#: templates/admin/warehouse/task_detail.html:63
+#: templates/admin/warehouse/tasks.html:101
+msgid "🔴 Терміново"
+msgstr "🔴 Терміново"
+
+#: templates/admin/warehouse/task_detail.html:65
+#: templates/admin/warehouse/tasks.html:103
+msgid "🟡 Високий"
+msgstr "🟡 Високий"
+
+#: templates/admin/warehouse/task_detail.html:67
+#: templates/admin/warehouse/tasks.html:105
+msgid "⚪ Звичайний"
+msgstr "⚪ Звичайний"
+
+#: templates/admin/warehouse/task_detail.html:80
+msgid "👤 Клієнт"
+msgstr "👤 Клієнт"
+
+#: templates/admin/warehouse/task_detail.html:83
+msgid "Ім'я:"
+msgstr "Ім'я:"
+
+#: templates/admin/warehouse/task_detail.html:87
+msgid "Телефон:"
+msgstr "Телефон:"
+
+#: templates/admin/warehouse/task_detail.html:99
+msgid "📍 Адреса доставки"
+msgstr "📍 Адреса доставки"
+
+#: templates/admin/warehouse/task_detail.html:102
+msgid "Спосіб:"
+msgstr "Спосіб:"
+
+#: templates/admin/warehouse/task_detail.html:110
+msgid "📦 Товари для відправки"
+msgstr "📦 Товари для відправки"
+
+#: templates/admin/warehouse/task_detail.html:135
+msgid "🚚 Інформація про відправку"
+msgstr "🚚 Інформація про відправку"
+
+#: templates/admin/warehouse/task_detail.html:138
+#: templates/admin/warehouse/task_detail.html:247
+msgid "Перевізник:"
+msgstr "Перевізник:"
+
+#: templates/admin/warehouse/task_detail.html:142
+msgid "Номер відстеження:"
+msgstr "Номер відстеження:"
+
+#: templates/admin/warehouse/task_detail.html:157
+msgid "Вага:"
+msgstr "Вага:"
+
+#: templates/admin/warehouse/task_detail.html:158
+#, python-format
+msgid "%(weight)s кг"
+msgstr "%(weight)s кг"
+
+#: templates/admin/warehouse/task_detail.html:163
+#: templates/admin/warehouse/task_detail.html:209
+msgid "Розміри:"
+msgstr "Розміри:"
+
+#: templates/admin/warehouse/task_detail.html:173
+msgid "📝 Нотатки"
+msgstr "📝 Нотатки"
+
+#: templates/admin/warehouse/task_detail.html:178
+msgid "💾 Зберегти нотатки"
+msgstr "💾 Зберегти нотатки"
+
+#: templates/admin/warehouse/task_detail.html:186
+msgid "⚡ Дії"
+msgstr "⚡ Дії"
+
+#: templates/admin/warehouse/task_detail.html:193
+msgid "Виконавець:"
+msgstr "Виконавець:"
+
+#: templates/admin/warehouse/task_detail.html:194
+msgid "Ім'я працівника"
+msgstr "Ім'я працівника"
+
+#: templates/admin/warehouse/task_detail.html:196
+msgid "🔄 Взяти в роботу"
+msgstr "🔄 Взяти в роботу"
+
+#: templates/admin/warehouse/task_detail.html:205
+msgid "Вага (кг):"
+msgstr "Вага (кг):"
+
+#: templates/admin/warehouse/task_detail.html:210
+msgid "30x20x10 см"
+msgstr "30x20x10 см"
+
+#: templates/admin/warehouse/task_detail.html:229
+msgid "🏬 Самовивіз — трек-номер не потрібен."
+msgstr "🏬 Самовивіз — трек-номер не потрібен."
+
+#: templates/admin/warehouse/task_detail.html:230
+msgid "✅ Видано клієнту"
+msgstr "✅ Видано клієнту"
+
+#: templates/admin/warehouse/task_detail.html:235
+msgid "🏷️ Завантажити лейбл"
+msgstr "🏷️ Завантажити лейбл"
+
+#: templates/admin/warehouse/task_detail.html:249
+msgid "Нова Пошта"
+msgstr "Нова Пошта"
+
+#: templates/admin/warehouse/task_detail.html:250
+msgid "Укрпошта"
+msgstr "Укрпошта"
+
+#: templates/admin/warehouse/task_detail.html:254
+msgid "Інший"
+msgstr "Інший"
+
+#: templates/admin/warehouse/task_detail.html:258
+msgid "Номер ТТН:"
+msgstr "Номер ТТН:"
+
+#: templates/admin/warehouse/task_detail.html:276
+msgid "Ви впевнені що хочете скасувати це завдання?"
+msgstr "Ви впевнені що хочете скасувати це завдання?"
+
+#: templates/admin/warehouse/task_detail.html:280
+msgid "Причина скасування:"
+msgstr "Причина скасування:"
+
+#: templates/admin/warehouse/task_detail.html:283
+msgid "❌ Скасувати"
+msgstr "❌ Скасувати"
+
+#: templates/admin/warehouse/task_detail.html:291
+msgid "👷 Виконавець"
+msgstr "👷 Виконавець"
+
+#: templates/admin/warehouse/task_detail.html:298
+msgid "🔗 Посилання"
+msgstr "🔗 Посилання"
+
+#: templates/admin/warehouse/task_detail.html:300
+msgid "📦 Всі завдання"
+msgstr "📦 Всі завдання"
+
+#: templates/admin/warehouse/task_detail.html:303
+msgid "🧾 Замовлення"
+msgstr "🧾 Замовлення"
+
 #: templates/admin/warehouse/tasks.html:3
 msgid "📦 Склад - Завдання"
 msgstr "📦 Склад - Завдання"
@@ -5170,26 +5374,6 @@ msgstr "Активні"
 msgid "⏳ Очікують"
 msgstr "⏳ Очікують"
 
-#: templates/admin/warehouse/tasks.html:50
-#: templates/admin/warehouse/tasks.html:112
-msgid "🔄 В роботі"
-msgstr "🔄 В роботі"
-
-#: templates/admin/warehouse/tasks.html:52
-#: templates/admin/warehouse/tasks.html:114
-msgid "📦 Запаковано"
-msgstr "📦 Запаковано"
-
-#: templates/admin/warehouse/tasks.html:54
-#: templates/admin/warehouse/tasks.html:118
-msgid "🚚 Відправлено"
-msgstr "🚚 Відправлено"
-
-#: templates/admin/warehouse/tasks.html:56
-#: templates/admin/warehouse/tasks.html:120
-msgid "✔️ Доставлено"
-msgstr "✔️ Доставлено"
-
 #: templates/admin/warehouse/tasks.html:64
 msgid "№ Завдання"
 msgstr "№ Завдання"
@@ -5198,18 +5382,6 @@ msgstr "№ Завдання"
 msgid "Пріоритет"
 msgstr "Пріоритет"
 
-#: templates/admin/warehouse/tasks.html:101
-msgid "🔴 Терміново"
-msgstr "🔴 Терміново"
-
-#: templates/admin/warehouse/tasks.html:103
-msgid "🟡 Високий"
-msgstr "🟡 Високий"
-
-#: templates/admin/warehouse/tasks.html:105
-msgid "⚪ Звичайний"
-msgstr "⚪ Звичайний"
-
 #: templates/admin/warehouse/tasks.html:110
 msgid "⏳ Очікує"
 msgstr "⏳ Очікує"
@@ -5217,10 +5389,6 @@ msgstr "⏳ Очікує"
 #: templates/admin/warehouse/tasks.html:116
 msgid "✅ Готово"
 msgstr "✅ Готово"
-
-#: templates/admin/warehouse/tasks.html:122
-msgid "❌ Скасовано"
-msgstr "❌ Скасовано"
 
 #: templates/admin/warehouse/tasks.html:129
 msgid "👁️ Деталі"
@@ -6087,10 +6255,6 @@ msgstr "Деталі:"
 #: templates/email/crm_alert.html:29
 msgid "Компанія:"
 msgstr "Компанія:"
-
-#: templates/email/crm_alert.html:30
-msgid "Тип:"
-msgstr "Тип:"
 
 #: templates/email/crm_alert.html:31
 #: templates/email/order_confirmation.html:18
@@ -7336,3 +7500,23 @@ msgstr "Користувачів не знайдено."
 
 #~ msgid "Загальна сума (EUR)"
 #~ msgstr "Загальна сума (EUR)"
+
+#~ msgid "✅ VAT номер підтверджено: %(name)s"
+#~ msgstr "✅ VAT номер підтверджено: %(name)s"
+
+#~ msgid "⚠️ VAT номер не підтверджено: %(error)s"
+#~ msgstr "⚠️ VAT номер не підтверджено: %(error)s"
+
+#~ msgid ""
+#~ "✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити "
+#~ "замовлення."
+#~ msgstr ""
+#~ "✅ Реєстрація успішна! Ваша компанія верифікована, ви можете робити "
+#~ "замовлення."
+
+#~ msgid ""
+#~ "📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після "
+#~ "верифікації."
+#~ msgstr ""
+#~ "📋 Реєстрація успішна! Ваша заявка на розгляді. Ми повідомимо вас після "
+#~ "верифікації."

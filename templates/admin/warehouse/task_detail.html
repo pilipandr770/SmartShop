@@ -6,9 +6,9 @@
 <div class="task-detail">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
-            <a href="{{ url_for('admin_warehouse') }}" class="btn btn-sm btn-outline">{{ _('← До списку') }}</a>
+            <a href="{{ url_for('warehouse.admin_warehouse') }}" class="btn btn-sm btn-outline">{{ _('← До списку') }}</a>
             <h1 style="margin: 0.5rem 0;">{{ _('📦 Завдання %(number)s', number=(task.task_number or '#' ~ task.id)) }}</h1>
-            <a href="{{ url_for('admin_warehouse_task_print', id=task.id) }}" target="_blank" class="btn btn-sm btn-outline">{{ _('🖨️ Друкувати пакувальний лист') }}</a>
+            <a href="{{ url_for('warehouse.admin_warehouse_task_print', id=task.id) }}" target="_blank" class="btn btn-sm btn-outline">{{ _('🖨️ Друкувати пакувальний лист') }}</a>
         </div>
         <div>
             {% if task.status == 'pending' %}
@@ -191,7 +191,7 @@
                     <input type="hidden" name="action" value="start_processing">
                     <div class="form-group">
                         <label>{{ _('Виконавець:') }}</label>
-                        <input type="text" name="assigned_to" class="form-control" placeholder="{{ _(\"Ім'я працівника\") }}">
+                        <input type="text" name="assigned_to" class="form-control" placeholder="{{ _("Ім'я працівника") }}">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">{{ _('🔄 Взяти в роботу') }}</button>
                 </form>
@@ -297,8 +297,8 @@
             <div class="card">
                 <h3>{{ _('🔗 Посилання') }}</h3>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <a href="{{ url_for('admin_warehouse') }}" class="btn btn-outline btn-block">{{ _('📦 Всі завдання') }}</a>
-                    <a href="{{ url_for('admin_warehouse_stock') }}" class="btn btn-outline btn-block">{{ _('📊 Залишки') }}</a>
+                    <a href="{{ url_for('warehouse.admin_warehouse') }}" class="btn btn-outline btn-block">{{ _('📦 Всі завдання') }}</a>
+                    <a href="{{ url_for('warehouse.admin_warehouse_stock') }}" class="btn btn-outline btn-block">{{ _('📊 Залишки') }}</a>
                     {% if task.order %}
                     <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}" class="btn btn-outline btn-block">{{ _('🧾 Замовлення') }}</a>
                     {% endif %}

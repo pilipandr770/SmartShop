@@ -48,12 +48,12 @@
             <button type="submit" class="btn btn-primary">{{ _('Знайти') }}</button>
         </form>
         
-        <a href="{{ url_for('admin_warehouse_stock') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse_stock') }}" 
            class="btn {% if not show_low %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Всі товари') }}</a>
-        <a href="{{ url_for('admin_warehouse_stock', low=1) }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse_stock', low=1) }}" 
            class="btn {% if show_low %}btn-warning{% else %}btn-outline{% endif %}">{{ _('⚠️ Низький залишок') }}</a>
         
-        <a href="{{ url_for('admin_warehouse_replenishment_new') }}" class="btn btn-success">{{ _('➕ Замовити поповнення') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_replenishment_new') }}" class="btn btn-success">{{ _('➕ Замовити поповнення') }}</a>
     </div>
 
     <!-- Таблиця товарів -->
@@ -107,7 +107,7 @@
                                     onclick="openAdjustModal({{ product.id }}, '{{ product.name }}', {{ product.stock }})">
                                 ±
                             </button>
-                            <a href="{{ url_for('admin_warehouse_stock_history', product_id=product.id) }}" 
+                            <a href="{{ url_for('warehouse.admin_warehouse_stock_history', product_id=product.id) }}" 
                                class="btn btn-sm btn-outline" title="{{ _('Історія') }}">
                                 📜
                             </a>
@@ -129,13 +129,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse_stock', page=page-1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_stock', page=page-1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
         <span class="btn btn-sm disabled">{{ _('%(page)s з %(total)s', page=page, total=total_pages) }}</span>
         
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse_stock', page=page+1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse_stock', page=page+1, low=show_low|int, search=search) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
         {% endif %}
     </div>
     {% endif %}

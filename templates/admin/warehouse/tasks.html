@@ -42,17 +42,17 @@
 
     <!-- Фільтри -->
     <div class="filters-bar" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <a href="{{ url_for('admin_warehouse') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse') }}" 
            class="btn {% if not status_filter %}btn-primary{% else %}btn-outline{% endif %}">{{ _('Активні') }}</a>
-        <a href="{{ url_for('admin_warehouse', status='pending') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse', status='pending') }}" 
            class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('⏳ Очікують') }}</a>
-        <a href="{{ url_for('admin_warehouse', status='processing') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse', status='processing') }}" 
            class="btn {% if status_filter == 'processing' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('🔄 В роботі') }}</a>
-        <a href="{{ url_for('admin_warehouse', status='packed') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse', status='packed') }}" 
            class="btn {% if status_filter == 'packed' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('📦 Запаковано') }}</a>
-        <a href="{{ url_for('admin_warehouse', status='shipped') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse', status='shipped') }}" 
            class="btn {% if status_filter == 'shipped' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('🚚 Відправлено') }}</a>
-        <a href="{{ url_for('admin_warehouse', status='delivered') }}" 
+        <a href="{{ url_for('warehouse.admin_warehouse', status='delivered') }}" 
            class="btn {% if status_filter == 'delivered' %}btn-primary{% else %}btn-outline{% endif %}">{{ _('✔️ Доставлено') }}</a>
     </div>
 
@@ -126,7 +126,7 @@
                         <small>{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
                     </td>
                     <td>
-                        <a href="{{ url_for('admin_warehouse_task', id=task.id) }}" class="btn btn-sm btn-primary">{{ _('👁️ Деталі') }}</a>
+                        <a href="{{ url_for('warehouse.admin_warehouse_task', id=task.id) }}" class="btn btn-sm btn-primary">{{ _('👁️ Деталі') }}</a>
                     </td>
                 </tr>
                 {% else %}
@@ -147,13 +147,13 @@
     {% if total_pages > 1 %}
     <div class="pagination" style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 0.5rem;">
         {% if page > 1 %}
-        <a href="{{ url_for('admin_warehouse', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse', page=page-1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('← Назад') }}</a>
         {% endif %}
         
         <span class="btn btn-sm disabled">{{ _('%(page)s з %(total)s', page=page, total=total_pages) }}</span>
         
         {% if page < total_pages %}
-        <a href="{{ url_for('admin_warehouse', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
+        <a href="{{ url_for('warehouse.admin_warehouse', page=page+1, status=status_filter) }}" class="btn btn-sm btn-outline">{{ _('Далі →') }}</a>
         {% endif %}
     </div>
     {% endif %}

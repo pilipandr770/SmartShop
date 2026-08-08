@@ -6,7 +6,7 @@
 <div class="replenishment-detail">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <div>
-            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← {{ _('До списку') }}</a>
+            <a href="{{ url_for('warehouse.admin_warehouse_replenishment') }}" class="btn btn-sm btn-outline">← {{ _('До списку') }}</a>
             <h1 style="margin: 0.5rem 0;">📥 {{ _('Замовлення') }} {{ order.order_number or '#' ~ order.id }}</h1>
         </div>
         <div>

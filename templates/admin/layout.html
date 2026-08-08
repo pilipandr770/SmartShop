@@ -340,19 +340,19 @@
 
         <div class="nav-section">
             <div class="nav-title">{{ _('Склад') }}</div>
-            <a href="{{ url_for('admin_warehouse') }}" class="nav-link{% if request.endpoint in ['admin_warehouse', 'admin_warehouse_task'] %} active{% endif %}">
+            <a href="{{ url_for('warehouse.admin_warehouse') }}" class="nav-link{% if request.endpoint in ['warehouse.admin_warehouse', 'warehouse.admin_warehouse_task'] %} active{% endif %}">
                 <span class="nav-icon">📦</span> {{ _('Завдання') }}
             </a>
-            <a href="{{ url_for('admin_warehouse_stock') }}" class="nav-link{% if request.endpoint in ['admin_warehouse_stock', 'admin_warehouse_stock_history'] %} active{% endif %}">
+            <a href="{{ url_for('warehouse.admin_warehouse_stock') }}" class="nav-link{% if request.endpoint in ['warehouse.admin_warehouse_stock', 'warehouse.admin_warehouse_stock_history'] %} active{% endif %}">
                 <span class="nav-icon">📊</span> {{ _('Залишки') }}
             </a>
-            <a href="{{ url_for('admin_warehouse_replenishment') }}" class="nav-link{% if request.endpoint in ['admin_warehouse_replenishment', 'admin_warehouse_replenishment_new', 'admin_warehouse_replenishment_detail'] %} active{% endif %}">
+            <a href="{{ url_for('warehouse.admin_warehouse_replenishment') }}" class="nav-link{% if request.endpoint in ['warehouse.admin_warehouse_replenishment', 'warehouse.admin_warehouse_replenishment_new', 'warehouse.admin_warehouse_replenishment_detail'] %} active{% endif %}">
                 <span class="nav-icon">📥</span> {{ _('Поповнення') }}
             </a>
-            <a href="{{ url_for('admin_warehouse_expenses') }}" class="nav-link{% if request.endpoint in ['admin_warehouse_expenses', 'admin_warehouse_expenses_add'] %} active{% endif %}">
+            <a href="{{ url_for('warehouse.admin_warehouse_expenses') }}" class="nav-link{% if request.endpoint in ['warehouse.admin_warehouse_expenses', 'warehouse.admin_warehouse_expenses_add'] %} active{% endif %}">
                 <span class="nav-icon">💰</span> {{ _('Витрати') }}
             </a>
-            <a href="{{ url_for('admin_warehouse_reports') }}" class="nav-link{% if request.endpoint == 'admin_warehouse_reports' %} active{% endif %}">
+            <a href="{{ url_for('warehouse.admin_warehouse_reports') }}" class="nav-link{% if request.endpoint == 'warehouse.admin_warehouse_reports' %} active{% endif %}">
                 <span class="nav-icon">📈</span> {{ _('Звіти') }}
             </a>
             <a href="{{ url_for('admin_shipping_settings') }}" class="nav-link{% if request.endpoint in ['admin_shipping_settings', 'admin_shipping_account_new', 'admin_shipping_account_edit'] %} active{% endif %}">
