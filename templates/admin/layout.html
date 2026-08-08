@@ -330,10 +330,10 @@
 
         <div class="nav-section">
             <div class="nav-title">B2B / CRM</div>
-            <a href="{{ url_for('admin_crm') }}" class="nav-link{% if request.endpoint in ['admin_crm', 'admin_crm_partner'] %} active{% endif %}">
+            <a href="{{ url_for('crm.admin_crm') }}" class="nav-link{% if request.endpoint in ['crm.admin_crm', 'crm.admin_crm_partner'] %} active{% endif %}">
                 <span class="nav-icon">🏢</span> {{ _('Партнери') }}
             </a>
-            <a href="{{ url_for('admin_crm_alerts') }}" class="nav-link{% if request.endpoint == 'admin_crm_alerts' %} active{% endif %}">
+            <a href="{{ url_for('crm.admin_crm_alerts') }}" class="nav-link{% if request.endpoint == 'crm.admin_crm_alerts' %} active{% endif %}">
                 <span class="nav-icon">🔔</span> {{ _('Алерти') }}
             </a>
         </div>

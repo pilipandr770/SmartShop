@@ -2950,8 +2950,8 @@ msgid "60 днів"
 msgstr "60 Tage"
 
 #: templates/admin/crm_partner.html:184
-msgid "Знижка (%)"
-msgstr "Rabatt (%)"
+msgid "Знижка (%%)"
+msgstr "Rabatt (%%)"
 
 #: templates/admin/crm_partner.html:195
 msgid "Результати останньої перевірки"

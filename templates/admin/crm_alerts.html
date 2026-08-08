@@ -6,7 +6,7 @@
 <div class="alerts-page">
     <div class="page-header">
         <div class="breadcrumb">
-            <a href="{{ url_for('admin_crm') }}">← CRM</a>
+            <a href="{{ url_for('crm.admin_crm') }}">← CRM</a>
         </div>
         <h1>🔔 {{ _('Алерти верифікації') }}</h1>
         <div class="header-actions">
@@ -69,7 +69,7 @@
                 </div>
                 <p class="alert-message">{{ alert.message }}</p>
                 {% if alert.company %}
-                <a href="{{ url_for('admin_crm_partner', id=alert.company.id) }}" class="company-link">
+                <a href="{{ url_for('crm.admin_crm_partner', id=alert.company.id) }}" class="company-link">
                     🏢 {{ alert.company.name }}
                 </a>
                 {% endif %}

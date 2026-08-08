@@ -6,7 +6,7 @@
 <div class="partner-detail-page">
     <div class="page-header">
         <div class="breadcrumb">
-            <a href="{{ url_for('admin_crm') }}">← CRM</a>
+            <a href="{{ url_for('crm.admin_crm') }}">← CRM</a>
         </div>
         <h1>🏢 {{ company.name }}</h1>
         <span class="status-badge {{ company.status }}">{{ company.status }}</span>
@@ -164,7 +164,7 @@
         <!-- B2B Settings -->
         <div class="info-card">
             <h3>💰 {{ _('B2B налаштування') }}</h3>
-            <form method="post" action="{{ url_for('admin_crm_partner_update', id=company.id) }}">
+            <form method="post" action="{{ url_for('crm.admin_crm_partner_update', id=company.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label>{{ _('Кредитний ліміт (€)') }}</label>
@@ -181,7 +181,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>{{ _('Знижка (%)') }}</label>
+                    <label>{{ _('Знижка (%%)') }}</label>
                     <input type="number" name="discount_percent" value="{{ company.discount_percent }}" step="0.1" min="0" max="50">
                 </div>
                 <button type="submit" class="btn btn-primary">{{ _('Зберегти') }}</button>

@@ -10,7 +10,7 @@
         <div class="alert-icon">⚠️</div>
         <div class="alert-content">
             <strong>{{ _('%(count)s критичних алертів!', count=critical_alerts|length) }}</strong>
-            <a href="{{ url_for('admin_crm_alerts') }}">{{ _('Переглянути') }}</a>
+            <a href="{{ url_for('crm.admin_crm_alerts') }}">{{ _('Переглянути') }}</a>
         </div>
     </div>
     {% endif %}
@@ -18,7 +18,7 @@
     <div class="page-header">
         <h1>🏢 CRM - {{ _('Управління партнерами') }}</h1>
         <div class="header-actions">
-            <a href="{{ url_for('admin_crm_alerts') }}" class="btn btn-warning">
+            <a href="{{ url_for('crm.admin_crm_alerts') }}" class="btn btn-warning">
                 🔔 {{ _('Алерти') }} {% if unread_alerts_count %}<span class="badge">{{ unread_alerts_count }}</span>{% endif %}
             </a>
             <button class="btn btn-primary" onclick="runDailyCheck()">
@@ -111,7 +111,7 @@
                 <input type="text" name="search" value="{{ search }}" placeholder="{{ _('Назва, VAT, домен...') }}">
             </div>
             <button type="submit" class="btn">{{ _('Фільтрувати') }}</button>
-            <a href="{{ url_for('admin_crm') }}" class="btn btn-secondary">{{ _('Скинути') }}</a>
+            <a href="{{ url_for('crm.admin_crm') }}" class="btn btn-secondary">{{ _('Скинути') }}</a>
         </form>
     </div>
 
@@ -202,7 +202,7 @@
                     </td>
                     <td>
                         <div class="actions">
-                            <a href="{{ url_for('admin_crm_partner', id=company.id) }}" class="btn btn-sm" title="{{ _('Деталі') }}">
+                            <a href="{{ url_for('crm.admin_crm_partner', id=company.id) }}" class="btn btn-sm" title="{{ _('Деталі') }}">
                                 👁️
                             </a>
                             <button class="btn btn-sm btn-primary" onclick="verifyPartner({{ company.id }})" title="{{ _('Перевірити') }}">
