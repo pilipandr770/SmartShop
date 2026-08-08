@@ -323,7 +323,7 @@
             <a href="{{ url_for('admin_orders') }}" class="nav-link{% if request.endpoint in ['admin_orders', 'admin_order_detail'] %} active{% endif %}">
                 <span class="nav-icon">🛒</span> {{ _('Замовлення') }}
             </a>
-            <a href="{{ url_for('admin_contacts') }}" class="nav-link{% if request.endpoint == 'admin_contacts' %} active{% endif %}">
+            <a href="{{ url_for('contacts.admin_contacts') }}" class="nav-link{% if request.endpoint == 'contacts.admin_contacts' %} active{% endif %}">
                 <span class="nav-icon">✉️</span> {{ _('Заявки') }}
             </a>
         </div>
