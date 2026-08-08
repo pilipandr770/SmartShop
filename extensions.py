@@ -1,6 +1,8 @@
 """
 Flask extensions - ініціалізація розширень
 """
+import os
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -23,9 +25,16 @@ csrf = CSRFProtect()
 
 # Rate limiting - захист /login, /register, /signup від brute-force та
 # credential-stuffing. За замовчуванням немає глобальних лімітів, тільки
-# явно позначені маршрути (default_limits=[] нижче) - зберігання лічильників
-# in-memory (per-worker, не спільне між gunicorn-воркерами) - для одного
-# сервера цього достатньо як перший рівень захисту без додаткової
-# інфраструктури (Redis); якщо колись буде декілька інстансів застосунку,
-# знадобиться підключити storage_uri="redis://...".
-limiter = Limiter(key_func=get_remote_address, default_limits=[])
+# явно позначені маршрути (default_limits=[] нижче). Лічильники зберігаються
+# в Redis (REDIS_URL), якщо він налаштований - це ОБОВ'ЯЗКОВО, а не "на
+# майбутнє": gunicorn вже сьогодні працює з кількома воркерами (--workers 3,
+# Dockerfile), і in-memory storage веде окремий лічильник у КОЖНОМУ воркері,
+# тобто фактичний ліміт "5 на хвилину" на практиці міг бути ~15 на хвилину.
+# Якщо REDIS_URL не заданий (напр. в тестах, tests/conftest.py), тихо
+# відкочується на in-memory - не ламає локальну розробку/CI без Redis.
+_redis_url = os.environ.get("REDIS_URL", "")
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=[],
+    storage_uri=_redis_url or "memory://",
+)

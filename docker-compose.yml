@@ -16,6 +16,18 @@ services:
       timeout: 5s
       retries: 10
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    volumes:
+      - smartshop_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   web:
     build: .
     restart: unless-stopped
@@ -23,6 +35,7 @@ services:
       - .env.docker
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-smartshop}:${POSTGRES_PASSWORD:-smartshop}@db:5432/${POSTGRES_DB:-smartshop}
+      REDIS_URL: redis://redis:6379/0
       FLASK_APP: app.py
     ports:
       - "5000:5000"
@@ -32,8 +45,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   smartshop_pgdata:
   smartshop_uploads:
   smartshop_logs:
+  smartshop_redis:
