@@ -15,8 +15,11 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 # Login Manager
+# "user_login" - реальний /login у app.py (повна логіка редіректу за
+# роллю + перевірка TOTP 2FA). Раніше тут стояло застаріле "auth.login" -
+# дублікат-обхід 2FA в routes/auth.py, видалений 2026-08-08.
 login_manager = LoginManager()
-login_manager.login_view = "auth.login"
+login_manager.login_view = "user_login"
 login_manager.login_message = "Будь ласка, увійдіть для доступу до цієї сторінки."
 login_manager.login_message_category = "warning"
 
