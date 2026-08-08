@@ -358,7 +358,7 @@
             <a href="{{ url_for('admin_shipping_settings') }}" class="nav-link{% if request.endpoint in ['admin_shipping_settings', 'admin_shipping_account_new', 'admin_shipping_account_edit'] %} active{% endif %}">
                 <span class="nav-icon">🚚</span> {{ _('Доставка') }}
             </a>
-            <a href="{{ url_for('admin_accounting') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin_accounting') %} active{% endif %}">
+            <a href="{{ url_for('accounting.admin_accounting') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('accounting.') %} active{% endif %}">
                 <span class="nav-icon">🧾</span> {{ _('Бухгалтерія') }}
             </a>
         </div>
@@ -381,7 +381,7 @@
 
         <div class="nav-section">
             <div class="nav-title">{{ _('ШІ-асистенти') }}</div>
-            <a href="{{ url_for('admin_ai_settings') }}" class="nav-link{% if request.endpoint == 'admin_ai_settings' %} active{% endif %}">
+            <a href="{{ url_for('ai.admin_ai_settings') }}" class="nav-link{% if request.endpoint == 'ai.admin_ai_settings' %} active{% endif %}">
                 <span class="nav-icon">🤖</span> {{ _('Налаштування ШІ') }}
             </a>
             <a href="{{ url_for('blog.admin_blog_plan') }}" class="nav-link{% if request.endpoint == 'blog.admin_blog_plan' %} active{% endif %}">

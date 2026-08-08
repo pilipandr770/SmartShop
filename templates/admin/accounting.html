@@ -55,13 +55,13 @@
         {{ _('Файли враховують обраний вище період. Це не податкові документи — просто структуровані дані для передачі бухгалтеру/імпорту в його програму.') }}
     </p>
     <div style="padding: 1rem; display:flex; gap: 1rem; flex-wrap: wrap;">
-        <a class="btn" href="{{ url_for('admin_accounting_export_orders', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
+        <a class="btn" href="{{ url_for('accounting.admin_accounting_export_orders', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
             🧾 {{ _('Замовлення (продажі)') }}
         </a>
-        <a class="btn" href="{{ url_for('admin_accounting_export_expenses', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
+        <a class="btn" href="{{ url_for('accounting.admin_accounting_export_expenses', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
             💸 {{ _('Витрати складу') }}
         </a>
-        <a class="btn" href="{{ url_for('admin_accounting_export_revenue_by_country', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
+        <a class="btn" href="{{ url_for('accounting.admin_accounting_export_revenue_by_country', **{'from': date_from.isoformat(), 'to': date_to.isoformat()}) }}">
             🌍 {{ _('Дохід по країнах') }}
         </a>
     </div>
