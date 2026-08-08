@@ -108,10 +108,10 @@
                     </td>
                     <td>
                         <div class="actions-cell">
-                            <a href="{{ url_for('admin_categories_edit', category_id=c.id) }}" class="btn btn-sm btn-secondary" title="{{ _('Редагувати') }}">
+                            <a href="{{ url_for('products.admin_categories_edit', category_id=c.id) }}" class="btn btn-sm btn-secondary" title="{{ _('Редагувати') }}">
                                 ✏️
                             </a>
-                            <form method="post" action="{{ url_for('admin_categories_delete', category_id=c.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити категорію? Товари залишаться без категорії.') }}');">
+                            <form method="post" action="{{ url_for('products.admin_categories_delete', category_id=c.id) }}" style="display: inline;" onsubmit="return confirm('{{ _('Видалити категорію? Товари залишаться без категорії.') }}');">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Видалити') }}">
                                     🗑️

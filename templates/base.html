@@ -566,7 +566,7 @@
                     {% if current_user.can_manage_store(g.store) %}
                         <!-- Власник/менеджер ЦЬОГО магазину - "Dashboard" має вести
                              в адмінку магазину, а не в клієнтський кабінет покупця. -->
-                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary">⚙️ {{ _('Admin Panel') }}</a>
+                        <a href="{{ url_for('dashboard.admin_dashboard') }}" class="btn btn-primary">⚙️ {{ _('Admin Panel') }}</a>
                     {% elif current_user.is_b2b %}
                         <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
                     {% else %}

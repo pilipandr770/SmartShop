@@ -386,7 +386,7 @@
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
                     {{ (settings.ai_instructions or _('ШІ-продавець налаштований бути ввічливим та допомагати з вибором товарів.'))[:100] }}...
                 </p>
-                <a href="{{ url_for('admin_blocks') }}" style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent);">
+                <a href="{{ url_for('dashboard.admin_blocks') }}" style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent);">
                     {{ _('Налаштувати в адмінці') }} →
                 </a>
             </div>

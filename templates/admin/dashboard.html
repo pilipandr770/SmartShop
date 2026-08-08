@@ -61,14 +61,14 @@
                     </span>
                 </td>
                 <td class="text-right">
-                    <a href="{{ url_for('admin_order_detail', order_id=o.id) }}" class="btn-link">{{ _('Деталі') }} →</a>
+                    <a href="{{ url_for('orders.admin_order_detail', order_id=o.id) }}" class="btn-link">{{ _('Деталі') }} →</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
     <div style="margin-top: 1rem;">
-        <a href="{{ url_for('admin_orders') }}" class="btn-link">{{ _('Переглянути всі замовлення') }} →</a>
+        <a href="{{ url_for('orders.admin_orders') }}" class="btn-link">{{ _('Переглянути всі замовлення') }} →</a>
     </div>
     {% else %}
         <p class="text-muted">{{ _('Замовлень ще немає. Вони з\'являться після першої покупки.') }}</p>
@@ -79,10 +79,10 @@
     <div class="card">
         <h3>🚀 {{ _('Швидкі дії') }}</h3>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-            <a href="{{ url_for('admin_products') }}" class="btn-link" style="justify-content: flex-start;">📦 {{ _('Додати новий товар') }}</a>
-            <a href="{{ url_for('admin_categories') }}" class="btn-link" style="justify-content: flex-start;">📁 {{ _('Управління категоріями') }}</a>
-            <a href="{{ url_for('admin_blocks') }}" class="btn-link" style="justify-content: flex-start;">🏠 {{ _('Редагувати головну') }}</a>
-            <a href="{{ url_for('admin_settings') }}" class="btn-link" style="justify-content: flex-start;">⚙️ {{ _('Налаштування сайту') }}</a>
+            <a href="{{ url_for('products.admin_products') }}" class="btn-link" style="justify-content: flex-start;">📦 {{ _('Додати новий товар') }}</a>
+            <a href="{{ url_for('products.admin_categories') }}" class="btn-link" style="justify-content: flex-start;">📁 {{ _('Управління категоріями') }}</a>
+            <a href="{{ url_for('dashboard.admin_blocks') }}" class="btn-link" style="justify-content: flex-start;">🏠 {{ _('Редагувати головну') }}</a>
+            <a href="{{ url_for('site_settings.admin_settings') }}" class="btn-link" style="justify-content: flex-start;">⚙️ {{ _('Налаштування сайту') }}</a>
         </div>
     </div>
     <div class="card">

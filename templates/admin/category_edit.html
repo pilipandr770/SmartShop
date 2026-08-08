@@ -6,7 +6,7 @@
         <h1>✏️ {{ _('Редагування категорії') }}</h1>
         <p class="page-subtitle">{{ category.name }}</p>
     </div>
-    <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">← {{ _('Назад до списку') }}</a>
+    <a href="{{ url_for('products.admin_categories') }}" class="btn btn-secondary">← {{ _('Назад до списку') }}</a>
 </div>
 
 <form method="post">
@@ -55,7 +55,7 @@
                         <br><span class="text-muted">{{ '%.2f'|format(product.price) }} ₴</span>
                     </div>
                 </div>
-                <a href="{{ url_for('admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary">✏️</a>
+                <a href="{{ url_for('products.admin_products_edit', product_id=product.id) }}" class="btn btn-sm btn-secondary">✏️</a>
             </div>
             {% endfor %}
             {% if category.products|length > 10 %}
@@ -68,7 +68,7 @@
     {% endif %}
 
     <div class="form-footer">
-        <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">{{ _('Скасувати') }}</a>
+        <a href="{{ url_for('products.admin_categories') }}" class="btn btn-secondary">{{ _('Скасувати') }}</a>
         <button type="submit" class="btn btn-primary btn-lg">💾 {{ _('Зберегти зміни') }}</button>
     </div>
 </form>
@@ -80,7 +80,7 @@
     </div>
     <div class="form-section">
         <p class="text-muted">{{ _('При видаленні категорії товари залишаться, але будуть без категорії.') }}</p>
-        <form method="post" action="{{ url_for('admin_categories_delete', category_id=category.id) }}" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити цю категорію?') }}');">
+        <form method="post" action="{{ url_for('products.admin_categories_delete', category_id=category.id) }}" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити цю категорію?') }}');">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger">🗑️ {{ _('Видалити категорію') }}</button>
         </form>

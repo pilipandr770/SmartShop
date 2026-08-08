@@ -82,7 +82,7 @@
                     </td>
                     <td>
                         {% if task.order %}
-                        <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}">
+                        <a href="{{ url_for('orders.admin_order_detail', order_id=task.order_id) }}">
                             #{{ task.order.id }}
                         </a>
                         {% else %}

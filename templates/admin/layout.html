@@ -310,17 +310,17 @@
 
         <div class="nav-section">
             <div class="nav-title">{{ _('Огляд') }}</div>
-            <a href="{{ url_for('admin_dashboard') }}" class="nav-link{% if request.endpoint == 'admin_dashboard' %} active{% endif %}">
+            <a href="{{ url_for('dashboard.admin_dashboard') }}" class="nav-link{% if request.endpoint == 'dashboard.admin_dashboard' %} active{% endif %}">
                 <span class="nav-icon">📊</span> {{ _('Дашборд') }}
             </a>
-            <a href="{{ url_for('admin_stats') }}" class="nav-link{% if request.endpoint == 'admin_stats' %} active{% endif %}">
+            <a href="{{ url_for('orders.admin_stats') }}" class="nav-link{% if request.endpoint == 'orders.admin_stats' %} active{% endif %}">
                 <span class="nav-icon">📈</span> {{ _('Статистика') }}
             </a>
         </div>
 
         <div class="nav-section">
             <div class="nav-title">{{ _('Продажі') }}</div>
-            <a href="{{ url_for('admin_orders') }}" class="nav-link{% if request.endpoint in ['admin_orders', 'admin_order_detail'] %} active{% endif %}">
+            <a href="{{ url_for('orders.admin_orders') }}" class="nav-link{% if request.endpoint in ['orders.admin_orders', 'orders.admin_order_detail'] %} active{% endif %}">
                 <span class="nav-icon">🛒</span> {{ _('Замовлення') }}
             </a>
             <a href="{{ url_for('contacts.admin_contacts') }}" class="nav-link{% if request.endpoint == 'contacts.admin_contacts' %} active{% endif %}">
@@ -365,13 +365,13 @@
 
         <div class="nav-section">
             <div class="nav-title">{{ _('Контент') }}</div>
-            <a href="{{ url_for('admin_blocks') }}" class="nav-link{% if request.endpoint == 'admin_blocks' %} active{% endif %}">
+            <a href="{{ url_for('dashboard.admin_blocks') }}" class="nav-link{% if request.endpoint == 'dashboard.admin_blocks' %} active{% endif %}">
                 <span class="nav-icon">🏠</span> {{ _('Головна сторінка') }}
             </a>
-            <a href="{{ url_for('admin_categories') }}" class="nav-link{% if request.endpoint in ['admin_categories', 'admin_categories_edit'] %} active{% endif %}">
+            <a href="{{ url_for('products.admin_categories') }}" class="nav-link{% if request.endpoint in ['products.admin_categories', 'products.admin_categories_edit'] %} active{% endif %}">
                 <span class="nav-icon">📁</span> {{ _('Категорії') }}
             </a>
-            <a href="{{ url_for('admin_products') }}" class="nav-link{% if request.endpoint in ['admin_products', 'admin_products_edit'] %} active{% endif %}">
+            <a href="{{ url_for('products.admin_products') }}" class="nav-link{% if request.endpoint in ['products.admin_products', 'products.admin_products_edit'] %} active{% endif %}">
                 <span class="nav-icon">📦</span> {{ _('Товари') }}
             </a>
             <a href="{{ url_for('blog.admin_blog') }}" class="nav-link{% if request.endpoint in ['blog.admin_blog', 'blog.admin_blog_edit', 'blog.admin_blog_new'] %} active{% endif %}">
@@ -392,7 +392,7 @@
         <div class="sidebar-footer">
             <div class="nav-section" style="margin-bottom: 0;">
                 <div class="nav-title">{{ _('Система') }}</div>
-                <a href="{{ url_for('admin_settings') }}" class="nav-link{% if request.endpoint == 'admin_settings' %} active{% endif %}">
+                <a href="{{ url_for('site_settings.admin_settings') }}" class="nav-link{% if request.endpoint == 'site_settings.admin_settings' %} active{% endif %}">
                     <span class="nav-icon">⚙️</span> {{ _('Налаштування') }}
                 </a>
                 <a href="{{ url_for('settings.admin_domain_settings') }}" class="nav-link{% if request.endpoint == 'settings.admin_domain_settings' %} active{% endif %}">
@@ -409,7 +409,7 @@
                     <span class="nav-icon">⚠️</span> {{ _('Видалити акаунт') }}
                 </a>
                 {% endif %}
-                <a href="{{ url_for('admin_logout') }}" class="nav-link">
+                <a href="{{ url_for('dashboard.admin_logout') }}" class="nav-link">
                     <span class="nav-icon">🚪</span> {{ _('Вийти') }}
                 </a>
                 <a href="{{ url_for('index') }}" class="nav-link" target="_blank">

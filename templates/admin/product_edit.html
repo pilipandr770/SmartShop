@@ -6,7 +6,7 @@
         <h1>{{ _('✏️ Редагування товару') }}</h1>
         <p class="page-subtitle">{{ product.name }}</p>
     </div>
-    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">{{ _('← Назад до списку') }}</a>
+    <a href="{{ url_for('products.admin_products') }}" class="btn btn-secondary">{{ _('← Назад до списку') }}</a>
 </div>
 
 <form method="post">
@@ -115,7 +115,7 @@
     </div>
 
     <div class="form-footer">
-        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary">{{ _('Скасувати') }}</a>
+        <a href="{{ url_for('products.admin_products') }}" class="btn btn-secondary">{{ _('Скасувати') }}</a>
         <button type="submit" class="btn btn-primary btn-lg">{{ _('💾 Зберегти зміни') }}</button>
     </div>
 </form>
@@ -127,7 +127,7 @@
     </div>
     <div class="form-section">
         <p class="text-muted">{{ _('Видалення товару є незворотною дією.') }}</p>
-        <form method="post" action="{{ url_for('admin_products_delete', product_id=product.id) }}" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити цей товар?') }}');">
+        <form method="post" action="{{ url_for('products.admin_products_delete', product_id=product.id) }}" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити цей товар?') }}');">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger">{{ _('🗑️ Видалити товар') }}</button>
         </form>

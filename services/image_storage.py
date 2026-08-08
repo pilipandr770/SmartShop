@@ -9,8 +9,34 @@ import os
 from urllib.parse import urlparse
 
 from flask import current_app
+from werkzeug.utils import secure_filename
 
 from extensions import db
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+ALLOWED_MIME_TYPES = {
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+    'image/webp',
+}
+
+
+def allowed_file(filename, content_type=None):
+    """Validate file extension and optionally MIME type."""
+    if not filename or '.' not in filename:
+        return False
+
+    filename = secure_filename(filename)
+
+    ext = filename.rsplit('.', 1)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return False
+
+    if content_type and content_type not in ALLOWED_MIME_TYPES:
+        return False
+
+    return True
 
 
 def delete_old_image(old_image_url):

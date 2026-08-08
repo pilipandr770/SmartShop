@@ -40,7 +40,7 @@
                         <span class="label">{{ _('ID Замовлення:') }}</span>
                         <span class="value">
                             {% if task.order %}
-                            <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}">#{{ task.order_id }}</a>
+                            <a href="{{ url_for('orders.admin_order_detail', order_id=task.order_id) }}">#{{ task.order_id }}</a>
                             {% else %}
                             #{{ task.order_id }}
                             {% endif %}
@@ -300,7 +300,7 @@
                     <a href="{{ url_for('warehouse.admin_warehouse') }}" class="btn btn-outline btn-block">{{ _('📦 Всі завдання') }}</a>
                     <a href="{{ url_for('warehouse.admin_warehouse_stock') }}" class="btn btn-outline btn-block">{{ _('📊 Залишки') }}</a>
                     {% if task.order %}
-                    <a href="{{ url_for('admin_order_detail', order_id=task.order_id) }}" class="btn btn-outline btn-block">{{ _('🧾 Замовлення') }}</a>
+                    <a href="{{ url_for('orders.admin_order_detail', order_id=task.order_id) }}" class="btn btn-outline btn-block">{{ _('🧾 Замовлення') }}</a>
                     {% endif %}
                 </div>
             </div>

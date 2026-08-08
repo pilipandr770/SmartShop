@@ -23,7 +23,7 @@
         </div>
         <button type="submit" class="btn btn-secondary">🔍 {{ _('Фільтрувати') }}</button>
         {% if request.args.get('status') %}
-            <a href="{{ url_for('admin_orders') }}" class="btn btn-ghost">✕ {{ _('Скинути') }}</a>
+            <a href="{{ url_for('orders.admin_orders') }}" class="btn btn-ghost">✕ {{ _('Скинути') }}</a>
         {% endif %}
     </form>
 </div>
@@ -85,7 +85,7 @@
             </thead>
             <tbody>
             {% for order in orders %}
-                <tr class="order-row" onclick="window.location='{{ url_for('admin_order_detail', order_id=order.id) }}'">
+                <tr class="order-row" onclick="window.location='{{ url_for('orders.admin_order_detail', order_id=order.id) }}'">
                     <td><span class="badge badge-secondary">#{{ order.id }}</span></td>
                     <td>{{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
                     <td>
@@ -124,7 +124,7 @@
                         {% endif %}
                     </td>
                     <td onclick="event.stopPropagation();">
-                        <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-secondary">
+                        <a href="{{ url_for('orders.admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-secondary">
                             👁️ {{ _('Деталі') }}
                         </a>
                     </td>
@@ -138,7 +138,7 @@
     {% if pagination.pages > 1 %}
     <div class="pagination">
         {% if pagination.has_prev %}
-            <a href="{{ url_for('admin_orders', page=pagination.prev_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">← {{ _('Попередня') }}</a>
+            <a href="{{ url_for('orders.admin_orders', page=pagination.prev_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">← {{ _('Попередня') }}</a>
         {% endif %}
 
         <span class="pagination-info">
@@ -146,7 +146,7 @@
         </span>
 
         {% if pagination.has_next %}
-            <a href="{{ url_for('admin_orders', page=pagination.next_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">{{ _('Наступна') }} →</a>
+            <a href="{{ url_for('orders.admin_orders', page=pagination.next_num, status=request.args.get('status')) }}" class="btn btn-secondary btn-sm">{{ _('Наступна') }} →</a>
         {% endif %}
     </div>
     {% endif %}

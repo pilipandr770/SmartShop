@@ -21,19 +21,19 @@
             {% for block in homepage_blocks %}
             <div class="block-editor {% if not block.is_active %}block-disabled{% endif %}">
                 <div class="block-order-controls">
-                    <form method="post" action="{{ url_for('admin_blocks_move', block_id=block.id) }}">
+                    <form method="post" action="{{ url_for('dashboard.admin_blocks_move', block_id=block.id) }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="direction" value="up">
                         <button type="submit" class="btn btn-sm btn-outline" {% if loop.first %}disabled{% endif %} title="{{ _('Вище') }}">↑</button>
                     </form>
-                    <form method="post" action="{{ url_for('admin_blocks_move', block_id=block.id) }}">
+                    <form method="post" action="{{ url_for('dashboard.admin_blocks_move', block_id=block.id) }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="direction" value="down">
                         <button type="submit" class="btn btn-sm btn-outline" {% if loop.last %}disabled{% endif %} title="{{ _('Нижче') }}">↓</button>
                     </form>
                 </div>
 
-                <form method="post" action="{{ url_for('admin_blocks_save', block_id=block.id) }}" class="block-form">
+                <form method="post" action="{{ url_for('dashboard.admin_blocks_save', block_id=block.id) }}" class="block-form">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="block-image-wrapper">
@@ -89,7 +89,7 @@
                     </div>
                 </form>
 
-                <form method="post" action="{{ url_for('admin_blocks_delete', block_id=block.id) }}"
+                <form method="post" action="{{ url_for('dashboard.admin_blocks_delete', block_id=block.id) }}"
                       onsubmit="return confirm('{{ _('Видалити цей блок?') }}')" class="block-delete-form">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-sm btn-danger" title="{{ _('Видалити') }}">🗑️</button>
@@ -98,7 +98,7 @@
             {% endfor %}
         </div>
 
-        <form method="post" action="{{ url_for('admin_blocks_new') }}" style="margin-top: 1rem;">
+        <form method="post" action="{{ url_for('dashboard.admin_blocks_new') }}" style="margin-top: 1rem;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-outline">➕ {{ _('Додати блок') }}</button>
         </form>

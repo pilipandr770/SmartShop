@@ -119,7 +119,7 @@
 <div class="card">
     <div class="card-header">
         <h3>{{ _('🕐 Останні замовлення') }}</h3>
-        <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary btn-sm">{{ _('Всі замовлення →') }}</a>
+        <a href="{{ url_for('orders.admin_orders') }}" class="btn btn-secondary btn-sm">{{ _('Всі замовлення →') }}</a>
     </div>
     
     {% if latest_orders %}

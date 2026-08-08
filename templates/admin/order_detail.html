@@ -6,7 +6,7 @@
         <h1>🛒 {{ _('Замовлення') }} #{{ order.id }}</h1>
         <p class="page-subtitle">{{ _('Деталі замовлення') }}</p>
     </div>
-    <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary">← {{ _('Назад до списку') }}</a>
+    <a href="{{ url_for('orders.admin_orders') }}" class="btn btn-secondary">← {{ _('Назад до списку') }}</a>
 </div>
 
 <div class="order-grid">
@@ -114,7 +114,7 @@
                     <td>
                         <strong>{{ item.product_name }}</strong>
                         {% if item.product_id %}
-                            <a href="{{ url_for('admin_products_edit', product_id=item.product_id) }}" class="btn btn-sm btn-secondary" style="margin-left: 0.5rem;">→</a>
+                            <a href="{{ url_for('products.admin_products_edit', product_id=item.product_id) }}" class="btn btn-sm btn-secondary" style="margin-left: 0.5rem;">→</a>
                         {% endif %}
                     </td>
                     <td>{{ '%.2f'|format(item.price) }} {{ item.currency }}</td>
@@ -144,7 +144,7 @@
         <h3>🔄 {{ _('Змінити статус') }}</h3>
     </div>
     <div class="form-section">
-        <form method="post" action="{{ url_for('admin_order_update_status', order_id=order.id) }}" class="status-form">
+        <form method="post" action="{{ url_for('orders.admin_order_update_status', order_id=order.id) }}" class="status-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <select name="status" class="status-select">
                 <option value="created" {% if order.status == 'created' %}selected{% endif %}>{{ _('Створено') }}</option>
@@ -165,7 +165,7 @@
         <h3>📝 {{ _('Нотатки') }}</h3>
     </div>
     <div class="form-section">
-        <form method="post" action="{{ url_for('admin_order_update_notes', order_id=order.id) }}">
+        <form method="post" action="{{ url_for('orders.admin_order_update_notes', order_id=order.id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <textarea name="notes" rows="3" placeholder="{{ _('Внутрішні нотатки (тільки для адміністратора)...') }}">{{ order.notes or '' }}</textarea>
             <div class="form-actions" style="margin-top: 1rem;">
@@ -182,7 +182,7 @@
             <a href="mailto:{{ order.customer_email }}?subject=Замовлення %23{{ order.id }}" class="btn btn-primary">✉️ {{ _('Написати клієнту') }}</a>
         {% endif %}
 
-        <form method="post" action="{{ url_for('admin_order_delete', order_id=order.id) }}" style="margin-left: auto;" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити це замовлення?') }}');">
+        <form method="post" action="{{ url_for('orders.admin_order_delete', order_id=order.id) }}" style="margin-left: auto;" onsubmit="return confirm('{{ _('Ви впевнені, що хочете видалити це замовлення?') }}');">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-danger">🗑️ {{ _('Видалити замовлення') }}</button>
         </form>
