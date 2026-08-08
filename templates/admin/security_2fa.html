@@ -29,7 +29,7 @@
             </p>
 
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-top:1rem;">
-                <form method="POST" action="{{ url_for('admin_2fa_regenerate_backup_codes') }}" style="display:flex; gap:0.5rem; align-items:center;">
+                <form method="POST" action="{{ url_for('settings.admin_2fa_regenerate_backup_codes') }}" style="display:flex; gap:0.5rem; align-items:center;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="password" name="password" placeholder="{{ _('Ваш пароль') }}" required class="form-control" style="width:auto;">
                     <button type="submit" class="btn btn-outline">🔄 {{ _('Перегенерувати резервні коди') }}</button>
@@ -37,7 +37,7 @@
             </div>
 
             <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.75rem;">
-                <form method="POST" action="{{ url_for('admin_2fa_disable') }}" style="display:flex; gap:0.5rem; align-items:center;"
+                <form method="POST" action="{{ url_for('settings.admin_2fa_disable') }}" style="display:flex; gap:0.5rem; align-items:center;"
                       onsubmit="return confirm('{{ _('Вимкнути двофакторну автентифікацію?') }}');">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="password" name="password" placeholder="{{ _('Ваш пароль') }}" required class="form-control" style="width:auto;">
@@ -52,7 +52,7 @@
             <p style="color: var(--text-muted); font-size: 0.9rem;">
                 {{ _('Рекомендуємо увімкнути - це суттєво ускладнює доступ до адмінки навіть якщо пароль стане відомий третій особі.') }}
             </p>
-            <a href="{{ url_for('admin_2fa_setup') }}" class="btn btn-primary">🔐 {{ _('Увімкнути 2FA') }}</a>
+            <a href="{{ url_for('settings.admin_2fa_setup') }}" class="btn btn-primary">🔐 {{ _('Увімкнути 2FA') }}</a>
         {% endif %}
     </div>
 </div>

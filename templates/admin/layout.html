@@ -355,7 +355,7 @@
             <a href="{{ url_for('warehouse.admin_warehouse_reports') }}" class="nav-link{% if request.endpoint == 'warehouse.admin_warehouse_reports' %} active{% endif %}">
                 <span class="nav-icon">📈</span> {{ _('Звіти') }}
             </a>
-            <a href="{{ url_for('admin_shipping_settings') }}" class="nav-link{% if request.endpoint in ['admin_shipping_settings', 'admin_shipping_account_new', 'admin_shipping_account_edit'] %} active{% endif %}">
+            <a href="{{ url_for('settings.admin_shipping_settings') }}" class="nav-link{% if request.endpoint in ['settings.admin_shipping_settings', 'settings.admin_shipping_account_new', 'settings.admin_shipping_account_edit'] %} active{% endif %}">
                 <span class="nav-icon">🚚</span> {{ _('Доставка') }}
             </a>
             <a href="{{ url_for('accounting.admin_accounting') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('accounting.') %} active{% endif %}">
@@ -395,17 +395,17 @@
                 <a href="{{ url_for('admin_settings') }}" class="nav-link{% if request.endpoint == 'admin_settings' %} active{% endif %}">
                     <span class="nav-icon">⚙️</span> {{ _('Налаштування') }}
                 </a>
-                <a href="{{ url_for('admin_domain_settings') }}" class="nav-link{% if request.endpoint == 'admin_domain_settings' %} active{% endif %}">
+                <a href="{{ url_for('settings.admin_domain_settings') }}" class="nav-link{% if request.endpoint == 'settings.admin_domain_settings' %} active{% endif %}">
                     <span class="nav-icon">🔗</span> {{ _('Власний домен') }}
                 </a>
-                <a href="{{ url_for('admin_payments_settings') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin_payments') %} active{% endif %}">
+                <a href="{{ url_for('settings.admin_payments_settings') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('settings.admin_payments') %} active{% endif %}">
                     <span class="nav-icon">💳</span> {{ _('Прийом оплат') }}
                 </a>
-                <a href="{{ url_for('admin_2fa') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('admin_2fa') %} active{% endif %}">
+                <a href="{{ url_for('settings.admin_2fa') }}" class="nav-link{% if request.endpoint and request.endpoint.startswith('settings.admin_2fa') %} active{% endif %}">
                     <span class="nav-icon">🔐</span> {{ _('Двофакторна автентифікація') }}
                 </a>
                 {% if current_user.is_authenticated and g.store and current_user.id == g.store.owner_user_id %}
-                <a href="{{ url_for('admin_delete_account') }}" class="nav-link{% if request.endpoint == 'admin_delete_account' %} active{% endif %}" style="color:#f87171;">
+                <a href="{{ url_for('settings.admin_delete_account') }}" class="nav-link{% if request.endpoint == 'settings.admin_delete_account' %} active{% endif %}" style="color:#f87171;">
                     <span class="nav-icon">⚠️</span> {{ _('Видалити акаунт') }}
                 </a>
                 {% endif %}

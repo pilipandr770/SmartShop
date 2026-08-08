@@ -29,7 +29,7 @@
         </p>
         <code style="display:inline-block; padding: 0.5rem 0.75rem; background: var(--bg-main); border-radius: 0.5rem; letter-spacing: 0.05em;">{{ secret }}</code>
 
-        <form method="POST" action="{{ url_for('admin_2fa_restart') }}" style="margin-top: 1rem;">
+        <form method="POST" action="{{ url_for('settings.admin_2fa_restart') }}" style="margin-top: 1rem;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-outline btn-sm">🔄 {{ _('QR-код не працює? Згенерувати новий') }}</button>
         </form>
@@ -41,7 +41,7 @@
         <h3>{{ _('Крок 2. Підтвердіть код') }}</h3>
     </div>
     <div class="form-section" style="padding: 1.5rem;">
-        <form method="POST" action="{{ url_for('admin_2fa_setup') }}">
+        <form method="POST" action="{{ url_for('settings.admin_2fa_setup') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label for="code">{{ _('6-значний код з застосунку') }}</label>

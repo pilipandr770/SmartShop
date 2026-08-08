@@ -37,8 +37,8 @@
                 <td>{% if account.is_enabled %}✅ {{ _('Увімкнено') }}{% else %}⏸️ {{ _('Вимкнено') }}{% endif %}</td>
                 <td>{{ account.origin_city or '—' }}</td>
                 <td>
-                    <a href="{{ url_for('admin_shipping_account_edit', id=account.id) }}" class="btn btn-outline">✏️ {{ _('Редагувати') }}</a>
-                    <form method="POST" action="{{ url_for('admin_shipping_account_delete', id=account.id) }}" style="display:inline;"
+                    <a href="{{ url_for('settings.admin_shipping_account_edit', id=account.id) }}" class="btn btn-outline">✏️ {{ _('Редагувати') }}</a>
+                    <form method="POST" action="{{ url_for('settings.admin_shipping_account_delete', id=account.id) }}" style="display:inline;"
                           onsubmit="return confirm('{{ _('Видалити цей обліковий запис?') }}');">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-outline" style="color:#ef4444;border-color:#ef4444;">🗑️</button>
@@ -60,7 +60,7 @@
     </div>
     <div style="padding: 1rem; display:flex; gap: 1rem;">
         {% for carrier in available_carriers %}
-        <a href="{{ url_for('admin_shipping_account_new', carrier=carrier) }}" class="btn">
+        <a href="{{ url_for('settings.admin_shipping_account_new', carrier=carrier) }}" class="btn">
             + {{ carrier_labels.get(carrier, carrier) }}
         </a>
         {% endfor %}
