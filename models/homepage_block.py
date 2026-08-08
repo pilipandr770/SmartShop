@@ -77,7 +77,7 @@ class HomepageBlock(db.Model):
         if self.link_type == "shop":
             return url_for("shop")
         if self.link_type == "blog":
-            return url_for("blog_page")
+            return url_for("blog.blog_page")
         if self.link_type == "ai_assistant":
             return url_for("ai_assistant_page")
         if self.link_type == "category" and self.link_value:

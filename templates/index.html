@@ -369,7 +369,7 @@
     <h2 style="font-size:1.1rem;margin-bottom:0.25rem;">{{ _('Latest from Blog') }}</h2>
     <div class="products-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
         {% for post in blog_posts %}
-        <a href="{{ url_for('blog_post_page', slug=post.slug) }}" class="product-card">
+        <a href="{{ url_for('blog.blog_post_page', slug=post.slug) }}" class="product-card">
             <div class="product-img">
                 <div class="product-img-inner"
                      style="background-image:url('{{ post.featured_image or 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800' }}');">
@@ -389,7 +389,7 @@
         {% endfor %}
     </div>
     <div style="text-align:center;margin-top:1rem;">
-        <a href="{{ url_for('blog_page') }}" class="btn">{{ _('View all') }} &#8594;</a>
+        <a href="{{ url_for('blog.blog_page') }}" class="btn">{{ _('View all') }} &#8594;</a>
     </div>
 </section>
 {% endif %}

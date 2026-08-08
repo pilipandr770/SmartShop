@@ -264,7 +264,7 @@
 
     {% if featured_post %}
     <!-- Featured Post -->
-    <a href="{{ url_for('blog_post_page', slug=featured_post.slug) }}" class="featured-post">
+    <a href="{{ url_for('blog.blog_post_page', slug=featured_post.slug) }}" class="featured-post">
         <div class="featured-image">
             {% if featured_post.featured_image %}
             <img src="{{ featured_post.featured_image }}" alt="{{ featured_post.get_title(get_locale()|string) }}">
@@ -291,7 +291,7 @@
 
     <div class="blog-grid">
         {% for post in posts %}
-        <a href="{{ url_for('blog_post_page', slug=post.slug) }}" class="blog-card">
+        <a href="{{ url_for('blog.blog_post_page', slug=post.slug) }}" class="blog-card">
             <div class="blog-card-image" style="background-image: url('{{ post.featured_image or 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600' }}');"></div>
             <div class="blog-card-content">
                 <div class="blog-card-date">
@@ -317,7 +317,7 @@
     {% if total_pages > 1 %}
     <div class="pagination">
         {% for p in range(1, total_pages + 1) %}
-        <a href="{{ url_for('blog_page', page=p) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
+        <a href="{{ url_for('blog.blog_page', page=p) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
         {% endfor %}
     </div>
     {% endif %}

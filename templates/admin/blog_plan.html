@@ -4,7 +4,7 @@
 <div class="page-header">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
         <div>
-            <a href="{{ url_for('admin_blog') }}" class="back-link">← {{ _('Назад до блогу') }}</a>
+            <a href="{{ url_for('blog.admin_blog') }}" class="back-link">← {{ _('Назад до блогу') }}</a>
             <h1>📅 {{ _('План публікацій на 7 днів') }}</h1>
             <p class="page-subtitle">{{ _('Заплануйте теми статей і AI згенерує контент автоматично') }}</p>
         </div>
@@ -42,7 +42,7 @@
                         {% if day.plan.status == 'pending' %}
                         <button type="button" class="btn-sm btn-accent" onclick="generatePost({{ day.plan.id }})">🤖 {{ _('Генерувати') }}</button>
                         {% elif day.plan.blog_post_id %}
-                        <a href="{{ url_for('admin_blog_edit', id=day.plan.blog_post_id) }}" class="btn-sm">✏️ {{ _('Редагувати') }}</a>
+                        <a href="{{ url_for('blog.admin_blog_edit', id=day.plan.blog_post_id) }}" class="btn-sm">✏️ {{ _('Редагувати') }}</a>
                         {% endif %}
                         <button type="button" class="btn-sm btn-danger" onclick="deletePlan({{ day.plan.id }})">🗑</button>
                     </div>
@@ -138,7 +138,7 @@
                     <button type="button" class="btn-sm btn-accent" onclick="generatePost({{ plan.id }})">🤖</button>
                     {% endif %}
                     {% if plan.blog_post_id %}
-                    <a href="{{ url_for('admin_blog_edit', id=plan.blog_post_id) }}" class="btn-sm">✏️</a>
+                    <a href="{{ url_for('blog.admin_blog_edit', id=plan.blog_post_id) }}" class="btn-sm">✏️</a>
                     {% endif %}
                 </td>
             </tr>

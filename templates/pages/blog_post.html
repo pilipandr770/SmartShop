@@ -297,7 +297,7 @@
     <div class="breadcrumb">
         <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
         <span>/</span>
-        <a href="{{ url_for('blog_page') }}">{{ _('Блог') }}</a>
+        <a href="{{ url_for('blog.blog_page') }}">{{ _('Блог') }}</a>
         <span>/</span>
         <span style="color: var(--text-main);">{{ post.get_title(get_locale()|string)[:50] }}...</span>
     </div>
@@ -368,7 +368,7 @@
         <h2 class="related-title">{{ _('Схожі статті') }}</h2>
         <div class="related-grid">
             {% for r in related %}
-            <a href="{{ url_for('blog_post_page', slug=r.slug) }}" class="related-card">
+            <a href="{{ url_for('blog.blog_post_page', slug=r.slug) }}" class="related-card">
                 {% if r.featured_image %}
                 <div class="related-card-image" style="background-image: url('{{ r.featured_image }}');"></div>
                 {% else %}

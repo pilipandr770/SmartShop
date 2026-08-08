@@ -4,7 +4,7 @@
 <div class="page-header">
     <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-            <a href="{{ url_for('admin_blog') }}" class="back-link">← {{ _('Назад до блогу') }}</a>
+            <a href="{{ url_for('blog.admin_blog') }}" class="back-link">← {{ _('Назад до блогу') }}</a>
             <h1>{{ _('Редагування статті') if post else _('Нова стаття') }}</h1>
         </div>
         {% if post and post.status == 'draft' %}

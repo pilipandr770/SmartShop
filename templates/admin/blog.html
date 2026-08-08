@@ -8,8 +8,8 @@
             <p class="page-subtitle">{{ _('Управління публікаціями та контент-планом') }}</p>
         </div>
         <div style="display:flex;gap:0.75rem;">
-            <a href="{{ url_for('admin_blog_plan') }}" class="btn btn-secondary">📅 {{ _('План на 7 днів') }}</a>
-            <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">➕ {{ _('Нова стаття') }}</a>
+            <a href="{{ url_for('blog.admin_blog_plan') }}" class="btn btn-secondary">📅 {{ _('План на 7 днів') }}</a>
+            <a href="{{ url_for('blog.admin_blog_new') }}" class="btn btn-primary">➕ {{ _('Нова стаття') }}</a>
         </div>
     </div>
 </div>
@@ -37,10 +37,10 @@
 <!-- Фільтри -->
 <div class="filters-bar">
     <div class="filter-group">
-        <a href="{{ url_for('admin_blog') }}" class="filter-btn {{ 'active' if not status_filter else '' }}">{{ _('Всі') }}</a>
-        <a href="{{ url_for('admin_blog', status='published') }}" class="filter-btn {{ 'active' if status_filter == 'published' else '' }}">{{ _('Опубліковані') }}</a>
-        <a href="{{ url_for('admin_blog', status='scheduled') }}" class="filter-btn {{ 'active' if status_filter == 'scheduled' else '' }}">{{ _('Заплановані') }}</a>
-        <a href="{{ url_for('admin_blog', status='draft') }}" class="filter-btn {{ 'active' if status_filter == 'draft' else '' }}">{{ _('Чернетки') }}</a>
+        <a href="{{ url_for('blog.admin_blog') }}" class="filter-btn {{ 'active' if not status_filter else '' }}">{{ _('Всі') }}</a>
+        <a href="{{ url_for('blog.admin_blog', status='published') }}" class="filter-btn {{ 'active' if status_filter == 'published' else '' }}">{{ _('Опубліковані') }}</a>
+        <a href="{{ url_for('blog.admin_blog', status='scheduled') }}" class="filter-btn {{ 'active' if status_filter == 'scheduled' else '' }}">{{ _('Заплановані') }}</a>
+        <a href="{{ url_for('blog.admin_blog', status='draft') }}" class="filter-btn {{ 'active' if status_filter == 'draft' else '' }}">{{ _('Чернетки') }}</a>
     </div>
 </div>
 
@@ -69,7 +69,7 @@
                             <div class="post-thumb-placeholder">📄</div>
                             {% endif %}
                             <div>
-                                <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="post-title">{{ post.title }}</a>
+                                <a href="{{ url_for('blog.admin_blog_edit', id=post.id) }}" class="post-title">{{ post.title }}</a>
                                 {% if post.is_ai_generated %}
                                 <span class="ai-badge">🤖 AI</span>
                                 {% endif %}
@@ -106,7 +106,7 @@
                     <td>
                         <div class="actions">
                             {% if post.status != 'published' %}
-                            <form method="post" action="{{ url_for('admin_blog_publish', id=post.id) }}" style="display:inline;">
+                            <form method="post" action="{{ url_for('blog.admin_blog_publish', id=post.id) }}" style="display:inline;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn-icon success" title="{{ _('Опублікувати') }}">🚀</button>
                             </form>
@@ -114,9 +114,9 @@
                             <button type="button" class="btn-icon translate-btn" data-id="{{ post.id }}" title="{{ _('Автопереклад EN+DE') }}" onclick="translatePost({{ post.id }}, this)">
                                 🌐
                             </button>
-                            <a href="{{ url_for('blog_post_page', slug=post.slug) }}" target="_blank" class="btn-icon" title="{{ _('Переглянути') }}">👁</a>
-                            <a href="{{ url_for('admin_blog_edit', id=post.id) }}" class="btn-icon" title="{{ _('Редагувати') }}">✏️</a>
-                            <form method="post" action="{{ url_for('admin_blog_delete', id=post.id) }}" style="display:inline;">
+                            <a href="{{ url_for('blog.blog_post_page', slug=post.slug) }}" target="_blank" class="btn-icon" title="{{ _('Переглянути') }}">👁</a>
+                            <a href="{{ url_for('blog.admin_blog_edit', id=post.id) }}" class="btn-icon" title="{{ _('Редагувати') }}">✏️</a>
+                            <form method="post" action="{{ url_for('blog.admin_blog_delete', id=post.id) }}" style="display:inline;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="btn-icon danger" title="{{ _('Видалити') }}" onclick="return confirm('{{ _('Видалити цю статтю?') }}')">🗑</button>
                             </form>
@@ -129,7 +129,7 @@
                 <td colspan="6" class="empty-state">
                     <div class="empty-icon">📝</div>
                     <p>{{ _('Ще немає жодної статті') }}</p>
-                    <a href="{{ url_for('admin_blog_new') }}" class="btn btn-primary">{{ _('Створити першу статтю') }}</a>
+                    <a href="{{ url_for('blog.admin_blog_new') }}" class="btn btn-primary">{{ _('Створити першу статтю') }}</a>
                 </td>
             </tr>
             {% endif %}
@@ -141,7 +141,7 @@
 {% if total_pages > 1 %}
 <div class="pagination">
     {% for p in range(1, total_pages + 1) %}
-    <a href="{{ url_for('admin_blog', page=p, status=status_filter) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
+    <a href="{{ url_for('blog.admin_blog', page=p, status=status_filter) }}" class="page-btn {{ 'active' if p == page else '' }}">{{ p }}</a>
     {% endfor %}
 </div>
 {% endif %}

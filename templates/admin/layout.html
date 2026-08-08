@@ -374,7 +374,7 @@
             <a href="{{ url_for('admin_products') }}" class="nav-link{% if request.endpoint in ['admin_products', 'admin_products_edit'] %} active{% endif %}">
                 <span class="nav-icon">📦</span> {{ _('Товари') }}
             </a>
-            <a href="{{ url_for('admin_blog') }}" class="nav-link{% if request.endpoint in ['admin_blog', 'admin_blog_edit', 'admin_blog_new'] %} active{% endif %}">
+            <a href="{{ url_for('blog.admin_blog') }}" class="nav-link{% if request.endpoint in ['blog.admin_blog', 'blog.admin_blog_edit', 'blog.admin_blog_new'] %} active{% endif %}">
                 <span class="nav-icon">📝</span> {{ _('Блог') }}
             </a>
         </div>
@@ -384,7 +384,7 @@
             <a href="{{ url_for('admin_ai_settings') }}" class="nav-link{% if request.endpoint == 'admin_ai_settings' %} active{% endif %}">
                 <span class="nav-icon">🤖</span> {{ _('Налаштування ІІ') }}
             </a>
-            <a href="{{ url_for('admin_blog_plan') }}" class="nav-link{% if request.endpoint == 'admin_blog_plan' %} active{% endif %}">
+            <a href="{{ url_for('blog.admin_blog_plan') }}" class="nav-link{% if request.endpoint == 'blog.admin_blog_plan' %} active{% endif %}">
                 <span class="nav-icon">📅</span> {{ _('Контент-план') }}
             </a>
         </div>
