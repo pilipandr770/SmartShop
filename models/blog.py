@@ -258,7 +258,7 @@ class BlogPlan(db.Model):
 
 
 class AISettings(db.Model):
-    """Налаштування ІІ: чатбот та блогер (одна на магазин)."""
+    """Налаштування ШІ: чатбот та блогер (одна на магазин)."""
     __tablename__ = "ai_settings"
     __table_args__ = {'extend_existing': True}
 
@@ -267,7 +267,7 @@ class AISettings(db.Model):
 
     # === ЧАТБОТ ===
     chatbot_enabled = db.Column(db.Boolean, default=True)
-    chatbot_name = db.Column(db.String(100), default="ІІ-продавець")
+    chatbot_name = db.Column(db.String(100), default="ШІ-продавець")
     
     # Базові інструкції (система)
     chatbot_system_prompt = db.Column(db.Text, nullable=True)

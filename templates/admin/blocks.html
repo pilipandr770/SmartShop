@@ -66,7 +66,7 @@
                                     <option value="about" {% if block.link_type == 'about' %}selected{% endif %}>{{ _('Сторінка "Про нас"') }}</option>
                                     <option value="shop" {% if block.link_type == 'shop' %}selected{% endif %}>{{ _('Каталог товарів') }}</option>
                                     <option value="blog" {% if block.link_type == 'blog' %}selected{% endif %}>{{ _('Блог') }}</option>
-                                    <option value="ai_assistant" {% if block.link_type == 'ai_assistant' %}selected{% endif %}>{{ _('ІІ-асистент') }}</option>
+                                    <option value="ai_assistant" {% if block.link_type == 'ai_assistant' %}selected{% endif %}>{{ _('ШІ-асистент') }}</option>
                                     <option value="category" {% if block.link_type == 'category' %}selected{% endif %}>{{ _('Конкретна категорія') }}</option>
                                     <option value="custom" {% if block.link_type == 'custom' %}selected{% endif %}>{{ _('Довільне посилання') }}</option>
                                 </select>
@@ -186,7 +186,7 @@
                     <label for="ai_instructions">System prompt / {{ _('правила') }}</label>
                     <textarea id="ai_instructions" name="ai_instructions" rows="5" placeholder="{{ _('Інструкції для AI-продавця...') }}">{{ settings.ai_instructions or '' }}</textarea>
                     <small class="form-hint">
-                        💡 {{ _('Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він може/не може робити') }}
+                        💡 {{ _('Тут ви задаєте правила для ШІ-продавця: тон спілкування, мови, що він може/не може робити') }}
                     </small>
                 </div>
             </div>

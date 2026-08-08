@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-08 18:07+0200\n"
+"POT-Creation-Date: 2026-08-08 18:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1338,7 +1338,7 @@ msgstr ""
 #: templates/admin/ai_settings.html:35 templates/pages/ai_assistant.html:307
 #: templates/pages/ai_assistant.html:311 templates/pages/landing.html:262
 #: templates/pages/landing.html:358
-msgid "ІІ-продавець"
+msgid "ШІ-продавець"
 msgstr ""
 
 #: templates/admin/ai_settings.html:38
@@ -1384,7 +1384,7 @@ msgstr ""
 #: templates/admin/ai_settings.html:77
 msgid ""
 "Незалежно від того, що написано нижче, платформа завжди додає власні "
-"базові правила безпеки (розкриття, що це ІІ, заборона видумувати "
+"базові правила безпеки (розкриття, що це ШІ, заборона видумувати "
 "обіцянки, заборона розкривати чужі дані, стійкість до спроб \"зламати\" "
 "бота) - їх не можна вимкнути звідси."
 msgstr ""
@@ -1681,7 +1681,7 @@ msgid "Блог"
 msgstr ""
 
 #: templates/admin/blocks.html:69
-msgid "ІІ-асистент"
+msgid "ШІ-асистент"
 msgstr ""
 
 #: templates/admin/blocks.html:70
@@ -1790,7 +1790,7 @@ msgstr ""
 
 #: templates/admin/blocks.html:189
 msgid ""
-"Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він "
+"Тут ви задаєте правила для ШІ-продавця: тон спілкування, мови, що він "
 "може/не може робити"
 msgstr ""
 
@@ -3218,11 +3218,11 @@ msgid "Головна сторінка"
 msgstr ""
 
 #: templates/admin/layout.html:383
-msgid "ІІ-асистенти"
+msgid "ШІ-асистенти"
 msgstr ""
 
 #: templates/admin/layout.html:385
-msgid "Налаштування ІІ"
+msgid "Налаштування ШІ"
 msgstr ""
 
 #: templates/admin/layout.html:388
@@ -5506,7 +5506,7 @@ msgid "Створіть свій магазин"
 msgstr ""
 
 #: templates/auth/signup.html:10
-msgid "Каталог, ІІ-продавець і SEO-блог за кілька хвилин"
+msgid "Каталог, ШІ-продавець і SEO-блог за кілька хвилин"
 msgstr ""
 
 #: templates/auth/signup.html:24
@@ -6382,7 +6382,7 @@ msgid "Швидка обробка замовлень та доставка у �
 msgstr ""
 
 #: templates/pages/about.html:157
-msgid "Наш ІІ-помічник та команда завжди готові допомогти вам 24/7"
+msgid "Наш ШІ-помічник та команда завжди готові допомогти вам 24/7"
 msgstr ""
 
 #: templates/pages/about.html:162
@@ -6390,15 +6390,15 @@ msgid "Маєте питання?"
 msgstr ""
 
 #: templates/pages/about.html:163
-msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ІІ-помічником"
+msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ШІ-помічником"
 msgstr ""
 
 #: templates/pages/about.html:166
-msgid "Чат з ІІ"
+msgid "Чат з ШІ"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:2
-msgid "ІІ-продавець – SmartShop AI"
+msgid "ШІ-продавець – SmartShop AI"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:312
@@ -6416,7 +6416,7 @@ msgid "Вітаю!"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:329
-msgid "Я ІІ-помічник магазину SmartShop. Можу допомогти вам:"
+msgid "Я ШІ-помічник магазину SmartShop. Можу допомогти вам:"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:330
@@ -6480,11 +6480,11 @@ msgid "Переглянути всі"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:385
-msgid "Інструкції ІІ"
+msgid "Інструкції ШІ"
 msgstr ""
 
 #: templates/pages/ai_assistant.html:387
-msgid "ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів."
+msgid "ШІ-продавець налаштований бути ввічливим та допомагати з вибором товарів."
 msgstr ""
 
 #: templates/pages/ai_assistant.html:390
@@ -6568,7 +6568,7 @@ msgid "Завітайте до нашого офісу"
 msgstr ""
 
 #: templates/pages/contacts.html:252
-msgid "ІІ-помічник"
+msgid "ШІ-помічник"
 msgstr ""
 
 #: templates/pages/contacts.html:258
@@ -6612,16 +6612,16 @@ msgid "Потрібна швидка відповідь?"
 msgstr ""
 
 #: templates/pages/contacts.html:291
-msgid "Наш ІІ-помічник працює 24/7 і може відповісти миттєво"
+msgid "Наш ШІ-помічник працює 24/7 і може відповісти миттєво"
 msgstr ""
 
 #: templates/pages/contacts.html:292
-msgid "Поспілкуватись з ІІ"
+msgid "Поспілкуватись з ШІ"
 msgstr ""
 
 #: templates/pages/landing.html:6 templates/pages/landing.html:15
 #: templates/pages/landing.html:20
-msgid "SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем"
+msgid "SmartShop AI — конструктор інтернет-магазинів з ШІ-продавцем"
 msgstr ""
 
 #: templates/pages/landing.html:7 templates/pages/landing.html:16
@@ -6629,12 +6629,12 @@ msgstr ""
 msgid ""
 "SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, "
 "підключіть склад, доставку, бухгалтерію, автоматичний блог та "
-"ІІ-продавця. Підписка від 19€/міс."
+"ШІ-продавця. Підписка від 19€/міс."
 msgstr ""
 
 #: templates/pages/landing.html:31
 msgid ""
-"SaaS-платформа для запуску безпечного онлайн-магазину з ІІ-продавцем — "
+"SaaS-платформа для запуску безпечного онлайн-магазину з ШІ-продавцем — "
 "альтернатива WordPress/WooCommerce та Ecwid."
 msgstr ""
 
@@ -6646,7 +6646,7 @@ msgstr ""
 msgid ""
 "WordPress/WooCommerce покладається на сторонні плагіни — найчастішу "
 "причину злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та "
-"ІІ-продавець вбудовані в саму платформу й підтримуються централізовано, "
+"ШІ-продавець вбудовані в саму платформу й підтримуються централізовано, "
 "без плагінного ризику. Захист від CSRF, обмеження на перебір паролів, "
 "шифрування ключів доставки та перевірка оплати через підписані "
 "Stripe-вебхуки закладені з самого початку."
@@ -6664,13 +6664,13 @@ msgid ""
 msgstr ""
 
 #: templates/pages/landing.html:66 templates/pages/landing.html:401
-msgid "Що робить ІІ-продавець на сайті?"
+msgid "Що робить ШІ-продавець на сайті?"
 msgstr ""
 
 #: templates/pages/landing.html:67 templates/pages/landing.html:402
 msgid ""
 "Чат-бот знає ваш каталог, ціни та наявність, консультує покупця і "
-"підказує статус замовлення. Він прозоро повідомляє, що є ІІ (відповідно "
+"підказує статус замовлення. Він прозоро повідомляє, що є ШІ (відповідно "
 "до вимог EU AI Act), і ніколи не розкриває дані інших клієнтів чи не "
 "вигадує обіцянок від імені магазину."
 msgstr ""
@@ -6708,7 +6708,7 @@ msgid "Запитання"
 msgstr ""
 
 #: templates/pages/landing.html:241
-msgid "Свій інтернет-магазин з ІІ-продавцем —"
+msgid "Свій інтернет-магазин з ШІ-продавцем —"
 msgstr ""
 
 #: templates/pages/landing.html:241
@@ -6719,7 +6719,7 @@ msgstr ""
 msgid ""
 "Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, "
 "тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. "
-"Блог пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець."
+"Блог пише і публікує ШІ, а на сайті клієнтів консультує ШІ-продавець."
 msgstr ""
 
 #: templates/pages/landing.html:246
@@ -6762,7 +6762,7 @@ msgstr ""
 
 #: templates/pages/landing.html:268
 msgid ""
-"ІІ пише статті за вашим планом тем з SEO-заголовками, описами та "
+"ШІ пише статті за вашим планом тем з SEO-заголовками, описами та "
 "ключовими словами."
 msgstr ""
 
@@ -6859,15 +6859,15 @@ msgid ""
 msgstr ""
 
 #: templates/pages/landing.html:328
-msgid "ІІ-продавець з вбудованими обмеженнями"
+msgid "ШІ-продавець з вбудованими обмеженнями"
 msgstr ""
 
 #: templates/pages/landing.html:329
 msgid ""
 "Незалежно від налаштувань власника магазину, платформа завжди додає "
-"власні базові правила: чат-бот прозоро повідомляє, що він ІІ, не "
+"власні базові правила: чат-бот прозоро повідомляє, що він ШІ, не "
 "розголошує чужі дані і не вигадує обіцянок від імені магазину — з "
-"урахуванням вимог EU AI Act щодо прозорості ІІ-систем."
+"урахуванням вимог EU AI Act щодо прозорості ШІ-систем."
 msgstr ""
 
 #: templates/pages/landing.html:333

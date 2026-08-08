@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ _('ІІ-продавець – SmartShop AI') }}{% endblock %}
+{% block title %}{{ _('ШІ-продавець – SmartShop AI') }}{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -304,11 +304,11 @@
     <div class="breadcrumb">
         <a href="{{ url_for('index') }}">{{ _('Головна') }}</a>
         <span>/</span>
-        <span style="color: var(--text-main);">{{ _('ІІ-продавець') }}</span>
+        <span style="color: var(--text-main);">{{ _('ШІ-продавець') }}</span>
     </div>
 
     <div class="ai-hero">
-        <h1>🤖 {{ _('ІІ-продавець') }}</h1>
+        <h1>🤖 {{ _('ШІ-продавець') }}</h1>
         <p>{{ _('Ваш персональний помічник, який знає весь каталог та готовий допомогти 24/7') }}</p>
     </div>
 
@@ -326,7 +326,7 @@
                 <div class="ai-message bot">
                     <div class="avatar">🤖</div>
                     <div class="content">
-                        {{ _('Вітаю!') }} 👋 {{ _('Я ІІ-помічник магазину SmartShop. Можу допомогти вам:') }}<br><br>
+                        {{ _('Вітаю!') }} 👋 {{ _('Я ШІ-помічник магазину SmartShop. Можу допомогти вам:') }}<br><br>
                         • {{ _('Знайти потрібний товар') }}<br>
                         • {{ _('Порівняти продукти') }}<br>
                         • {{ _('Відповісти на питання про доставку') }}<br>
@@ -382,9 +382,9 @@
             </div>
 
             <div class="ai-sidebar-card">
-                <h4>⚙️ {{ _('Інструкції ІІ') }}</h4>
+                <h4>⚙️ {{ _('Інструкції ШІ') }}</h4>
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">
-                    {{ (settings.ai_instructions or _('ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів.'))[:100] }}...
+                    {{ (settings.ai_instructions or _('ШІ-продавець налаштований бути ввічливим та допомагати з вибором товарів.'))[:100] }}...
                 </p>
                 <a href="{{ url_for('admin_blocks') }}" style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent);">
                     {{ _('Налаштувати в адмінці') }} →

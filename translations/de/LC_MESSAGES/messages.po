@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SmartShop AI 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-08 18:07+0200\n"
+"POT-Creation-Date: 2026-08-08 18:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -1396,7 +1396,7 @@ msgstr "Chatbot-Name"
 #: templates/admin/ai_settings.html:35 templates/pages/ai_assistant.html:307
 #: templates/pages/ai_assistant.html:311 templates/pages/landing.html:262
 #: templates/pages/landing.html:358
-msgid "ІІ-продавець"
+msgid "ШІ-продавець"
 msgstr "KI-Verkäufer"
 
 #: templates/admin/ai_settings.html:38
@@ -1442,7 +1442,7 @@ msgstr "Chatbot-Anweisungen"
 #: templates/admin/ai_settings.html:77
 msgid ""
 "Незалежно від того, що написано нижче, платформа завжди додає власні базові "
-"правила безпеки (розкриття, що це ІІ, заборона видумувати обіцянки, заборона"
+"правила безпеки (розкриття, що це ШІ, заборона видумувати обіцянки, заборона"
 " розкривати чужі дані, стійкість до спроб \"зламати\" бота) - їх не можна "
 "вимкнути звідси."
 msgstr ""
@@ -1759,7 +1759,7 @@ msgid "Блог"
 msgstr "Blog"
 
 #: templates/admin/blocks.html:69
-msgid "ІІ-асистент"
+msgid "ШІ-асистент"
 msgstr "KI-Assistent"
 
 #: templates/admin/blocks.html:70
@@ -1869,7 +1869,7 @@ msgstr "Anweisungen für KI-Verkäufer..."
 
 #: templates/admin/blocks.html:189
 msgid ""
-"Тут ви задаєте правила для ІІ-продавця: тон спілкування, мови, що він "
+"Тут ви задаєте правила для ШІ-продавця: тон спілкування, мови, що він "
 "може/не може робити"
 msgstr ""
 "Hier legen Sie die Regeln für den KI-Verkäufer fest: Kommunikationston, was "
@@ -3329,11 +3329,11 @@ msgid "Головна сторінка"
 msgstr "Startseite"
 
 #: templates/admin/layout.html:383
-msgid "ІІ-асистенти"
+msgid "ШІ-асистенти"
 msgstr "KI-Assistenten"
 
 #: templates/admin/layout.html:385
-msgid "Налаштування ІІ"
+msgid "Налаштування ШІ"
 msgstr "KI-Einstellungen"
 
 #: templates/admin/layout.html:388
@@ -5666,7 +5666,7 @@ msgid "Створіть свій магазин"
 msgstr "Erstellen Sie Ihren Shop"
 
 #: templates/auth/signup.html:10
-msgid "Каталог, ІІ-продавець і SEO-блог за кілька хвилин"
+msgid "Каталог, ШІ-продавець і SEO-блог за кілька хвилин"
 msgstr "Katalog, KI-Verkäufer und SEO-Blog in wenigen Minuten"
 
 #: templates/auth/signup.html:24
@@ -6595,7 +6595,7 @@ msgid "Швидка обробка замовлень та доставка у �
 msgstr "Schnelle Bestellabwicklung und Lieferung in kürzester Zeit"
 
 #: templates/pages/about.html:157
-msgid "Наш ІІ-помічник та команда завжди готові допомогти вам 24/7"
+msgid "Наш ШІ-помічник та команда завжди готові допомогти вам 24/7"
 msgstr ""
 "Unser KI-Assistent und unser Team helfen Ihnen jederzeit rund um die Uhr"
 
@@ -6604,15 +6604,15 @@ msgid "Маєте питання?"
 msgstr "Haben Sie Fragen?"
 
 #: templates/pages/about.html:163
-msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ІІ-помічником"
+msgid "Зв'яжіться з нами або поспілкуйтесь з нашим ШІ-помічником"
 msgstr "Kontaktieren Sie uns oder chatten Sie mit unserem KI-Assistenten"
 
 #: templates/pages/about.html:166
-msgid "Чат з ІІ"
+msgid "Чат з ШІ"
 msgstr "Chat mit der KI"
 
 #: templates/pages/ai_assistant.html:2
-msgid "ІІ-продавець – SmartShop AI"
+msgid "ШІ-продавець – SmartShop AI"
 msgstr "KI-Verkaufsassistent – SmartShop AI"
 
 #: templates/pages/ai_assistant.html:312
@@ -6631,7 +6631,7 @@ msgid "Вітаю!"
 msgstr "Hallo!"
 
 #: templates/pages/ai_assistant.html:329
-msgid "Я ІІ-помічник магазину SmartShop. Можу допомогти вам:"
+msgid "Я ШІ-помічник магазину SmartShop. Можу допомогти вам:"
 msgstr "Ich bin der KI-Assistent des SmartShop. Ich kann Ihnen helfen:"
 
 #: templates/pages/ai_assistant.html:330
@@ -6695,12 +6695,12 @@ msgid "Переглянути всі"
 msgstr "Alle anzeigen"
 
 #: templates/pages/ai_assistant.html:385
-msgid "Інструкції ІІ"
+msgid "Інструкції ШІ"
 msgstr "KI-Anweisungen"
 
 #: templates/pages/ai_assistant.html:387
 msgid ""
-"ІІ-продавець налаштований бути ввічливим та допомагати з вибором товарів."
+"ШІ-продавець налаштований бути ввічливим та допомагати з вибором товарів."
 msgstr ""
 "Der KI-Verkaufsassistent ist so eingestellt, dass er höflich ist und bei der"
 " Produktauswahl hilft."
@@ -6786,7 +6786,7 @@ msgid "Завітайте до нашого офісу"
 msgstr "Besuchen Sie unser Büro"
 
 #: templates/pages/contacts.html:252
-msgid "ІІ-помічник"
+msgid "ШІ-помічник"
 msgstr "KI-Assistent"
 
 #: templates/pages/contacts.html:258
@@ -6830,24 +6830,24 @@ msgid "Потрібна швидка відповідь?"
 msgstr "Benötigen Sie eine schnelle Antwort?"
 
 #: templates/pages/contacts.html:291
-msgid "Наш ІІ-помічник працює 24/7 і може відповісти миттєво"
+msgid "Наш ШІ-помічник працює 24/7 і може відповісти миттєво"
 msgstr ""
 "Unser KI-Assistent ist rund um die Uhr im Einsatz und antwortet sofort"
 
 #: templates/pages/contacts.html:292
-msgid "Поспілкуватись з ІІ"
+msgid "Поспілкуватись з ШІ"
 msgstr "Mit der KI chatten"
 
 #: templates/pages/landing.html:6 templates/pages/landing.html:15
 #: templates/pages/landing.html:20
-msgid "SmartShop AI — конструктор інтернет-магазинів з ІІ-продавцем"
+msgid "SmartShop AI — конструктор інтернет-магазинів з ШІ-продавцем"
 msgstr "SmartShop AI - Online-Shop-Builder mit KI-Verkäufer"
 
 #: templates/pages/landing.html:7 templates/pages/landing.html:16
 #: templates/pages/landing.html:21
 msgid ""
 "SmartShop AI — SaaS-конструктор магазинів: зберіть вітрину за годину, "
-"підключіть склад, доставку, бухгалтерію, автоматичний блог та ІІ-продавця. "
+"підключіть склад, доставку, бухгалтерію, автоматичний блог та ШІ-продавця. "
 "Підписка від 19€/міс."
 msgstr ""
 "SmartShop AI - SaaS-Shop-Builder: Baue einen Shop in einer Stunde, verbinde "
@@ -6856,7 +6856,7 @@ msgstr ""
 
 #: templates/pages/landing.html:31
 msgid ""
-"SaaS-платформа для запуску безпечного онлайн-магазину з ІІ-продавцем — "
+"SaaS-платформа для запуску безпечного онлайн-магазину з ШІ-продавцем — "
 "альтернатива WordPress/WooCommerce та Ecwid."
 msgstr ""
 "Eine SaaS-Plattform zum Start eines sicheren Onlineshops mit KI-"
@@ -6869,7 +6869,7 @@ msgstr "Was macht SmartShop AI besser als WordPress (WooCommerce) oder Ecwid?"
 #: templates/pages/landing.html:57 templates/pages/landing.html:394
 msgid ""
 "WordPress/WooCommerce покладається на сторонні плагіни — найчастішу причину "
-"злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та ІІ-"
+"злому таких сайтів. У SmartShop AI склад, доставка, CRM, блог та ШІ-"
 "продавець вбудовані в саму платформу й підтримуються централізовано, без "
 "плагінного ризику. Захист від CSRF, обмеження на перебір паролів, шифрування"
 " ключів доставки та перевірка оплати через підписані Stripe-вебхуки "
@@ -6897,13 +6897,13 @@ msgstr ""
 "Hosting und ohne Sicherheitsupdates, um die Sie sich selbst kümmern müssten."
 
 #: templates/pages/landing.html:66 templates/pages/landing.html:401
-msgid "Що робить ІІ-продавець на сайті?"
+msgid "Що робить ШІ-продавець на сайті?"
 msgstr "Was macht der KI-Verkaufsassistent auf der Website?"
 
 #: templates/pages/landing.html:67 templates/pages/landing.html:402
 msgid ""
 "Чат-бот знає ваш каталог, ціни та наявність, консультує покупця і підказує "
-"статус замовлення. Він прозоро повідомляє, що є ІІ (відповідно до вимог EU "
+"статус замовлення. Він прозоро повідомляє, що є ШІ (відповідно до вимог EU "
 "AI Act), і ніколи не розкриває дані інших клієнтів чи не вигадує обіцянок "
 "від імені магазину."
 msgstr ""
@@ -6949,7 +6949,7 @@ msgid "Запитання"
 msgstr "FAQ"
 
 #: templates/pages/landing.html:241
-msgid "Свій інтернет-магазин з ІІ-продавцем —"
+msgid "Свій інтернет-магазин з ШІ-продавцем —"
 msgstr "Ihr eigener Online-Shop mit KI-Verkäufer —"
 
 #: templates/pages/landing.html:241
@@ -6960,7 +6960,7 @@ msgstr "ohne Entwickler und ohne Code"
 msgid ""
 "Реєструєтесь, оформлюєте підписку і за годину збираєте вітрину: фото, "
 "тексти, товари. За потреби підключаєте склад, доставку та бухгалтерію. Блог "
-"пише і публікує ІІ, а на сайті клієнтів консультує ІІ-продавець."
+"пише і публікує ШІ, а на сайті клієнтів консультує ШІ-продавець."
 msgstr ""
 "Registrieren Sie sich, schließen Sie ein Abonnement ab und stellen Sie in "
 "einer Stunde Ihren Shop zusammen: Fotos, Texte, Produkte. Bei Bedarf "
@@ -7015,7 +7015,7 @@ msgstr "Automatischer Blog"
 
 #: templates/pages/landing.html:268
 msgid ""
-"ІІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими "
+"ШІ пише статті за вашим планом тем з SEO-заголовками, описами та ключовими "
 "словами."
 msgstr ""
 "KI schreibt Artikel nach Ihrem Themenplan mit SEO-Titeln, Beschreibungen und"
@@ -7136,15 +7136,15 @@ msgstr ""
 "überprüft."
 
 #: templates/pages/landing.html:328
-msgid "ІІ-продавець з вбудованими обмеженнями"
+msgid "ШІ-продавець з вбудованими обмеженнями"
 msgstr "KI-Verkaufsassistent mit eingebauten Schutzregeln"
 
 #: templates/pages/landing.html:329
 msgid ""
 "Незалежно від налаштувань власника магазину, платформа завжди додає власні "
-"базові правила: чат-бот прозоро повідомляє, що він ІІ, не розголошує чужі "
+"базові правила: чат-бот прозоро повідомляє, що він ШІ, не розголошує чужі "
 "дані і не вигадує обіцянок від імені магазину — з урахуванням вимог EU AI "
-"Act щодо прозорості ІІ-систем."
+"Act щодо прозорості ШІ-систем."
 msgstr ""
 "Unabhängig von den Einstellungen des Shop-Inhabers wendet die Plattform "
 "stets ihre eigenen Grundregeln an: Der Chatbot legt transparent offen, dass "

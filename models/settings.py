@@ -127,7 +127,7 @@ class SiteSettings(db.Model):
                 about_title="Про компанію",
                 about_text="Тут ви зможете розповісти про свій бренд, команду та цінності.",
                 blog_title="Як ми автоматизуємо ваш онлайн-магазин",
-                blog_excerpt="Автоматичний блог на базі ІІ: статті, огляди, відповіді на питання клієнтів.",
+                blog_excerpt="Автоматичний блог на базі ШІ: статті, огляди, відповіді на питання клієнтів.",
                 social_telegram="https://t.me/your_channel",
                 social_whatsapp="https://wa.me/380123456789",
                 ai_instructions=(

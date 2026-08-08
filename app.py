@@ -822,7 +822,7 @@ def create_app():
                 # ai_settings колонки
                 ai_settings_columns = [
                     ('chatbot_enabled', 'BOOLEAN DEFAULT TRUE'),
-                    ('chatbot_name', "VARCHAR(100) DEFAULT 'ІІ-продавець'"),
+                    ('chatbot_name', "VARCHAR(100) DEFAULT 'ШІ-продавець'"),
                     ('chatbot_system_prompt', 'TEXT'),
                     ('chatbot_custom_instructions', 'TEXT'),
                     ('chatbot_tone', "VARCHAR(50) DEFAULT 'friendly'"),
@@ -1220,7 +1220,7 @@ def create_app():
 
     @app.route("/ai-assistant")
     def ai_assistant_page():
-        """Сторінка ІІ-продавця."""
+        """Сторінка ШІ-продавця."""
         settings = SiteSettings.get_or_create(g.store.id)
         products = Product.query.filter_by(is_active=True, store_id=g.store.id).all()
         categories = Category.query.filter_by(store_id=g.store.id).all()
@@ -2086,7 +2086,7 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
     @app.route("/api/chat", methods=["POST"])
     @limiter.limit("20 per minute;200 per hour")
     def api_chat():
-        """API для чату з ІІ-продавцем."""
+        """API для чату з ШІ-продавцем."""
         import json as json_module
 
         openai_client = get_openai_client()
@@ -2173,10 +2173,10 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
                 reason = (args.get("reason") or "Клієнт потребує допомоги людини").strip()
                 contact = ContactMessage(
                     store_id=g.store.id,
-                    name=(args.get("contact_name") or "Клієнт з ІІ-чату").strip() or "Клієнт з ІІ-чату",
+                    name=(args.get("contact_name") or "Клієнт з ШІ-чату").strip() or "Клієнт з ШІ-чату",
                     email=(args.get("contact_email") or "no-email@chat.smartshop.local").strip(),
                     phone=(args.get("contact_phone") or None),
-                    subject="🤖 Ескалація з ІІ-чату",
+                    subject="🤖 Ескалація з ШІ-чату",
                     message=f"{reason}\n\nОстаннє повідомлення клієнта: {user_message}",
                 )
                 db.session.add(contact)
@@ -2259,7 +2259,7 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
 
     @app.route("/api/chat/reset", methods=["POST"])
     def api_chat_reset():
-        """Скидає історію діалогу з ІІ-продавцем у поточній сесії."""
+        """Скидає історію діалогу з ШІ-продавцем у поточній сесії."""
         session.pop("chat_history", None)
         return jsonify({"success": True})
 
@@ -2366,7 +2366,7 @@ SmartShop AI is a monthly subscription (from €19/month) aimed at small and med
             last_orders=last_orders,
         )
 
-    # ----- АДМІНКА: НАЛАШТУВАННЯ БЛОКІВ + СОЦМЕРЕЖІ + ІІ -----
+    # ----- АДМІНКА: НАЛАШТУВАННЯ БЛОКІВ + СОЦМЕРЕЖІ + ШІ -----
 
     @app.route("/admin/blocks", methods=["GET", "POST"])
     @admin_required
