@@ -135,7 +135,7 @@ def send_verification_email_for_user(user, locale=None):
         from flask import url_for
         from services.tokens import generate_token, EMAIL_VERIFY_SALT
         token = generate_token(user.email, EMAIL_VERIFY_SALT)
-        verify_url = url_for("verify_email", token=token, _external=True)
+        verify_url = url_for("user_auth.verify_email", token=token, _external=True)
         send_verification_email(user.email, user.full_name, verify_url, locale=locale)
     except Exception as e:
         current_app.logger.error(f'Failed to send verification email: {str(e)}')

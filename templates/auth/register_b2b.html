@@ -169,8 +169,8 @@
         </form>
 
         <div class="auth-footer">
-            <p>{{ _('Вже є акаунт?') }} <a href="{{ url_for('user_login') }}">{{ _('Увійти') }}</a></p>
-            <p>{{ _('Приватний покупець?') }} <a href="{{ url_for('user_register') }}">{{ _('Звичайна реєстрація') }}</a></p>
+            <p>{{ _('Вже є акаунт?') }} <a href="{{ url_for('user_auth.user_login') }}">{{ _('Увійти') }}</a></p>
+            <p>{{ _('Приватний покупець?') }} <a href="{{ url_for('user_auth.user_register') }}">{{ _('Звичайна реєстрація') }}</a></p>
         </div>
     </div>
 </div>

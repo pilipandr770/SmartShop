@@ -32,7 +32,7 @@ def admin_required(fn):
             return fn(*args, **kwargs)  # В демо-режимі пропускаємо перевірку
         if not current_user.is_authenticated:
             flash(_("Потрібен вхід в адмін-панель."), "warning")
-            return redirect(url_for("user_login", next=request.path))
+            return redirect(url_for("user_auth.user_login", next=request.path))
         if not current_user.can_manage_store(g.get("store")):
             abort(403)
         return fn(*args, **kwargs)

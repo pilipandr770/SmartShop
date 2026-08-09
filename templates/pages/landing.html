@@ -232,7 +232,7 @@
                     </a>
                 {% endfor %}
             </div>
-            <a href="{{ url_for('user_login') }}" class="btn btn-outline">{{ _('Увійти') }}</a>
+            <a href="{{ url_for('user_auth.user_login') }}" class="btn btn-outline">{{ _('Увійти') }}</a>
             <a href="{{ url_for('signup.new_store') }}" class="btn btn-primary">{{ _('Створити магазин') }}</a>
         </div>
     </header>

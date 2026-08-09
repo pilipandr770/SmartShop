@@ -68,7 +68,7 @@
             <span style="color: var(--text-muted); font-size: 0.85rem;">{{ current_user.email }}</span>
             <a href="{{ url_for('cabinet.change_password') }}" class="btn">{{ _('🔐 Пароль') }}</a>
             <a href="{{ url_for('index') }}" class="btn">{{ _('← На сайт') }}</a>
-            <a href="{{ url_for('user_logout') }}" class="btn">{{ _('🚪 Вийти') }}</a>
+            <a href="{{ url_for('user_auth.user_logout') }}" class="btn">{{ _('🚪 Вийти') }}</a>
         </div>
     </header>
 

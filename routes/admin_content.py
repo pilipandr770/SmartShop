@@ -30,12 +30,12 @@ def admin_login():
     """
     if DEMO_MODE:
         return redirect(url_for(".admin_dashboard"))
-    return redirect(url_for("user_login", next=url_for(".admin_dashboard")))
+    return redirect(url_for("user_auth.user_login", next=url_for(".admin_dashboard")))
 
 
 @content_bp.route("/admin/logout")
 def admin_logout():
-    return redirect(url_for("user_logout"))
+    return redirect(url_for("user_auth.user_logout"))
 
 
 @content_bp.route("/admin/")

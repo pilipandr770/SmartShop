@@ -66,11 +66,11 @@
         </form>
 
         <div class="auth-footer">
-            <p>{{ _('Вже є акаунт?') }} <a href="{{ url_for('user_login') }}">{{ _('Увійти') }}</a></p>
+            <p>{{ _('Вже є акаунт?') }} <a href="{{ url_for('user_auth.user_login') }}">{{ _('Увійти') }}</a></p>
             <div class="auth-divider">
                 <span>{{ _('або') }}</span>
             </div>
-            <a href="{{ url_for('user_register_b2b') }}" class="btn btn-outline btn-b2b btn-block">
+            <a href="{{ url_for('user_auth.user_register_b2b') }}" class="btn btn-outline btn-b2b btn-block">
                 🏢 {{ _('Реєстрація B2B партнера') }}
             </a>
         </div>

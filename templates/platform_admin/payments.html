@@ -58,7 +58,7 @@
         <div style="display:flex; gap:0.6rem; align-items:center;">
             <a href="{{ url_for('platform_admin.dashboard') }}" class="btn">← {{ _('Магазини') }}</a>
             <a href="{{ url_for('index') }}" class="btn">{{ _('← На сайт') }}</a>
-            <a href="{{ url_for('user_logout') }}" class="btn">{{ _('🚪 Вийти') }}</a>
+            <a href="{{ url_for('user_auth.user_logout') }}" class="btn">{{ _('🚪 Вийти') }}</a>
         </div>
     </header>
 
