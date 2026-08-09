@@ -568,9 +568,9 @@
                              в адмінку магазину, а не в клієнтський кабінет покупця. -->
                         <a href="{{ url_for('dashboard.admin_dashboard') }}" class="btn btn-primary">⚙️ {{ _('Admin Panel') }}</a>
                     {% elif current_user.is_b2b %}
-                        <a href="{{ url_for('b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
+                        <a href="{{ url_for('cabinet.b2b_dashboard') }}" class="btn btn-outline">🏢 B2B</a>
                     {% else %}
-                        <a href="{{ url_for('user_cabinet') }}" class="btn btn-outline">👤 {{ _('Dashboard') }}</a>
+                        <a href="{{ url_for('cabinet.user_cabinet') }}" class="btn btn-outline">👤 {{ _('Dashboard') }}</a>
                     {% endif %}
                     <a href="{{ url_for('user_auth.user_logout') }}" class="social-pill" title="{{ _('Logout') }}">🚪</a>
                 {% else %}

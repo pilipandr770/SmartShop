@@ -14,13 +14,13 @@
         </div>
 
         <nav class="cabinet-nav">
-            <a href="{{ url_for('b2b_dashboard') }}" class="nav-item">
+            <a href="{{ url_for('cabinet.b2b_dashboard') }}" class="nav-item">
                 📊 Dashboard
             </a>
-            <a href="{{ url_for('b2b_orders') }}" class="nav-item">
+            <a href="{{ url_for('cabinet.b2b_orders') }}" class="nav-item">
                 📦 {{ _('Замовлення') }}
             </a>
-            <a href="{{ url_for('b2b_company') }}" class="nav-item active">
+            <a href="{{ url_for('cabinet.b2b_company') }}" class="nav-item active">
                 🏢 {{ _('Компанія') }}
             </a>
             <a href="#" class="nav-item">
@@ -51,12 +51,12 @@
         
         {% if company %}
         <div class="verification-section">
-            <div class="verification-card {% if company.verification_status == 'verified' %}verified{% elif company.verification_status == 'pending' %}pending{% else %}rejected{% endif %}">
+            <div class="verification-card {% if company.status == 'verified' %}verified{% elif company.status == 'pending' %}pending{% else %}rejected{% endif %}">
                 <div class="verification-header">
                     <h3>{{ _('Статус верифікації') }}</h3>
-                    {% if company.verification_status == 'verified' %}
+                    {% if company.status == 'verified' %}
                     <span class="status-badge status-success">✅ {{ _('Верифіковано') }}</span>
-                    {% elif company.verification_status == 'pending' %}
+                    {% elif company.status == 'pending' %}
                     <span class="status-badge status-warning">⏳ {{ _('На перевірці') }}</span>
                     {% else %}
                     <span class="status-badge status-danger">❌ {{ _('Відхилено') }}</span>
@@ -84,7 +84,7 @@
             </div>
         </div>
         
-        <form method="POST" action="{{ url_for('b2b_company') }}" class="company-form">
+        <form method="POST" action="{{ url_for('cabinet.b2b_company') }}" class="company-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
             
             <div class="form-section">

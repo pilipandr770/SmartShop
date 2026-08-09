@@ -15,24 +15,24 @@
 
         {% if current_user.company %}
         <div class="verification-status">
-            {% if current_user.company.verification_status == 'verified' %}
+            {% if current_user.company.status == 'verified' %}
             <span class="status-verified">✅ {{ _('Верифікована компанія') }}</span>
-            {% elif current_user.company.verification_status == 'pending' %}
+            {% elif current_user.company.status == 'pending' %}
             <span class="status-pending">⏳ {{ _('На перевірці') }}</span>
-            {% elif current_user.company.verification_status == 'rejected' %}
+            {% elif current_user.company.status == 'rejected' %}
             <span class="status-rejected">❌ {{ _('Відхилено') }}</span>
             {% endif %}
         </div>
         {% endif %}
 
         <nav class="cabinet-nav">
-            <a href="{{ url_for('b2b_dashboard') }}" class="nav-item active">
+            <a href="{{ url_for('cabinet.b2b_dashboard') }}" class="nav-item active">
                 📊 Dashboard
             </a>
-            <a href="{{ url_for('b2b_orders') }}" class="nav-item">
+            <a href="{{ url_for('cabinet.b2b_orders') }}" class="nav-item">
                 📦 {{ _('Замовлення') }}
             </a>
-            <a href="{{ url_for('b2b_company') }}" class="nav-item">
+            <a href="{{ url_for('cabinet.b2b_company') }}" class="nav-item">
                 🏢 {{ _('Компанія') }}
             </a>
             <a href="#" class="nav-item">
@@ -67,7 +67,7 @@
             {% endif %}
         {% endwith %}
         
-        {% if current_user.company and current_user.company.verification_status == 'pending' %}
+        {% if current_user.company and current_user.company.status == 'pending' %}
         <div class="alert alert-info">
             <strong>⏳ {{ _('Ваша компанія на перевірці') }}</strong>
             <p>{{ _('Ми перевіряємо надані вами дані. Це може зайняти до 24 годин. Після верифікації ви отримаєте доступ до повного функціоналу B2B кабінету.') }}</p>
@@ -101,7 +101,7 @@
             <div class="section">
                 <div class="section-header">
                     <h2>📦 {{ _('Останні замовлення') }}</h2>
-                    <a href="{{ url_for('b2b_orders') }}" class="btn btn-sm">{{ _('Всі') }} →</a>
+                    <a href="{{ url_for('cabinet.b2b_orders') }}" class="btn btn-sm">{{ _('Всі') }} →</a>
                 </div>
 
                 {% if recent_orders %}
@@ -168,7 +168,7 @@
         <div class="section company-info-section">
             <div class="section-header">
                 <h2>🏢 {{ _('Інформація про компанію') }}</h2>
-                <a href="{{ url_for('b2b_company') }}" class="btn btn-sm">{{ _('Редагувати') }}</a>
+                <a href="{{ url_for('cabinet.b2b_company') }}" class="btn btn-sm">{{ _('Редагувати') }}</a>
             </div>
             <div class="company-grid">
                 <div class="info-item">

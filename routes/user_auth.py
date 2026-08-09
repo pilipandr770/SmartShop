@@ -52,7 +52,7 @@ def verify_email(token):
         user.is_verified = True
         db.session.commit()
     flash(_("✅ Email підтверджено!"), "success")
-    return redirect(url_for("user_cabinet") if current_user.is_authenticated else url_for(".user_login"))
+    return redirect(url_for("cabinet.user_cabinet") if current_user.is_authenticated else url_for(".user_login"))
 
 
 @user_auth_bp.route("/resend-verification", methods=["GET", "POST"])
@@ -139,8 +139,8 @@ def user_login():
         if current_user.is_platform_owner:
             return redirect(url_for("platform_admin.dashboard"))
         if current_user.is_b2b:
-            return redirect(url_for("b2b_dashboard"))
-        return redirect(url_for("user_cabinet"))
+            return redirect(url_for("cabinet.b2b_dashboard"))
+        return redirect(url_for("cabinet.user_cabinet"))
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -178,9 +178,9 @@ def user_login():
             elif user.is_admin or user.is_manager:
                 return redirect(url_for("dashboard.admin_dashboard"))
             elif user.is_b2b:
-                return redirect(url_for("b2b_dashboard"))
+                return redirect(url_for("cabinet.b2b_dashboard"))
 
-            return redirect(url_for("user_cabinet"))
+            return redirect(url_for("cabinet.user_cabinet"))
 
         flash(_("Невірний email або пароль."), "danger")
 
@@ -229,8 +229,8 @@ def login_2fa():
             elif user.is_admin or user.is_manager:
                 return redirect(url_for("dashboard.admin_dashboard"))
             elif user.is_b2b:
-                return redirect(url_for("b2b_dashboard"))
-            return redirect(url_for("user_cabinet"))
+                return redirect(url_for("cabinet.b2b_dashboard"))
+            return redirect(url_for("cabinet.user_cabinet"))
 
         flash(_("Невірний код. Спробуйте ще раз."), "danger")
 
@@ -252,7 +252,7 @@ def user_logout():
 def user_register():
     """Реєстрація B2C клієнта."""
     if current_user.is_authenticated:
-        return redirect(url_for("user_cabinet"))
+        return redirect(url_for("cabinet.user_cabinet"))
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -306,7 +306,7 @@ def user_register():
         from flask_login import login_user as flask_login_user
         flask_login_user(user)
         flash(_("Реєстрація успішна! Ласкаво просимо!"), "success")
-        return redirect(url_for("user_cabinet"))
+        return redirect(url_for("cabinet.user_cabinet"))
 
     settings = SiteSettings.get_or_create(g.store.id)
     return render_template("auth/register.html", settings=settings)
@@ -317,7 +317,7 @@ def user_register():
 def user_register_b2b():
     """Реєстрація B2B партнера."""
     if current_user.is_authenticated:
-        return redirect(url_for("b2b_dashboard"))
+        return redirect(url_for("cabinet.b2b_dashboard"))
 
     settings = SiteSettings.get_or_create(g.store.id)
     if not getattr(settings, 'b2b_registration_open', True):
@@ -442,6 +442,6 @@ def user_register_b2b():
         else:
             flash(_("📋 Реєстрація успішна! Ваша заявка на розгляді."), "info")
 
-        return redirect(url_for("b2b_dashboard"))
+        return redirect(url_for("cabinet.b2b_dashboard"))
 
     return render_template("auth/register_b2b.html", settings=settings)

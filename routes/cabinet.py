@@ -1,167 +1,161 @@
 """
-Маршрути особистого кабінету (B2C та B2B)
+Особистий кабінет покупця: B2C дашборд, B2B дашборд + замовлення +
+профіль компанії, зміна пароля (спільна для всіх ролей).
+
+До 2026-08-09 існувало ДВІ паралельні реалізації кабінету: ця блюпринт-
+версія (з маршрутами dashboard/b2c_dashboard/orders/order_detail/profile,
+що фільтрували Order за user_id/company_id) і робоча версія прямо в
+app.py (/cabinet, /cabinet/b2b, /cabinet/b2b/orders, /cabinet/b2b/company,
+що фільтрує за customer_email). Друга була фактично МЕРТВИМ кодом:
+жоден шаблон і жоден внутрішній redirect на неї не посилався (єдиний
+живий маршрут цього blueprint був change_password), а там, де вона теж
+була б технічно досяжна за прямим URL, вона була ще й ЗЛАМАНА - ніде в
+коді Order.user_id/Order.company_id не встановлюються під час checkout(),
+тож ці фільтри завжди повертали порожній результат; order_detail()/
+profile()/orders() (гілка B2C) до того ж рендерили шаблони, яких взагалі
+не існує (cabinet/b2c/orders.html, cabinet/b2c/order_detail.html,
+cabinet/b2b/order_detail.html, cabinet/*/profile.html) - впали б з 500
+одразу після того, як фільтр повернув би хоч щось.
+
+Консолідовано в один blueprint 2026-08-09: перенесено робочу логіку з
+app.py (яка й лишається єдиним джерелом правди - фільтрація за
+customer_email, встановленим у checkout_success()/stripe_webhook()),
+додано перевірку крос-тенантності (company.store_id != g.store.id) з
+мертвої версії - це була єдина цінна відсутня деталь. Мертві маршрути
+видалено, а не "полагоджені", бо на них ніщо не посилалось.
+
+Той самий перенесений код (ще з app.py) мав власний, теж мертвий/нікому
+не потрібний рядок `order.status_display = {...}.get(...)` - Order вже
+має ідентичну by-design властивість status_display (models/order.py) без
+setter'а, тож це падало з AttributeError щойно з'являвся хоч один реальний
+запис в recent_orders/orders (раніше не спрацьовувало непомітно, бо
+/cabinet ніколи не тестувався з користувачем, що реально мав замовлення).
+Видалено - шаблони й так звертаються до order.status_display напряму.
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, g
+from flask import Blueprint, g, redirect, render_template, request, url_for, flash
 from flask_babel import gettext as _
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
+
 from extensions import db
-from models.order import Order, OrderStatus
+from models.order import Order
 from models.settings import SiteSettings
 
 cabinet_bp = Blueprint("cabinet", __name__, url_prefix="/cabinet")
 
 
-@cabinet_bp.route("/")
+@cabinet_bp.route("")
 @login_required
-def dashboard():
-    """Головна сторінка кабінету."""
+def user_cabinet():
+    """Особистий кабінет B2C клієнта."""
     if current_user.is_b2b:
-        return redirect(url_for("cabinet.b2b_dashboard"))
-    return redirect(url_for("cabinet.b2c_dashboard"))
+        return redirect(url_for(".b2b_dashboard"))
 
+    settings = SiteSettings.get_or_create(g.store.id)
 
-@cabinet_bp.route("/b2c")
-@login_required
-def b2c_dashboard():
-    """Dashboard для B2C клієнта."""
-    # Останні замовлення (тільки в межах поточного магазину)
-    recent_orders = Order.query.filter_by(user_id=current_user.id, store_id=g.store.id)\
-        .order_by(Order.created_at.desc())\
-        .limit(5)\
-        .all()
+    # Статистика (тільки замовлення в межах поточного магазину)
+    total_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id).count()
+    recent_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id)\
+        .order_by(Order.created_at.desc()).limit(5).all()
 
-    # Статистика
-    total_orders = Order.query.filter_by(user_id=current_user.id, store_id=g.store.id).count()
-    
     return render_template(
         "cabinet/b2c/dashboard.html",
-        recent_orders=recent_orders,
+        settings=settings,
         total_orders=total_orders,
-        settings=SiteSettings.get_or_create(g.store.id),
+        recent_orders=recent_orders,
     )
 
 
 @cabinet_bp.route("/b2b")
 @login_required
 def b2b_dashboard():
-    """Dashboard для B2B партнера."""
+    """Dashboard B2B партнера."""
     if not current_user.is_b2b:
-        flash(_("Доступ лише для B2B партнерів."), "warning")
-        return redirect(url_for("cabinet.b2c_dashboard"))
+        return redirect(url_for(".user_cabinet"))
 
     company = current_user.company
 
-    # Компанія зареєстрована як B2B-партнер конкретного магазину - на іншому
-    # піддомені кабінет не показуємо (немає доступу до чужого store).
-    if company.store_id and company.store_id != g.store.id:
+    # Компанія зареєстрована як B2B-партнер конкретного магазину - на
+    # іншому піддомені кабінет не показуємо (немає доступу до чужого
+    # store; інакше можна було б побачити дані/знижку "не своєї" компанії).
+    if company and company.store_id and company.store_id != g.store.id:
         flash(_("Цей кабінет недоступний на цьому магазині."), "warning")
         return redirect(url_for("index"))
 
-    # Перевірка статусу компанії
-    if not company.is_verified:
-        return render_template(
-            "cabinet/b2b/pending.html",
-            company=company,
-            settings=SiteSettings.get_or_create(g.store.id),
-        )
+    settings = SiteSettings.get_or_create(g.store.id)
 
-    # Останні замовлення компанії
-    recent_orders = Order.query.filter_by(company_id=company.id, store_id=g.store.id)\
-        .order_by(Order.created_at.desc())\
-        .limit(10)\
-        .all()
-
-    # Статистика
-    total_orders = Order.query.filter_by(company_id=company.id, store_id=g.store.id).count()
-    paid_orders = Order.query.filter_by(company_id=company.id, status=OrderStatus.PAID.value, store_id=g.store.id).count()
+    # Статистика (в межах поточного магазину)
+    total_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id).count()
+    pending_orders = Order.query.filter_by(customer_email=current_user.email, status="pending", store_id=g.store.id).count()
     total_spent = db.session.query(db.func.coalesce(db.func.sum(Order.amount), 0.0))\
-        .filter(Order.company_id == company.id, Order.status == OrderStatus.PAID.value, Order.store_id == g.store.id)\
-        .scalar()
-    
+        .filter_by(customer_email=current_user.email, status="paid", store_id=g.store.id).scalar()
+
+    discount = company.discount_percent if company else 0
+
+    recent_orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id)\
+        .order_by(Order.created_at.desc()).limit(5).all()
+
     return render_template(
         "cabinet/b2b/dashboard.html",
-        company=company,
-        recent_orders=recent_orders,
+        settings=settings,
         total_orders=total_orders,
-        paid_orders=paid_orders,
+        pending_orders=pending_orders,
         total_spent=total_spent,
-        settings=SiteSettings.get_or_create(g.store.id),
+        discount=discount,
+        recent_orders=recent_orders,
+        recent_documents=[],  # TODO: Документи
+        chart_labels=None,
+        chart_data=None,
     )
 
 
-@cabinet_bp.route("/orders")
+@cabinet_bp.route("/b2b/orders")
 @login_required
-def orders():
-    """Список замовлень."""
-    page = request.args.get("page", 1, type=int)
-    per_page = 20
-    
-    if current_user.is_b2b and current_user.company_id:
-        query = Order.query.filter_by(company_id=current_user.company_id, store_id=g.store.id)
-    else:
-        query = Order.query.filter_by(user_id=current_user.id, store_id=g.store.id)
-    
-    pagination = query.order_by(Order.created_at.desc())\
-        .paginate(page=page, per_page=per_page, error_out=False)
-    
-    orders = pagination.items
-    
-    template = "cabinet/b2b/orders.html" if current_user.is_b2b else "cabinet/b2c/orders.html"
-    return render_template(template, orders=orders, pagination=pagination, settings=SiteSettings.get_or_create(g.store.id))
-
-
-@cabinet_bp.route("/orders/<int:order_id>")
-@login_required
-def order_detail(order_id):
-    """Деталі замовлення."""
-    if current_user.is_b2b and current_user.company_id:
-        order = Order.query.filter_by(id=order_id, company_id=current_user.company_id, store_id=g.store.id).first_or_404()
-    else:
-        order = Order.query.filter_by(id=order_id, user_id=current_user.id, store_id=g.store.id).first_or_404()
-    
-    template = "cabinet/b2b/order_detail.html" if current_user.is_b2b else "cabinet/b2c/order_detail.html"
-    return render_template(template, order=order)
-
-
-@cabinet_bp.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    """Профіль користувача."""
-    if request.method == "POST":
-        current_user.first_name = request.form.get("first_name", "").strip() or None
-        current_user.last_name = request.form.get("last_name", "").strip() or None
-        current_user.phone = request.form.get("phone", "").strip() or None
-        
-        db.session.commit()
-        flash(_("Профіль оновлено."), "success")
-        return redirect(url_for("cabinet.profile"))
-    
-    template = "cabinet/b2b/profile.html" if current_user.is_b2b else "cabinet/b2c/profile.html"
-    return render_template(template)
-
-
-@cabinet_bp.route("/company", methods=["GET", "POST"])
-@login_required
-def company():
-    """Налаштування компанії (тільки для B2B)."""
+def b2b_orders():
+    """Замовлення B2B партнера."""
     if not current_user.is_b2b:
-        flash(_("Доступ лише для B2B партнерів."), "warning")
-        return redirect(url_for("cabinet.dashboard"))
-    
+        return redirect(url_for(".user_cabinet"))
+
+    settings = SiteSettings.get_or_create(g.store.id)
+
+    orders = Order.query.filter_by(customer_email=current_user.email, store_id=g.store.id)\
+        .order_by(Order.created_at.desc()).all()
+
+    return render_template(
+        "cabinet/b2b/orders.html",
+        settings=settings,
+        orders=orders,
+    )
+
+
+@cabinet_bp.route("/b2b/company", methods=["GET", "POST"])
+@login_required
+def b2b_company():
+    """Профіль компанії B2B партнера."""
+    if not current_user.is_b2b:
+        return redirect(url_for(".user_cabinet"))
+
+    settings = SiteSettings.get_or_create(g.store.id)
     company = current_user.company
-    
-    if request.method == "POST":
-        company.contact_person = request.form.get("contact_person", "").strip() or None
-        company.contact_phone = request.form.get("contact_phone", "").strip() or None
-        company.address = request.form.get("address", "").strip() or None
-        company.city = request.form.get("city", "").strip() or None
-        company.postal_code = request.form.get("postal_code", "").strip() or None
-        
+
+    if request.method == "POST" and company:
+        company.name = request.form.get("name", company.name)
+        company.address = request.form.get("address", company.address)
+        company.city = request.form.get("city", company.city)
+        company.postal_code = request.form.get("postal_code", company.postal_code)
+        company.country = request.form.get("country", company.country)
+        company.website = request.form.get("website", company.website)
+        company.contact_person = request.form.get("contact_person", company.contact_person)
+        company.contact_phone = request.form.get("phone", company.contact_phone)
+
         db.session.commit()
-        flash(_("Дані компанії оновлено."), "success")
-        return redirect(url_for("cabinet.company"))
-    
-    return render_template("cabinet/b2b/company.html", company=company, settings=SiteSettings.get_or_create(g.store.id))
+        flash(_("Дані компанії оновлено!"), "success")
+        return redirect(url_for(".b2b_company"))
+
+    return render_template(
+        "cabinet/b2b/company.html",
+        settings=settings,
+        company=company,
+    )
 
 
 @cabinet_bp.route("/change-password", methods=["GET", "POST"])
@@ -172,7 +166,7 @@ def change_password():
         current_password = request.form.get("current_password", "")
         new_password = request.form.get("new_password", "")
         confirm_password = request.form.get("confirm_password", "")
-        
+
         if not current_user.check_password(current_password):
             flash(_("Невірний поточний пароль."), "danger")
         elif len(new_password) < 6:
@@ -185,6 +179,8 @@ def change_password():
             flash(_("Пароль успішно змінено."), "success")
             if current_user.is_platform_owner:
                 return redirect(url_for("platform_admin.dashboard"))
-            return redirect(url_for("cabinet.profile"))
+            if current_user.is_b2b:
+                return redirect(url_for(".b2b_dashboard"))
+            return redirect(url_for(".user_cabinet"))
 
     return render_template("cabinet/change_password.html")
