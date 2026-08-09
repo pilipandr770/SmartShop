@@ -288,11 +288,11 @@
     <h2 style="font-size:1.1rem;margin-bottom:0.6rem;">{{ _('Categories') }}</h2>
     <div class="categories-row-grid">
         {% for cat in categories %}
-        <a href="{{ url_for('category_page', slug=cat.slug) }}" class="category-pill-card">
+        <a href="{{ url_for('storefront.category_page', slug=cat.slug) }}" class="category-pill-card">
             {{ cat.name }}
         </a>
         {% endfor %}
-        <a href="{{ url_for('shop') }}" class="category-pill-card category-pill-all">{{ _('All Products') }} &#8594;</a>
+        <a href="{{ url_for('storefront.shop') }}" class="category-pill-card category-pill-all">{{ _('All Products') }} &#8594;</a>
     </div>
 </section>
 {% endif %}
@@ -340,7 +340,7 @@
     <div class="products-grid">
         {% if products %}
             {% for p in products %}
-                <a href="{{ url_for('product_page', product_id=p.id) }}" class="product-card">
+                <a href="{{ url_for('storefront.product_page', product_id=p.id) }}" class="product-card">
                     <div class="product-img">
                         <div class="product-img-inner"
                              style="background-image:url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');">

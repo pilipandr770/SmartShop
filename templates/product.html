@@ -18,7 +18,7 @@
 {% block og_description %}{{ product_desc[:200] if product_desc else 'Buy ' ~ product_name ~ ' online' }}{% endblock %}
 {% block og_image %}{{ product.image_url or (request.url_root ~ 'static/images/og-default.jpg') }}{% endblock %}
 
-{% block canonical_url %}{{ url_for('product_page', product_id=product.id, _external=True) }}{% endblock %}
+{% block canonical_url %}{{ url_for('storefront.product_page', product_id=product.id, _external=True) }}{% endblock %}
 
 {% block structured_data %}
 <script type="application/ld+json">
@@ -35,7 +35,7 @@
     },
     "offers": {
         "@type": "Offer",
-        "url": "{{ url_for('product_page', product_id=product.id, _external=True) }}",
+        "url": "{{ url_for('storefront.product_page', product_id=product.id, _external=True) }}",
         "priceCurrency": "{{ product.currency }}",
         "price": "{{ product.price }}",
         "availability": "{{ 'https://schema.org/InStock' if product.stock > 0 else 'https://schema.org/OutOfStock' }}",
@@ -61,25 +61,25 @@
             "@type": "ListItem",
             "position": 2,
             "name": "{{ _('Shop') }}",
-            "item": "{{ url_for('shop', _external=True) }}"
+            "item": "{{ url_for('storefront.shop', _external=True) }}"
         }{% if product.category %},
         {
             "@type": "ListItem",
             "position": 3,
             "name": "{{ category_name }}",
-            "item": "{{ url_for('category_page', slug=product.category.slug, _external=True) }}"
+            "item": "{{ url_for('storefront.category_page', slug=product.category.slug, _external=True) }}"
         },
         {
             "@type": "ListItem",
             "position": 4,
             "name": "{{ product_name }}",
-            "item": "{{ url_for('product_page', product_id=product.id, _external=True) }}"
+            "item": "{{ url_for('storefront.product_page', product_id=product.id, _external=True) }}"
         }{% else %},
         {
             "@type": "ListItem",
             "position": 3,
             "name": "{{ product_name }}",
-            "item": "{{ url_for('product_page', product_id=product.id, _external=True) }}"
+            "item": "{{ url_for('storefront.product_page', product_id=product.id, _external=True) }}"
         }{% endif %}
     ]
 }
@@ -177,10 +177,10 @@
     <div class="breadcrumb">
         <a href="{{ url_for('index') }}">{{ _('Home') }}</a>
         <span>/</span>
-        <a href="{{ url_for('shop') }}">{{ _('Shop') }}</a>
+        <a href="{{ url_for('storefront.shop') }}">{{ _('Shop') }}</a>
         {% if product.category %}
         <span>/</span>
-        <a href="{{ url_for('category_page', slug=product.category.slug) }}">{{ category_name }}</a>
+        <a href="{{ url_for('storefront.category_page', slug=product.category.slug) }}">{{ category_name }}</a>
         {% endif %}
         <span>/</span>
         <span style="color: var(--text-main);">{{ product_name }}</span>
@@ -208,9 +208,9 @@
             {% endif %}
 
             <!-- Форма додавання в кошик -->
-            <form action="{{ url_for('cart_add', product_id=product.id) }}" method="post" class="add-to-cart-form">
+            <form action="{{ url_for('cart.cart_add', product_id=product.id) }}" method="post" class="add-to-cart-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="next" value="{{ url_for('product_page', product_id=product.id) }}">
+                <input type="hidden" name="next" value="{{ url_for('storefront.product_page', product_id=product.id) }}">
                 <label for="quantity" style="color: var(--text-muted);">{{ _('Quantity') }}:</label>
                 <input type="number" name="quantity" id="quantity" value="1" min="1" max="99">
                 <button type="submit" class="btn">🛒 {{ _('Add to cart') }}</button>
@@ -219,7 +219,7 @@
             {% if product.category %}
             <div style="margin-top: 0.5rem;">
                 <span style="color: var(--text-muted);">{{ _('Category') }}:</span>
-                <a href="{{ url_for('category_page', slug=product.category.slug) }}" 
+                <a href="{{ url_for('storefront.category_page', slug=product.category.slug) }}" 
                    class="social-pill" style="margin-left: 0.5rem;">{{ category_name }}</a>
             </div>
             {% endif %}
@@ -240,7 +240,7 @@
         <div class="products-grid">
             {% for p in related %}
             {% set p_name = p.name_en if locale == 'en' else (p.name_de if locale == 'de' else p.name) %}
-            <a href="{{ url_for('product_page', product_id=p.id) }}" class="product-card">
+            <a href="{{ url_for('storefront.product_page', product_id=p.id) }}" class="product-card">
                 <div class="product-img">
                     <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
                 </div>

@@ -147,7 +147,7 @@
                                  alt="{{ item.product.name }}" 
                                  class="cart-item-img">
                             <div class="cart-item-name">
-                                <a href="{{ url_for('product_page', product_id=item.product.id) }}">
+                                <a href="{{ url_for('storefront.product_page', product_id=item.product.id) }}">
                                     {{ item.product.name }}
                                 </a>
                             </div>
@@ -155,7 +155,7 @@
                     </td>
                     <td>{{ "%.2f"|format(item.product.price) }} {{ get_currency_symbol(item.product.currency) }}</td>
                     <td>
-                        <form action="{{ url_for('cart_update', product_id=item.product.id) }}" method="post" class="quantity-form">
+                        <form action="{{ url_for('cart.cart_update', product_id=item.product.id) }}" method="post" class="quantity-form">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99">
                             <button type="submit" class="btn btn-outline">✓</button>
@@ -165,7 +165,7 @@
                         {{ "%.2f"|format(item.item_total) }} {{ item.product.currency }}
                     </td>
                     <td>
-                        <form action="{{ url_for('cart_remove', product_id=item.product.id) }}" method="post">
+                        <form action="{{ url_for('cart.cart_remove', product_id=item.product.id) }}" method="post">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-outline" style="color: #ef4444; border-color: #ef4444;">✕</button>
                         </form>
@@ -182,17 +182,17 @@
             <span class="cart-total">{{ "%.2f"|format(total) }} {{ items[0].product.currency if items else (settings.default_currency or 'EUR') }}</span>
         </div>
         <div class="cart-actions">
-            <form action="{{ url_for('cart_clear') }}" method="post">
+            <form action="{{ url_for('cart.cart_clear') }}" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-outline">{{ _('Очистити кошик') }}</button>
             </form>
-            <a href="{{ url_for('shop') }}" class="btn btn-outline">{{ _('Продовжити покупки') }}</a>
+            <a href="{{ url_for('storefront.shop') }}" class="btn btn-outline">{{ _('Продовжити покупки') }}</a>
             {% if has_shipping_carriers %}
-            <a href="{{ url_for('checkout_address') }}" class="btn">
+            <a href="{{ url_for('checkout.checkout_address') }}" class="btn">
                 💳 {{ _('Оформити замовлення') }}
             </a>
             {% else %}
-            <form action="{{ url_for('checkout') }}" method="post" style="display: inline;">
+            <form action="{{ url_for('checkout.checkout') }}" method="post" style="display: inline;">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn">
                     💳 {{ _('Оформити замовлення') }}
@@ -205,7 +205,7 @@
     {% else %}
     <div class="card empty-cart">
         <p>🛒 {{ _('Ваш кошик порожній') }}</p>
-        <a href="{{ url_for('shop') }}" class="btn">{{ _('Перейти до магазину') }}</a>
+        <a href="{{ url_for('storefront.shop') }}" class="btn">{{ _('Перейти до магазину') }}</a>
     </div>
     {% endif %}
 </section>

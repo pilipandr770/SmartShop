@@ -524,7 +524,7 @@
 
         <nav class="nav" aria-label="{{ _('Головна навігація') }}">
             <a href="{{ url_for('index') }}">{{ _('Home') }}</a>
-            <a href="{{ url_for('shop') }}">{{ _('Shop') }}</a>
+            <a href="{{ url_for('storefront.shop') }}">{{ _('Shop') }}</a>
             <a href="{{ url_for('blog.blog_page') }}">{{ _('Blog') }}</a>
             <a href="{{ url_for('about_page') }}">{{ _('About') }}</a>
             <a href="{{ url_for('contacts_page') }}">{{ _('Contacts') }}</a>
@@ -556,7 +556,7 @@
                         <a href="{{ settings.social_whatsapp }}" target="_blank" class="social-pill">WhatsApp</a>
                     {% endif %}
                 </div>
-                <a href="{{ url_for('cart_page') }}" class="btn btn-outline cart-badge">
+                <a href="{{ url_for('cart.cart_page') }}" class="btn btn-outline cart-badge">
                     🛒 {{ _('Cart') }}
                     {% if cart_count > 0 %}
                         <span class="cart-count">{{ cart_count }}</span>

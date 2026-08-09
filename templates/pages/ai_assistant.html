@@ -365,7 +365,7 @@
                 <h4>📦 {{ _('Каталог') }} ({{ products|length }} {{ _('товарів') }})</h4>
                 <div class="catalog-preview">
                     {% for p in products[:5] %}
-                    <a href="{{ url_for('product_page', product_id=p.id) }}" class="catalog-item">
+                    <a href="{{ url_for('storefront.product_page', product_id=p.id) }}" class="catalog-item">
                         <img src="{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=100' }}" alt="{{ p.get_name(get_locale()|string) }}">
                         <span class="name">{{ p.get_name(get_locale()|string) }}</span>
                         <span class="price">{{ "%.0f"|format(p.price) }}€</span>
@@ -375,7 +375,7 @@
                     {% endfor %}
                 </div>
                 {% if products|length > 5 %}
-                <a href="{{ url_for('shop') }}" style="display: block; text-align: center; margin-top: 0.75rem; font-size: 0.8rem; color: var(--accent);">
+                <a href="{{ url_for('storefront.shop') }}" style="display: block; text-align: center; margin-top: 0.75rem; font-size: 0.8rem; color: var(--accent);">
                     {{ _('Переглянути всі') }} →
                 </a>
                 {% endif %}

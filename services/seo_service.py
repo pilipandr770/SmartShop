@@ -183,7 +183,7 @@ class SEOService:
             },
             "offers": {
                 "@type": "Offer",
-                "url": url_for('product_page', product_id=product.id, _external=True),
+                "url": url_for('storefront.product_page', product_id=product.id, _external=True),
                 "priceCurrency": "EUR",
                 "price": float(product.price),
                 "availability": "https://schema.org/InStock" if product.stock > 0 else "https://schema.org/OutOfStock",

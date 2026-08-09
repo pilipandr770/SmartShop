@@ -75,7 +75,7 @@ class HomepageBlock(db.Model):
         if self.link_type == "about":
             return url_for("about_page")
         if self.link_type == "shop":
-            return url_for("shop")
+            return url_for("storefront.shop")
         if self.link_type == "blog":
             return url_for("blog.blog_page")
         if self.link_type == "ai_assistant":
@@ -85,8 +85,8 @@ class HomepageBlock(db.Model):
 
             category = Category.query.filter_by(slug=self.link_value, store_id=self.store_id).first()
             if category:
-                return url_for("category_page", slug=category.slug)
-            return url_for("shop")
+                return url_for("storefront.category_page", slug=category.slug)
+            return url_for("storefront.shop")
         return self.link_value or "#"
 
     @staticmethod

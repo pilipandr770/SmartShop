@@ -11,11 +11,11 @@
     <!-- Категорії -->
     {% if categories %}
     <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0;">
-        <a href="{{ url_for('shop') }}" class="social-pill" style="{% if not request.args.get('category') %}border-color: var(--accent);{% endif %}">
+        <a href="{{ url_for('storefront.shop') }}" class="social-pill" style="{% if not request.args.get('category') %}border-color: var(--accent);{% endif %}">
             {{ _('All Categories') }}
         </a>
         {% for cat in categories %}
-        <a href="{{ url_for('category_page', slug=cat.slug) }}" class="social-pill">
+        <a href="{{ url_for('storefront.category_page', slug=cat.slug) }}" class="social-pill">
             {{ cat.get_name(get_locale()|string) }}
         </a>
         {% endfor %}
@@ -26,7 +26,7 @@
     {% if products.items %}
     <div class="products-grid">
         {% for p in products.items %}
-        <a href="{{ url_for('product_page', product_id=p.id) }}" class="product-card">
+        <a href="{{ url_for('storefront.product_page', product_id=p.id) }}" class="product-card">
             <div class="product-img">
                 <div class="product-img-inner" style="background-image: url('{{ p.image_url or 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=800' }}');"></div>
             </div>
@@ -41,7 +41,7 @@
     {% if products.pages > 1 %}
     <div class="pagination">
         {% if products.has_prev %}
-        <a href="{{ url_for('shop', page=products.prev_num) }}">← {{ _('Previous') }}</a>
+        <a href="{{ url_for('storefront.shop', page=products.prev_num) }}">← {{ _('Previous') }}</a>
         {% endif %}
 
         {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
@@ -49,7 +49,7 @@
                 {% if page_num == products.page %}
                 <span class="active">{{ page_num }}</span>
                 {% else %}
-                <a href="{{ url_for('shop', page=page_num) }}">{{ page_num }}</a>
+                <a href="{{ url_for('storefront.shop', page=page_num) }}">{{ page_num }}</a>
                 {% endif %}
             {% else %}
             <span>…</span>
@@ -57,7 +57,7 @@
         {% endfor %}
 
         {% if products.has_next %}
-        <a href="{{ url_for('shop', page=products.next_num) }}">{{ _('Next') }} →</a>
+        <a href="{{ url_for('storefront.shop', page=products.next_num) }}">{{ _('Next') }} →</a>
         {% endif %}
     </div>
     {% endif %}
