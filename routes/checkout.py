@@ -263,7 +263,17 @@ def checkout():
         # Створюємо Stripe Checkout сесію. Гроші клієнта йдуть напряму
         # власнику магазину через destination charge (transfer_data) -
         # платформа лишається лише посередником Checkout-сесії й не
-        # утримує кошти на своєму рахунку та не бере комісії.
+        # утримує кошти на своєму рахунку та не бере комісії (application_fee
+        # не встановлюється - тейк-рейт платформи 0%, свідоме рішення).
+        #
+        # on_behalf_of обов'язковий тут: без нього коміс Stripe за обробку
+        # платежу (transaction fee, ~1.4%+0.25€ для EU-карт) списувалась би
+        # з балансу ПЛАТФОРМИ (бо сам charge технічно створюється на її
+        # акаунті), а не з магазину - тобто платформа платила б за кожну
+        # транзакцію кожного магазину зі своєї кишені навіть при 0% take
+        # rate. З on_behalf_of, спрямованим на той самий connected account,
+        # що й transfer_data.destination, Stripe списує свою комісію з
+        # магазину - платформа справді нічого не платить і не заробляє.
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=line_items,
@@ -272,6 +282,7 @@ def checkout():
             cancel_url=url_for(".checkout_cancel", _external=True),
             payment_intent_data={
                 "transfer_data": {"destination": g.store.stripe_connect_account_id},
+                "on_behalf_of": g.store.stripe_connect_account_id,
             },
             metadata={
                 "order_id": str(order.id),
